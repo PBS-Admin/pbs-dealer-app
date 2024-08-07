@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styles from './Dialog.module.css';
 
 const CopyBuildingDialog = ({
   isOpen,
@@ -15,7 +16,9 @@ const CopyBuildingDialog = ({
       <div className="dialog-content">
         <div className="dialog-title">
           <h2>Copy Building</h2>
-          <p>Select the building you want to copy to:</p>
+          <p className={styles.message}>
+            Select the building you want to copy to:
+          </p>
         </div>
         <ul>
           {buildings.map(

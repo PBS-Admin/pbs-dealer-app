@@ -31,7 +31,7 @@ export default function ClientQuote({ session }) {
   const [sourceBuildingIndex, setSourceBuildingIndex] = useState(0);
 
   // Adjust index to change initial starting page, helpful to work on page on save
-  const [currentIndex, setCurrentIndex] = useState(2);
+  const [currentIndex, setCurrentIndex] = useState(3);
   const navItems = [
     { id: 'quote-info', label: 'Project Information' },
     { id: 'design-code', label: 'Design Codes' },
@@ -62,6 +62,18 @@ export default function ClientQuote({ session }) {
     },
     { id: 'accessories', label: 'Accessories' },
     { id: 'finalize-quote', label: 'Finalize Quote' },
+  ];
+
+  const shapes = [
+    { id: 'symmetrical', label: 'Symmetrical' },
+    { id: 'singleSlope', label: 'Single Slope' },
+    { id: 'leanTo', label: 'Lean-to' },
+    { id: 'nonSymmetrical', label: 'Non-Symmetrical' },
+  ];
+
+  const frames = [
+    { id: 'rigidFrame', label: 'Rigid Frame' },
+    { id: 'multiSpan', label: 'Multi Span' },
   ];
 
   // Carousel Nav handlers
@@ -104,6 +116,22 @@ export default function ClientQuote({ session }) {
           offsetY: '',
           rotation: '',
           commonWall: '',
+          shape: 'symmetrical',
+          backPeakOffset: '',
+          eaveHeight: '',
+          lowEaveHeight: '',
+          highEaveHeight: '',
+          backEaveHeight: '',
+          frontEaveHeight: '',
+          roofPitch: '',
+          backRoofPitch: '',
+          frontRoofPitch: '',
+          swBaySpacing: '',
+          lewBaySpacing: '',
+          rewBaySpacing: '',
+          frameType: 'rigidFrame',
+          intColSpacing: '',
+          leftEndwallFrame: '',
         },
       ],
     }));
@@ -226,7 +254,7 @@ export default function ClientQuote({ session }) {
 
   return (
     <main>
-      <header>
+      <header className="mainHeader">
         {isDesktop ? (
           <Link href="/dashboard" className={styles.leftBox}>
             <FontAwesomeIcon icon={faHouse} size="2x" />
@@ -863,28 +891,448 @@ export default function ClientQuote({ session }) {
             )}
             {/* Building Layout Page */}
             {activeCard == 'bldg-layout' && activeBuilding != null && (
-              <section>
-                <h2>Building {activeBuilding + 1} - Layout</h2>
-                <div className={styles.buildingProjectContainer}>
-                  <label htmlFor={`buildingWidth-${activeBuilding}`}>
-                    Front Sidewall:
-                  </label>
-                  <input
-                    type="text"
-                    id={`buildingWidth-${activeBuilding}`}
-                    name={`buildingWidth-${activeBuilding}`}
-                    value={values.buildings[activeBuilding].fswBays}
-                    onChange={(e) =>
-                      handleNestedChange(
-                        activeBuilding,
-                        'fswBays',
-                        e.target.value
-                      )
-                    }
-                    placeholder="Separate Bays with Space"
-                  />
-                </div>
-              </section>
+              <div className={styles.layoutPage}>
+                <section className="sectionCard">
+                  <div className="sectionInnerCard">
+                    <header className="sectionHeader">
+                      <h3>Building Shape</h3>
+                    </header>
+                    <div className="sectionContent">
+                      <h4>Building Size</h4>
+                      <fieldset className={styles.radioGroup}>
+                        {shapes.map(({ id, label }) => (
+                          <div key={id}>
+                            <input
+                              type="radio"
+                              id={id}
+                              name="shape"
+                              value={id}
+                              checked={
+                                values.buildings[activeBuilding].shape === id
+                              }
+                              onChange={(e) =>
+                                handleNestedChange(
+                                  activeBuilding,
+                                  'shape',
+                                  e.target.value
+                                )
+                              }
+                            />
+                            <label htmlFor={id}>{label}</label>
+                          </div>
+                        ))}
+                      </fieldset>
+                      <div className="sectionField">
+                        <label htmlFor={`buildingWidth-${activeBuilding}`}>
+                          Width:
+                        </label>
+                        <input
+                          type="text"
+                          id={`buildingWidth-${activeBuilding}`}
+                          name={`buildingWidth-${activeBuilding}`}
+                          value={values.buildings[activeBuilding].width}
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'width',
+                              e.target.value
+                            )
+                          }
+                          placeholder="Feet"
+                        />
+                      </div>
+                      <div className="sectionField">
+                        <label htmlFor={`buildingLength-${activeBuilding}`}>
+                          Length:
+                        </label>
+                        <input
+                          type="text"
+                          id={`buildingLength-${activeBuilding}`}
+                          name={`buildingLength-${activeBuilding}`}
+                          value={values.buildings[activeBuilding].length}
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'length',
+                              e.target.value
+                            )
+                          }
+                          placeholder="Feet"
+                        />
+                      </div>
+                      {values.buildings[activeBuilding].shape ==
+                        'symmetrical' && (
+                        <div className="sectionField">
+                          <label
+                            htmlFor={`buildingEaveHeight-${activeBuilding}`}
+                          >
+                            Eave Height:
+                          </label>
+                          <input
+                            type="text"
+                            id={`buildingEaveHeight-${activeBuilding}`}
+                            name={`buildingEaveHeight-${activeBuilding}`}
+                            value={values.buildings[activeBuilding].eaveHeight}
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'eaveHeight',
+                                e.target.value
+                              )
+                            }
+                            placeholder="Feet"
+                          />
+                        </div>
+                      )}
+                      {(values.buildings[activeBuilding].shape ==
+                        'singleSlope' ||
+                        values.buildings[activeBuilding].shape == 'leanTo') && (
+                        <>
+                          <div className="sectionField">
+                            <label
+                              htmlFor={`buildingLowEaveHeight-${activeBuilding}`}
+                            >
+                              Low Eave Height:
+                            </label>
+                            <input
+                              type="text"
+                              id={`buildingLowEaveHeight-${activeBuilding}`}
+                              name={`buildingLowEaveHeight-${activeBuilding}`}
+                              value={
+                                values.buildings[activeBuilding].lowEaveHeight
+                              }
+                              onChange={(e) =>
+                                handleNestedChange(
+                                  activeBuilding,
+                                  'lowEaveHeight',
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Feet"
+                            />
+                          </div>
+                          <div className="sectionField">
+                            <label
+                              htmlFor={`buildingHighEaveHeight-${activeBuilding}`}
+                            >
+                              Low Eave Height:
+                            </label>
+                            <input
+                              type="text"
+                              id={`buildingHighEaveHeight-${activeBuilding}`}
+                              name={`buildingHighEaveHeight-${activeBuilding}`}
+                              value={
+                                values.buildings[activeBuilding].highEaveHeight
+                              }
+                              onChange={(e) =>
+                                handleNestedChange(
+                                  activeBuilding,
+                                  'highEaveHeight',
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Feet"
+                            />
+                          </div>
+                        </>
+                      )}
+                      {values.buildings[activeBuilding].shape !=
+                        'nonSymmetrical' && (
+                        <div className="sectionField">
+                          <label
+                            htmlFor={`buildingRoofPitch-${activeBuilding}`}
+                          >
+                            Roof Pitch:
+                          </label>
+                          <input
+                            type="text"
+                            id={`buildingRoofPitch-${activeBuilding}`}
+                            name={`buildingRoofPitch-${activeBuilding}`}
+                            value={values.buildings[activeBuilding].roofPitch}
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'roofPitch',
+                                e.target.value
+                              )
+                            }
+                            placeholder="Feet"
+                          />
+                        </div>
+                      )}
+                      {values.buildings[activeBuilding].shape ==
+                        'nonSymmetrical' && (
+                        <>
+                          <div className="sectionField">
+                            <label
+                              htmlFor={`buildingPeakOffset-${activeBuilding}`}
+                            >
+                              Back Peak Offset:
+                            </label>
+                            <input
+                              type="text"
+                              id={`buildingPeakOffset-${activeBuilding}`}
+                              name={`buildingPeakOffset-${activeBuilding}`}
+                              value={
+                                values.buildings[activeBuilding].backPeakOffset
+                              }
+                              onChange={(e) =>
+                                handleNestedChange(
+                                  activeBuilding,
+                                  'backPeakOffset',
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Feet"
+                            />
+                          </div>
+                          <div className="sectionField">
+                            <label
+                              htmlFor={`buildingBackEaveHeight-${activeBuilding}`}
+                            >
+                              Back Eave Height:
+                            </label>
+                            <input
+                              type="text"
+                              id={`buildingBackEaveHeight-${activeBuilding}`}
+                              name={`buildingBackEaveHeight-${activeBuilding}`}
+                              value={
+                                values.buildings[activeBuilding].backEaveHeight
+                              }
+                              onChange={(e) =>
+                                handleNestedChange(
+                                  activeBuilding,
+                                  'backEaveHeight',
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Feet"
+                            />
+                          </div>
+                          <div className="sectionField">
+                            <label
+                              htmlFor={`buildingFrontEaveHeight-${activeBuilding}`}
+                            >
+                              Front Eave Height:
+                            </label>
+                            <input
+                              type="text"
+                              id={`buildingFrontEaveHeight-${activeBuilding}`}
+                              name={`buildingFrontEaveHeight-${activeBuilding}`}
+                              value={
+                                values.buildings[activeBuilding].frontEaveHeight
+                              }
+                              onChange={(e) =>
+                                handleNestedChange(
+                                  activeBuilding,
+                                  'frontEaveHeight',
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Feet"
+                            />
+                          </div>
+                          <div className="sectionField">
+                            <label
+                              htmlFor={`buildingBackRoofPitch-${activeBuilding}`}
+                            >
+                              Back Roof Pitch:
+                            </label>
+                            <input
+                              type="text"
+                              id={`buildingBackRoofPitch-${activeBuilding}`}
+                              name={`buildingBackRoofPitch-${activeBuilding}`}
+                              value={
+                                values.buildings[activeBuilding].backRoofPitch
+                              }
+                              onChange={(e) =>
+                                handleNestedChange(
+                                  activeBuilding,
+                                  'backRoofPitch',
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Feet"
+                            />
+                          </div>
+                          <div className="sectionField">
+                            <label
+                              htmlFor={`buildingFrontRoofPitch-${activeBuilding}`}
+                            >
+                              Front Roof Pitch:
+                            </label>
+                            <input
+                              type="text"
+                              id={`buildingFrontRoofPitch-${activeBuilding}`}
+                              name={`buildingFrontRoofPitch-${activeBuilding}`}
+                              value={
+                                values.buildings[activeBuilding].frontRoofPitch
+                              }
+                              onChange={(e) =>
+                                handleNestedChange(
+                                  activeBuilding,
+                                  'frontRoofPitch',
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Feet"
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <div className="sectionContent">
+                      <h4>Bay Spacing</h4>
+                      <div className="sectionField">
+                        <label
+                          htmlFor={`buildingSWBaySpacing-${activeBuilding}`}
+                        >
+                          Sidewall Bay Spacing:
+                        </label>
+                        <input
+                          type="text"
+                          id={`buildingSWBaySpacing-${activeBuilding}`}
+                          name={`buildingSWBaySpacing-${activeBuilding}`}
+                          value={values.buildings[activeBuilding].swBaySpacing}
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'swBaySpacing',
+                              e.target.value
+                            )
+                          }
+                          placeholder="Separate Bays with Spaces"
+                        />
+                      </div>
+                      <div className="sectionField">
+                        <label
+                          htmlFor={`buildingLEWBaySpacing-${activeBuilding}`}
+                        >
+                          Left Endwall Bay Spacing:
+                        </label>
+                        <input
+                          type="text"
+                          id={`buildingLEWBaySpacing-${activeBuilding}`}
+                          name={`buildingLEWBaySpacing-${activeBuilding}`}
+                          value={values.buildings[activeBuilding].lewBaySpacing}
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'lewBaySpacing',
+                              e.target.value
+                            )
+                          }
+                          placeholder="Separate Bays with Spaces"
+                        />
+                      </div>
+                      <div className="sectionField">
+                        <label
+                          htmlFor={`buildingREWBaySpacing-${activeBuilding}`}
+                        >
+                          Right Endwall Bay Spacing:
+                        </label>
+                        <input
+                          type="text"
+                          id={`buildingREWBaySpacing-${activeBuilding}`}
+                          name={`buildingREWBaySpacing-${activeBuilding}`}
+                          value={values.buildings[activeBuilding].rewBaySpacing}
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'rewBaySpacing',
+                              e.target.value
+                            )
+                          }
+                          placeholder="Separate Bays with Spaces"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <section className="sectionCard">
+                  <div className="sectionInnerCard">
+                    <header className="sectionHeader">
+                      <h3>Frame Type</h3>
+                    </header>
+                    <div className="sectionContent">
+                      <fieldset className={styles.radioGroup}>
+                        {frames.map(({ id, label }) => (
+                          <div key={id}>
+                            <input
+                              type="radio"
+                              id={id}
+                              name="frame"
+                              value={id}
+                              checked={
+                                values.buildings[activeBuilding].frameType ===
+                                id
+                              }
+                              onChange={(e) =>
+                                handleNestedChange(
+                                  activeBuilding,
+                                  'frameType',
+                                  e.target.value
+                                )
+                              }
+                            />
+                            <label htmlFor={id}>{label}</label>
+                          </div>
+                        ))}
+                      </fieldset>
+                      {values.buildings[activeBuilding].frameType ==
+                        'multiSpan' && (
+                        <div className="sectionField">
+                          <label
+                            htmlFor={`buildingIntColSpacing-${activeBuilding}`}
+                          >
+                            Interior Column Spacing:
+                          </label>
+                          <input
+                            type="text"
+                            id={`buildingIntColSpacing-${activeBuilding}`}
+                            name={`buildingIntColSpacing-${activeBuilding}`}
+                            value={
+                              values.buildings[activeBuilding].intColSpacing
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'intColSpacing',
+                                e.target.value
+                              )
+                            }
+                            placeholder="Feet"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div className="sectionContent">
+                      <h4>Endwall Frames</h4>
+                      <div className="sectionField">
+                        <label htmlFor={`buildingLEWFrame-${activeBuilding}`}>
+                          Left Endwall Frame:
+                        </label>
+                        <input
+                          type="text"
+                          id={`buildingLEWFrame-${activeBuilding}`}
+                          name={`buildingLEWFrame-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding].leftEndwallFrame
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'leftEndwallFrame',
+                              e.target.value
+                            )
+                          }
+                          placeholder="Feet"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
             )}
             {activeCard == 'bldg-extensions' && <section></section>}
             {activeCard == 'bldg-partitions' && <section></section>}
