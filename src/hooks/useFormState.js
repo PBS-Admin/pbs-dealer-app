@@ -5,15 +5,15 @@ function useFormState(initialState) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setValues(prev => ({ ...prev, [name]: value }));
+    setValues((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleNestedChange = (buildingIndex, field, value) => {
-    setValues(prev => ({
+    setValues((prev) => ({
       ...prev,
-      buildings: prev.buildings.map((building, index) => 
+      buildings: prev.buildings.map((building, index) =>
         index === buildingIndex ? { ...building, [field]: value } : building
-      )
+      ),
     }));
   };
 

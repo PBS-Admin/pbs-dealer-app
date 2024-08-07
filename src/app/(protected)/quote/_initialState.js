@@ -35,7 +35,7 @@ export const initialState = {
   seismicS1: '',
   seismicSms: '',
   seismicSm1: '',
-  // Building Project Page  
+  // Building Project Page
   steelFinish: '',
   buildings: [
     {
@@ -47,7 +47,7 @@ export const initialState = {
       commonWall: '',
       // Building - Layout
       fswBays: '',
-    }
+    },
   ],
   // BUilding # - Layout
   buildingShape: '',

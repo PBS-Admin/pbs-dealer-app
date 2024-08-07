@@ -1,15 +1,14 @@
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '../../api/auth/[...nextauth]/route'
-import { redirect } from 'next/navigation'
-import ClientQuote from './ClientQuote'
-
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '../../api/auth/[...nextauth]/route';
+import { redirect } from 'next/navigation';
+import ClientQuote from './ClientQuote';
 
 export default async function Quote() {
-    const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
-    if (!session) {
-        redirect('/login')
-    }
+  if (!session) {
+    redirect('/login');
+  }
 
-    return <ClientQuote session={session} />
+  return <ClientQuote session={session} />;
 }
