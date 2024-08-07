@@ -1,0 +1,262 @@
+.inputBody {
+    margin: 6em 0;
+    display: flex;
+    flex-flow: row nowrap;
+    width: 100%;
+    align-items: center;
+}
+
+.sectionContainer {
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow: auto;
+}
+
+.sectionContainer section {
+    background-color: var(--background-white);
+    padding: 1em;
+    border-radius: 1em;
+}
+
+.pageTitle {
+    font-size: 7vw;
+}
+
+.sidebar {
+    display: flex;
+    flex-flow: column nowrap;
+    background-color: var(--background-white);
+    border-radius: 0 1em 1em 0;
+    padding: 1em 0;
+
+}
+
+.sidebar button {
+    background: none;
+    font-size: 1em;
+    padding: 1em;
+    border: none;
+    cursor: pointer;
+    border-radius: 0 1em 1em 0;
+    transition: background-color .5s ease;
+}
+
+.sidebar button:hover {
+    background: var(--light-orange);
+}
+
+.carouselNav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background-color: var(--background-white);
+    padding: 1em;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+}
+
+.carouselContainer {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.carouselItem {
+    color: var(--dark-blue);
+    font-size: 1em;
+    font-weight: 600;
+    padding: 0.5em;
+    white-space: nowrap;
+    margin-bottom: 0.5em;
+}
+
+.dotContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--light-orange);
+    margin: 0 4px;
+    transition: all 0.3s ease;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.activeDot {
+    width: 16px;
+    height: 16px;
+    background-color: var(--orange);
+}
+
+.navArrow {
+    color: var(--dark-blue);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5em;
+}
+
+.leftBox {
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
+.rightBox {
+    font-size: 2vw;
+    flex-grow: 1;
+    flex-basis: 0;
+    text-align: right;
+    overflow-wrap: break-word;
+}
+
+.inputContainer {
+    display: flex;
+    color: var(--dark-blue);
+    font-size: .75em;
+    font-weight: 600;
+    align-items: center;
+    gap: 1em;
+    justify-content: flex-end;
+}
+
+.inputContainer label {
+    white-space: nowrap;
+}
+
+.textInput {
+    background: none;
+    padding: 0 0 0 1em;
+    border: 1px solid var(--dark-blue);
+    line-height: 2em;
+    border-radius: 5px;
+}
+
+.buildingContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    padding: .5em;
+    gap: .25em;
+    background-color: var(--dark-blue);
+    border-radius: 10px;
+}
+
+.buildingContainer input {
+    padding: 0 0 0 1em;
+    line-height: 2em;
+    border-radius: 5px;
+    border: 1px solid var(--light-orange);
+}
+
+.buildingContainer input:focus {
+    outline: 2px solid var(--orange);
+}
+
+.buildingTitleContainer {
+    display: flex;
+    justify-content: space-between;
+    color: var(--background-white);
+}
+
+.buildingProjectContainer {
+    display: flex;
+    color: var(--background-white);
+    font-size: .75em;
+    font-weight: 600;
+    align-items: center;
+    gap: 1em;
+    justify-content: flex-end;
+}
+
+.buildingProjectContainer label {
+    white-space: nowrap;
+}
+
+.buildingProjectContainer input[type=number] {
+    color: black;
+}
+
+
+.projectPage {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1.5em;
+}
+
+.copyBuilding {
+    font-size: 1em;
+    padding: .5em;
+    border: none;
+    border-radius: 5px;
+    color: var(--background-white);
+    align-self: center;
+    background-color: var(--light-blue);
+}
+
+.addBuilding {
+    color: var(--background-white);
+    background-color: var(--dark-blue);
+    border: none;
+    border-radius: 50%;
+    width: 2em;
+    height: 2em;
+    font-size: 1.25em;
+    align-self: center;
+}
+
+.buttonContainer {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+}
+
+.removeBuilding {
+    font-size: 1em;
+    padding: .5em;
+    border: none;
+    border-radius: 5px;
+    color: var(--background-white);
+    align-self: flex-end;
+    background: var(--red);
+}
+
+.activeBuilding {
+    font-size: 1em;
+    padding: .5em;
+    border: none;
+    border-radius: 5px;
+    color: var(--background-white);
+    align-self: flex-end;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.activeBuildingSelected {
+    background-color: var(--light-green);
+    color: white;
+}
+
+@media screen and (min-width: 600px) {
+    .pageTitle {
+        font-size: 2em;
+    }
+
+    .rightBox {
+        font-size: .75em;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .inputBody {
+        flex-flow: column nowrap;
+    }
+}

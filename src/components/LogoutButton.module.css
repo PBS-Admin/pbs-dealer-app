@@ -1,0 +1,18 @@
+.leftBox {
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
+.leftBox button {
+    background: none;
+    border: none;
+    color: var(--dark-blue);
+    cursor: pointer;
+    font-size: 1.5em;
+}
+
+@media screen and (min-width: 600px) {
+    .leftBox button {
+        font-size: 2.5em;
+    }
+}
