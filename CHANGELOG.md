@@ -11,11 +11,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Added Building # - Layout page
+
 ### Changed
 
 - Changed the location of the repository to a pbsAdmin shared github account
 
 ### Fixed
+
+- Fixed linting errors and started to correct global and page specific CSS classes
 
 ## [0.0.5] - 2024-08-02
 

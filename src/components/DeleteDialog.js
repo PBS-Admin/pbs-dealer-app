@@ -1,17 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styles from './Dialog.module.css';
 
 const DeleteDialog = ({ isOpen, onClose, onDelete, title, message }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="dialog-overlay">
-      <div className="dialog-content">
-        <div className="dialog-title">
+    <div className={styles.overlay}>
+      <div className={styles.content}>
+        <div className={styles.title}>
           <h2>{title}</h2>
         </div>
-        <p>{message}</p>
-        <div className="dialog-buttons">
+        <p className={styles.message}>{message}</p>
+        <div className={styles.buttons}>
           <button className="cancel" onClick={onClose}>
             Cancel
           </button>

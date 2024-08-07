@@ -12,12 +12,7 @@
     align-items: flex-start;
     justify-content: center;
     overflow: auto;
-}
-
-.sectionContainer section {
-    background-color: var(--background-white);
     padding: 1em;
-    border-radius: 1em;
 }
 
 .pageTitle {
@@ -148,7 +143,7 @@
     padding: .5em;
     gap: .25em;
     background-color: var(--dark-blue);
-    border-radius: 10px;
+    border-radius: 10px;    
 }
 
 .buildingContainer input {
@@ -186,10 +181,30 @@
     color: black;
 }
 
+.radioGroup{
+    display: flex;
+    flex-flow: row nowrap; 
+    color: var(--black);
+    padding: .5em;
+    outline: none;
+    border: none;    
+    gap: 1em;
+    justify-content: space-evenly;    
+    accent-color: var(--dark-blue);    
+    text-align: center;
+}
+
+.radioGroup div{
+    display: flex;
+    flex-flow: column nowrap;
+}
 
 .projectPage {
     display: flex;
     flex-flow: column nowrap;
+    background-color: var(--background-white);
+    padding: 1em;
+    border-radius: 1em;
     gap: 1.5em;
 }
 
@@ -243,6 +258,12 @@
 .activeBuildingSelected {
     background-color: var(--light-green);
     color: white;
+}
+
+.layoutPage{
+    display: flex;
+    gap: 1em;
+    flex-flow: column nowrap;
 }
 
 @media screen and (min-width: 600px) {

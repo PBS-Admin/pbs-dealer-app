@@ -60,7 +60,7 @@ main {
   background-color: var(--dark-blue);
 }
 
-header {
+.mainHeader {
   position: absolute;
   width: 100%;
   border-radius: 0 0 1em 1em;
@@ -73,18 +73,75 @@ header {
   color: var(--dark-blue);
 }
 
-.card {
-  position: relative;
+.sectionCard{  
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 4rem 2rem;
-  margin: 1em;
-  border-radius: 1em;
-  min-width: 10em;
+  padding: .5em;
   background-color: var(--background-white);
-  color: var(--black);
+  border-radius: 1em;
+}
+
+.sectionInnerCard{
+  background-color: var(--background-white);  
+  border-radius: 1em;
+  overflow: hidden;
+  font-size: .75em;  
+  border: none;  
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 1.5em;
+  width: 100%;  
+}
+
+.sectionHeader{
+  background-color: var(--dark-blue);    
+  padding: .5em 0;
+  text-align: center;
+  font-size: 1.25em;
+}
+
+.sectionHeader h3{
+  color: var(--background-white);
+}
+
+.sectionContent{
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 1em;
+  padding: 1em;  
+}
+
+.sectionContent h4{
+  color: var(--dark-blue);
+  font-size: 1.25em;  
+}
+
+.sectionField{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2em;   
+}
+
+.sectionField label{
+  white-space: nowrap;      
+}
+
+.sectionField fieldset{
+  line-height: 2.5em;    
+}
+
+.sectionField input[type='text']{
+  line-height: 2em;
+  padding: 0 .25em;
+  border: none;
+  border-radius: .25em;
+  background: none;
+  outline: 1px solid var(--dark-blue);
+}
+
+.sectionField input[type='text']:focus{
+  outline: 2px solid var(--orange);
 }
 
 .title {
@@ -146,45 +203,6 @@ header {
   max-width: 280px;
   min-width: 200px;
   height: auto;
-}
-
-.dialog-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.dialog-content {
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: center;
-  gap: .75em;
-  background-color: var(--background-white);
-  color: var(--black);
-  padding: 1em 3em 3em 3em;
-  border-radius: 10px;
-}
-
-.dialog-content ul {
-  display: flex;
-  gap: .75em;
-  list-style-type: none;
-}
-
-.dialog-title {
-  text-align: center;
-}
-
-.dialog-buttons {
-  display: flex;
-  width: 100%;
-  justify-content: space-around;
 }
 
 .primary-button {
