@@ -21,12 +21,12 @@ export default async function Dashboard() {
 
   return (
     <main>
-      <header>
-        <LogoutButton className={styles.leftBox} />
+      <header className="pageHeader">
+        <LogoutButton />
         <h1>Dashboard</h1>
-        <div className={styles.rightBox}>
-          <div className={styles.innerBox}>
-            <div className={styles.avatarBox}>
+        <div className="pageHeaderRight">
+          <div className="avatarBox">
+            <div className="avatar">
               <Image
                 alt="PBS Buildings Logo"
                 src={logo}
@@ -38,8 +38,7 @@ export default async function Dashboard() {
         </div>
       </header>
       <div className="card">
-        {/* <CsvWriter /> */}
-        <nav className={styles.buttonCardContainer}>
+        <nav className="cardBox col">
           <Link href="/quote" className={styles.buttonCard}>
             <h3 className={styles.cardTitle}>Create New Quote</h3>
             <Image
@@ -57,7 +56,7 @@ export default async function Dashboard() {
             />
           </Link>
           {hasPermission(5) && (
-            <Link href="/register" className="button">
+            <Link href="/register" className="button prim">
               Register
             </Link>
           )}

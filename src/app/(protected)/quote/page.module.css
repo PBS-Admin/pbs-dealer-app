@@ -1,3 +1,4 @@
+/* Page Styles */
 .inputBody {
     margin: 6em 0;
     display: flex;
@@ -6,31 +7,13 @@
     align-items: center;
 }
 
-.sectionContainer {
-    flex-grow: 1;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    overflow: auto;
-}
-
-.sectionContainer section {
-    background-color: var(--background-white);
-    padding: 1em;
-    border-radius: 1em;
-}
-
-.pageTitle {
-    font-size: 7vw;
-}
-
+/* Navigation Styles */
 .sidebar {
     display: flex;
     flex-flow: column nowrap;
     background-color: var(--background-white);
     border-radius: 0 1em 1em 0;
     padding: 1em 0;
-
 }
 
 .sidebar button {
@@ -107,40 +90,33 @@
     padding: 0.5em;
 }
 
-.leftBox {
+/* Content Styles */
+.cardContainer {
     flex-grow: 1;
-    flex-basis: 0;
-}
-
-.rightBox {
-    font-size: 2vw;
-    flex-grow: 1;
-    flex-basis: 0;
-    text-align: right;
-    overflow-wrap: break-word;
-}
-
-.inputContainer {
     display: flex;
-    color: var(--dark-blue);
-    font-size: .75em;
-    font-weight: 600;
-    align-items: center;
-    gap: 1em;
-    justify-content: flex-end;
+    align-items: flex-start;
+    justify-content: center;
+    overflow: auto;
 }
 
-.inputContainer label {
-    white-space: nowrap;
-}
 
-.textInput {
+/* END */
+
+
+
+
+
+
+
+
+
+/* .textInput {
     background: none;
     padding: 0 0 0 1em;
     border: 1px solid var(--dark-blue);
     line-height: 2em;
     border-radius: 5px;
-}
+} */
 
 .buildingContainer {
     display: flex;
@@ -187,11 +163,6 @@
 }
 
 
-.projectPage {
-    display: flex;
-    flex-flow: column nowrap;
-    gap: 1.5em;
-}
 
 .copyBuilding {
     font-size: 1em;
@@ -248,10 +219,6 @@
 @media screen and (min-width: 600px) {
     .pageTitle {
         font-size: 2em;
-    }
-
-    .rightBox {
-        font-size: .75em;
     }
 }
 

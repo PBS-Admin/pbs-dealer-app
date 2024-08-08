@@ -1,13 +1,8 @@
-:root {
-  --max-width: 1100px;
-  --border-radius: 12px;
+:root {   
   --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
       'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
       'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
 
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
   --black: #141414;
   --dark-blue: #103494;
   --light-blue: #A3B9F5;
@@ -15,8 +10,11 @@
   --light-orange: #FBB99D;
   --background-white: #F5F5F5;
   --red: #FB4B4B;
-  --light-green: #4CB852;
-  --green: #74FB78;
+  --light-red: #FD8787;
+  --green: #4CB852;
+  --light-green: #8AD08E;  
+  --gray: #A2A2A2;
+  --light-gray: #CCCCCC;  
 }
 
 * {
@@ -31,25 +29,21 @@ body {
   overflow-x: hidden;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom,
-          transparent,
-          rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
-}
-
-h2 {
-  color: var(--dark-blue);
-}
-
-p{
+.globalButton{
   color: var(--background-white);
+  background-color: var(--light-orange);  
+  border-radius: 50%;  
+  width: 50px;
+  height: 50px;
+  padding: 7px;
+  text-align: center;  
+  font-size: 30px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+/* Global DOM Styles */
 
 main {
   display: flex;
@@ -60,7 +54,28 @@ main {
   background-color: var(--dark-blue);
 }
 
-header {
+h1, h4{
+  color: var(--dark-blue);
+}
+
+h2, h3{
+  color: var(--background-white);
+}
+
+p{
+  color: var(--background-white);
+}
+
+/* !! Global Class Styles */
+
+/* Page Header Styles */
+.page {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 1.5em;    
+}
+
+.pageHeader{
   position: absolute;
   width: 100%;
   border-radius: 0 0 1em 1em;
@@ -70,83 +85,217 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 1em 2em;
+}
+
+.pageHeaderLeft {
+  flex-grow: 1;
+  flex-basis: 0;
+  font-size: 1em;
+}
+
+.pageHeaderLeft button {
+  background: none;
+  border: none;
+  color: var(--dark-blue);
+  cursor: pointer;  
+}
+
+.pageHeaderRight{
+  display: flex;
+  font-size: 2vw;
+  flex-grow: 1;
+  flex-basis: 0;  
+  overflow-wrap: break-word;    
+  justify-content: flex-end;
+}
+
+.avatarBox {
+  display: flex;  
+  flex-flow: column nowrap;
+  gap: .25em;  
+  justify-content: center;
+  align-items: center;     
+}
+
+.avatarBox p{
   color: var(--dark-blue);
 }
 
-.card {
-  position: relative;
+.avatar {
+  display: flex;
+  width: 35px;
+  height: 35px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: radial-gradient(rgb(0, 0, 0, 0.15), rgb(0, 0, 0, 0) 75%);
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar img {
+  max-width: 100%;
+  height: auto;  
+}
+
+/* Global Card Styles */
+.card {  
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 4rem 2rem;
+  overflow: hidden;  
   margin: 1em;
+  padding: .75em;  
   border-radius: 1em;
   min-width: 10em;
-  background-color: var(--background-white);
-  color: var(--black);
+  background-color: var(--background-white);  
 }
 
-.title {
-  font-size: 2vw;
-  color: var(--black);
-  margin-bottom: 1rem;
+.cardHeader{
+  background-color: var(--dark-blue);
+  width: 100%;
+  border-radius: .5em .5em 0 0;
+  padding: .25em;
   text-align: center;
 }
 
-.buttonContainer {
-  display: flex;
-  gap: 1rem;
+.cardBox{
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: .5em;
+  padding: 1em;
 }
 
-.textInput {
+.cardBox h4{
+  width: 100%;
+}
+
+.cardInput{
   display: flex;
-  justify-content: right;
+  gap: .75em;
   color: var(--black);
-  gap: 1em;
-  margin: 1em 0;
 }
 
-.textInput input {
-  background: none;
-  border: 1px solid var(--black);
-  border-radius: 5px;
-  line-height: 1.5em;
-  padding: 0 .5em;
+.cardInput input{
+  line-height: 1.5em;  
+  border-radius: .25em;
+  background-color: none;
+  border: none;
+  outline: 1px solid var(--black);
+  padding: 0 .25em;  
 }
 
-.textInput input:focus {
+.cardInput input[type="text"]:focus, .cardInput input[type="password"]:focus{
   outline: 1px solid var(--orange);
 }
 
-.backButton {
-  color: var(--dark-blue);
-  position: absolute;
-  top: 1em;
-  left: 1em;
+.start{
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.center{
+  align-items: center;
+  justify-content: center;
+}
+
+.end{
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.col{
+  flex-flow: column;
+}
+
+.row{
+  flex-flow: row;
+}
+
+/* Global Button Classes */
+
+.iconPrim{  
+  background-color: none;
+  color: var(--dark-blue);  
+  transition: all .3s ease;
+  font-size: 1.5em;
+}
+
+.iconPrim:hover{  
+  background-color: none;
+  color: var(--light-blue);  
 }
 
 .button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  color: var(--background-white);
-  background-color: var(--dark-blue);
+  cursor: pointer;
   border: none;
-  border-radius: 5px;
+  border-radius: .5em;
+  padding: 1em;  
   text-decoration: none;
-  transition: background-color 0.3s ease;
 }
 
-.button:hover {
+.prim{  
+  background-color: var(--dark-blue);
+  color: var(--background-white);
+  transition: all .3s ease;
+}
+
+.prim:hover{
+  background-color: var(--light-blue);
+}
+
+.sec{
+  background-color: var(--light-blue);
+  color: var(--background-white);
+  transition: all .3s ease;
+}
+
+.sec:hover{
+  background-color: var(--dark-blue);
+}
+
+.accent{  
+  background-color: var(--orange);
+  color: var(--background-white);
+  transition: all .3s ease;
+}
+
+.accent:hover{
   background-color: var(--light-orange);
 }
 
-.image {
-  width: 50vw;
-  max-width: 280px;
-  min-width: 200px;
-  height: auto;
+.success{  
+  background-color: var(--green);
+  color: var(--background-white);
+  transition: all .3s ease;
 }
+
+.success:hover{
+  background-color: var(--light-green);
+}
+
+.reject{  
+  background-color: var(--red);
+  color: var(--background-white);
+  transition: all .3s ease;
+}
+
+.reject:hover{
+  background-color: var(--light-red);
+}
+
+
+.nuetral{  
+  background-color: var(--gray);
+  color: var(--background-white);
+  transition: all .3s ease;
+}
+
+.nuetral:hover{
+  background-color: var(--light-gray);
+}
+
+/* Global Dialog Styles */
 
 .dialog-overlay {
   position: fixed;
@@ -187,40 +336,44 @@ header {
   justify-content: space-around;
 }
 
-.primary-button {
-  color: var(--background-white);
-  background-color: var(--dark-blue);
-  border: none;
-  border-radius: 5px;
-  padding: .75em;
+/* Global Card Styles */
+
+.backButton {
+  color: var(--dark-blue);
+  align-self: flex-start;
+  font-size: 1.5em;  
 }
 
-.cancel {
-  color: var(--background-white);
-  background-color: rgba(0, 0, 0, 0.5);
-  border: none;
-  border-radius: 5px;
-  padding: .75em;
+.image {
+  width: 50vw;
+  max-width: 280px;
+  min-width: 200px;
+  height: auto;
 }
 
-.delete {
-  color: var(--background-white);
-  background-color: var(--red);
-  border: none;
-  border-radius: 5px;
-  padding: .75em;
+/* Global Utility Styles */
+
+.black{
+  color: var(--black);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-      --foreground-rgb: 255, 255, 255;
-      --background-start-rgb: 0, 0, 0;
-      --background-end-rgb: 0, 0, 0;
+.white{
+  color: var(--background-white);
+}
+
+.gap-1{
+  gap: 1em;
+}
+
+/* END */
+
+
+@media screen and (min-width: 600px) {
+  .pageHeaderLeft {
+    font-size: 1.25em;      
   }
-}
 
-@media screen and (max-width: 800px) {
-  .title {
-      font-size: 1.25em;
+  .pageHeaderRight {
+    font-size: .75em;
   }
 }

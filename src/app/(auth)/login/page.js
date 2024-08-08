@@ -44,8 +44,8 @@ export default function Login() {
         <Image alt="PBS Buildings Logo" src={logo} className="image" />
         <h1 className="title">Login</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <div className="container">
-          <div className="textInput">
+        <div className="cardBox col end">
+          <div className="cardInput">
             <label htmlFor="email">Email:</label>
             <input
               id="email"
@@ -55,7 +55,7 @@ export default function Login() {
               required
             />
           </div>
-          <div className="textInput">
+          <div className="cardInput">
             <label htmlFor="password">Password:</label>
             <input
               id="password"
@@ -66,7 +66,7 @@ export default function Login() {
             />
           </div>
         </div>
-        <button className="button" type="submit">
+        <button className="button prim" type="submit">
           Login
         </button>
       </form>

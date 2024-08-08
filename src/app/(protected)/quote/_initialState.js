@@ -35,7 +35,7 @@ export const initialState = {
   seismicS1: '',
   seismicSms: '',
   seismicSm1: '',
-  // Building Project Page  
+  // Building Project Page
   steelFinish: '',
   buildings: [
     {
@@ -46,10 +46,22 @@ export const initialState = {
       rotation: '',
       commonWall: '',
       // Building - Layout
-      fswBays: '',
-    }
+      shape: 'symmetrical',
+      backPeakOffset: '',
+      eaveHeight: '',
+      lowEaveHeight: '',
+      highEaveHeight: '',
+      backEaveHeight: '',
+      frontEaveHeight: '',
+      roofPitch: '',
+      backRoofPitch: '',
+      frontRoofPitch: '',
+      swBaySpacing: '',
+      lewBaySpacing: '',
+      rewBaySpacing: '',
+      frameType: 'rigidFrame',
+      intColSpacing: '',
+      leftEndwallFrame: '',
+    },
   ],
-  // BUilding # - Layout
-  buildingShape: '',
-  backPeakOffset: '',
 };

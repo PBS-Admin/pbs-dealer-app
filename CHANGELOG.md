@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.1] - 2024-08-07
+
+###### Goal of change is to finish the building-layout page and correct global styles application-wide
+
+### Added
+
+### Changed
+
+- Changed the location of the repository to a pbsAdmin shared github account
+
+### Fixed
+
 ## [0.1.0] - 2024-08-07
 
 ###### Goal of change is to move the application over to a shared Github and clean up the project after transferring
