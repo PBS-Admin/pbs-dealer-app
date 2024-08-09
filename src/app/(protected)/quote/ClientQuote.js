@@ -317,419 +317,436 @@ export default function ClientQuote({ session }) {
           <form onSubmit={handleSubmit}>
             {/* Project Info Page */}
             {activeCard == 'quote-info' && (
-              <section id="projectInfo">
-                <div className={styles.inputContainer}>
-                  <label htmlFor="customerName">Customer Name:</label>
-                  <input
-                    type="text"
-                    id="customerName"
-                    name="customerName"
-                    className={styles.textInput}
-                    value={values.customerName}
-                    onChange={handleChange}
-                    placeholder="Customer Name"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="contactName">Contact Name:</label>
-                  <input
-                    type="text"
-                    id="contactName"
-                    name="contactName"
-                    className={styles.textInput}
-                    value={values.contactName}
-                    onChange={handleChange}
-                    placeholder="Contact Name"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="customerStreet">Street Address:</label>
-                  <input
-                    type="text"
-                    id="customerStreet"
-                    name="customerStreet"
-                    className={styles.textInput}
-                    value={values.customerStreet}
-                    onChange={handleChange}
-                    placeholder="Street Address"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="customerCity">City:</label>
-                  <input
-                    type="text"
-                    id="customerCity"
-                    name="customerCity"
-                    className={styles.textInput}
-                    value={values.customerCity}
-                    onChange={handleChange}
-                    placeholder="City"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="customerState">State:</label>
-                  <input
-                    type="text"
-                    id="customerState"
-                    name="customerState"
-                    className={styles.textInput}
-                    value={values.customerState}
-                    onChange={handleChange}
-                    placeholder="State"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="customerZip">Zip Code:</label>
-                  <input
-                    type="text"
-                    id="customerZip"
-                    name="customerZip"
-                    className={styles.textInput}
-                    value={values.customerZip}
-                    onChange={handleChange}
-                    placeholder="Zip"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="customerPhone">Phone:</label>
-                  <input
-                    type="text"
-                    id="customerPhone"
-                    name="customerPhone"
-                    className={styles.textInput}
-                    value={values.customerPhone}
-                    onChange={handleChange}
-                    placeholder="Phone"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="customerFax">Fax:</label>
-                  <input
-                    type="text"
-                    id="customerFax"
-                    name="customerFax"
-                    className={styles.textInput}
-                    value={values.customerFax}
-                    onChange={handleChange}
-                    placeholder="Fax"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="customerCell">Cell:</label>
-                  <input
-                    type="text"
-                    id="customerCell"
-                    name="customerCell"
-                    className={styles.textInput}
-                    value={values.customerCell}
-                    onChange={handleChange}
-                    placeholder="Cell"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="customerEmail">Email:</label>
-                  <input
-                    type="text"
-                    id="customerEmail"
-                    name="customerEmail"
-                    className={styles.textInput}
-                    value={values.customerEmail}
-                    onChange={handleChange}
-                    placeholder="Email"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="projectName">Project Name:</label>
-                  <input
-                    type="text"
-                    id="projectName"
-                    name="projectName"
-                    className={styles.textInput}
-                    value={values.projectName}
-                    onChange={handleChange}
-                    placeholder="Project Name"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="projectFor">Project For:</label>
-                  <input
-                    type="text"
-                    id="projectFor"
-                    name="projectFor"
-                    className={styles.textInput}
-                    value={values.projectFor}
-                    onChange={handleChange}
-                    placeholder="Project For"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="projectAddress">Street Address:</label>
-                  <input
-                    type="text"
-                    id="projectAddress"
-                    name="projectAddress"
-                    className={styles.textInput}
-                    value={values.projectAddress}
-                    onChange={handleChange}
-                    placeholder="Address"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="projectCity">City:</label>
-                  <input
-                    type="text"
-                    id="projectCity"
-                    name="projectCity"
-                    className={styles.textInput}
-                    value={values.projectCity}
-                    onChange={handleChange}
-                    placeholder="City"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="projectState">State:</label>
-                  <input
-                    type="text"
-                    id="projectState"
-                    name="projectState"
-                    className={styles.textInput}
-                    value={values.projectState}
-                    onChange={handleChange}
-                    placeholder="State"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="projectZip">Zip Code:</label>
-                  <input
-                    type="text"
-                    id="projectZip"
-                    name="projectZip"
-                    className={styles.textInput}
-                    value={values.projectZip}
-                    onChange={handleChange}
-                    placeholder="Zip"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="projectCounty">County:</label>
-                  <input
-                    type="text"
-                    id="projectCounty"
-                    name="projectCounty"
-                    className={styles.textInput}
-                    value={values.projectCounty}
-                    onChange={handleChange}
-                    placeholder="County"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="buildingUse">Building Use:</label>
-                  <input
-                    type="text"
-                    id="buildingUse"
-                    name="buildingUse"
-                    className={styles.textInput}
-                    value={values.buildingUse}
-                    onChange={handleChange}
-                    placeholder="Building Use"
-                  />
-                </div>
-              </section>
+              <>
+                <section className="card">
+                  <header className="cardHeader">
+                    <h3>Customer Information</h3>
+                  </header>
+                  <div className="cardBox col end">
+                    <div className="cardInput">
+                      <label htmlFor="customerName">Customer Name:</label>
+                      <input
+                        type="text"
+                        id="customerName"
+                        name="customerName"
+                        value={values.customerName}
+                        onChange={handleChange}
+                        placeholder="Customer Name"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="contactName">Contact Name:</label>
+                      <input
+                        type="text"
+                        id="contactName"
+                        name="contactName"
+                        value={values.contactName}
+                        onChange={handleChange}
+                        placeholder="Contact Name"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="customerStreet">Street Address:</label>
+                      <input
+                        type="text"
+                        id="customerStreet"
+                        name="customerStreet"
+                        className={styles.textInput}
+                        value={values.customerStreet}
+                        onChange={handleChange}
+                        placeholder="Street Address"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="customerCity">City:</label>
+                      <input
+                        type="text"
+                        id="customerCity"
+                        name="customerCity"
+                        className={styles.textInput}
+                        value={values.customerCity}
+                        onChange={handleChange}
+                        placeholder="City"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="customerState">State:</label>
+                      <input
+                        type="text"
+                        id="customerState"
+                        name="customerState"
+                        className={styles.textInput}
+                        value={values.customerState}
+                        onChange={handleChange}
+                        placeholder="State"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="customerZip">Zip Code:</label>
+                      <input
+                        type="text"
+                        id="customerZip"
+                        name="customerZip"
+                        className={styles.textInput}
+                        value={values.customerZip}
+                        onChange={handleChange}
+                        placeholder="Zip"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="customerPhone">Phone:</label>
+                      <input
+                        type="text"
+                        id="customerPhone"
+                        name="customerPhone"
+                        className={styles.textInput}
+                        value={values.customerPhone}
+                        onChange={handleChange}
+                        placeholder="Phone"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="customerFax">Fax:</label>
+                      <input
+                        type="text"
+                        id="customerFax"
+                        name="customerFax"
+                        className={styles.textInput}
+                        value={values.customerFax}
+                        onChange={handleChange}
+                        placeholder="Fax"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="customerCell">Cell:</label>
+                      <input
+                        type="text"
+                        id="customerCell"
+                        name="customerCell"
+                        className={styles.textInput}
+                        value={values.customerCell}
+                        onChange={handleChange}
+                        placeholder="Cell"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="customerEmail">Email:</label>
+                      <input
+                        type="text"
+                        id="customerEmail"
+                        name="customerEmail"
+                        className={styles.textInput}
+                        value={values.customerEmail}
+                        onChange={handleChange}
+                        placeholder="Email"
+                      />
+                    </div>
+                  </div>
+                </section>
+                <section className="card">
+                  <header className="cardHeader">
+                    <h3>Project Information</h3>
+                  </header>
+                  <div className="cardBox col end">
+                    <div className="cardInput">
+                      <label htmlFor="projectName">Project Name:</label>
+                      <input
+                        type="text"
+                        id="projectName"
+                        name="projectName"
+                        className={styles.textInput}
+                        value={values.projectName}
+                        onChange={handleChange}
+                        placeholder="Project Name"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="projectFor">Project For:</label>
+                      <input
+                        type="text"
+                        id="projectFor"
+                        name="projectFor"
+                        className={styles.textInput}
+                        value={values.projectFor}
+                        onChange={handleChange}
+                        placeholder="Project For"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="projectAddress">Street Address:</label>
+                      <input
+                        type="text"
+                        id="projectAddress"
+                        name="projectAddress"
+                        className={styles.textInput}
+                        value={values.projectAddress}
+                        onChange={handleChange}
+                        placeholder="Address"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="projectCity">City:</label>
+                      <input
+                        type="text"
+                        id="projectCity"
+                        name="projectCity"
+                        className={styles.textInput}
+                        value={values.projectCity}
+                        onChange={handleChange}
+                        placeholder="City"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="projectState">State:</label>
+                      <input
+                        type="text"
+                        id="projectState"
+                        name="projectState"
+                        className={styles.textInput}
+                        value={values.projectState}
+                        onChange={handleChange}
+                        placeholder="State"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="projectZip">Zip Code:</label>
+                      <input
+                        type="text"
+                        id="projectZip"
+                        name="projectZip"
+                        className={styles.textInput}
+                        value={values.projectZip}
+                        onChange={handleChange}
+                        placeholder="Zip"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="projectCounty">County:</label>
+                      <input
+                        type="text"
+                        id="projectCounty"
+                        name="projectCounty"
+                        className={styles.textInput}
+                        value={values.projectCounty}
+                        onChange={handleChange}
+                        placeholder="County"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="buildingUse">Building Use:</label>
+                      <input
+                        type="text"
+                        id="buildingUse"
+                        name="buildingUse"
+                        className={styles.textInput}
+                        value={values.buildingUse}
+                        onChange={handleChange}
+                        placeholder="Building Use"
+                      />
+                    </div>
+                  </div>
+                </section>
+              </>
             )}
             {/* Design Code Page */}
             {activeCard == 'design-code' && (
-              <section>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="buildingCode">Building Code:</label>
-                  <input
-                    type="text"
-                    id="buildingCode"
-                    name="buildingCode"
-                    className={styles.textInput}
-                    value={values.buildingCode}
-                    onChange={handleChange}
-                    placeholder="Building Code"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="riskCategory">Risk Category:</label>
-                  <input
-                    type="text"
-                    id="riskCategory"
-                    name="riskCategory"
-                    className={styles.textInput}
-                    value={values.riskCategory}
-                    onChange={handleChange}
-                    placeholder="Risk Category"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="collateralLoad">Collateral Load:</label>
-                  <input
-                    type="text"
-                    id="collateralLoad"
-                    name="collateralLoad"
-                    className={styles.textInput}
-                    value={values.collateralLoad}
-                    onChange={handleChange}
-                    placeholder="Collateral Load"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="liveLoad">Live Load:</label>
-                  <input
-                    type="text"
-                    id="liveLoad"
-                    name="liveLoad"
-                    className={styles.textInput}
-                    value={values.liveLoad}
-                    onChange={handleChange}
-                    placeholder="Live Load"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="deadLoad">Dead Load:</label>
-                  <input
-                    type="text"
-                    id="deadLoad"
-                    name="deadLoad"
-                    className={styles.textInput}
-                    value={values.deadLoad}
-                    onChange={handleChange}
-                    placeholder="Dead Load"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="windLoad">Wind Load:</label>
-                  <input
-                    type="text"
-                    id="windLoad"
-                    name="windLoad"
-                    className={styles.textInput}
-                    value={values.windLoad}
-                    onChange={handleChange}
-                    placeholder="Wind Load"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="exposure">Exposure:</label>
-                  <input
-                    type="text"
-                    id="exposure"
-                    name="exposure"
-                    className={styles.textInput}
-                    value={values.exposure}
-                    onChange={handleChange}
-                    placeholder="Exposure"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="enclosure">Enclosure:</label>
-                  <input
-                    type="text"
-                    id="enclosure"
-                    name="enclosure"
-                    className={styles.textInput}
-                    value={values.enclosure}
-                    onChange={handleChange}
-                    placeholder="Enclosure"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="groundLoad">Ground Load:</label>
-                  <input
-                    type="text"
-                    id="groundLoad"
-                    name="groundLoad"
-                    className={styles.textInput}
-                    value={values.groundLoad}
-                    onChange={handleChange}
-                    placeholder="Ground Load"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="roofLoad">Roof Load:</label>
-                  <input
-                    type="text"
-                    id="roofLoad"
-                    name="roofLoad"
-                    className={styles.textInput}
-                    value={values.roofLoad}
-                    onChange={handleChange}
-                    placeholder="Roof Load"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="thermalFactor">Thermal Factor:</label>
-                  <input
-                    type="text"
-                    id="thermalFactor"
-                    name="thermalFactor"
-                    className={styles.textInput}
-                    value={values.thermalFactor}
-                    onChange={handleChange}
-                    placeholder="Thermal Factor"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="seismicCategory">Seismic Category:</label>
-                  <input
-                    type="text"
-                    id="seismicCategory"
-                    name="seismicCategory"
-                    className={styles.textInput}
-                    value={values.seismicCategory}
-                    onChange={handleChange}
-                    placeholder="Seismic Category"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="seismicSs">SeismicSs:</label>
-                  <input
-                    type="text"
-                    id="seismicSs"
-                    name="seismicSs"
-                    className={styles.textInput}
-                    value={values.seismicSs}
-                    onChange={handleChange}
-                    placeholder="SeismicSs"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="seismicS1">SeismicS1:</label>
-                  <input
-                    type="text"
-                    id="seismicS1"
-                    name="seismicS1"
-                    className={styles.textInput}
-                    value={values.seismicS1}
-                    onChange={handleChange}
-                    placeholder="SeismicS1"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="seismicSms">SeismicSms:</label>
-                  <input
-                    type="text"
-                    id="seismicSms"
-                    name="seismicSms"
-                    className={styles.textInput}
-                    value={values.seismicSms}
-                    onChange={handleChange}
-                    placeholder="SeismicSms"
-                  />
-                </div>
-                <div className={styles.inputContainer}>
-                  <label htmlFor="seismicSm1">SeismicSm1:</label>
-                  <input
-                    type="text"
-                    id="seismicSm1"
-                    name="seismicSm1"
-                    className={styles.textInput}
-                    value={values.seismicSm1}
-                    onChange={handleChange}
-                    placeholder="SeismicSm1"
-                  />
+              <section className="card">
+                <header className="cardHeader">
+                  <h3>Design Codes</h3>
+                </header>
+                <div className="cardBox col end">
+                  <div className="cardInput">
+                    <label htmlFor="buildingCode">Building Code:</label>
+                    <input
+                      type="text"
+                      id="buildingCode"
+                      name="buildingCode"
+                      className={styles.textInput}
+                      value={values.buildingCode}
+                      onChange={handleChange}
+                      placeholder="Building Code"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="riskCategory">Risk Category:</label>
+                    <input
+                      type="text"
+                      id="riskCategory"
+                      name="riskCategory"
+                      className={styles.textInput}
+                      value={values.riskCategory}
+                      onChange={handleChange}
+                      placeholder="Risk Category"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="collateralLoad">Collateral Load:</label>
+                    <input
+                      type="text"
+                      id="collateralLoad"
+                      name="collateralLoad"
+                      className={styles.textInput}
+                      value={values.collateralLoad}
+                      onChange={handleChange}
+                      placeholder="Collateral Load"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="liveLoad">Live Load:</label>
+                    <input
+                      type="text"
+                      id="liveLoad"
+                      name="liveLoad"
+                      className={styles.textInput}
+                      value={values.liveLoad}
+                      onChange={handleChange}
+                      placeholder="Live Load"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="deadLoad">Dead Load:</label>
+                    <input
+                      type="text"
+                      id="deadLoad"
+                      name="deadLoad"
+                      className={styles.textInput}
+                      value={values.deadLoad}
+                      onChange={handleChange}
+                      placeholder="Dead Load"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="windLoad">Wind Load:</label>
+                    <input
+                      type="text"
+                      id="windLoad"
+                      name="windLoad"
+                      className={styles.textInput}
+                      value={values.windLoad}
+                      onChange={handleChange}
+                      placeholder="Wind Load"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="exposure">Exposure:</label>
+                    <input
+                      type="text"
+                      id="exposure"
+                      name="exposure"
+                      className={styles.textInput}
+                      value={values.exposure}
+                      onChange={handleChange}
+                      placeholder="Exposure"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="enclosure">Enclosure:</label>
+                    <input
+                      type="text"
+                      id="enclosure"
+                      name="enclosure"
+                      className={styles.textInput}
+                      value={values.enclosure}
+                      onChange={handleChange}
+                      placeholder="Enclosure"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="groundLoad">Ground Load:</label>
+                    <input
+                      type="text"
+                      id="groundLoad"
+                      name="groundLoad"
+                      className={styles.textInput}
+                      value={values.groundLoad}
+                      onChange={handleChange}
+                      placeholder="Ground Load"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="roofLoad">Roof Load:</label>
+                    <input
+                      type="text"
+                      id="roofLoad"
+                      name="roofLoad"
+                      className={styles.textInput}
+                      value={values.roofLoad}
+                      onChange={handleChange}
+                      placeholder="Roof Load"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="thermalFactor">Thermal Factor:</label>
+                    <input
+                      type="text"
+                      id="thermalFactor"
+                      name="thermalFactor"
+                      className={styles.textInput}
+                      value={values.thermalFactor}
+                      onChange={handleChange}
+                      placeholder="Thermal Factor"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="seismicCategory">Seismic Category:</label>
+                    <input
+                      type="text"
+                      id="seismicCategory"
+                      name="seismicCategory"
+                      className={styles.textInput}
+                      value={values.seismicCategory}
+                      onChange={handleChange}
+                      placeholder="Seismic Category"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="seismicSs">SeismicSs:</label>
+                    <input
+                      type="text"
+                      id="seismicSs"
+                      name="seismicSs"
+                      className={styles.textInput}
+                      value={values.seismicSs}
+                      onChange={handleChange}
+                      placeholder="SeismicSs"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="seismicS1">SeismicS1:</label>
+                    <input
+                      type="text"
+                      id="seismicS1"
+                      name="seismicS1"
+                      className={styles.textInput}
+                      value={values.seismicS1}
+                      onChange={handleChange}
+                      placeholder="SeismicS1"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="seismicSms">SeismicSms:</label>
+                    <input
+                      type="text"
+                      id="seismicSms"
+                      name="seismicSms"
+                      className={styles.textInput}
+                      value={values.seismicSms}
+                      onChange={handleChange}
+                      placeholder="SeismicSms"
+                    />
+                  </div>
+                  <div className="cardInput">
+                    <label htmlFor="seismicSm1">SeismicSm1:</label>
+                    <input
+                      type="text"
+                      id="seismicSm1"
+                      name="seismicSm1"
+                      className={styles.textInput}
+                      value={values.seismicSm1}
+                      onChange={handleChange}
+                      placeholder="SeismicSm1"
+                    />
+                  </div>
                 </div>
               </section>
             )}
