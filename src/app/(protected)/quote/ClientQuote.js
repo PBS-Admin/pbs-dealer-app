@@ -17,7 +17,9 @@ import useFormState from '../../../hooks/useFormState';
 import { initialState } from './_initialState';
 import CopyBuildingDialog from '../../../components/CopyBuildingDialog';
 import DeleteDialog from '../../../components/DeleteDialog';
+import ReusableSelect from '../../../components/ReusableSelect';
 import logo from '../../../../public/images/pbslogo.png';
+import { shapes, frames, FrameOptions, BracingType } from './_dropdownOptions';
 
 export default function ClientQuote({ session }) {
   const { values, handleChange, handleNestedChange, setValues } =
@@ -32,7 +34,7 @@ export default function ClientQuote({ session }) {
   const [sourceBuildingIndex, setSourceBuildingIndex] = useState(0);
 
   // Adjust index to change initial starting page, helpful to work on page on save
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(3);
   const navItems = [
     { id: 'quote-info', label: 'Project Information' },
     { id: 'design-code', label: 'Design Codes' },
@@ -63,18 +65,6 @@ export default function ClientQuote({ session }) {
     },
     { id: 'accessories', label: 'Accessories' },
     { id: 'finalize-quote', label: 'Finalize Quote' },
-  ];
-
-  const shapes = [
-    { id: 'symmetrical', label: 'Symmetrical' },
-    { id: 'singleSlope', label: 'Single Slope' },
-    { id: 'leanTo', label: 'Lean-to' },
-    { id: 'nonSymmetrical', label: 'Non-Symmetrical' },
-  ];
-
-  const frames = [
-    { id: 'rigidFrame', label: 'Rigid Frame' },
-    { id: 'multiSpan', label: 'Multi Span' },
   ];
 
   // Carousel Nav handlers
@@ -132,7 +122,18 @@ export default function ClientQuote({ session }) {
           rewBaySpacing: '',
           frameType: 'rigidFrame',
           intColSpacing: '',
-          leftEndwallFrame: '',
+          straightExtColumns: false,
+          noFlangeBraces: false,
+          leftEndwallFrame: 'postAndBeam',
+          leftEnwallInset: '',
+          leftEndwallIntColSpacing: '',
+          rightEndwallFrame: 'postAndBeam',
+          rightEnwallInset: '',
+          rightEndwallIntColSpacing: '',
+          frontSidewallBracingType: 'xbrace',
+          backSidewallBracingType: 'xbrace',
+          leftEndwallBracingType: 'xbrace',
+          rightEndwallBracingType: 'xbrace',
         },
       ],
     }));
@@ -323,123 +324,125 @@ export default function ClientQuote({ session }) {
                     <h3>Customer Information</h3>
                   </header>
                   <div className="cardBox col end">
-                    <div className="cardInput">
-                      <label htmlFor="customerName">Customer Name:</label>
-                      <input
-                        type="text"
-                        id="customerName"
-                        name="customerName"
-                        value={values.customerName}
-                        onChange={handleChange}
-                        placeholder="Customer Name"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="contactName">Contact Name:</label>
-                      <input
-                        type="text"
-                        id="contactName"
-                        name="contactName"
-                        value={values.contactName}
-                        onChange={handleChange}
-                        placeholder="Contact Name"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="customerStreet">Street Address:</label>
-                      <input
-                        type="text"
-                        id="customerStreet"
-                        name="customerStreet"
-                        className={styles.textInput}
-                        value={values.customerStreet}
-                        onChange={handleChange}
-                        placeholder="Street Address"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="customerCity">City:</label>
-                      <input
-                        type="text"
-                        id="customerCity"
-                        name="customerCity"
-                        className={styles.textInput}
-                        value={values.customerCity}
-                        onChange={handleChange}
-                        placeholder="City"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="customerState">State:</label>
-                      <input
-                        type="text"
-                        id="customerState"
-                        name="customerState"
-                        className={styles.textInput}
-                        value={values.customerState}
-                        onChange={handleChange}
-                        placeholder="State"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="customerZip">Zip Code:</label>
-                      <input
-                        type="text"
-                        id="customerZip"
-                        name="customerZip"
-                        className={styles.textInput}
-                        value={values.customerZip}
-                        onChange={handleChange}
-                        placeholder="Zip"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="customerPhone">Phone:</label>
-                      <input
-                        type="text"
-                        id="customerPhone"
-                        name="customerPhone"
-                        className={styles.textInput}
-                        value={values.customerPhone}
-                        onChange={handleChange}
-                        placeholder="Phone"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="customerFax">Fax:</label>
-                      <input
-                        type="text"
-                        id="customerFax"
-                        name="customerFax"
-                        className={styles.textInput}
-                        value={values.customerFax}
-                        onChange={handleChange}
-                        placeholder="Fax"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="customerCell">Cell:</label>
-                      <input
-                        type="text"
-                        id="customerCell"
-                        name="customerCell"
-                        className={styles.textInput}
-                        value={values.customerCell}
-                        onChange={handleChange}
-                        placeholder="Cell"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="customerEmail">Email:</label>
-                      <input
-                        type="text"
-                        id="customerEmail"
-                        name="customerEmail"
-                        className={styles.textInput}
-                        value={values.customerEmail}
-                        onChange={handleChange}
-                        placeholder="Email"
-                      />
+                    <div className="cardInnerBox col end">
+                      <div className="cardInput">
+                        <label htmlFor="customerName">Customer Name:</label>
+                        <input
+                          type="text"
+                          id="customerName"
+                          name="customerName"
+                          value={values.customerName}
+                          onChange={handleChange}
+                          placeholder="Customer Name"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="contactName">Contact Name:</label>
+                        <input
+                          type="text"
+                          id="contactName"
+                          name="contactName"
+                          value={values.contactName}
+                          onChange={handleChange}
+                          placeholder="Contact Name"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="customerStreet">Street Address:</label>
+                        <input
+                          type="text"
+                          id="customerStreet"
+                          name="customerStreet"
+                          className={styles.textInput}
+                          value={values.customerStreet}
+                          onChange={handleChange}
+                          placeholder="Street Address"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="customerCity">City:</label>
+                        <input
+                          type="text"
+                          id="customerCity"
+                          name="customerCity"
+                          className={styles.textInput}
+                          value={values.customerCity}
+                          onChange={handleChange}
+                          placeholder="City"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="customerState">State:</label>
+                        <input
+                          type="text"
+                          id="customerState"
+                          name="customerState"
+                          className={styles.textInput}
+                          value={values.customerState}
+                          onChange={handleChange}
+                          placeholder="State"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="customerZip">Zip Code:</label>
+                        <input
+                          type="text"
+                          id="customerZip"
+                          name="customerZip"
+                          className={styles.textInput}
+                          value={values.customerZip}
+                          onChange={handleChange}
+                          placeholder="Zip"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="customerPhone">Phone:</label>
+                        <input
+                          type="text"
+                          id="customerPhone"
+                          name="customerPhone"
+                          className={styles.textInput}
+                          value={values.customerPhone}
+                          onChange={handleChange}
+                          placeholder="Phone"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="customerFax">Fax:</label>
+                        <input
+                          type="text"
+                          id="customerFax"
+                          name="customerFax"
+                          className={styles.textInput}
+                          value={values.customerFax}
+                          onChange={handleChange}
+                          placeholder="Fax"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="customerCell">Cell:</label>
+                        <input
+                          type="text"
+                          id="customerCell"
+                          name="customerCell"
+                          className={styles.textInput}
+                          value={values.customerCell}
+                          onChange={handleChange}
+                          placeholder="Cell"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="customerEmail">Email:</label>
+                        <input
+                          type="text"
+                          id="customerEmail"
+                          name="customerEmail"
+                          className={styles.textInput}
+                          value={values.customerEmail}
+                          onChange={handleChange}
+                          placeholder="Email"
+                        />
+                      </div>
                     </div>
                   </div>
                 </section>
@@ -447,102 +450,104 @@ export default function ClientQuote({ session }) {
                   <header className="cardHeader">
                     <h3>Project Information</h3>
                   </header>
-                  <div className="cardBox col end">
-                    <div className="cardInput">
-                      <label htmlFor="projectName">Project Name:</label>
-                      <input
-                        type="text"
-                        id="projectName"
-                        name="projectName"
-                        className={styles.textInput}
-                        value={values.projectName}
-                        onChange={handleChange}
-                        placeholder="Project Name"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="projectFor">Project For:</label>
-                      <input
-                        type="text"
-                        id="projectFor"
-                        name="projectFor"
-                        className={styles.textInput}
-                        value={values.projectFor}
-                        onChange={handleChange}
-                        placeholder="Project For"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="projectAddress">Street Address:</label>
-                      <input
-                        type="text"
-                        id="projectAddress"
-                        name="projectAddress"
-                        className={styles.textInput}
-                        value={values.projectAddress}
-                        onChange={handleChange}
-                        placeholder="Address"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="projectCity">City:</label>
-                      <input
-                        type="text"
-                        id="projectCity"
-                        name="projectCity"
-                        className={styles.textInput}
-                        value={values.projectCity}
-                        onChange={handleChange}
-                        placeholder="City"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="projectState">State:</label>
-                      <input
-                        type="text"
-                        id="projectState"
-                        name="projectState"
-                        className={styles.textInput}
-                        value={values.projectState}
-                        onChange={handleChange}
-                        placeholder="State"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="projectZip">Zip Code:</label>
-                      <input
-                        type="text"
-                        id="projectZip"
-                        name="projectZip"
-                        className={styles.textInput}
-                        value={values.projectZip}
-                        onChange={handleChange}
-                        placeholder="Zip"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="projectCounty">County:</label>
-                      <input
-                        type="text"
-                        id="projectCounty"
-                        name="projectCounty"
-                        className={styles.textInput}
-                        value={values.projectCounty}
-                        onChange={handleChange}
-                        placeholder="County"
-                      />
-                    </div>
-                    <div className="cardInput">
-                      <label htmlFor="buildingUse">Building Use:</label>
-                      <input
-                        type="text"
-                        id="buildingUse"
-                        name="buildingUse"
-                        className={styles.textInput}
-                        value={values.buildingUse}
-                        onChange={handleChange}
-                        placeholder="Building Use"
-                      />
+                  <div className="cardBox col center">
+                    <div className="cardInnerBox col end">
+                      <div className="cardInput">
+                        <label htmlFor="projectName">Project Name:</label>
+                        <input
+                          type="text"
+                          id="projectName"
+                          name="projectName"
+                          className={styles.textInput}
+                          value={values.projectName}
+                          onChange={handleChange}
+                          placeholder="Project Name"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="projectFor">Project For:</label>
+                        <input
+                          type="text"
+                          id="projectFor"
+                          name="projectFor"
+                          className={styles.textInput}
+                          value={values.projectFor}
+                          onChange={handleChange}
+                          placeholder="Project For"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="projectAddress">Street Address:</label>
+                        <input
+                          type="text"
+                          id="projectAddress"
+                          name="projectAddress"
+                          className={styles.textInput}
+                          value={values.projectAddress}
+                          onChange={handleChange}
+                          placeholder="Address"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="projectCity">City:</label>
+                        <input
+                          type="text"
+                          id="projectCity"
+                          name="projectCity"
+                          className={styles.textInput}
+                          value={values.projectCity}
+                          onChange={handleChange}
+                          placeholder="City"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="projectState">State:</label>
+                        <input
+                          type="text"
+                          id="projectState"
+                          name="projectState"
+                          className={styles.textInput}
+                          value={values.projectState}
+                          onChange={handleChange}
+                          placeholder="State"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="projectZip">Zip Code:</label>
+                        <input
+                          type="text"
+                          id="projectZip"
+                          name="projectZip"
+                          className={styles.textInput}
+                          value={values.projectZip}
+                          onChange={handleChange}
+                          placeholder="Zip"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="projectCounty">County:</label>
+                        <input
+                          type="text"
+                          id="projectCounty"
+                          name="projectCounty"
+                          className={styles.textInput}
+                          value={values.projectCounty}
+                          onChange={handleChange}
+                          placeholder="County"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label htmlFor="buildingUse">Building Use:</label>
+                        <input
+                          type="text"
+                          id="buildingUse"
+                          name="buildingUse"
+                          className={styles.textInput}
+                          value={values.buildingUse}
+                          onChange={handleChange}
+                          placeholder="Building Use"
+                        />
+                      </div>
                     </div>
                   </div>
                 </section>
@@ -554,198 +559,200 @@ export default function ClientQuote({ session }) {
                 <header className="cardHeader">
                   <h3>Design Codes</h3>
                 </header>
-                <div className="cardBox col end">
-                  <div className="cardInput">
-                    <label htmlFor="buildingCode">Building Code:</label>
-                    <input
-                      type="text"
-                      id="buildingCode"
-                      name="buildingCode"
-                      className={styles.textInput}
-                      value={values.buildingCode}
-                      onChange={handleChange}
-                      placeholder="Building Code"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="riskCategory">Risk Category:</label>
-                    <input
-                      type="text"
-                      id="riskCategory"
-                      name="riskCategory"
-                      className={styles.textInput}
-                      value={values.riskCategory}
-                      onChange={handleChange}
-                      placeholder="Risk Category"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="collateralLoad">Collateral Load:</label>
-                    <input
-                      type="text"
-                      id="collateralLoad"
-                      name="collateralLoad"
-                      className={styles.textInput}
-                      value={values.collateralLoad}
-                      onChange={handleChange}
-                      placeholder="Collateral Load"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="liveLoad">Live Load:</label>
-                    <input
-                      type="text"
-                      id="liveLoad"
-                      name="liveLoad"
-                      className={styles.textInput}
-                      value={values.liveLoad}
-                      onChange={handleChange}
-                      placeholder="Live Load"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="deadLoad">Dead Load:</label>
-                    <input
-                      type="text"
-                      id="deadLoad"
-                      name="deadLoad"
-                      className={styles.textInput}
-                      value={values.deadLoad}
-                      onChange={handleChange}
-                      placeholder="Dead Load"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="windLoad">Wind Load:</label>
-                    <input
-                      type="text"
-                      id="windLoad"
-                      name="windLoad"
-                      className={styles.textInput}
-                      value={values.windLoad}
-                      onChange={handleChange}
-                      placeholder="Wind Load"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="exposure">Exposure:</label>
-                    <input
-                      type="text"
-                      id="exposure"
-                      name="exposure"
-                      className={styles.textInput}
-                      value={values.exposure}
-                      onChange={handleChange}
-                      placeholder="Exposure"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="enclosure">Enclosure:</label>
-                    <input
-                      type="text"
-                      id="enclosure"
-                      name="enclosure"
-                      className={styles.textInput}
-                      value={values.enclosure}
-                      onChange={handleChange}
-                      placeholder="Enclosure"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="groundLoad">Ground Load:</label>
-                    <input
-                      type="text"
-                      id="groundLoad"
-                      name="groundLoad"
-                      className={styles.textInput}
-                      value={values.groundLoad}
-                      onChange={handleChange}
-                      placeholder="Ground Load"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="roofLoad">Roof Load:</label>
-                    <input
-                      type="text"
-                      id="roofLoad"
-                      name="roofLoad"
-                      className={styles.textInput}
-                      value={values.roofLoad}
-                      onChange={handleChange}
-                      placeholder="Roof Load"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="thermalFactor">Thermal Factor:</label>
-                    <input
-                      type="text"
-                      id="thermalFactor"
-                      name="thermalFactor"
-                      className={styles.textInput}
-                      value={values.thermalFactor}
-                      onChange={handleChange}
-                      placeholder="Thermal Factor"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="seismicCategory">Seismic Category:</label>
-                    <input
-                      type="text"
-                      id="seismicCategory"
-                      name="seismicCategory"
-                      className={styles.textInput}
-                      value={values.seismicCategory}
-                      onChange={handleChange}
-                      placeholder="Seismic Category"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="seismicSs">SeismicSs:</label>
-                    <input
-                      type="text"
-                      id="seismicSs"
-                      name="seismicSs"
-                      className={styles.textInput}
-                      value={values.seismicSs}
-                      onChange={handleChange}
-                      placeholder="SeismicSs"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="seismicS1">SeismicS1:</label>
-                    <input
-                      type="text"
-                      id="seismicS1"
-                      name="seismicS1"
-                      className={styles.textInput}
-                      value={values.seismicS1}
-                      onChange={handleChange}
-                      placeholder="SeismicS1"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="seismicSms">SeismicSms:</label>
-                    <input
-                      type="text"
-                      id="seismicSms"
-                      name="seismicSms"
-                      className={styles.textInput}
-                      value={values.seismicSms}
-                      onChange={handleChange}
-                      placeholder="SeismicSms"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor="seismicSm1">SeismicSm1:</label>
-                    <input
-                      type="text"
-                      id="seismicSm1"
-                      name="seismicSm1"
-                      className={styles.textInput}
-                      value={values.seismicSm1}
-                      onChange={handleChange}
-                      placeholder="SeismicSm1"
-                    />
+                <div className="cardBox col center">
+                  <div className="cardInnerBox col end">
+                    <div className="cardInput">
+                      <label htmlFor="buildingCode">Building Code:</label>
+                      <input
+                        type="text"
+                        id="buildingCode"
+                        name="buildingCode"
+                        className={styles.textInput}
+                        value={values.buildingCode}
+                        onChange={handleChange}
+                        placeholder="Building Code"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="riskCategory">Risk Category:</label>
+                      <input
+                        type="text"
+                        id="riskCategory"
+                        name="riskCategory"
+                        className={styles.textInput}
+                        value={values.riskCategory}
+                        onChange={handleChange}
+                        placeholder="Risk Category"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="collateralLoad">Collateral Load:</label>
+                      <input
+                        type="text"
+                        id="collateralLoad"
+                        name="collateralLoad"
+                        className={styles.textInput}
+                        value={values.collateralLoad}
+                        onChange={handleChange}
+                        placeholder="Collateral Load"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="liveLoad">Live Load:</label>
+                      <input
+                        type="text"
+                        id="liveLoad"
+                        name="liveLoad"
+                        className={styles.textInput}
+                        value={values.liveLoad}
+                        onChange={handleChange}
+                        placeholder="Live Load"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="deadLoad">Dead Load:</label>
+                      <input
+                        type="text"
+                        id="deadLoad"
+                        name="deadLoad"
+                        className={styles.textInput}
+                        value={values.deadLoad}
+                        onChange={handleChange}
+                        placeholder="Dead Load"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="windLoad">Wind Load:</label>
+                      <input
+                        type="text"
+                        id="windLoad"
+                        name="windLoad"
+                        className={styles.textInput}
+                        value={values.windLoad}
+                        onChange={handleChange}
+                        placeholder="Wind Load"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="exposure">Exposure:</label>
+                      <input
+                        type="text"
+                        id="exposure"
+                        name="exposure"
+                        className={styles.textInput}
+                        value={values.exposure}
+                        onChange={handleChange}
+                        placeholder="Exposure"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="enclosure">Enclosure:</label>
+                      <input
+                        type="text"
+                        id="enclosure"
+                        name="enclosure"
+                        className={styles.textInput}
+                        value={values.enclosure}
+                        onChange={handleChange}
+                        placeholder="Enclosure"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="groundLoad">Ground Load:</label>
+                      <input
+                        type="text"
+                        id="groundLoad"
+                        name="groundLoad"
+                        className={styles.textInput}
+                        value={values.groundLoad}
+                        onChange={handleChange}
+                        placeholder="Ground Load"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="roofLoad">Roof Load:</label>
+                      <input
+                        type="text"
+                        id="roofLoad"
+                        name="roofLoad"
+                        className={styles.textInput}
+                        value={values.roofLoad}
+                        onChange={handleChange}
+                        placeholder="Roof Load"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="thermalFactor">Thermal Factor:</label>
+                      <input
+                        type="text"
+                        id="thermalFactor"
+                        name="thermalFactor"
+                        className={styles.textInput}
+                        value={values.thermalFactor}
+                        onChange={handleChange}
+                        placeholder="Thermal Factor"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="seismicCategory">Seismic Category:</label>
+                      <input
+                        type="text"
+                        id="seismicCategory"
+                        name="seismicCategory"
+                        className={styles.textInput}
+                        value={values.seismicCategory}
+                        onChange={handleChange}
+                        placeholder="Seismic Category"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="seismicSs">SeismicSs:</label>
+                      <input
+                        type="text"
+                        id="seismicSs"
+                        name="seismicSs"
+                        className={styles.textInput}
+                        value={values.seismicSs}
+                        onChange={handleChange}
+                        placeholder="SeismicSs"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="seismicS1">SeismicS1:</label>
+                      <input
+                        type="text"
+                        id="seismicS1"
+                        name="seismicS1"
+                        className={styles.textInput}
+                        value={values.seismicS1}
+                        onChange={handleChange}
+                        placeholder="SeismicS1"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="seismicSms">SeismicSms:</label>
+                      <input
+                        type="text"
+                        id="seismicSms"
+                        name="seismicSms"
+                        className={styles.textInput}
+                        value={values.seismicSms}
+                        onChange={handleChange}
+                        placeholder="SeismicSms"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label htmlFor="seismicSm1">SeismicSm1:</label>
+                      <input
+                        type="text"
+                        id="seismicSm1"
+                        name="seismicSm1"
+                        className={styles.textInput}
+                        value={values.seismicSm1}
+                        onChange={handleChange}
+                        placeholder="SeismicSm1"
+                      />
+                    </div>
                   </div>
                 </div>
               </section>
@@ -924,37 +931,37 @@ export default function ClientQuote({ session }) {
             {/* Building Layout Page */}
             {activeCard == 'bldg-layout' && activeBuilding != null && (
               <>
-                <section className="sectionCard">
-                  <div className="sectionInnerCard">
-                    <header className="sectionHeader">
-                      <h3>Building Shape</h3>
-                    </header>
-                    <div className="sectionContent">
-                      <h4>Building Size</h4>
-                      <fieldset className={styles.radioGroup}>
-                        {shapes.map(({ id, label }) => (
-                          <div key={id}>
-                            <input
-                              type="radio"
-                              id={id}
-                              name="shape"
-                              value={id}
-                              checked={
-                                values.buildings[activeBuilding].shape === id
-                              }
-                              onChange={(e) =>
-                                handleNestedChange(
-                                  activeBuilding,
-                                  'shape',
-                                  e.target.value
-                                )
-                              }
-                            />
-                            <label htmlFor={id}>{label}</label>
-                          </div>
-                        ))}
-                      </fieldset>
-                      <div className="sectionField">
+                <section className="card">
+                  <header className="cardHeader">
+                    <h3>Building Shape</h3>
+                  </header>
+                  <div className="cardBox col center">
+                    <h4>Building Size</h4>
+                    <fieldset className={styles.radioGroup}>
+                      {shapes.map(({ id, label }) => (
+                        <div key={id}>
+                          <input
+                            type="radio"
+                            id={id}
+                            name="shape"
+                            value={id}
+                            checked={
+                              values.buildings[activeBuilding].shape === id
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'shape',
+                                e.target.value
+                              )
+                            }
+                          />
+                          <label htmlFor={id}>{label}</label>
+                        </div>
+                      ))}
+                    </fieldset>
+                    <div className="cardInnerBox col end">
+                      <div className="cardInput">
                         <label htmlFor={`buildingWidth-${activeBuilding}`}>
                           Width:
                         </label>
@@ -973,7 +980,7 @@ export default function ClientQuote({ session }) {
                           placeholder="Feet"
                         />
                       </div>
-                      <div className="sectionField">
+                      <div className="cardInput">
                         <label htmlFor={`buildingLength-${activeBuilding}`}>
                           Length:
                         </label>
@@ -994,7 +1001,7 @@ export default function ClientQuote({ session }) {
                       </div>
                       {values.buildings[activeBuilding].shape ==
                         'symmetrical' && (
-                        <div className="sectionField">
+                        <div className="cardInput">
                           <label
                             htmlFor={`buildingEaveHeight-${activeBuilding}`}
                           >
@@ -1020,7 +1027,7 @@ export default function ClientQuote({ session }) {
                         'singleSlope' ||
                         values.buildings[activeBuilding].shape == 'leanTo') && (
                         <>
-                          <div className="sectionField">
+                          <div className="cardInput">
                             <label
                               htmlFor={`buildingLowEaveHeight-${activeBuilding}`}
                             >
@@ -1043,7 +1050,7 @@ export default function ClientQuote({ session }) {
                               placeholder="Feet"
                             />
                           </div>
-                          <div className="sectionField">
+                          <div className="cardInput">
                             <label
                               htmlFor={`buildingHighEaveHeight-${activeBuilding}`}
                             >
@@ -1070,7 +1077,7 @@ export default function ClientQuote({ session }) {
                       )}
                       {values.buildings[activeBuilding].shape !=
                         'nonSymmetrical' && (
-                        <div className="sectionField">
+                        <div className="cardInput">
                           <label
                             htmlFor={`buildingRoofPitch-${activeBuilding}`}
                           >
@@ -1095,7 +1102,7 @@ export default function ClientQuote({ session }) {
                       {values.buildings[activeBuilding].shape ==
                         'nonSymmetrical' && (
                         <>
-                          <div className="sectionField">
+                          <div className="cardInput">
                             <label
                               htmlFor={`buildingPeakOffset-${activeBuilding}`}
                             >
@@ -1118,7 +1125,7 @@ export default function ClientQuote({ session }) {
                               placeholder="Feet"
                             />
                           </div>
-                          <div className="sectionField">
+                          <div className="cardInput">
                             <label
                               htmlFor={`buildingBackEaveHeight-${activeBuilding}`}
                             >
@@ -1141,7 +1148,7 @@ export default function ClientQuote({ session }) {
                               placeholder="Feet"
                             />
                           </div>
-                          <div className="sectionField">
+                          <div className="cardInput">
                             <label
                               htmlFor={`buildingFrontEaveHeight-${activeBuilding}`}
                             >
@@ -1164,7 +1171,7 @@ export default function ClientQuote({ session }) {
                               placeholder="Feet"
                             />
                           </div>
-                          <div className="sectionField">
+                          <div className="cardInput">
                             <label
                               htmlFor={`buildingBackRoofPitch-${activeBuilding}`}
                             >
@@ -1187,7 +1194,7 @@ export default function ClientQuote({ session }) {
                               placeholder="Feet"
                             />
                           </div>
-                          <div className="sectionField">
+                          <div className="cardInput">
                             <label
                               htmlFor={`buildingFrontRoofPitch-${activeBuilding}`}
                             >
@@ -1213,9 +1220,11 @@ export default function ClientQuote({ session }) {
                         </>
                       )}
                     </div>
-                    <div className="sectionContent">
-                      <h4>Bay Spacing</h4>
-                      <div className="sectionField">
+                  </div>
+                  <div className="cardBox col center">
+                    <h4>Bay Spacing</h4>
+                    <div className="cardInnerBox col end">
+                      <div className="cardInput">
                         <label
                           htmlFor={`buildingSWBaySpacing-${activeBuilding}`}
                         >
@@ -1236,7 +1245,7 @@ export default function ClientQuote({ session }) {
                           placeholder="Separate Bays with Spaces"
                         />
                       </div>
-                      <div className="sectionField">
+                      <div className="cardInput">
                         <label
                           htmlFor={`buildingLEWBaySpacing-${activeBuilding}`}
                         >
@@ -1257,7 +1266,7 @@ export default function ClientQuote({ session }) {
                           placeholder="Separate Bays with Spaces"
                         />
                       </div>
-                      <div className="sectionField">
+                      <div className="cardInput">
                         <label
                           htmlFor={`buildingREWBaySpacing-${activeBuilding}`}
                         >
@@ -1281,73 +1290,121 @@ export default function ClientQuote({ session }) {
                     </div>
                   </div>
                 </section>
-                <section className="sectionCard">
-                  <div className="sectionInnerCard">
-                    <header className="sectionHeader">
-                      <h3>Frame Type</h3>
-                    </header>
-                    <div className="sectionContent">
-                      <fieldset className={styles.radioGroup}>
-                        {frames.map(({ id, label }) => (
-                          <div key={id}>
-                            <input
-                              type="radio"
-                              id={id}
-                              name="frame"
-                              value={id}
-                              checked={
-                                values.buildings[activeBuilding].frameType ===
-                                id
-                              }
-                              onChange={(e) =>
-                                handleNestedChange(
-                                  activeBuilding,
-                                  'frameType',
-                                  e.target.value
-                                )
-                              }
-                            />
-                            <label htmlFor={id}>{label}</label>
-                          </div>
-                        ))}
-                      </fieldset>
-                      {values.buildings[activeBuilding].frameType ==
-                        'multiSpan' && (
-                        <div className="sectionField">
-                          <label
-                            htmlFor={`buildingIntColSpacing-${activeBuilding}`}
-                          >
-                            Interior Column Spacing:
-                          </label>
+                <section className="card">
+                  <header className="cardHeader">
+                    <h3>Frame Type</h3>
+                  </header>
+                  <div className="cardBox col center">
+                    <fieldset className={styles.radioGroup}>
+                      {frames.map(({ id, label }) => (
+                        <div key={id}>
                           <input
-                            type="text"
-                            id={`buildingIntColSpacing-${activeBuilding}`}
-                            name={`buildingIntColSpacing-${activeBuilding}`}
-                            value={
-                              values.buildings[activeBuilding].intColSpacing
+                            type="radio"
+                            id={id}
+                            name="frame"
+                            value={id}
+                            checked={
+                              values.buildings[activeBuilding].frameType === id
                             }
                             onChange={(e) =>
                               handleNestedChange(
                                 activeBuilding,
-                                'intColSpacing',
+                                'frameType',
                                 e.target.value
+                              )
+                            }
+                          />
+                          <label htmlFor={id}>{label}</label>
+                        </div>
+                      ))}
+                    </fieldset>
+                    <div className="cardBox col center">
+                      {values.buildings[activeBuilding].frameType ==
+                        'multiSpan' && (
+                        <div className="cardInnerBox col end">
+                          <div className="cardInput">
+                            <label
+                              htmlFor={`buildingIntColSpacing-${activeBuilding}`}
+                            >
+                              Int Column Spacing:
+                            </label>
+                            <input
+                              type="text"
+                              id={`buildingIntColSpacing-${activeBuilding}`}
+                              name={`buildingIntColSpacing-${activeBuilding}`}
+                              value={
+                                values.buildings[activeBuilding].intColSpacing
+                              }
+                              onChange={(e) =>
+                                handleNestedChange(
+                                  activeBuilding,
+                                  'intColSpacing',
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Feet"
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <div className="cardInnerBox col start">
+                        <div className="cardInput">
+                          <input
+                            type="checkbox"
+                            id={`buildingStraightExtColumns-${activeBuilding}`}
+                            name={`buildingStraightExtColumns-${activeBuilding}`}
+                            checked={
+                              values.buildings[activeBuilding]
+                                .straightExtColumns
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'straightExtColumns',
+                                e.target.checked
                               )
                             }
                             placeholder="Feet"
                           />
+                          <label
+                            htmlFor={`buildingStraightExtColumns-${activeBuilding}`}
+                          >
+                            Straight Exterior Columns
+                          </label>
                         </div>
-                      )}
+                        <div className="cardInput">
+                          <input
+                            type="checkbox"
+                            id={`buildingNoFlangeBraces-${activeBuilding}`}
+                            name={`buildingNoFlangeBraces-${activeBuilding}`}
+                            checked={
+                              values.buildings[activeBuilding].noFlangeBraces
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'noFlangeBraces',
+                                e.target.checked
+                              )
+                            }
+                            placeholder="Feet"
+                          />
+                          <label
+                            htmlFor={`buildingNoFlangeBraces-${activeBuilding}`}
+                          >
+                            No Flange Braces On Columns
+                          </label>
+                        </div>
+                      </div>
                     </div>
-                    <div className="sectionContent">
-                      <h4>Endwall Frames</h4>
-                      <div className="sectionField">
-                        <label htmlFor={`buildingLEWFrame-${activeBuilding}`}>
-                          Left Endwall Frame:
-                        </label>
-                        <input
-                          type="text"
-                          id={`buildingLEWFrame-${activeBuilding}`}
-                          name={`buildingLEWFrame-${activeBuilding}`}
+                  </div>
+                  <div className="cardBox col center">
+                    <h4>Endwall Frames</h4>
+                    <div className="cardInnerBox col end">
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingLeftEndwallFrame-${activeBuilding}`}
+                          name={`buildingLeftEndwallFrame-${activeBuilding}`}
                           value={
                             values.buildings[activeBuilding].leftEndwallFrame
                           }
@@ -1358,7 +1415,213 @@ export default function ClientQuote({ session }) {
                               e.target.value
                             )
                           }
-                          placeholder="Feet"
+                          options={FrameOptions}
+                          label="Left Endwall Frame:"
+                        />
+                      </div>
+                      {values.buildings[activeBuilding].leftEndwallFrame ==
+                        'insetRF' && (
+                        <div className="cardInput">
+                          <label
+                            htmlFor={`buildingLeftEnwallInset-${activeBuilding}`}
+                          >
+                            Inset # of Bays
+                          </label>
+                          <input
+                            type="text"
+                            id={`buildingLeftEnwallInset-${activeBuilding}`}
+                            name={`buildingLeftEnwallInset-${activeBuilding}`}
+                            value={
+                              values.buildings[activeBuilding].leftEnwallInset
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'leftEnwallInset',
+                                e.target.value
+                              )
+                            }
+                            placeholder=""
+                          />
+                        </div>
+                      )}
+
+                      <div className="cardInput">
+                        <label
+                          htmlFor={`buildingLeftEnwallIntColSpacing-${activeBuilding}`}
+                        >
+                          Interior Column Spacing
+                        </label>
+                        <input
+                          type="text"
+                          id={`buildingLeftEnwallIntColSpacing-${activeBuilding}`}
+                          name={`buildingLeftEnwallIntColSpacing-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding]
+                              .leftEndwallIntColSpacing
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'leftEndwallIntColSpacing',
+                              e.target.value
+                            )
+                          }
+                          placeholder="Separate Bays with Comma"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingRightEndwallFrame-${activeBuilding}`}
+                          name={`buildingRightEndwallFrame-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding].rightEndwallFrame
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'rightEndwallFrame',
+                              e.target.value
+                            )
+                          }
+                          options={FrameOptions}
+                          label="Right Endwall Frame:"
+                        />
+                      </div>
+                      {values.buildings[activeBuilding].rightEndwallFrame ==
+                        'insetRF' && (
+                        <div className="cardInput">
+                          <label
+                            htmlFor={`buildingRightEnwallInset-${activeBuilding}`}
+                          >
+                            Inset # of Bays
+                          </label>
+                          <input
+                            type="text"
+                            id={`buildingRightEnwallInset-${activeBuilding}`}
+                            name={`buildingRightEnwallInset-${activeBuilding}`}
+                            value={
+                              values.buildings[activeBuilding].rightEnwallInset
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'rightEnwallInset',
+                                e.target.value
+                              )
+                            }
+                            placeholder=""
+                          />
+                        </div>
+                      )}
+
+                      <div className="cardInput">
+                        <label
+                          htmlFor={`buildingRightEnwallIntColSpacing-${activeBuilding}`}
+                        >
+                          Interior Column Spacing
+                        </label>
+                        <input
+                          type="text"
+                          id={`buildingRightEnwallIntColSpacing-${activeBuilding}`}
+                          name={`buildingRightEnwallIntColSpacing-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding]
+                              .rightEndwallIntColSpacing
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'rightEndwallIntColSpacing',
+                              e.target.value
+                            )
+                          }
+                          placeholder="Separate Bays with Comma"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <section className="card">
+                  <header className="cardHeader">
+                    <h3>Bracing</h3>
+                  </header>
+                  <div className="cardBox col center">
+                    <div className="cardInnerBox col end">
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingFrontSideWallBracing-${activeBuilding}`}
+                          name={`buildingFrontSideWallBracing-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding]
+                              .frontSidewallBracingType
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'frontSidewallBracingType',
+                              e.target.value
+                            )
+                          }
+                          options={BracingType}
+                          label="Front Sidewall Bracing Type"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingBackSideWallBracing-${activeBuilding}`}
+                          name={`buildingBackSideWallBracing-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding]
+                              .backSidewallBracingType
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'backSidewallBracingType',
+                              e.target.value
+                            )
+                          }
+                          options={BracingType}
+                          label="Back Sidewall Bracing Type"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingLeftEndWallBracing-${activeBuilding}`}
+                          name={`buildingLeftEndWallBracing-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding]
+                              .leftEndwallBracingType
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'leftEndwallBracingType',
+                              e.target.value
+                            )
+                          }
+                          options={BracingType}
+                          label="Left Endwall Bracing Type"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingRightEndWallBracing-${activeBuilding}`}
+                          name={`buildingRightEndWallBracing-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding]
+                              .rightEndwallBracingType
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'rightEndwallBracingType',
+                              e.target.value
+                            )
+                          }
+                          options={BracingType}
+                          label="Right Endwall Bracing Type"
                         />
                       </div>
                     </div>

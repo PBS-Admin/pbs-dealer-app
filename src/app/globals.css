@@ -20,7 +20,31 @@
 * {
   box-sizing: border-box;
   padding: 0;
-  margin: 0;
+  margin: 0;  
+}
+
+*::-webkit-scrollbar {
+  width: 17px;   
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--dark-blue);  
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--background-white);
+  border-radius: 100vw;
+  border: 3px solid var(--dark-blue);  
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--light-orange);
+}
+
+html{
+  -moz-text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
 }
 
 html,
@@ -56,6 +80,7 @@ main {
 
 h1, h4{
   color: var(--dark-blue);
+  text-align: center;
 }
 
 h2, h3{
@@ -164,29 +189,58 @@ p{
   flex-wrap: wrap; 
   gap: .5em;
   padding: 1em;
+  /* outline: 1px solid red; */
 }
 
 .cardBox h4{
   width: 100%;
+  text-align: left;  
+}
+
+.cardInnerBox{
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: .5em;  
 }
 
 .cardInput{
   display: flex;
   gap: .75em;
   color: var(--black);
+  /* white-space: nowrap;   */
+  text-align: right;  
 }
 
-.cardInput input{
-  line-height: 1.5em;  
+.cardInput input{  
+  line-height: 2em;  
+  font-size: 11px;
   border-radius: .25em;
   background-color: none;
   border: none;
   outline: 1px solid var(--black);
   padding: 0 .25em;  
+  
+}
+
+.cardInput input[type="checkbox"]{
+  accent-color: var(--dark-blue);
+  outline: none
 }
 
 .cardInput input[type="text"]:focus, .cardInput input[type="password"]:focus{
   outline: 1px solid var(--orange);
+}
+
+.cardInput select{
+  border: none;
+  outline: 1px solid var(--black);
+  border-radius: .25em;      
+  height: 2em;
+  font-size: 11px;  
+}
+
+.cardInput label{
+  font-size: 11px; 
 }
 
 .start{
@@ -201,7 +255,7 @@ p{
 
 .end{
   align-items: flex-end;
-  justify-content: flex-end;
+  justify-content: flex-end;  
 }
 
 .col{
@@ -367,13 +421,23 @@ p{
 
 /* END */
 
+@media screen and (min-width: 350px) {
+  .cardInput label, .cardInput input, .cardInput select{
+    font-size: 3.15vw;
+  }
+}
 
-@media screen and (min-width: 600px) {
+
+@media screen and (min-width: 476px) {
   .pageHeaderLeft {
     font-size: 1.25em;      
   }
 
   .pageHeaderRight {
     font-size: .75em;
+  }
+
+  .cardInput label, .cardInput input, .cardInput select{
+    font-size: 15px;
   }
 }

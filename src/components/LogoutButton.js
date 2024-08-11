@@ -13,10 +13,12 @@ export default function LogoutButton() {
   };
 
   return (
-    <div className="pageHeaderLeft">
-      <button onClick={handleLogout} className="iconPrim">
-        <FontAwesomeIcon icon={faDoorOpen} />
-      </button>
-    </div>
+    <>
+      <div className="pageHeaderLeft">
+        <button onClick={handleLogout} className="iconPrim">
+          <FontAwesomeIcon icon={faDoorOpen} />
+        </button>
+      </div>
+    </>
   );
 }

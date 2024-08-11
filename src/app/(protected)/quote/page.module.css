@@ -103,7 +103,22 @@
 /* END */
 
 
+.radioGroup{
+    accent-color: var(--dark-blue);
+    display: flex;    
+    gap: 1em;    
+    border: none;
+    background-color: rgba(0, 0, 0, 0.10);
+    padding: .5em;
+    border-radius: .5em;
+    align-self: center;
+    font-size: 11px;
+}
 
+.radioGroup div{
+    display: flex;
+    flex-flow: column nowrap;
+}
 
 
 
@@ -162,8 +177,6 @@
     color: black;
 }
 
-
-
 .copyBuilding {
     font-size: 1em;
     padding: .5em;
@@ -216,6 +229,18 @@
     color: white;
 }
 
+@media screen and (min-width: 350px) {
+    .radioGroup{
+      font-size: 3.15vw;
+    }
+}
+  
+@media screen and (min-width: 476px) {
+    .radioGroup{
+      font-size: 15px;
+    }
+}
+
 @media screen and (min-width: 600px) {
     .pageTitle {
         font-size: 2em;
@@ -227,3 +252,7 @@
         flex-flow: column nowrap;
     }
 }
+
+
+
+  
