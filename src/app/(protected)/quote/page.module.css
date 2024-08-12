@@ -8,7 +8,9 @@
 }
 
 /* Navigation Styles */
-.sidebar {
+.sidebar {  
+    position: fixed;
+    top: 7em;  
     display: flex;
     flex-flow: column nowrap;
     background-color: var(--background-white);
@@ -227,6 +229,13 @@
 .activeBuildingSelected {
     background-color: var(--light-green);
     color: white;
+}
+
+.panelImage{
+    align-self: center;
+    height: auto;
+    width: 60vw;
+    max-width: 200px
 }
 
 @media screen and (min-width: 350px) {

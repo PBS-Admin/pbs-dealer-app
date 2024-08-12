@@ -18,8 +18,27 @@ import { initialState } from './_initialState';
 import CopyBuildingDialog from '../../../components/CopyBuildingDialog';
 import DeleteDialog from '../../../components/DeleteDialog';
 import ReusableSelect from '../../../components/ReusableSelect';
-import logo from '../../../../public/images/pbslogo.png';
-import { shapes, frames, FrameOptions, BracingType } from './_dropdownOptions';
+import { logo } from '../../../../public/images';
+import {
+  shapes,
+  frames,
+  FrameOptions,
+  SidewallBracingType,
+  EndwallBracingType,
+  breakPoints,
+  girtTypes,
+  girtSpacing,
+  baseCondition,
+  purlinSpacing,
+  roofPanels,
+  roofGauge,
+  roofFinish,
+  wallPanels,
+  wallGauge,
+  wallFinish,
+  roofInsulation,
+  wallInsulation,
+} from './_dropdownOptions';
 
 export default function ClientQuote({ session }) {
   const { values, handleChange, handleNestedChange, setValues } =
@@ -131,9 +150,40 @@ export default function ClientQuote({ session }) {
           rightEnwallInset: '',
           rightEndwallIntColSpacing: '',
           frontSidewallBracingType: 'xbrace',
+          frontSidewallBracingHeight: '',
           backSidewallBracingType: 'xbrace',
+          backSidewallBracingHeight: '',
           leftEndwallBracingType: 'xbrace',
+          leftEndwallBracingHeight: '',
           rightEndwallBracingType: 'xbrace',
+          rightEndwallBracingHeight: '',
+          frontSidewallBracedBays: '',
+          backSidewallBracedBays: '',
+          leftEndwallBracedBays: '',
+          rightEndwallBracedBays: '',
+          roofBracedBays: '',
+          roofBreakPoints: 'left',
+          frontSidewallGirtType: 'bipass',
+          backSidewallGirtType: 'bipass',
+          leftEndwallGirtType: 'bipass',
+          rightEndwallGirtType: 'bipass',
+          frontSidewallGirtSpacing: 'default',
+          backSidewallGirtSpacing: 'default',
+          leftEndwallGirtSpacing: 'default',
+          rightEndwallGirtSpacing: 'default',
+          baseCondition: 'angle',
+          purlinSpacing: '',
+          roofPanelType: 'pbr',
+          roofPanelGauge: '',
+          roofPanelFinish: '',
+          wallPanelType: 'pbr',
+          wallPanelGauge: '',
+          wallPanelFinish: '',
+          includeGutters: false,
+          roofInsulation: '',
+          roofInsulationOthers: false,
+          wallInsulation: '',
+          wallInsulationOthers: false,
         },
       ],
     }));
@@ -233,6 +283,14 @@ export default function ClientQuote({ session }) {
     console.log('Form submitted with values:', values);
     // Here you would typically send the data to your backend
   };
+
+  const selectedRoofPanel = roofPanels.find(
+    (panel) => panel.id === values.buildings[activeBuilding].roofPanelType
+  );
+
+  const selectedWallPanel = wallPanels.find(
+    (panel) => panel.id === values.buildings[activeBuilding].wallPanelType
+  );
 
   // Checking for screen width to conditionally render DOM elements
   useEffect(() => {
@@ -1095,7 +1153,7 @@ export default function ClientQuote({ session }) {
                                 e.target.value
                               )
                             }
-                            placeholder="Feet"
+                            placeholder="x:12"
                           />
                         </div>
                       )}
@@ -1364,7 +1422,6 @@ export default function ClientQuote({ session }) {
                                 e.target.checked
                               )
                             }
-                            placeholder="Feet"
                           />
                           <label
                             htmlFor={`buildingStraightExtColumns-${activeBuilding}`}
@@ -1387,7 +1444,6 @@ export default function ClientQuote({ session }) {
                                 e.target.checked
                               )
                             }
-                            placeholder="Feet"
                           />
                           <label
                             htmlFor={`buildingNoFlangeBraces-${activeBuilding}`}
@@ -1563,14 +1619,41 @@ export default function ClientQuote({ session }) {
                               e.target.value
                             )
                           }
-                          options={BracingType}
-                          label="Front Sidewall Bracing Type"
+                          options={SidewallBracingType}
+                          label="Front Sidewall Bracing Type:"
                         />
                       </div>
+                      {values.buildings[activeBuilding]
+                        .frontSidewallBracingType == 'tier' && (
+                        <div className="cardInput">
+                          <label
+                            htmlFor={`buildingBackSidewallBracing-${activeBuilding}`}
+                          >
+                            Height of Portal Frame:
+                          </label>
+                          <input
+                            type="text"
+                            id={`buildingBackSidewallBracing-${activeBuilding}`}
+                            name={`buildingBackSidewallBracing-${activeBuilding}`}
+                            value={
+                              values.buildings[activeBuilding]
+                                .frontSidewallBracingHeight
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'frontSidewallBracingHeight',
+                                e.target.value
+                              )
+                            }
+                            placeholder="Feet"
+                          />
+                        </div>
+                      )}
                       <div className="cardInput">
                         <ReusableSelect
-                          id={`buildingBackSideWallBracing-${activeBuilding}`}
-                          name={`buildingBackSideWallBracing-${activeBuilding}`}
+                          id={`buildingBackSidewallBracing-${activeBuilding}`}
+                          name={`buildingBackSidewallBracing-${activeBuilding}`}
                           value={
                             values.buildings[activeBuilding]
                               .backSidewallBracingType
@@ -1582,47 +1665,680 @@ export default function ClientQuote({ session }) {
                               e.target.value
                             )
                           }
-                          options={BracingType}
-                          label="Back Sidewall Bracing Type"
+                          options={SidewallBracingType}
+                          label="Back Sidewall Bracing Type:"
                         />
                       </div>
+                      {values.buildings[activeBuilding]
+                        .backSidewallBracingType == 'tier' && (
+                        <div className="cardInput">
+                          <label
+                            htmlFor={`buildingBackSidewallBracingHeight-${activeBuilding}`}
+                          >
+                            Height of Portal Frame:
+                          </label>
+                          <input
+                            type="text"
+                            id={`buildingBackSidewallBracingHeight-${activeBuilding}`}
+                            name={`buildingBackSidewallBracingHeight-${activeBuilding}`}
+                            value={
+                              values.buildings[activeBuilding]
+                                .backSidewallBracingHeight
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'backSidewallBracingHeight',
+                                e.target.value
+                              )
+                            }
+                            placeholder="Feet"
+                          />
+                        </div>
+                      )}
+                      {values.buildings[activeBuilding].leftEndwallFrame ==
+                        'postAndBeam' && (
+                        <div className="cardInput">
+                          <ReusableSelect
+                            id={`buildingLeftEndwallBracing-${activeBuilding}`}
+                            name={`buildingLeftEndwallBracing-${activeBuilding}`}
+                            value={
+                              values.buildings[activeBuilding]
+                                .leftEndwallBracingType
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'leftEndwallBracingType',
+                                e.target.value
+                              )
+                            }
+                            options={EndwallBracingType}
+                            label="Left Endwall Bracing Type:"
+                          />
+                        </div>
+                      )}
+                      {values.buildings[activeBuilding].rightEndwallFrame ==
+                        'postAndBeam' && (
+                        <div className="cardInput">
+                          <ReusableSelect
+                            id={`buildingRightEndWallBracing-${activeBuilding}`}
+                            name={`buildingRightEndWallBracing-${activeBuilding}`}
+                            value={
+                              values.buildings[activeBuilding]
+                                .rightEndwallBracingType
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'rightEndwallBracingType',
+                                e.target.value
+                              )
+                            }
+                            options={EndwallBracingType}
+                            label="Right Endwall Bracing Type:"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="cardBox col center">
+                    <h4>Wall Braced Bays</h4>
+                    {values.buildings[activeBuilding]
+                      .frontSidewallBracingType != 'torsional' && (
                       <div className="cardInput">
-                        <ReusableSelect
-                          id={`buildingLeftEndWallBracing-${activeBuilding}`}
-                          name={`buildingLeftEndWallBracing-${activeBuilding}`}
+                        <label
+                          htmlFor={`buildingFrontSidewallBracedBays-${activeBuilding}`}
+                        >
+                          Front Sidewall:
+                        </label>
+                        <input
+                          type="text"
+                          id={`buildingFrontSidewallBracedBays-${activeBuilding}`}
+                          name={`buildingFrontSidewallBracedBays-${activeBuilding}`}
                           value={
                             values.buildings[activeBuilding]
-                              .leftEndwallBracingType
+                              .frontSidewallBracedBays
                           }
                           onChange={(e) =>
                             handleNestedChange(
                               activeBuilding,
-                              'leftEndwallBracingType',
+                              'frontSidewallBracedBays',
                               e.target.value
                             )
                           }
-                          options={BracingType}
-                          label="Left Endwall Bracing Type"
+                          placeholder="Separate Bays with Space"
                         />
                       </div>
+                    )}
+                    {values.buildings[activeBuilding].backSidewallBracingType !=
+                      'torsional' && (
                       <div className="cardInput">
-                        <ReusableSelect
-                          id={`buildingRightEndWallBracing-${activeBuilding}`}
-                          name={`buildingRightEndWallBracing-${activeBuilding}`}
+                        <label
+                          htmlFor={`buildingBackSidewallBracedBays-${activeBuilding}`}
+                        >
+                          Back Sidewall:
+                        </label>
+                        <input
+                          type="text"
+                          id={`buildingBackSidewallBracedBays-${activeBuilding}`}
+                          name={`buildingBackSidewallBracedBays-${activeBuilding}`}
                           value={
                             values.buildings[activeBuilding]
-                              .rightEndwallBracingType
+                              .backSidewallBracedBays
                           }
                           onChange={(e) =>
                             handleNestedChange(
                               activeBuilding,
-                              'rightEndwallBracingType',
+                              'backSidewallBracedBays',
                               e.target.value
                             )
                           }
-                          options={BracingType}
-                          label="Right Endwall Bracing Type"
+                          placeholder="Separate Bays with Space"
                         />
+                      </div>
+                    )}
+                    {values.buildings[activeBuilding].leftEndwallFrame ==
+                      'postAndBeam' && (
+                      <div className="cardInput">
+                        <label
+                          htmlFor={`buildingLeftEndwallBracedBays-${activeBuilding}`}
+                        >
+                          Back Sidewall:
+                        </label>
+                        <input
+                          type="text"
+                          id={`buildingLeftEndwallBracedBays-${activeBuilding}`}
+                          name={`buildingLeftEndwallBracedBays-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding]
+                              .leftEndwallBracedBays
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'leftEndwallBracedBays',
+                              e.target.value
+                            )
+                          }
+                          placeholder="Separate Bays with Space"
+                        />
+                      </div>
+                    )}
+                    {values.buildings[activeBuilding].rightEndwallFrame ==
+                      'postAndBeam' && (
+                      <div className="cardInput">
+                        <label
+                          htmlFor={`buildingRightEndwallBracedBays-${activeBuilding}`}
+                        >
+                          Right Endwall:
+                        </label>
+                        <input
+                          type="text"
+                          id={`buildingRightEndwallBracedBays-${activeBuilding}`}
+                          name={`buildingRightEndwallBracedBays-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding]
+                              .rightEndwallBracedBays
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'rightEndwallBracedBays',
+                              e.target.value
+                            )
+                          }
+                          placeholder="Separate Bays with Space"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div className="cardBox col center">
+                    <h4>Roof Bracing</h4>
+                    <div className="cardInput">
+                      <label
+                        htmlFor={`buildingRoofBracedBays-${activeBuilding}`}
+                      >
+                        Roof Braced Bays:
+                      </label>
+                      <input
+                        type="text"
+                        id={`buildingRoofBracedBays-${activeBuilding}`}
+                        name={`buildingRoofBracedBays-${activeBuilding}`}
+                        value={values.buildings[activeBuilding].roofBracedBays}
+                        onChange={(e) =>
+                          handleNestedChange(
+                            activeBuilding,
+                            'roofBracedBays',
+                            e.target.value
+                          )
+                        }
+                        placeholder="Separate Bays with Space"
+                      />
+                    </div>
+                    <h5>Break Points to Match</h5>
+                    <fieldset className={styles.radioGroup}>
+                      {breakPoints.map(({ id, label }) => (
+                        <div key={id}>
+                          <input
+                            type="radio"
+                            id={id}
+                            name="breakPoints"
+                            value={id}
+                            checked={
+                              values.buildings[activeBuilding]
+                                .roofBreakPoints === id
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'roofBreakPoints',
+                                e.target.value
+                              )
+                            }
+                          />
+                          <label htmlFor={id}>{label}</label>
+                        </div>
+                      ))}
+                    </fieldset>
+                  </div>
+                </section>
+                <section className="card">
+                  <header className="cardHeader">
+                    <h3>Purlins and Girts</h3>
+                  </header>
+                  <div className="cardBox col center">
+                    <div className="cardInnerBox col end">
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingFrontSidewallGirtType-${activeBuilding}`}
+                          name={`buildingFrontSidewallGirtType-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding]
+                              .frontSidewallGirtType
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'frontSidewallGirtType',
+                              e.target.value
+                            )
+                          }
+                          options={girtTypes}
+                          label="Front Sidewall Girt Type:"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingBackSidewallGirtType-${activeBuilding}`}
+                          name={`buildingBackSidewallGirtType-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding]
+                              .backSidewallGirtType
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'backSidewallGirtType',
+                              e.target.value
+                            )
+                          }
+                          options={girtTypes}
+                          label="Back Sidewall Girt Type:"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingLeftEndwallGirtType-${activeBuilding}`}
+                          name={`buildingLeftEndwallGirtType-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding].leftEndwallGirtType
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'leftEndwallGirtType',
+                              e.target.value
+                            )
+                          }
+                          options={girtTypes}
+                          label="Left Endwall Girt Type:"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingRightEndwallGirtType-${activeBuilding}`}
+                          name={`buildingRightEndwallGirtType-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding]
+                              .rightEndwallGirtType
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'rightEndwallGirtType',
+                              e.target.value
+                            )
+                          }
+                          options={girtTypes}
+                          label="Right Endwall Girt Type:"
+                        />
+                      </div>
+                      {values.buildings[activeBuilding].frontSidewallGirtType !=
+                        'open' && (
+                        <div className="cardInput">
+                          <ReusableSelect
+                            id={`buildingFrontSidewallGirtSpacing-${activeBuilding}`}
+                            name={`buildingFrontSidewallGirtSpacing-${activeBuilding}`}
+                            value={
+                              values.buildings[activeBuilding]
+                                .frontSidewallGirtSpacing
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'frontSidewallGirtSpacing',
+                                e.target.value
+                              )
+                            }
+                            options={girtSpacing}
+                            label="Front Sidewall Girt Spacing:"
+                          />
+                        </div>
+                      )}
+                      {values.buildings[activeBuilding].backSidewallGirtType !=
+                        'open' && (
+                        <div className="cardInput">
+                          <ReusableSelect
+                            id={`buildingBackSidewallGirtSpacing-${activeBuilding}`}
+                            name={`buildingBackSidewallGirtSpacing-${activeBuilding}`}
+                            value={
+                              values.buildings[activeBuilding]
+                                .backSidewallGirtSpacing
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'backSidewallGirtSpacing',
+                                e.target.value
+                              )
+                            }
+                            options={girtSpacing}
+                            label="Back Sidewall Girt Spacing:"
+                          />
+                        </div>
+                      )}
+                      {values.buildings[activeBuilding].leftEndwallGirtType !=
+                        'open' && (
+                        <div className="cardInput">
+                          <ReusableSelect
+                            id={`buildingLeftEndwallGirtSpacing-${activeBuilding}`}
+                            name={`buildingLeftEndwallGirtSpacing-${activeBuilding}`}
+                            value={
+                              values.buildings[activeBuilding]
+                                .leftEndwallGirtSpacing
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'leftEndwallGirtSpacing',
+                                e.target.value
+                              )
+                            }
+                            options={girtSpacing}
+                            label="Left Endwall Girt Spacing:"
+                          />
+                        </div>
+                      )}
+                      {values.buildings[activeBuilding].rightEndwallGirtType !=
+                        'open' && (
+                        <div className="cardInput">
+                          <ReusableSelect
+                            id={`buildingRightEndwallGirtSpacing-${activeBuilding}`}
+                            name={`buildingRightEndwallGirtSpacing-${activeBuilding}`}
+                            value={
+                              values.buildings[activeBuilding]
+                                .rightEndwallGirtSpacing
+                            }
+                            onChange={(e) =>
+                              handleNestedChange(
+                                activeBuilding,
+                                'rightEndwallGirtSpacing',
+                                e.target.value
+                              )
+                            }
+                            options={girtSpacing}
+                            label="Right Endwall Girt Spacing:"
+                          />
+                        </div>
+                      )}
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingBaseCondition-${activeBuilding}`}
+                          name={`buildingBaseCondition-${activeBuilding}`}
+                          value={values.buildings[activeBuilding].baseCondition}
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'baseCondition',
+                              e.target.value
+                            )
+                          }
+                          options={baseCondition}
+                          label="Base Condition:"
+                        />
+                      </div>
+                      <h4>Purlins</h4>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingPurlinSpacing-${activeBuilding}`}
+                          name={`buildingPurlinSpacing-${activeBuilding}`}
+                          value={values.buildings[activeBuilding].purlinSpacing}
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'purlinSpacing',
+                              e.target.value
+                            )
+                          }
+                          options={purlinSpacing}
+                          label="Purlin Spacing:"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <section className="card">
+                  <header className="cardHeader">
+                    <h3>Sheeting & Insulation</h3>
+                  </header>
+                  <div className="cardBox col center">
+                    <div className="cardBox col end">
+                      <h4>Roof</h4>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingRoofPanels-${activeBuilding}`}
+                          name={`buildingRoofPanels-${activeBuilding}`}
+                          value={values.buildings[activeBuilding].roofPanelType}
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'roofPanelType',
+                              e.target.value
+                            )
+                          }
+                          options={roofPanels}
+                          label="Roof Panels:"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingRoofGauge-${activeBuilding}`}
+                          name={`buildingRoofGauge-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding].roofPanelGauge
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'roofPanelGauge',
+                              e.target.value
+                            )
+                          }
+                          options={roofGauge}
+                          label="Gauge:"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingRoofFinish-${activeBuilding}`}
+                          name={`buildingRoofFinish-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding].roofPanelFinish
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'roofPanelFinish',
+                              e.target.value
+                            )
+                          }
+                          options={roofFinish}
+                          label="Finish:"
+                        />
+                      </div>
+                      {selectedRoofPanel && selectedRoofPanel.image && (
+                        <Image
+                          alt={`${selectedRoofPanel.label}`}
+                          src={selectedRoofPanel.image}
+                          className={styles.panelImage}
+                        />
+                      )}
+                      <h4>Walls</h4>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingWallPanels-${activeBuilding}`}
+                          name={`buildingWallPanels-${activeBuilding}`}
+                          value={values.buildings[activeBuilding].wallPanelType}
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'wallPanelType',
+                              e.target.value
+                            )
+                          }
+                          options={wallPanels}
+                          label="Wall Panels:"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingWallGauge-${activeBuilding}`}
+                          name={`buildingWallGauge-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding].wallPanelGauge
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'wallPanelGauge',
+                              e.target.value
+                            )
+                          }
+                          options={wallGauge}
+                          label="Gauge:"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingWallFinish-${activeBuilding}`}
+                          name={`buildingWallFinish-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding].wallPanelFinish
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'wallPanelFinish',
+                              e.target.value
+                            )
+                          }
+                          options={wallFinish}
+                          label="Finish:"
+                        />
+                      </div>
+                      {selectedWallPanel && selectedWallPanel.image && (
+                        <Image
+                          alt={`${selectedWallPanel.label}`}
+                          src={selectedWallPanel.image}
+                          className={styles.panelImage}
+                        />
+                      )}
+                      <h4>Gutters and Downspouts</h4>
+                      <div className="cardInput">
+                        <input
+                          type="checkbox"
+                          id={`buildingIncludeGutters-${activeBuilding}`}
+                          name={`buildingIncludeGutters-${activeBuilding}`}
+                          checked={
+                            values.buildings[activeBuilding].includeGutters
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'includeGutters',
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <label
+                          htmlFor={`buildingIncludeGutters-${activeBuilding}`}
+                        >
+                          Include Gutters and Downspouts
+                        </label>
+                      </div>
+                      <h4>Building Insulation</h4>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingRoofInsulation-${activeBuilding}`}
+                          name={`buildingRoofInsulation-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding].roofInsulation
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'roofInsulation',
+                              e.target.value
+                            )
+                          }
+                          options={roofInsulation}
+                          label="Roof Insulation:"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <input
+                          type="checkbox"
+                          id={`buildingRoofInsulationOthers-${activeBuilding}`}
+                          name={`buildingRoofInsulationOthers-${activeBuilding}`}
+                          checked={
+                            values.buildings[activeBuilding]
+                              .roofInsulationOthers
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'roofInsulationOthers',
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <label
+                          htmlFor={`buildingRoofInsulationOthers-${activeBuilding}`}
+                        >
+                          By Others (Roof Insulation)
+                        </label>
+                      </div>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`buildingWallInsulation-${activeBuilding}`}
+                          name={`buildingWallInsulation-${activeBuilding}`}
+                          value={
+                            values.buildings[activeBuilding].wallInsulation
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'wallInsulation',
+                              e.target.value
+                            )
+                          }
+                          options={wallInsulation}
+                          label="Wall Insulation:"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <input
+                          type="checkbox"
+                          id={`buildingWallInsulationOthers-${activeBuilding}`}
+                          name={`buildingWallInsulationOthers-${activeBuilding}`}
+                          checked={
+                            values.buildings[activeBuilding]
+                              .wallInsulationOthers
+                          }
+                          onChange={(e) =>
+                            handleNestedChange(
+                              activeBuilding,
+                              'wallInsulationOthers',
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <label
+                          htmlFor={`buildingWallInsulationOthers-${activeBuilding}`}
+                        >
+                          By Others (Wall Insulation)
+                        </label>
                       </div>
                     </div>
                   </div>

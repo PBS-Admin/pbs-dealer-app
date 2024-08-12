@@ -78,7 +78,7 @@ main {
   background-color: var(--dark-blue);
 }
 
-h1, h4{
+h1, h4, h5{
   color: var(--dark-blue);
   text-align: center;
 }
@@ -208,7 +208,7 @@ p{
   gap: .75em;
   color: var(--black);
   /* white-space: nowrap;   */
-  text-align: right;  
+  text-align: right;    
 }
 
 .cardInput input{  
@@ -237,6 +237,7 @@ p{
   border-radius: .25em;      
   height: 2em;
   font-size: 11px;  
+  max-width: 50vw;
 }
 
 .cardInput label{
@@ -259,6 +260,10 @@ p{
 }
 
 .col{
+  flex-flow: column;
+}
+
+.col3{
   flex-flow: column;
 }
 
