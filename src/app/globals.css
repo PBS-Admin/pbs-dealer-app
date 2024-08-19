@@ -53,29 +53,23 @@ body {
   overflow-x: hidden;
 }
 
-.globalButton{
-  color: var(--background-white);
-  background-color: var(--light-orange);  
-  border-radius: 50%;  
-  width: 50px;
-  height: 50px;
-  padding: 7px;
-  text-align: center;  
-  font-size: 30px;
-  position: absolute;
-  top: 20px;
-  right: 20px;
+/* Global DOM Styles */
+main {
+  display: grid;
+  grid-template-rows: 100px 1fr 100px;
+  grid-template-columns: 1fr;
+  min-height: 100vh;
+  background-color: var(--dark-blue);  
 }
 
-/* Global DOM Styles */
-
-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: var(--dark-blue);
+.pageHeader{
+  grid-row: 1;
+  grid-column: span 2;
+  background-color: var(--background-white);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-content: center;  
+  align-items: center;  
 }
 
 h1, h4, h5{
@@ -94,44 +88,9 @@ p{
 /* !! Global Class Styles */
 
 /* Page Header Styles */
-.page {
-  display: flex;
-  flex-flow: column nowrap;
-  gap: 1.5em;    
-}
-
-.pageHeader{
-  position: absolute;
-  width: 100%;
-  border-radius: 0 0 1em 1em;
-  top: 0;
-  display: flex;
-  background-color: var(--background-white);
-  justify-content: space-between;
-  align-items: center;
-  padding: 1em 2em;
-}
-
-.pageHeaderLeft {
-  flex-grow: 1;
-  flex-basis: 0;
-  font-size: 1em;
-}
-
-.pageHeaderLeft button {
-  background: none;
-  border: none;
-  color: var(--dark-blue);
-  cursor: pointer;  
-}
-
-.pageHeaderRight{
-  display: flex;
-  font-size: 2vw;
-  flex-grow: 1;
-  flex-basis: 0;  
-  overflow-wrap: break-word;    
-  justify-content: flex-end;
+.backBox {
+  justify-self: flex-start;
+  margin-left: 2em;
 }
 
 .avatarBox {
@@ -139,7 +98,9 @@ p{
   flex-flow: column nowrap;
   gap: .25em;  
   justify-content: center;
-  align-items: center;     
+  align-items: center;
+  justify-self: flex-end;
+  margin-right: 2em;
 }
 
 .avatarBox p{
@@ -149,10 +110,7 @@ p{
 .avatar {
   display: flex;
   width: 35px;
-  height: 35px;
-  overflow: hidden;
-  border-radius: 50%;
-  background: radial-gradient(rgb(0, 0, 0, 0.15), rgb(0, 0, 0, 0) 75%);
+  height: 35px;    
   justify-content: center;
   align-items: center;
 }
@@ -163,7 +121,28 @@ p{
 }
 
 /* Global Card Styles */
-.card {  
+.inputForm{
+  display: grid;
+  gap: 1em;
+  margin: 1vw;
+}
+
+.card{
+  display: grid;
+  background-color: var(--background-white);
+  border-radius: 1em;
+  padding: .75em;  
+}
+
+.card header{
+  background-color: var(--dark-blue);
+  width: 100%;
+  border-radius: .5em .5em 0 0;
+  padding: .25em;
+  text-align: center;
+}
+
+/* .card {  
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -188,8 +167,7 @@ p{
   display: flex; 
   flex-wrap: wrap; 
   gap: .5em;
-  padding: 1em;
-  /* outline: 1px solid red; */
+  padding: 1em;  
 }
 
 .cardBox h4{
@@ -206,8 +184,7 @@ p{
 .cardInput{
   display: flex;
   gap: .75em;
-  color: var(--black);
-  /* white-space: nowrap;   */
+  color: var(--black);  
   text-align: right;    
 }
 
@@ -242,7 +219,7 @@ p{
 
 .cardInput label{
   font-size: 11px; 
-}
+} */
 
 .start{
   align-items: flex-start;
@@ -444,5 +421,16 @@ p{
 
   .cardInput label, .cardInput input, .cardInput select{
     font-size: 15px;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  main{
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: 100px 1fr;    
+  }
+
+  .inputForm{
+    margin-right: .5em;
   }
 }

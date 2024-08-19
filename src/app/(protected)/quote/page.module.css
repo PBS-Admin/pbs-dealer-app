@@ -1,21 +1,12 @@
-/* Page Styles */
-.inputBody {
-    margin: 6em 0;
-    display: flex;
-    flex-flow: row nowrap;
-    width: 100%;
-    align-items: center;
-}
-
 /* Navigation Styles */
-.sidebar {  
-    position: fixed;
-    top: 7em;  
+.sidebar {          
     display: flex;
     flex-flow: column nowrap;
     background-color: var(--background-white);
     border-radius: 0 1em 1em 0;
-    padding: 1em 0;
+    padding: 1em 0; 
+    align-self: flex-start;
+    margin-top: 1vw;
 }
 
 .sidebar button {
@@ -92,16 +83,6 @@
     padding: 0.5em;
 }
 
-/* Content Styles */
-.cardContainer {
-    flex-grow: 1;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    overflow: auto;
-}
-
-
 /* END */
 
 
@@ -121,19 +102,6 @@
     display: flex;
     flex-flow: column nowrap;
 }
-
-
-
-
-
-
-/* .textInput {
-    background: none;
-    padding: 0 0 0 1em;
-    border: 1px solid var(--dark-blue);
-    line-height: 2em;
-    border-radius: 5px;
-} */
 
 .buildingContainer {
     display: flex;
@@ -253,12 +221,6 @@
 @media screen and (min-width: 600px) {
     .pageTitle {
         font-size: 2em;
-    }
-}
-
-@media screen and (max-width: 1000px) {
-    .inputBody {
-        flex-flow: column nowrap;
     }
 }
 

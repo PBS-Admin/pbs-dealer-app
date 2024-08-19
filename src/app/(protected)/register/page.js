@@ -4,9 +4,9 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import logo from '../../../../public/images/pbslogo.png';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import styles from './page.module.css';
 
 export default function Register() {
   console.log('Register component rendered');
@@ -38,16 +38,15 @@ export default function Register() {
   };
 
   return (
-    <main>
-      <div></div>
-      <form className="card" onSubmit={handleSubmit}>
+    <main className={styles.registerMain}>
+      <form className={styles.registerCard} onSubmit={handleSubmit}>
         <Link href="/dashboard" className="backButton">
           <FontAwesomeIcon icon={faArrowLeft} />
         </Link>
         <Image alt="PBS Buildings Logo" src={logo} className="image" />
         <h1>Register</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <div className="cardBox col end">
+        <div className={styles.registerInputs}>
           <div className="cardInput">
             <label htmlFor="email">Email:</label>
             <input

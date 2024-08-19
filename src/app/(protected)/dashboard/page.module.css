@@ -1,31 +1,6 @@
-.dashImage {
-    width: 150px;
-    max-width: 180px;
-    min-width: 100px;
-    height: auto;
-}
-
-.cardTitle {
-    font-size: .75em;
-    background-color: var(--dark-blue);
-    color: var(--background-white);
-    width: 100%;
-    text-align: center;
-    padding: .5em .5em;
-    white-space: nowrap;
-}
-
-.buttonCard {
+.dashMain{
     display: flex;
-    flex-flow: column;
-    justify-content: space-between;
+    flex-flow: column nowrap;
     align-items: center;
-    border-radius: 10px;
-    overflow: clip;
-    box-shadow: 0px 5px 5px var(--light-blue);
-    transition: all .3s ease;
-}
-
-.buttonCard:hover{
-    box-shadow: 0px 0px 5px var(--dark-blue);
+    justify-content: center;    
 }

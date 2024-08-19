@@ -24,17 +24,11 @@ export default async function Dashboard() {
       <header className="pageHeader">
         <LogoutButton />
         <h1>Dashboard</h1>
-        <div className="pageHeaderRight">
-          <div className="avatarBox">
-            <div className="avatar">
-              <Image
-                alt="PBS Buildings Logo"
-                src={logo}
-                className={styles.avatar}
-              />
-            </div>
-            <p>{session.user.email}</p>
+        <div className="avatarBox">
+          <div className="avatar">
+            <Image alt="PBS Buildings Logo" src={logo} />
           </div>
+          <p>{session.user.email}</p>
         </div>
       </header>
       <div className="card">

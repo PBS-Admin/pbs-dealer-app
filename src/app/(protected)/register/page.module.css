@@ -1,0 +1,42 @@
+.registerMain{
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;    
+}
+
+.registerCard{
+    background-color: var(--background-white);
+    border-radius: 1em;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    padding: 1em;
+    margin: .5em;
+}
+
+.registerInputs{
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-end;
+    padding: 1em;
+    gap: .5em;
+}
+
+.registerInputs > div{
+    display: flex;
+    align-items: center;
+    gap: .5em;
+}
+
+.registerInputs input{
+    border: none;
+    outline: 1px solid var(--black);
+    line-height: 1.5em;
+    border-radius: .25em;    
+    padding-left: .25em;
+}
+
+.registerInputs input:focus{    
+    outline: 1px solid var(--orange);    
+}

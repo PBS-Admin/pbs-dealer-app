@@ -14,11 +14,9 @@ export default function LogoutButton() {
 
   return (
     <>
-      <div className="pageHeaderLeft">
-        <button onClick={handleLogout} className="iconPrim">
-          <FontAwesomeIcon icon={faDoorOpen} />
-        </button>
-      </div>
+      <button onClick={handleLogout} className="iconPrim">
+        <FontAwesomeIcon icon={faDoorOpen} />
+      </button>
     </>
   );
 }
