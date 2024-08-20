@@ -62,16 +62,6 @@ main {
   background-color: var(--dark-blue);  
 }
 
-.pageHeader{
-  grid-row: 1;
-  grid-column: span 2;
-  background-color: var(--background-white);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  align-content: center;  
-  align-items: center;  
-}
-
 h1, h4, h5{
   color: var(--dark-blue);
   text-align: center;
@@ -88,6 +78,24 @@ p{
 /* !! Global Class Styles */
 
 /* Page Header Styles */
+.pageHeader{
+  grid-row: 1;
+  grid-column: span 2;
+  background-color: var(--background-white);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-content: center;  
+  align-items: center;  
+}
+
+.pageHeader button{
+  border: none;
+  background: none;
+  flex-grow: 0;
+  justify-self: flex-start;
+  margin-left: 2em;
+}
+
 .backBox {
   justify-self: flex-start;
   margin-left: 2em;
@@ -140,6 +148,11 @@ p{
   border-radius: .5em .5em 0 0;
   padding: .25em;
   text-align: center;
+}
+
+.cardGrid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));  
 }
 
 /* .card {  

@@ -315,7 +315,7 @@ export default function ClientQuote({ session }) {
 
   return (
     <main>
-      <PageHeader session={session} />
+      <PageHeader session={session} title="Quote Input" isLogOut={false} />
       {isDesktop && (
         <nav className={styles.sidebar}>
           <button onClick={() => setActiveCard('quote-info')}>
@@ -951,7 +951,7 @@ export default function ClientQuote({ session }) {
               <header>
                 <h3>Building Shape</h3>
               </header>
-              <div className="cardBox col center">
+              <div className="cardGrid">
                 <h4>Building Size</h4>
                 <fieldset className={styles.radioGroup}>
                   {shapes.map(({ id, label }) => (
@@ -974,256 +974,242 @@ export default function ClientQuote({ session }) {
                     </div>
                   ))}
                 </fieldset>
-                <div className="cardInnerBox col end">
-                  <div className="cardInput">
-                    <label htmlFor={`buildingWidth-${activeBuilding}`}>
-                      Width:
-                    </label>
-                    <input
-                      type="text"
-                      id={`buildingWidth-${activeBuilding}`}
-                      name={`buildingWidth-${activeBuilding}`}
-                      value={values.buildings[activeBuilding].width}
-                      onChange={(e) =>
-                        handleNestedChange(
-                          activeBuilding,
-                          'width',
-                          e.target.value
-                        )
-                      }
-                      placeholder="Feet"
-                    />
-                  </div>
-                  <div className="cardInput">
-                    <label htmlFor={`buildingLength-${activeBuilding}`}>
-                      Length:
-                    </label>
-                    <input
-                      type="text"
-                      id={`buildingLength-${activeBuilding}`}
-                      name={`buildingLength-${activeBuilding}`}
-                      value={values.buildings[activeBuilding].length}
-                      onChange={(e) =>
-                        handleNestedChange(
-                          activeBuilding,
-                          'length',
-                          e.target.value
-                        )
-                      }
-                      placeholder="Feet"
-                    />
-                  </div>
-                  {values.buildings[activeBuilding].shape == 'symmetrical' && (
+                {values.buildings[activeBuilding].shape == 'nonSymmetrical' && (
+                  <>
                     <div className="cardInput">
-                      <label htmlFor={`buildingEaveHeight-${activeBuilding}`}>
-                        Eave Height:
+                      <label htmlFor={`buildingPeakOffset-${activeBuilding}`}>
+                        Back Peak Offset:
                       </label>
                       <input
                         type="text"
-                        id={`buildingEaveHeight-${activeBuilding}`}
-                        name={`buildingEaveHeight-${activeBuilding}`}
-                        value={values.buildings[activeBuilding].eaveHeight}
+                        id={`buildingPeakOffset-${activeBuilding}`}
+                        name={`buildingPeakOffset-${activeBuilding}`}
+                        value={values.buildings[activeBuilding].backPeakOffset}
                         onChange={(e) =>
                           handleNestedChange(
                             activeBuilding,
-                            'eaveHeight',
+                            'backPeakOffset',
                             e.target.value
                           )
                         }
                         placeholder="Feet"
                       />
                     </div>
-                  )}
-                  {(values.buildings[activeBuilding].shape == 'singleSlope' ||
-                    values.buildings[activeBuilding].shape == 'leanTo') && (
-                    <>
-                      <div className="cardInput">
-                        <label
-                          htmlFor={`buildingLowEaveHeight-${activeBuilding}`}
-                        >
-                          Low Eave Height:
-                        </label>
-                        <input
-                          type="text"
-                          id={`buildingLowEaveHeight-${activeBuilding}`}
-                          name={`buildingLowEaveHeight-${activeBuilding}`}
-                          value={values.buildings[activeBuilding].lowEaveHeight}
-                          onChange={(e) =>
-                            handleNestedChange(
-                              activeBuilding,
-                              'lowEaveHeight',
-                              e.target.value
-                            )
-                          }
-                          placeholder="Feet"
-                        />
-                      </div>
-                      <div className="cardInput">
-                        <label
-                          htmlFor={`buildingHighEaveHeight-${activeBuilding}`}
-                        >
-                          Low Eave Height:
-                        </label>
-                        <input
-                          type="text"
-                          id={`buildingHighEaveHeight-${activeBuilding}`}
-                          name={`buildingHighEaveHeight-${activeBuilding}`}
-                          value={
-                            values.buildings[activeBuilding].highEaveHeight
-                          }
-                          onChange={(e) =>
-                            handleNestedChange(
-                              activeBuilding,
-                              'highEaveHeight',
-                              e.target.value
-                            )
-                          }
-                          placeholder="Feet"
-                        />
-                      </div>
-                    </>
-                  )}
-                  {values.buildings[activeBuilding].shape !=
-                    'nonSymmetrical' && (
                     <div className="cardInput">
-                      <label htmlFor={`buildingRoofPitch-${activeBuilding}`}>
-                        Roof Pitch:
+                      <label
+                        htmlFor={`buildingBackEaveHeight-${activeBuilding}`}
+                      >
+                        Back Eave Height:
                       </label>
                       <input
                         type="text"
-                        id={`buildingRoofPitch-${activeBuilding}`}
-                        name={`buildingRoofPitch-${activeBuilding}`}
-                        value={values.buildings[activeBuilding].roofPitch}
+                        id={`buildingBackEaveHeight-${activeBuilding}`}
+                        name={`buildingBackEaveHeight-${activeBuilding}`}
+                        value={values.buildings[activeBuilding].backEaveHeight}
                         onChange={(e) =>
                           handleNestedChange(
                             activeBuilding,
-                            'roofPitch',
+                            'backEaveHeight',
                             e.target.value
                           )
                         }
-                        placeholder="x:12"
+                        placeholder="Feet"
                       />
                     </div>
-                  )}
-                  {values.buildings[activeBuilding].shape ==
-                    'nonSymmetrical' && (
-                    <>
-                      <div className="cardInput">
-                        <label htmlFor={`buildingPeakOffset-${activeBuilding}`}>
-                          Back Peak Offset:
-                        </label>
-                        <input
-                          type="text"
-                          id={`buildingPeakOffset-${activeBuilding}`}
-                          name={`buildingPeakOffset-${activeBuilding}`}
-                          value={
-                            values.buildings[activeBuilding].backPeakOffset
-                          }
-                          onChange={(e) =>
-                            handleNestedChange(
-                              activeBuilding,
-                              'backPeakOffset',
-                              e.target.value
-                            )
-                          }
-                          placeholder="Feet"
-                        />
-                      </div>
-                      <div className="cardInput">
-                        <label
-                          htmlFor={`buildingBackEaveHeight-${activeBuilding}`}
-                        >
-                          Back Eave Height:
-                        </label>
-                        <input
-                          type="text"
-                          id={`buildingBackEaveHeight-${activeBuilding}`}
-                          name={`buildingBackEaveHeight-${activeBuilding}`}
-                          value={
-                            values.buildings[activeBuilding].backEaveHeight
-                          }
-                          onChange={(e) =>
-                            handleNestedChange(
-                              activeBuilding,
-                              'backEaveHeight',
-                              e.target.value
-                            )
-                          }
-                          placeholder="Feet"
-                        />
-                      </div>
-                      <div className="cardInput">
-                        <label
-                          htmlFor={`buildingFrontEaveHeight-${activeBuilding}`}
-                        >
-                          Front Eave Height:
-                        </label>
-                        <input
-                          type="text"
-                          id={`buildingFrontEaveHeight-${activeBuilding}`}
-                          name={`buildingFrontEaveHeight-${activeBuilding}`}
-                          value={
-                            values.buildings[activeBuilding].frontEaveHeight
-                          }
-                          onChange={(e) =>
-                            handleNestedChange(
-                              activeBuilding,
-                              'frontEaveHeight',
-                              e.target.value
-                            )
-                          }
-                          placeholder="Feet"
-                        />
-                      </div>
-                      <div className="cardInput">
-                        <label
-                          htmlFor={`buildingBackRoofPitch-${activeBuilding}`}
-                        >
-                          Back Roof Pitch:
-                        </label>
-                        <input
-                          type="text"
-                          id={`buildingBackRoofPitch-${activeBuilding}`}
-                          name={`buildingBackRoofPitch-${activeBuilding}`}
-                          value={values.buildings[activeBuilding].backRoofPitch}
-                          onChange={(e) =>
-                            handleNestedChange(
-                              activeBuilding,
-                              'backRoofPitch',
-                              e.target.value
-                            )
-                          }
-                          placeholder="Feet"
-                        />
-                      </div>
-                      <div className="cardInput">
-                        <label
-                          htmlFor={`buildingFrontRoofPitch-${activeBuilding}`}
-                        >
-                          Front Roof Pitch:
-                        </label>
-                        <input
-                          type="text"
-                          id={`buildingFrontRoofPitch-${activeBuilding}`}
-                          name={`buildingFrontRoofPitch-${activeBuilding}`}
-                          value={
-                            values.buildings[activeBuilding].frontRoofPitch
-                          }
-                          onChange={(e) =>
-                            handleNestedChange(
-                              activeBuilding,
-                              'frontRoofPitch',
-                              e.target.value
-                            )
-                          }
-                          placeholder="Feet"
-                        />
-                      </div>
-                    </>
-                  )}
+                    <div className="cardInput">
+                      <label
+                        htmlFor={`buildingFrontEaveHeight-${activeBuilding}`}
+                      >
+                        Front Eave Height:
+                      </label>
+                      <input
+                        type="text"
+                        id={`buildingFrontEaveHeight-${activeBuilding}`}
+                        name={`buildingFrontEaveHeight-${activeBuilding}`}
+                        value={values.buildings[activeBuilding].frontEaveHeight}
+                        onChange={(e) =>
+                          handleNestedChange(
+                            activeBuilding,
+                            'frontEaveHeight',
+                            e.target.value
+                          )
+                        }
+                        placeholder="Feet"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label
+                        htmlFor={`buildingBackRoofPitch-${activeBuilding}`}
+                      >
+                        Back Roof Pitch:
+                      </label>
+                      <input
+                        type="text"
+                        id={`buildingBackRoofPitch-${activeBuilding}`}
+                        name={`buildingBackRoofPitch-${activeBuilding}`}
+                        value={values.buildings[activeBuilding].backRoofPitch}
+                        onChange={(e) =>
+                          handleNestedChange(
+                            activeBuilding,
+                            'backRoofPitch',
+                            e.target.value
+                          )
+                        }
+                        placeholder="Feet"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label
+                        htmlFor={`buildingFrontRoofPitch-${activeBuilding}`}
+                      >
+                        Front Roof Pitch:
+                      </label>
+                      <input
+                        type="text"
+                        id={`buildingFrontRoofPitch-${activeBuilding}`}
+                        name={`buildingFrontRoofPitch-${activeBuilding}`}
+                        value={values.buildings[activeBuilding].frontRoofPitch}
+                        onChange={(e) =>
+                          handleNestedChange(
+                            activeBuilding,
+                            'frontRoofPitch',
+                            e.target.value
+                          )
+                        }
+                        placeholder="Feet"
+                      />
+                    </div>
+                  </>
+                )}
+                <div className="cardInput">
+                  <label htmlFor={`buildingWidth-${activeBuilding}`}>
+                    Width:
+                  </label>
+                  <input
+                    type="text"
+                    id={`buildingWidth-${activeBuilding}`}
+                    name={`buildingWidth-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].width}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'width',
+                        e.target.value
+                      )
+                    }
+                    placeholder="Feet"
+                  />
                 </div>
+                <div className="cardInput">
+                  <label htmlFor={`buildingLength-${activeBuilding}`}>
+                    Length:
+                  </label>
+                  <input
+                    type="text"
+                    id={`buildingLength-${activeBuilding}`}
+                    name={`buildingLength-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].length}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'length',
+                        e.target.value
+                      )
+                    }
+                    placeholder="Feet"
+                  />
+                </div>
+                {values.buildings[activeBuilding].shape == 'symmetrical' && (
+                  <div className="cardInput">
+                    <label htmlFor={`buildingEaveHeight-${activeBuilding}`}>
+                      Eave Height:
+                    </label>
+                    <input
+                      type="text"
+                      id={`buildingEaveHeight-${activeBuilding}`}
+                      name={`buildingEaveHeight-${activeBuilding}`}
+                      value={values.buildings[activeBuilding].eaveHeight}
+                      onChange={(e) =>
+                        handleNestedChange(
+                          activeBuilding,
+                          'eaveHeight',
+                          e.target.value
+                        )
+                      }
+                      placeholder="Feet"
+                    />
+                  </div>
+                )}
+                {(values.buildings[activeBuilding].shape == 'singleSlope' ||
+                  values.buildings[activeBuilding].shape == 'leanTo') && (
+                  <>
+                    <div className="cardInput">
+                      <label
+                        htmlFor={`buildingLowEaveHeight-${activeBuilding}`}
+                      >
+                        Low Eave Height:
+                      </label>
+                      <input
+                        type="text"
+                        id={`buildingLowEaveHeight-${activeBuilding}`}
+                        name={`buildingLowEaveHeight-${activeBuilding}`}
+                        value={values.buildings[activeBuilding].lowEaveHeight}
+                        onChange={(e) =>
+                          handleNestedChange(
+                            activeBuilding,
+                            'lowEaveHeight',
+                            e.target.value
+                          )
+                        }
+                        placeholder="Feet"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <label
+                        htmlFor={`buildingHighEaveHeight-${activeBuilding}`}
+                      >
+                        Low Eave Height:
+                      </label>
+                      <input
+                        type="text"
+                        id={`buildingHighEaveHeight-${activeBuilding}`}
+                        name={`buildingHighEaveHeight-${activeBuilding}`}
+                        value={values.buildings[activeBuilding].highEaveHeight}
+                        onChange={(e) =>
+                          handleNestedChange(
+                            activeBuilding,
+                            'highEaveHeight',
+                            e.target.value
+                          )
+                        }
+                        placeholder="Feet"
+                      />
+                    </div>
+                  </>
+                )}
+                {values.buildings[activeBuilding].shape != 'nonSymmetrical' && (
+                  <div className="cardInput">
+                    <label htmlFor={`buildingRoofPitch-${activeBuilding}`}>
+                      Roof Pitch:
+                    </label>
+                    <input
+                      type="text"
+                      id={`buildingRoofPitch-${activeBuilding}`}
+                      name={`buildingRoofPitch-${activeBuilding}`}
+                      value={values.buildings[activeBuilding].roofPitch}
+                      onChange={(e) =>
+                        handleNestedChange(
+                          activeBuilding,
+                          'roofPitch',
+                          e.target.value
+                        )
+                      }
+                      placeholder="x:12"
+                    />
+                  </div>
+                )}
               </div>
-              <div className="cardBox col center">
+              <div className="cardBox">
                 <h4>Bay Spacing</h4>
                 <div className="cardInnerBox col end">
                   <div className="cardInput">

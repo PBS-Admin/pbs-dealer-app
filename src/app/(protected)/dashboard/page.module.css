@@ -1,6 +1,36 @@
-.dashMain{
+.dashMain{    
+    display: grid;    
+    grid-template-columns: 1fr;
+    min-height: 100vh;
+    background-color: var(--dark-blue);
+}
+
+.dashCard{
+    background-color: var(--background-white);
+    border-radius: 1em;
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
-    justify-content: center;    
+    align-self: center;
+    justify-self: center;
+    padding: 1em;
+    margin: .5em;    
+    gap: .5em;
+}
+
+.dashCard a{
+    box-shadow: 0 0 5px var(--light-blue);
+    border-radius: .5em;
+    text-decoration: none;
+    text-align: center;
+    transition: all .3s ease;
+}
+
+.dashCard h3{
+    color: var(--dark-blue);
+    margin-top: .5em;
+}
+
+.dashCard a:hover{
+    box-shadow: 0 0 8px var(--dark-blue);
 }

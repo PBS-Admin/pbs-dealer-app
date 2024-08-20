@@ -26,7 +26,7 @@ const PageHeader = ({ session, title, isLogOut }) => {
           <FontAwesomeIcon icon={faHouse} />
         </Link>
       )}
-      <h1>Quote Input</h1>
+      <h1>{title}</h1>
       <div className="avatarBox">
         <div className="avatar">
           <Image alt="PBS Buildings Logo" src={logo} className="avatar" />
