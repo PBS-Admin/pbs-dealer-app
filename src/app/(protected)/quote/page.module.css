@@ -201,9 +201,9 @@
 
 .panelImage{
     align-self: center;
-    height: auto;
-    width: 60vw;
-    max-width: 200px
+    height: auto;    
+    width: 200px;    
+    justify-self: center;
 }
 
 @media screen and (min-width: 350px) {
@@ -222,8 +222,10 @@
     .pageTitle {
         font-size: 2em;
     }
+
+    .panelImage{        
+        width: 250px;            
+    }
 }
-
-
 
   
