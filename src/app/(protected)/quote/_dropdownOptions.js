@@ -8,6 +8,8 @@ import {
   blank,
   pbrRev,
   corrugated,
+  tuffRib,
+  flatSoffit,
 } from '../../../../public/images';
 
 export const shapes = [
@@ -155,6 +157,28 @@ export const wallFinish = [
   { id: 'kynar', label: 'Kynar' },
 ];
 
+export const soffitPanels = [
+  { id: 'tuff', label: 'Tuff Rib', image: tuffRib },
+  { id: 'flat', label: 'Flat Soffit', image: flatSoffit },
+  { id: 'pbr', label: 'PBR', image: pbr },
+  { id: 'pbrDrip', label: 'PBR with Drip Stop', image: pbr },
+  { id: 'pbrRev', label: 'Reverse Rolled PBR', image: pbrRev },
+  { id: 'hr34', label: 'HR-34', image: hr34 },
+  { id: 'none', label: 'None', image: blank },
+];
+
+export const soffitGauge = [
+  { id: '29', label: '29' },
+  { id: '26', label: '26' },
+  { id: '24', label: '24' },
+];
+
+export const soffitFinish = [
+  { id: 'galv', label: 'Galvalume' },
+  { id: 'painted', label: 'Painted' },
+  { id: 'kynar', label: 'Kynar' },
+];
+
 export const roofInsulation = [
   { id: 'none', label: 'None' },
   { id: 'vrr2', label: '2" VRR (R-7)' },
@@ -177,4 +201,16 @@ export const wallInsulation = [
   { id: 'vrr6', label: '6" VRR (R-19)' },
   { id: 'banded25', label: 'Banded Liner System (R-25)' },
   { id: 'banded30', label: 'Banded Liner System (R-30)' },
+];
+
+export const extInsulation = [
+  { id: 'none', label: 'None' },
+  { id: 'extend', label: 'Extend Roof Insulation at Extensions' },
+];
+
+export const canopyWalls = [
+  { id: 'fsw', label: 'Front Sidewall' },
+  { id: 'bsw', label: 'Back Sidewall' },
+  { id: 'lew', label: 'Left Endwall' },
+  { id: 'rew', label: 'Right Endwall' },
 ];

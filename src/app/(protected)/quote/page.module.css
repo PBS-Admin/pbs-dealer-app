@@ -202,7 +202,7 @@
 .panelImage{
     align-self: center;
     height: auto;    
-    width: 200px;    
+    width: 150px;    
     justify-self: center;
 }
 
@@ -224,7 +224,7 @@
     }
 
     .panelImage{        
-        width: 250px;            
+        width: 200px;            
     }
 }
 

@@ -17,7 +17,34 @@ function useFormState(initialState) {
     }));
   };
 
-  return { values, handleChange, handleNestedChange, setValues };
+  const handleDeeplyNestedChange = (
+    buildingIndex,
+    canopyIndex,
+    field,
+    value
+  ) => {
+    setValues((prev) => ({
+      ...prev,
+      buildings: prev.buildings.map((building, bIndex) =>
+        bIndex === buildingIndex
+          ? {
+              ...building,
+              canopies: building.canopies.map((canopy, cIndex) =>
+                cIndex === canopyIndex ? { ...canopy, [field]: value } : canopy
+              ),
+            }
+          : building
+      ),
+    }));
+  };
+
+  return {
+    values,
+    handleChange,
+    handleNestedChange,
+    handleDeeplyNestedChange,
+    setValues,
+  };
 }
 
 export default useFormState;

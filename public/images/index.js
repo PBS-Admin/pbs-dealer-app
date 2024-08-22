@@ -8,6 +8,8 @@ import hr34 from './HR-34.png';
 import blank from './Blank.png';
 import pbrRev from './Rev-PBR.png';
 import corrugated from './Corrugated.png';
+import tuffRib from './Tuff-Rib.png';
+import flatSoffit from './LSFP.png';
 
 export {
   logo,
@@ -20,4 +22,6 @@ export {
   blank,
   pbrRev,
   corrugated,
+  tuffRib,
+  flatSoffit,
 };
