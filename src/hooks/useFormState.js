@@ -17,12 +17,7 @@ function useFormState(initialState) {
     }));
   };
 
-  const handleDeeplyNestedChange = (
-    buildingIndex,
-    canopyIndex,
-    field,
-    value
-  ) => {
+  const handleCanopyChange = (buildingIndex, canopyIndex, field, value) => {
     setValues((prev) => ({
       ...prev,
       buildings: prev.buildings.map((building, bIndex) =>
@@ -38,11 +33,35 @@ function useFormState(initialState) {
     }));
   };
 
+  const handlePartitionChange = (
+    buildingIndex,
+    partitionIndex,
+    field,
+    value
+  ) => {
+    setValues((prev) => ({
+      ...prev,
+      buildings: prev.buildings.map((building, bIndex) =>
+        bIndex === buildingIndex
+          ? {
+              ...building,
+              partitions: building.partitions.map((partition, pIndex) =>
+                pIndex === partitionIndex
+                  ? { ...partition, [field]: value }
+                  : partition
+              ),
+            }
+          : building
+      ),
+    }));
+  };
+
   return {
     values,
     handleChange,
     handleNestedChange,
-    handleDeeplyNestedChange,
+    handleCanopyChange,
+    handlePartitionChange,
     setValues,
   };
 }

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './page.module.css';
@@ -43,6 +43,7 @@ import {
   wallInsulation,
   extInsulation,
   canopyWalls,
+  orientations,
 } from './_dropdownOptions';
 import PageHeader from '@/components/PageHeader';
 
@@ -51,7 +52,8 @@ export default function ClientQuote({ session }) {
     values,
     handleChange,
     handleNestedChange,
-    handleDeeplyNestedChange,
+    handleCanopyChange,
+    handlePartitionChange,
     setValues,
   } = useFormState(initialState);
   const [activeCard, setActiveCard] = useState('quote-info');
@@ -60,16 +62,23 @@ export default function ClientQuote({ session }) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [buildingToDelete, setBuildingToDelete] = useState(null);
   const [activeCanopy, setActiveCanopy] = useState(0);
+  const [activePartition, setActivePartition] = useState(0);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [sourceBuildingIndex, setSourceBuildingIndex] = useState(0);
 
   // Adjust index to change initial starting page, helpful to work on page on save
-  const [currentIndex, setCurrentIndex] = useState(4);
+  const [currentIndex, setCurrentIndex] = useState(5);
   const navItems = [
-    { id: 'quote-info', label: 'Project Information' },
+    {
+      id: 'quote-info',
+      label: 'Project Information',
+    },
     { id: 'design-code', label: 'Design Codes' },
-    { id: 'building-project', label: 'Building Project' },
+    {
+      id: 'building-project',
+      label: 'Building Project',
+    },
     {
       id: 'bldg-layout',
       label: 'Building ' + (activeBuilding + 1) + ' - Layout',
@@ -95,7 +104,10 @@ export default function ClientQuote({ session }) {
       label: 'Building ' + (activeBuilding + 1) + ' - Openings',
     },
     { id: 'accessories', label: 'Accessories' },
-    { id: 'finalize-quote', label: 'Finalize Quote' },
+    {
+      id: 'finalize-quote',
+      label: 'Finalize Quote',
+    },
   ];
 
   // Carousel Nav handlers
@@ -210,6 +222,7 @@ export default function ClientQuote({ session }) {
           soffitPanelGauge: '',
           soffitPanelFinish: '',
           canopies: [],
+          partitions: [],
         },
       ],
     }));
@@ -246,6 +259,37 @@ export default function ClientQuote({ session }) {
     }));
   };
 
+  const addPartition = (buildingIndex) => {
+    setValues((prev) => ({
+      ...prev,
+      buildings: prev.buildings.map((building, index) =>
+        index === buildingIndex
+          ? {
+              ...building,
+              partitions: [
+                ...building.partitions,
+                {
+                  orientation: 't',
+                  start: '',
+                  end: '',
+                  offset: '',
+                  height: '',
+                  baySpacing: '',
+                  insulation: 'vrr4',
+                  leftPanelType: 'pbr',
+                  leftPanelGauge: '',
+                  leftPanelFinish: '',
+                  rightPanelType: 'pbr',
+                  rightPanelGauge: '',
+                  rightPanelFinish: '',
+                },
+              ],
+            }
+          : building
+      ),
+    }));
+  };
+
   const removeBuilding = (indexToRemove) => {
     setValues((prev) => ({
       ...prev,
@@ -262,9 +306,8 @@ export default function ClientQuote({ session }) {
   };
 
   const removeCanopy = (buildingIndex, canopyIndex) => {
-    setValues((prev) => ({
-      ...prev,
-      buildings: prev.buildings.map((building, bIndex) =>
+    setValues((prev) => {
+      const newBuildings = prev.buildings.map((building, bIndex) =>
         bIndex === buildingIndex
           ? {
               ...building,
@@ -273,8 +316,41 @@ export default function ClientQuote({ session }) {
               ),
             }
           : building
-      ),
-    }));
+      );
+
+      // Update activeCanopy if necessary
+      const remainingCanopies = newBuildings[buildingIndex].canopies.length;
+      if (canopyIndex <= activeCanopy && activeCanopy > 0) {
+        setActiveCanopy(Math.min(activeCanopy - 1, remainingCanopies - 1));
+      }
+
+      return { ...prev, buildings: newBuildings };
+    });
+  };
+
+  const removePartition = (buildingIndex, partitionIndex) => {
+    setValues((prev) => {
+      const newBuildings = prev.buildings.map((building, bIndex) =>
+        bIndex === buildingIndex
+          ? {
+              ...building,
+              partitions: building.partitions.filter(
+                (_, pIndex) => pIndex !== partitionIndex
+              ),
+            }
+          : building
+      );
+
+      // Update activePartition if necessary
+      const remainingPartitions = newBuildings[buildingIndex].partitions.length;
+      if (partitionIndex <= activePartition && activePartition > 0) {
+        setActivePartition(
+          Math.min(activePartition - 1, remainingPartitions - 1)
+        );
+      }
+
+      return { ...prev, buildings: newBuildings };
+    });
   };
 
   const openCopyDialog = (index) => {
@@ -296,21 +372,28 @@ export default function ClientQuote({ session }) {
     setValues((prev) => {
       const newBuildings = [...prev.buildings];
       const sourceBuilding = newBuildings[sourceBuildingIndex];
-      const buildingToCopy = {
-        width: sourceBuilding.width,
-        length: sourceBuilding.length,
-        offsetX: sourceBuilding.offsetX,
-        offsetY: sourceBuilding.offsetY,
-        rotation: sourceBuilding.rotation,
-        commonWall: sourceBuilding.commonWall,
-      };
+
+      // Create a deep copy of the source building
+      const buildingToCopy = JSON.parse(JSON.stringify(sourceBuilding));
+
+      // Reset certain properties that should not be copied
+      buildingToCopy.offsetX = '';
+      buildingToCopy.offsetY = '';
+      buildingToCopy.rotation = '';
+      buildingToCopy.commonWall = '';
 
       if (targetIndex === 'new') {
         newBuildings.push(buildingToCopy);
       } else {
+        // Merge the copied building with the existing one at the target index
         newBuildings[targetIndex] = {
           ...newBuildings[targetIndex],
           ...buildingToCopy,
+          // Preserve the original offsets and rotation for existing buildings
+          offsetX: newBuildings[targetIndex].offsetX,
+          offsetY: newBuildings[targetIndex].offsetY,
+          rotation: newBuildings[targetIndex].rotation,
+          commonWall: newBuildings[targetIndex].commonWall,
         };
       }
 
@@ -379,6 +462,20 @@ export default function ClientQuote({ session }) {
     (panel) =>
       panel.id ===
       values.buildings[activeBuilding].canopies[activeCanopy]?.soffitPanelType
+  );
+
+  const selectedPartitionLeftPanel = wallPanels.find(
+    (panel) =>
+      panel.id ===
+      values.buildings[activeBuilding].partitions[activePartition]
+        ?.leftPanelType
+  );
+
+  const selectedPartitionRightPanel = wallPanels.find(
+    (panel) =>
+      panel.id ===
+      values.buildings[activeBuilding].partitions[activePartition]
+        ?.rightPanelType
   );
 
   // Checking for screen width to conditionally render DOM elements
@@ -1042,7 +1139,7 @@ export default function ClientQuote({ session }) {
               </header>
               <h4>Building Size</h4>
 
-              <div class="radioGrid">
+              <div className="radioGrid">
                 <fieldset className={`radio ${styles.radioGroup}`}>
                   {shapes.map(({ id, label }) => (
                     <div key={id}>
@@ -1462,7 +1559,7 @@ export default function ClientQuote({ session }) {
 
               <h4>Endwall Frames</h4>
               <div className="frameGrid">
-                <div class="cardInput">
+                <div className="cardInput">
                   <ReusableSelect
                     id={`buildinglewFrame-${activeBuilding}`}
                     name={`buildinglewFrame-${activeBuilding}`}
@@ -1524,7 +1621,7 @@ export default function ClientQuote({ session }) {
                   />
                 </div>
                 <div className="tabHide divider"></div>
-                <div class="cardInput">
+                <div className="cardInput">
                   <ReusableSelect
                     id={`buildingrewFrame-${activeBuilding}`}
                     name={`buildingrewFrame-${activeBuilding}`}
@@ -1816,7 +1913,7 @@ export default function ClientQuote({ session }) {
                     placeholder="Separate Bays with Space"
                   />
                 </div>
-                <div class="cardInput">
+                <div className="cardInput">
                   <h5>Break Points to Match</h5>
                   <fieldset className={`column ${styles.radioGroup}`}>
                     {breakPoints.map(({ id, label }) => (
@@ -2047,7 +2144,7 @@ export default function ClientQuote({ session }) {
                 <h3>Sheeting & Insulation</h3>
               </header>
 
-              <div class="extendGrid">
+              <div className="extendGrid">
                 <div className="extGrid">
                   <div className="cardInput">
                     <ReusableSelect
@@ -2450,7 +2547,7 @@ export default function ClientQuote({ session }) {
               </div>
               <div className="divider"></div>
 
-              <div class="extendGrid">
+              <div className="extendGrid">
                 <div className="extGrid start">
                   <div className="cardInput">
                     <ReusableSelect
@@ -2545,18 +2642,19 @@ export default function ClientQuote({ session }) {
               <header>
                 <h3>Canopies</h3>
               </header>
-              {/* todo: add canopie add function and table */}
               <div className="tableGrid">
                 {values.buildings[activeBuilding].canopies.map(
                   (canopy, canopyIndex) => (
-                    <>
+                    <Fragment
+                      key={`building-${activeBuilding}-canopy-${canopyIndex}`}
+                    >
                       <div className="cardInput">
                         <ReusableSelect
                           id={`building-${activeBuilding}-canopyWall-${canopyIndex}`}
                           name={`building-${activeBuilding}-canopyWall-${canopyIndex}`}
                           value={canopy.wall}
                           onChange={(e) =>
-                            handleDeeplyNestedChange(
+                            handleCanopyChange(
                               activeBuilding,
                               canopyIndex,
                               'wall',
@@ -2579,9 +2677,9 @@ export default function ClientQuote({ session }) {
                           type="text"
                           id={`building-${activeBuilding}-canopyWidth-${canopyIndex}`}
                           name={`building-${activeBuilding}-canopyWidth-${canopyIndex}`}
-                          value={canopy.widths}
+                          value={canopy.width}
                           onChange={(e) =>
-                            handleDeeplyNestedChange(
+                            handleCanopyChange(
                               activeBuilding,
                               canopyIndex,
                               'width',
@@ -2606,7 +2704,7 @@ export default function ClientQuote({ session }) {
                           name={`building-${activeBuilding}-canopySlope-${canopyIndex}`}
                           value={canopy.slope}
                           onChange={(e) =>
-                            handleDeeplyNestedChange(
+                            handleCanopyChange(
                               activeBuilding,
                               canopyIndex,
                               'slope',
@@ -2631,7 +2729,7 @@ export default function ClientQuote({ session }) {
                           name={`building-${activeBuilding}-canopyStartBay-${canopyIndex}`}
                           value={canopy.startBay}
                           onChange={(e) =>
-                            handleDeeplyNestedChange(
+                            handleCanopyChange(
                               activeBuilding,
                               canopyIndex,
                               'startBay',
@@ -2656,7 +2754,7 @@ export default function ClientQuote({ session }) {
                           name={`building-${activeBuilding}-canopyEndBay-${canopyIndex}`}
                           value={canopy.endBay}
                           onChange={(e) =>
-                            handleDeeplyNestedChange(
+                            handleCanopyChange(
                               activeBuilding,
                               canopyIndex,
                               'endBay',
@@ -2681,7 +2779,7 @@ export default function ClientQuote({ session }) {
                           name={`building-${activeBuilding}-canopyElevation-${canopyIndex}`}
                           value={canopy.elevation}
                           onChange={(e) =>
-                            handleDeeplyNestedChange(
+                            handleCanopyChange(
                               activeBuilding,
                               canopyIndex,
                               'elevation',
@@ -2703,7 +2801,7 @@ export default function ClientQuote({ session }) {
                           name={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
                           checked={canopy.addColumns}
                           onChange={(e) =>
-                            handleDeeplyNestedChange(
+                            handleCanopyChange(
                               activeBuilding,
                               canopyIndex,
                               'addColumns',
@@ -2736,7 +2834,7 @@ export default function ClientQuote({ session }) {
                           <div className="divider span2"></div>
                         </>
                       )}
-                    </>
+                    </Fragment>
                   )
                 )}
                 <button
@@ -2749,7 +2847,7 @@ export default function ClientQuote({ session }) {
 
               <div className="divider"></div>
               {values.buildings[activeBuilding].canopies.length > 0 && (
-                <div class="extendGrid">
+                <div className="extendGrid">
                   <div className="extGrid start">
                     <div className="cardInput">
                       <ReusableSelect
@@ -2761,7 +2859,7 @@ export default function ClientQuote({ session }) {
                           ].roofPanelType
                         }
                         onChange={(e) =>
-                          handleDeeplyNestedChange(
+                          handleCanopyChange(
                             activeBuilding,
                             activeCanopy,
                             'roofPanelType',
@@ -2782,7 +2880,7 @@ export default function ClientQuote({ session }) {
                           ].roofPanelGauge
                         }
                         onChange={(e) =>
-                          handleDeeplyNestedChange(
+                          handleCanopyChange(
                             activeBuilding,
                             activeCanopy,
                             'roofPanelGauge',
@@ -2803,7 +2901,7 @@ export default function ClientQuote({ session }) {
                           ].roofPanelFinish
                         }
                         onChange={(e) =>
-                          handleDeeplyNestedChange(
+                          handleCanopyChange(
                             activeBuilding,
                             activeCanopy,
                             'roofPanelFinish',
@@ -2834,7 +2932,7 @@ export default function ClientQuote({ session }) {
                           ].soffitPanelType
                         }
                         onChange={(e) =>
-                          handleDeeplyNestedChange(
+                          handleCanopyChange(
                             activeBuilding,
                             activeCanopy,
                             'soffitPanelType',
@@ -2855,7 +2953,7 @@ export default function ClientQuote({ session }) {
                           ].soffitPanelGauge
                         }
                         onChange={(e) =>
-                          handleDeeplyNestedChange(
+                          handleCanopyChange(
                             activeBuilding,
                             activeCanopy,
                             'soffitPanelGauge',
@@ -2876,7 +2974,7 @@ export default function ClientQuote({ session }) {
                           ].soffitPanelFinish
                         }
                         onChange={(e) =>
-                          handleDeeplyNestedChange(
+                          handleCanopyChange(
                             activeBuilding,
                             activeCanopy,
                             'soffitPanelFinish',
@@ -2918,7 +3016,364 @@ export default function ClientQuote({ session }) {
             </section>
           </>
         )}
-        {activeCard == 'bldg-partitions' && <section></section>}
+        {activeCard == 'bldg-partitions' && (
+          <>
+            <section className="card start">
+              <header>
+                <h3>Partition Walls</h3>
+              </header>
+              <div className="tableGrid">
+                {values.buildings[activeBuilding].partitions.map(
+                  (partition, partitionIndex) => (
+                    <Fragment
+                      key={`building-${activeBuilding}-partition-${partitionIndex}`}
+                    >
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`building-${activeBuilding}-partitionWall-${partitionIndex}`}
+                          name={`building-${activeBuilding}-partitionWall-${partitionIndex}`}
+                          value={partition.orientation}
+                          onChange={(e) =>
+                            handlePartitionChange(
+                              activeBuilding,
+                              partitionIndex,
+                              'orientation',
+                              e.target.value
+                            )
+                          }
+                          onFocus={() => {
+                            if (activePartition !== partitionIndex) {
+                              setActivePartition(partitionIndex);
+                            }
+                          }}
+                          options={orientations}
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label
+                          htmlFor={`building-${activeBuilding}-partitionStart-${partitionIndex}`}
+                        ></label>
+                        <input
+                          type="text"
+                          id={`building-${activeBuilding}-partitionStart-${partitionIndex}`}
+                          name={`building-${activeBuilding}-partitionStart-${partitionIndex}`}
+                          value={partition.start}
+                          onChange={(e) =>
+                            handlePartitionChange(
+                              activeBuilding,
+                              partitionIndex,
+                              'start',
+                              e.target.value
+                            )
+                          }
+                          onFocus={() => {
+                            if (activePartition !== partitionIndex) {
+                              setActivePartition(partitionIndex);
+                            }
+                          }}
+                          placeholder="Feet"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label
+                          htmlFor={`building-${activeBuilding}-partitionEnd-${partitionIndex}`}
+                        ></label>
+                        <input
+                          type="text"
+                          id={`building-${activeBuilding}-partitionEnd-${partitionIndex}`}
+                          name={`building-${activeBuilding}-partitionEnd-${partitionIndex}`}
+                          value={partition.end}
+                          onChange={(e) =>
+                            handlePartitionChange(
+                              activeBuilding,
+                              partitionIndex,
+                              'end',
+                              e.target.value
+                            )
+                          }
+                          onFocus={() => {
+                            if (activePartition !== partitionIndex) {
+                              setActivePartition(partitionIndex);
+                            }
+                          }}
+                          placeholder="Feet"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label
+                          htmlFor={`building-${activeBuilding}-partitionOffset-${partitionIndex}`}
+                        ></label>
+                        <input
+                          type="text"
+                          id={`building-${activeBuilding}-partitionOffset-${partitionIndex}`}
+                          name={`building-${activeBuilding}-partitionOffset-${partitionIndex}`}
+                          value={partition.offset}
+                          onChange={(e) =>
+                            handlePartitionChange(
+                              activeBuilding,
+                              partitionIndex,
+                              'offset',
+                              e.target.value
+                            )
+                          }
+                          onFocus={() => {
+                            if (activePartition !== partitionIndex) {
+                              setActivePartition(partitionIndex);
+                            }
+                          }}
+                          placeholder="Feet"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label
+                          htmlFor={`building-${activeBuilding}-partitionHeight-${partitionIndex}`}
+                        ></label>
+                        <input
+                          type="text"
+                          id={`building-${activeBuilding}-partitionHeight-${partitionIndex}`}
+                          name={`building-${activeBuilding}-partitionHeight-${partitionIndex}`}
+                          value={partition.height}
+                          onChange={(e) =>
+                            handlePartitionChange(
+                              activeBuilding,
+                              partitionIndex,
+                              'height',
+                              e.target.value
+                            )
+                          }
+                          onFocus={() => {
+                            if (activePartition !== partitionIndex) {
+                              setActivePartition(partitionIndex);
+                            }
+                          }}
+                          placeholder="Bay #"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label
+                          htmlFor={`building-${activeBuilding}-partitionBaySpacing-${partitionIndex}`}
+                        ></label>
+                        <input
+                          type="text"
+                          id={`building-${activeBuilding}-partitionBaySpacing-${partitionIndex}`}
+                          name={`building-${activeBuilding}-partitionBaySpacing-${partitionIndex}`}
+                          value={partition.baySpacing}
+                          onChange={(e) =>
+                            handlePartitionChange(
+                              activeBuilding,
+                              partitionIndex,
+                              'baySpacing',
+                              e.target.value
+                            )
+                          }
+                          onFocus={() => {
+                            if (activePartition !== partitionIndex) {
+                              setActivePartition(partitionIndex);
+                            }
+                          }}
+                          placeholder="Separate Bays with Space"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`building-${activeBuilding}-partitionInsulation-${partitionIndex}`}
+                          name={`building-${activeBuilding}-partitionInsulation-${partitionIndex}`}
+                          value={partition.insulation}
+                          onChange={(e) =>
+                            handlePartitionChange(
+                              activeBuilding,
+                              partitionIndex,
+                              'insulation',
+                              e.target.value
+                            )
+                          }
+                          onFocus={() => {
+                            if (activePartition !== partitionIndex) {
+                              setActivePartition(partitionIndex);
+                            }
+                          }}
+                          options={wallInsulation}
+                        />
+                      </div>
+                      <button
+                        onClick={() =>
+                          removePartition(activeBuilding, partitionIndex)
+                        }
+                        className="iconReject"
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                      {!isDesktop && (
+                        <>
+                          <div></div>
+                          <div className="divider span2"></div>
+                        </>
+                      )}
+                    </Fragment>
+                  )
+                )}
+                <button
+                  className="button success w5"
+                  onClick={() => addPartition(activeBuilding)}
+                >
+                  Add
+                </button>
+              </div>
+
+              <div className="divider"></div>
+              {values.buildings[activeBuilding].partitions.length > 0 && (
+                <div className="extendGrid">
+                  <div className="extGrid start">
+                    <div className="cardInput">
+                      <ReusableSelect
+                        id={`building-${activeBuilding}-partitionLeftPanels${activePartition}`}
+                        name={`building-${activeBuilding}-partitionLeftPanels${activePartition}`}
+                        value={
+                          values.buildings[activeBuilding].partitions[
+                            activePartition
+                          ].leftPanelType
+                        }
+                        onChange={(e) =>
+                          handlePartitionChange(
+                            activeBuilding,
+                            activePartition,
+                            'leftPanelType',
+                            e.target.value
+                          )
+                        }
+                        options={wallPanels}
+                        label="Left Panels:"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <ReusableSelect
+                        id={`building-${activeBuilding}-partitionLeftGauge${activePartition}`}
+                        name={`building-${activeBuilding}-partitionLeftGauge${activePartition}`}
+                        value={
+                          values.buildings[activeBuilding].partitions[
+                            activePartition
+                          ].leftPanelGauge
+                        }
+                        onChange={(e) =>
+                          handlePartitionChange(
+                            activeBuilding,
+                            activePartition,
+                            'leftPanelGauge',
+                            e.target.value
+                          )
+                        }
+                        options={wallGauge}
+                        label="Gauge:"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <ReusableSelect
+                        id={`building-${activeBuilding}-partitionLeftFinish${activePartition}`}
+                        name={`building-${activeBuilding}-partitionLeftFinish${activePartition}`}
+                        value={
+                          values.buildings[activeBuilding].partitions[
+                            activePartition
+                          ].leftPanelFinish
+                        }
+                        onChange={(e) =>
+                          handlePartitionChange(
+                            activeBuilding,
+                            activePartition,
+                            'leftPanelFinish',
+                            e.target.value
+                          )
+                        }
+                        options={wallFinish}
+                        label="Finish:"
+                      />
+                    </div>
+                    {selectedPartitionLeftPanel &&
+                      selectedPartitionLeftPanel.image && (
+                        <Image
+                          alt={`${selectedPartitionLeftPanel.label}`}
+                          src={selectedPartitionLeftPanel.image}
+                          className={styles.panelImage}
+                        />
+                      )}
+                  </div>
+                  <div className="extGrid start">
+                    <div className="cardInput">
+                      <ReusableSelect
+                        id={`building-${activeBuilding}-partitionRightPanels${activePartition}`}
+                        name={`building-${activeBuilding}-partitionRightPanels${activePartition}`}
+                        value={
+                          values.buildings[activeBuilding].partitions[
+                            activePartition
+                          ].rightPanelType
+                        }
+                        onChange={(e) =>
+                          handlePartitionChange(
+                            activeBuilding,
+                            activePartition,
+                            'rightPanelType',
+                            e.target.value
+                          )
+                        }
+                        options={wallPanels}
+                        label="Right Panels:"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <ReusableSelect
+                        id={`building-${activeBuilding}-partitionRightGauge${activePartition}`}
+                        name={`building-${activeBuilding}-partitionRightGauge${activePartition}`}
+                        value={
+                          values.buildings[activeBuilding].partitions[
+                            activePartition
+                          ].rightPanelGauge
+                        }
+                        onChange={(e) =>
+                          handlePartitionChange(
+                            activeBuilding,
+                            activePartition,
+                            'rightPanelGauge',
+                            e.target.value
+                          )
+                        }
+                        options={wallGauge}
+                        label="Gauge:"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <ReusableSelect
+                        id={`building-${activeBuilding}-partitionRightFinish${activePartition}`}
+                        name={`building-${activeBuilding}-partitionRightFinish${activePartition}`}
+                        value={
+                          values.buildings[activeBuilding].partitions[
+                            activePartition
+                          ].rightPanelFinish
+                        }
+                        onChange={(e) =>
+                          handlePartitionChange(
+                            activeBuilding,
+                            activePartition,
+                            'rightPanelFinish',
+                            e.target.value
+                          )
+                        }
+                        options={wallFinish}
+                        label="Finish:"
+                      />
+                    </div>
+                    {selectedPartitionRightPanel &&
+                      selectedPartitionRightPanel.image && (
+                        <Image
+                          alt={`${selectedPartitionRightPanel.label}`}
+                          src={selectedPartitionRightPanel.image}
+                          className={styles.panelImage}
+                        />
+                      )}
+                  </div>
+                </div>
+              )}
+            </section>
+          </>
+        )}
         {activeCard == 'bldg-options' && <section></section>}
         {activeCard == 'bldg-cranes' && <section></section>}
         {activeCard == 'bldg-openings' && <section></section>}

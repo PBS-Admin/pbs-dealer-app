@@ -214,3 +214,8 @@ export const canopyWalls = [
   { id: 'lew', label: 'Left Endwall' },
   { id: 'rew', label: 'Right Endwall' },
 ];
+
+export const orientations = [
+  { id: 't', label: 'Transverse' },
+  { id: 'l', label: 'Longitudinal' },
+];

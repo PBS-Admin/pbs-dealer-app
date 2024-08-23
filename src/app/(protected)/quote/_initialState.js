@@ -118,6 +118,7 @@ export const initialState = {
       soffitPanelGauge: '',
       soffitPanelFinish: '',
       canopies: [],
+      partitions: [],
     },
   ],
 };
