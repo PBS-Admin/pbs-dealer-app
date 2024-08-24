@@ -5,17 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.2] - 2024-08-24
+
+###### Goal of change is to start work on Building Sketch and finish adding input fields and layout
+
+### Added
+
+### Changed
+
+### Fixed
+
 ## [0.1.1] - 2024-08-07
 
 ###### Goal of change is to finish the building-layout page and correct global styles application-wide
 
 ### Added
 
+- Added Building Sketch and ReusableSelect components
+
+- Added Deeply nested object handlers to handle state of canopies, partitions, and options
+
 ### Changed
 
 - Changed the location of the repository to a pbsAdmin shared github account
 
+- Changed layout structure to Grids over Flexboxes
+
 ### Fixed
+
+- Fixed responsive layout on building pages
+
+- Fixed remove functions for nested and deeply nested objects
 
 ## [0.1.0] - 2024-08-07
 
