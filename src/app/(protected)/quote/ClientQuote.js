@@ -3671,7 +3671,9 @@ export default function ClientQuote({ session }) {
             <button type="submit">Submit Quote</button>
           </section>
         )}
-        <BuildingSketch buildingData={values} />
+        <section className="card start">
+          <BuildingSketch buildingData={values.buildings[activeBuilding]} />
+        </section>
       </form>
       {!isDesktop && (
         <nav className={styles.carouselNav}>
