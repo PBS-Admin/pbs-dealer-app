@@ -18,6 +18,7 @@ import { initialState } from './_initialState';
 import CopyBuildingDialog from '../../../components/CopyBuildingDialog';
 import DeleteDialog from '../../../components/DeleteDialog';
 import ReusableSelect from '../../../components/ReusableSelect';
+import BuildingSketch from '../../../components/BuildingSketch';
 import { logo } from '../../../../public/images';
 import {
   shapes,
@@ -42,8 +43,8 @@ import {
   roofInsulation,
   wallInsulation,
   extInsulation,
-  canopyWalls,
   orientations,
+  walls,
 } from './_dropdownOptions';
 import PageHeader from '@/components/PageHeader';
 
@@ -54,6 +55,7 @@ export default function ClientQuote({ session }) {
     handleNestedChange,
     handleCanopyChange,
     handlePartitionChange,
+    handleLinerPanelChange,
     setValues,
   } = useFormState(initialState);
   const [activeCard, setActiveCard] = useState('quote-info');
@@ -63,6 +65,7 @@ export default function ClientQuote({ session }) {
   const [buildingToDelete, setBuildingToDelete] = useState(null);
   const [activeCanopy, setActiveCanopy] = useState(0);
   const [activePartition, setActivePartition] = useState(0);
+  const [activeLinerPanel, setActiveLinerPanel] = useState(0);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [sourceBuildingIndex, setSourceBuildingIndex] = useState(0);
@@ -223,6 +226,7 @@ export default function ClientQuote({ session }) {
           soffitPanelFinish: '',
           canopies: [],
           partitions: [],
+          linerPanels: [],
         },
       ],
     }));
@@ -290,6 +294,31 @@ export default function ClientQuote({ session }) {
     }));
   };
 
+  const addLinerPanel = (buildingIndex) => {
+    setValues((prev) => ({
+      ...prev,
+      buildings: prev.buildings.map((building, index) =>
+        index === buildingIndex
+          ? {
+              ...building,
+              linerPanels: [
+                ...building.linerPanels,
+                {
+                  wall: 'frontSidewall',
+                  start: '',
+                  end: '',
+                  height: '',
+                  panelType: 'pbr',
+                  panelGauge: '',
+                  panelFinish: '',
+                },
+              ],
+            }
+          : building
+      ),
+    }));
+  };
+
   const removeBuilding = (indexToRemove) => {
     setValues((prev) => ({
       ...prev,
@@ -346,6 +375,32 @@ export default function ClientQuote({ session }) {
       if (partitionIndex <= activePartition && activePartition > 0) {
         setActivePartition(
           Math.min(activePartition - 1, remainingPartitions - 1)
+        );
+      }
+
+      return { ...prev, buildings: newBuildings };
+    });
+  };
+
+  const removeLinerPanel = (buildingIndex, linerPanelIndex) => {
+    setValues((prev) => {
+      const newBuildings = prev.buildings.map((building, bIndex) =>
+        bIndex === buildingIndex
+          ? {
+              ...building,
+              linerPanels: building.linerPanels.filter(
+                (_, lpIndex) => lpIndex !== linerPanelIndex
+              ),
+            }
+          : building
+      );
+
+      // Update activePartition if necessary
+      const remainingLinerPanels =
+        newBuildings[buildingIndex].linerPanels.length;
+      if (linerPanelIndex <= activeLinerPanel && activeLinerPanel > 0) {
+        setActiveLinerPanel(
+          Math.min(activeLinerPanel - 1, remainingLinerPanels - 1)
         );
       }
 
@@ -476,6 +531,12 @@ export default function ClientQuote({ session }) {
       panel.id ===
       values.buildings[activeBuilding].partitions[activePartition]
         ?.rightPanelType
+  );
+
+  const selectedLinerPanel = wallPanels.find(
+    (panel) =>
+      panel.id ===
+      values.buildings[activeBuilding].linerPanels[activeLinerPanel]?.panelType
   );
 
   // Checking for screen width to conditionally render DOM elements
@@ -2367,6 +2428,7 @@ export default function ClientQuote({ session }) {
             </section>
           </>
         )}
+        {/* Building Extensions Page */}
         {activeCard == 'bldg-extensions' && (
           <>
             <section className="card">
@@ -2666,7 +2728,7 @@ export default function ClientQuote({ session }) {
                               setActiveCanopy(canopyIndex);
                             }
                           }}
-                          options={canopyWalls}
+                          options={walls}
                         />
                       </div>
                       <div className="cardInput">
@@ -3016,6 +3078,7 @@ export default function ClientQuote({ session }) {
             </section>
           </>
         )}
+        {/* Building Partitions Page */}
         {activeCard == 'bldg-partitions' && (
           <>
             <section className="card start">
@@ -3374,7 +3437,232 @@ export default function ClientQuote({ session }) {
             </section>
           </>
         )}
-        {activeCard == 'bldg-options' && <section></section>}
+        {/* Building Options Page */}
+        {activeCard == 'bldg-options' && (
+          <>
+            <section className="card start">
+              <header>
+                <h3>Liner Panels</h3>
+              </header>
+              <div className="linerGrid">
+                {values.buildings[activeBuilding].linerPanels.map(
+                  (linerPanel, linerPanelIndex) => (
+                    <Fragment
+                      key={`building-${activeBuilding}-linerPanel-${linerPanelIndex}`}
+                    >
+                      <div className="cardInput">
+                        <ReusableSelect
+                          id={`building-${activeBuilding}-linerPanelWall-${linerPanelIndex}`}
+                          name={`building-${activeBuilding}-linerPanelWall-${linerPanelIndex}`}
+                          value={linerPanel.wall}
+                          onChange={(e) =>
+                            handleLinerPanelChange(
+                              activeBuilding,
+                              linerPanelIndex,
+                              'wall',
+                              e.target.value
+                            )
+                          }
+                          onFocus={() => {
+                            if (activeLinerPanel !== linerPanelIndex) {
+                              setActiveLinerPanel(linerPanelIndex);
+                            }
+                          }}
+                          options={walls}
+                          label="Wall"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label
+                          htmlFor={`building-${activeBuilding}-linerPanelStart-${linerPanelIndex}`}
+                        >
+                          Start (Left to Right)
+                        </label>
+                        <input
+                          type="text"
+                          id={`building-${activeBuilding}-linerPanelStart-${linerPanelIndex}`}
+                          name={`building-${activeBuilding}-linerPanelStart-${linerPanelIndex}`}
+                          value={linerPanel.start}
+                          onChange={(e) =>
+                            handleLinerPanelChange(
+                              activeBuilding,
+                              linerPanelIndex,
+                              'start',
+                              e.target.value
+                            )
+                          }
+                          onFocus={() => {
+                            if (activeLinerPanel !== linerPanelIndex) {
+                              setActiveLinerPanel(linerPanelIndex);
+                            }
+                          }}
+                          placeholder="Feet"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label
+                          htmlFor={`building-${activeBuilding}-linerPanelEnd-${linerPanelIndex}`}
+                        >
+                          End (Left to Right)
+                        </label>
+                        <input
+                          type="text"
+                          id={`building-${activeBuilding}-linerPanelEnd-${linerPanelIndex}`}
+                          name={`building-${activeBuilding}-linerPanelEnd-${linerPanelIndex}`}
+                          value={linerPanel.end}
+                          onChange={(e) =>
+                            handleLinerPanelChange(
+                              activeBuilding,
+                              linerPanelIndex,
+                              'end',
+                              e.target.value
+                            )
+                          }
+                          onFocus={() => {
+                            if (activeLinerPanel !== linerPanelIndex) {
+                              setActiveLinerPanel(linerPanelIndex);
+                            }
+                          }}
+                          placeholder="Feet"
+                        />
+                      </div>
+                      <div className="cardInput">
+                        <label
+                          htmlFor={`building-${activeBuilding}-linerPanelHeight-${linerPanelIndex}`}
+                        >
+                          Height
+                        </label>
+                        <input
+                          type="text"
+                          id={`building-${activeBuilding}-linerPanelHeight-${linerPanelIndex}`}
+                          name={`building-${activeBuilding}-linerPanelHeight-${linerPanelIndex}`}
+                          value={linerPanel.height}
+                          onChange={(e) =>
+                            handleLinerPanelChange(
+                              activeBuilding,
+                              linerPanelIndex,
+                              'height',
+                              e.target.value
+                            )
+                          }
+                          onFocus={() => {
+                            if (activePartition !== linerPanelIndex) {
+                              setActivePartition(linerPanelIndex);
+                            }
+                          }}
+                          placeholder="Feet"
+                        />
+                      </div>
+                      {!isDesktop && (
+                        <>
+                          <div></div>
+                        </>
+                      )}
+                      <button
+                        onClick={() =>
+                          removeLinerPanel(activeBuilding, linerPanelIndex)
+                        }
+                        className="iconReject"
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                      {!isDesktop && (
+                        <>
+                          <div className="divider span2"></div>
+                        </>
+                      )}
+                    </Fragment>
+                  )
+                )}
+                <button
+                  className="button success w5"
+                  onClick={() => addLinerPanel(activeBuilding)}
+                >
+                  Add
+                </button>
+              </div>
+
+              <div className="divider"></div>
+              {values.buildings[activeBuilding].linerPanels.length > 0 && (
+                <div className="extendGrid">
+                  <div className="extGrid start"></div>
+                  <div className="extGrid start">
+                    <div className="cardInput">
+                      <ReusableSelect
+                        id={`building-${activeBuilding}-linerPanelType${activeLinerPanel}`}
+                        name={`building-${activeBuilding}-linerPanelType${activeLinerPanel}`}
+                        value={
+                          values.buildings[activeBuilding].linerPanels[
+                            activeLinerPanel
+                          ].panelType
+                        }
+                        onChange={(e) =>
+                          handleLinerPanelChange(
+                            activeBuilding,
+                            activeLinerPanel,
+                            'panelType',
+                            e.target.value
+                          )
+                        }
+                        options={wallPanels}
+                        label="Liner Panels:"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <ReusableSelect
+                        id={`building-${activeBuilding}-linerPanelGauge${activeLinerPanel}`}
+                        name={`building-${activeBuilding}-linerPanelGauge${activeLinerPanel}`}
+                        value={
+                          values.buildings[activeBuilding].linerPanels[
+                            activeLinerPanel
+                          ].panelGauge
+                        }
+                        onChange={(e) =>
+                          handleLinerPanelChange(
+                            activeBuilding,
+                            activeLinerPanel,
+                            'panelGauge',
+                            e.target.value
+                          )
+                        }
+                        options={wallGauge}
+                        label="Gauge:"
+                      />
+                    </div>
+                    <div className="cardInput">
+                      <ReusableSelect
+                        id={`building-${activeBuilding}-linerPanelFinish${activeLinerPanel}`}
+                        name={`building-${activeBuilding}-linerPanelFinish${activeLinerPanel}`}
+                        value={
+                          values.buildings[activeBuilding].linerPanels[
+                            activeLinerPanel
+                          ].panelFinish
+                        }
+                        onChange={(e) =>
+                          handleLinerPanelChange(
+                            activeBuilding,
+                            activeLinerPanel,
+                            'panelFinish',
+                            e.target.value
+                          )
+                        }
+                        options={wallFinish}
+                        label="Finish:"
+                      />
+                    </div>
+                    {selectedLinerPanel && selectedLinerPanel.image && (
+                      <Image
+                        alt={`${selectedLinerPanel.label}`}
+                        src={selectedLinerPanel.image}
+                        className={styles.panelImage}
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
+            </section>
+          </>
+        )}
         {activeCard == 'bldg-cranes' && <section></section>}
         {activeCard == 'bldg-openings' && <section></section>}
         {activeCard == 'accessories' && <section></section>}
@@ -3383,6 +3671,7 @@ export default function ClientQuote({ session }) {
             <button type="submit">Submit Quote</button>
           </section>
         )}
+        <BuildingSketch buildingData={values} />
       </form>
       {!isDesktop && (
         <nav className={styles.carouselNav}>

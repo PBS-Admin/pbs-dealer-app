@@ -208,7 +208,7 @@ export const extInsulation = [
   { id: 'extend', label: 'Extend Roof Insulation at Extensions' },
 ];
 
-export const canopyWalls = [
+export const walls = [
   { id: 'fsw', label: 'Front Sidewall' },
   { id: 'bsw', label: 'Back Sidewall' },
   { id: 'lew', label: 'Left Endwall' },

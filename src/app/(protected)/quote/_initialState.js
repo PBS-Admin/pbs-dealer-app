@@ -119,6 +119,7 @@ export const initialState = {
       soffitPanelFinish: '',
       canopies: [],
       partitions: [],
+      linerPanels: [],
     },
   ],
 };

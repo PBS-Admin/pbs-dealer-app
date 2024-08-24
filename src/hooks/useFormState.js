@@ -56,12 +56,36 @@ function useFormState(initialState) {
     }));
   };
 
+  const handleLinerPanelChange = (
+    buildingIndex,
+    linerPanelIndex,
+    field,
+    value
+  ) => {
+    setValues((prev) => ({
+      ...prev,
+      buildings: prev.buildings.map((building, bIndex) =>
+        bIndex === buildingIndex
+          ? {
+              ...building,
+              linerPanels: building.linerPanels.map((linerPanel, lpIndex) =>
+                lpIndex === linerPanelIndex
+                  ? { ...linerPanel, [field]: value }
+                  : linerPanel
+              ),
+            }
+          : building
+      ),
+    }));
+  };
+
   return {
     values,
     handleChange,
     handleNestedChange,
     handleCanopyChange,
     handlePartitionChange,
+    handleLinerPanelChange,
     setValues,
   };
 }

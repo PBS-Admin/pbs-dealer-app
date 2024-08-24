@@ -203,6 +203,14 @@ p{
   margin: .5em; 
 }
 
+.linerGrid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(50px, 1fr));  
+  gap: .25em;
+  align-items: center; 
+  margin: .5em; 
+}
+
 .radio{
   align-self: center;
   justify-self: center;
@@ -524,6 +532,10 @@ p{
 
   .tableGrid{    
     grid-template-columns: repeat(8, minmax(95px, 1fr));        
+  }
+
+  .linerGrid{    
+    grid-template-columns: repeat(4, minmax(50px, 1fr)) 2em;        
   }
 
   .w5{
