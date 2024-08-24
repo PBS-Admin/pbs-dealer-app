@@ -7,6 +7,7 @@ import Image from 'next/image';
 import logo from '../../../../public/images/pbslogo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import styles from './page.module.css';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -36,16 +37,16 @@ export default function Login() {
   };
 
   return (
-    <main>
-      <form className="card" onSubmit={handleSubmit}>
+    <main className={styles.loginMain}>
+      <form className={styles.loginCard} onSubmit={handleSubmit}>
         <Link href="/" className="backButton">
-          <FontAwesomeIcon icon={faArrowLeft} size="1x" />
+          <FontAwesomeIcon icon={faArrowLeft} s />
         </Link>
         <Image alt="PBS Buildings Logo" src={logo} className="image" />
         <h1 className="title">Login</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <div className="container">
-          <div className="textInput">
+        <div className={styles.loginInputs}>
+          <div className="cardInput">
             <label htmlFor="email">Email:</label>
             <input
               id="email"
@@ -55,7 +56,7 @@ export default function Login() {
               required
             />
           </div>
-          <div className="textInput">
+          <div className="cardInput">
             <label htmlFor="password">Password:</label>
             <input
               id="password"
@@ -66,7 +67,7 @@ export default function Login() {
             />
           </div>
         </div>
-        <button className="button" type="submit">
+        <button className="button prim" type="submit">
           Login
         </button>
       </form>

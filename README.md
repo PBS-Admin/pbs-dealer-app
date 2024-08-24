@@ -6,10 +6,10 @@
 
 First, install all your dependencies
 
-``` bash
-npm install --save-dev prettier eslint-plugin-prettier eslint-config-prettier nodemon concurrently @types/bcrypt eslint-plugin-react
+```bash
+npm install --save-dev prettier eslint-plugin-prettier eslint-config-prettier nodemon concurrently @types/bcrypt three @types/three
 
-npm install -save express jsonwebtoken bcryptjs dotenv 
+npm install -save express jsonwebtoken bcryptjs dotenv
 @fortawesome/fontawesome-free @fortawesome/fontawesome-svg-core @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons next-pwa next react react-dom next-auth bcrypt mariadb
 ```
 

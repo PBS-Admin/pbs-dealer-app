@@ -1,0 +1,30 @@
+.splashMain{
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;    
+}
+
+.splashCard{
+    background-color: var(--background-white);
+    border-radius: 1em;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    padding: 1em;
+    margin: .5em;
+}
+
+.globalButton{
+    color: var(--background-white);
+    background-color: var(--light-orange);  
+    border-radius: 50%;  
+    width: 50px;
+    height: 50px;
+    padding: 7px;
+    text-align: center;  
+    font-size: 30px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}

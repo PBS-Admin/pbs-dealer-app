@@ -1,31 +1,12 @@
-.inputBody {
-    margin: 6em 0;
-    display: flex;
-    flex-flow: row nowrap;
-    width: 100%;
-    align-items: center;
-}
-
-.sectionContainer {
-    flex-grow: 1;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    overflow: auto;
-    padding: 1em;
-}
-
-.pageTitle {
-    font-size: 7vw;
-}
-
-.sidebar {
+/* Navigation Styles */
+.sidebar {          
     display: flex;
     flex-flow: column nowrap;
     background-color: var(--background-white);
     border-radius: 0 1em 1em 0;
-    padding: 1em 0;
-
+    padding: 1em 0; 
+    align-self: flex-start;
+    margin-top: 1vw;
 }
 
 .sidebar button {
@@ -102,39 +83,24 @@
     padding: 0.5em;
 }
 
-.leftBox {
-    flex-grow: 1;
-    flex-basis: 0;
+/* END */
+
+
+.radioGroup{
+    accent-color: var(--dark-blue);
+    display: flex;    
+    gap: 1em;    
+    border: none;
+    background-color: rgba(0, 0, 0, 0.10);
+    padding: .5em;
+    border-radius: .5em;
+    align-self: center;
+    font-size: 11px;
 }
 
-.rightBox {
-    font-size: 2vw;
-    flex-grow: 1;
-    flex-basis: 0;
-    text-align: right;
-    overflow-wrap: break-word;
-}
-
-.inputContainer {
+.radioGroup div{
     display: flex;
-    color: var(--dark-blue);
-    font-size: .75em;
-    font-weight: 600;
-    align-items: center;
-    gap: 1em;
-    justify-content: flex-end;
-}
-
-.inputContainer label {
-    white-space: nowrap;
-}
-
-.textInput {
-    background: none;
-    padding: 0 0 0 1em;
-    border: 1px solid var(--dark-blue);
-    line-height: 2em;
-    border-radius: 5px;
+    flex-flow: column nowrap;
 }
 
 .buildingContainer {
@@ -143,7 +109,7 @@
     padding: .5em;
     gap: .25em;
     background-color: var(--dark-blue);
-    border-radius: 10px;    
+    border-radius: 10px;
 }
 
 .buildingContainer input {
@@ -179,33 +145,6 @@
 
 .buildingProjectContainer input[type=number] {
     color: black;
-}
-
-.radioGroup{
-    display: flex;
-    flex-flow: row nowrap; 
-    color: var(--black);
-    padding: .5em;
-    outline: none;
-    border: none;    
-    gap: 1em;
-    justify-content: space-evenly;    
-    accent-color: var(--dark-blue);    
-    text-align: center;
-}
-
-.radioGroup div{
-    display: flex;
-    flex-flow: column nowrap;
-}
-
-.projectPage {
-    display: flex;
-    flex-flow: column nowrap;
-    background-color: var(--background-white);
-    padding: 1em;
-    border-radius: 1em;
-    gap: 1.5em;
 }
 
 .copyBuilding {
@@ -260,10 +199,23 @@
     color: white;
 }
 
-.layoutPage{
-    display: flex;
-    gap: 1em;
-    flex-flow: column nowrap;
+.panelImage{
+    align-self: center;
+    height: auto;    
+    width: 150px;    
+    justify-self: center;
+}
+
+@media screen and (min-width: 350px) {
+    .radioGroup{
+      font-size: 3.15vw;
+    }
+}
+  
+@media screen and (min-width: 476px) {
+    .radioGroup{
+      font-size: 15px;
+    }
 }
 
 @media screen and (min-width: 600px) {
@@ -271,13 +223,9 @@
         font-size: 2em;
     }
 
-    .rightBox {
-        font-size: .75em;
+    .panelImage{        
+        width: 200px;            
     }
 }
 
-@media screen and (max-width: 1000px) {
-    .inputBody {
-        flex-flow: column nowrap;
-    }
-}
+  
