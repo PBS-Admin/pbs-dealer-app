@@ -140,7 +140,7 @@ p{
   display: grid;
   background-color: var(--background-white);
   border-radius: 1em;
-  padding: .75em;   
+  padding: .75em;  
 }
 
 .card header{
@@ -209,6 +209,23 @@ p{
   gap: .25em;
   align-items: center; 
   margin: .5em; 
+}
+
+.radioGroup{
+  accent-color: var(--dark-blue);
+  display: flex;    
+  gap: 1em;    
+  border: none;
+  background-color: rgba(0, 0, 0, 0.10);
+  padding: .5em;
+  border-radius: .5em;
+  align-self: center;
+  font-size: 11px;
+}
+
+.radioGroup div{
+  display: flex;
+  flex-flow: column nowrap;
 }
 
 .radio{
@@ -463,6 +480,13 @@ p{
   height: auto;
 }
 
+.panelImage{
+  align-self: center;
+  height: auto;    
+  width: 150px;    
+  justify-self: center;
+}
+
 /* Global Utility Styles */
 
 .black{
@@ -483,8 +507,17 @@ p{
   .cardInput label, .cardInput input, .cardInput select, .cardRow label, .cardRow input, .cardRow select{
     font-size: 3.15vw;
   }
+
+  .radioGroup{
+    font-size: 3.15vw;
+  }
 }
 
+@media screen and (min-width: 476px) {
+  .radioGroup{
+    font-size: 15px;
+  }
+}
 
 @media screen and (min-width: 550px) {
   .pageHeaderLeft {
@@ -518,12 +551,16 @@ p{
   .tabHide{
     display: none;
   }
+  
+  .panelImage{        
+    width: 200px;            
+}
 }
 
 @media screen and (min-width: 1000px) {
   main{
     grid-template-columns: 300px 1fr;
-    grid-template-rows: 100px 1fr;    
+    grid-template-rows: 100px 1fr 600px;    
   }
 
   .inputForm{
@@ -559,9 +596,3 @@ p{
     grid-template-columns: repeat(4, minmax(150px, 1fr));        
   }
 }
-/* 
-@media screen and (min-width: 1900px) {  
-  .radioGrid{    
-    grid-template-columns: repeat(4, minmax(150px, 1fr));        
-  }
-} */

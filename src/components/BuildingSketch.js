@@ -20,7 +20,7 @@ const BuildingSketch = ({ buildingData, backgroundColor = 0xf5f5f5 }) => {
       sceneRef.current = new THREE.Scene();
       sceneRef.current.background = new THREE.Color(backgroundColor);
       cameraRef.current = new THREE.PerspectiveCamera(
-        75,
+        50,
         mount.clientWidth / mount.clientHeight,
         0.1,
         1000
@@ -45,7 +45,7 @@ const BuildingSketch = ({ buildingData, backgroundColor = 0xf5f5f5 }) => {
       const width = Number(buildingData.width) || 10;
       const length = Number(buildingData.length) || 10;
       const eaveHeight = Number(buildingData.eaveHeight) || 5;
-      const roofPitch = Number(buildingData.roofPitch) || 1;
+      const roofPitch = Number(buildingData.roofPitch) || 0;
 
       // Create building
       const buildingGeometry = new THREE.BoxGeometry(width, eaveHeight, length);
@@ -59,7 +59,8 @@ const BuildingSketch = ({ buildingData, backgroundColor = 0xf5f5f5 }) => {
       sceneRef.current.add(building);
 
       // Add roof
-      const roofHeight = (width / 2) * Math.tan((roofPitch * Math.PI) / 180);
+      const roofHeight =
+        (width / 2) * Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
       const roofGeometry = new THREE.BufferGeometry();
       const vertices = new Float32Array([
         -width / 2,
@@ -70,15 +71,18 @@ const BuildingSketch = ({ buildingData, backgroundColor = 0xf5f5f5 }) => {
         length / 2,
         0,
         roofHeight,
-        0,
+        length / 2,
         -width / 2,
         0,
         -length / 2,
         width / 2,
         0,
         -length / 2,
+        0,
+        roofHeight,
+        -length / 2,
       ]);
-      const indices = [0, 1, 2, 3, 4, 2, 0, 2, 3, 1, 4, 2];
+      const indices = [0, 1, 2, 3, 4, 5, 0, 2, 5, 5, 3, 0, 1, 2, 5, 5, 4, 1];
       roofGeometry.setAttribute(
         'position',
         new THREE.BufferAttribute(vertices, 3)
@@ -150,7 +154,7 @@ const BuildingSketch = ({ buildingData, backgroundColor = 0xf5f5f5 }) => {
     };
   }, [buildingData, backgroundColor]);
 
-  return <div ref={mountRef} style={{ width: '100%', height: '400px' }} />;
+  return <div ref={mountRef} style={{ width: '250px', height: '250px' }} />;
 };
 
 export default BuildingSketch;
