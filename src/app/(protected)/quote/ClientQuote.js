@@ -71,6 +71,7 @@ export default function ClientQuote({ session }) {
   // Hooks
   const {
     values,
+    lastChangedWall,
     handleChange,
     handleNestedChange,
     handleCanopyChange,
@@ -535,6 +536,7 @@ export default function ClientQuote({ session }) {
               <div className={styles.sketch}>
                 <BuildingSketch
                   buildingData={values.buildings[activeBuilding]}
+                  lastChangedWall={lastChangedWall}
                 />
               </div>
             </section>
@@ -1947,6 +1949,7 @@ export default function ClientQuote({ session }) {
               <div className={styles.sketch}>
                 <BuildingSketch
                   buildingData={values.buildings[activeBuilding]}
+                  lastChangedWall={lastChangedWall}
                 />
               </div>
             </section>

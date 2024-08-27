@@ -302,7 +302,7 @@ const BuildingLayout = ({ values, activeBuilding, handleNestedChange }) => {
                 onChange={(name, value) =>
                   handleNestedChange(activeBuilding, 'leftEndwallInset', value)
                 }
-                baySpacing={values.buildings[activeBuilding].lewBaySpacing}
+                baySpacing={values.buildings[activeBuilding].sidewallBaySpacing}
                 multiSelect={false}
               />
             )}
@@ -337,7 +337,7 @@ const BuildingLayout = ({ values, activeBuilding, handleNestedChange }) => {
                 onChange={(name, value) =>
                   handleNestedChange(activeBuilding, 'rightEndwallInset', value)
                 }
-                baySpacing={values.buildings[activeBuilding].rewBaySpacing}
+                baySpacing={values.buildings[activeBuilding].sidewallBaySpacing}
                 multiSelect={false}
               />
             )}
@@ -498,25 +498,16 @@ const BuildingLayout = ({ values, activeBuilding, handleNestedChange }) => {
 
         <h4>Roof Bracing</h4>
         <div className="cardGrid">
-          <div className="cardInput">
-            <label htmlFor={`buildingRoofBracedBays-${activeBuilding}`}>
-              Roof Braced Bays:
-            </label>
-            <input
-              type="text"
-              id={`buildingRoofBracedBays-${activeBuilding}`}
-              name={`buildingRoofBracedBays-${activeBuilding}`}
-              value={values.buildings[activeBuilding].roofBracedBays}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'roofBracedBays',
-                  e.target.value
-                )
-              }
-              placeholder="Separate Bays with Space"
-            />
-          </div>
+          <BaySelectionInput
+            name={`buildingRoofBracedBays-${activeBuilding}`}
+            label="Roof Braced Bays"
+            value={values.buildings[activeBuilding].roofBracedBays}
+            onChange={(name, value) =>
+              handleNestedChange(activeBuilding, 'roofBracedBays', value)
+            }
+            baySpacing={values.buildings[activeBuilding].sidewallBaySpacing}
+            multiSelect={true}
+          />
           <div className="cardInput">
             <h5>Break Points to Match</h5>
             <fieldset className="column radioGroup">

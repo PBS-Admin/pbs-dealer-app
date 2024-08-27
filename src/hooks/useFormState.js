@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 function useFormState(initialState) {
   const [values, setValues] = useState(initialState);
+  const [lastChangedWall, setLastChangedWall] = useState('frontSidewall');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,6 +16,10 @@ function useFormState(initialState) {
         index === buildingIndex ? { ...building, [field]: value } : building
       ),
     }));
+    // Update lastChangedWall when relevant fields change
+    if (field === 'lewBaySpacing') setLastChangedWall('leftEndwall');
+    if (field === 'rewBaySpacing') setLastChangedWall('rightEndwall');
+    if (field === 'sidewallBaySpacing') setLastChangedWall('frontSidewall');
   };
 
   const handleCanopyChange = (buildingIndex, canopyIndex, field, value) => {
@@ -81,6 +86,7 @@ function useFormState(initialState) {
 
   return {
     values,
+    lastChangedWall,
     handleChange,
     handleNestedChange,
     handleCanopyChange,

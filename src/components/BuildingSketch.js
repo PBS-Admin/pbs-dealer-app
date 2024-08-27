@@ -1,160 +1,226 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { useThreeSetup } from '../hooks/useThreeSetup';
+import { createBuilding, addBayLines } from './BuildingUtils';
 
-const BuildingSketch = ({ buildingData, backgroundColor = 0xf5f5f5 }) => {
+const BuildingSketch = ({
+  buildingData,
+  lastChangedWall,
+  backgroundColor = 0xf5f5f5,
+}) => {
+  console.log('BuildingSketch render', { buildingData, lastChangedWall });
+
   const mountRef = useRef(null);
-  const rendererRef = useRef(null);
-  const sceneRef = useRef(null);
-  const cameraRef = useRef(null);
-  const controlsRef = useRef(null);
-  const frameIdRef = useRef(null);
+  const canvasRef = useRef(null);
+  const updateCountRef = useRef(0);
+  const [currentView, setCurrentView] = useState('ISO');
+  const { scene, camera, renderer, animate, isSetup, updateCameraPosition } =
+    useThreeSetup(
+      mountRef,
+      backgroundColor,
+      {
+        width: buildingData.width,
+        length: buildingData.length,
+        eaveHeight: buildingData.eaveHeight,
+      },
+      currentView
+    );
 
-  useEffect(() => {
-    if (!mountRef.current) return;
+  console.log('useThreeSetup returned', { scene, camera, renderer, isSetup });
 
-    const mount = mountRef.current;
+  const updateBuilding = useCallback(() => {
+    console.log('updateBuilding called', { isSetup, scene });
+    updateCountRef.current++;
+    console.log(`Update building called ${updateCountRef.current} times`);
+    if (!isSetup || !scene) return;
 
-    // Setup scene, camera, renderer only once
-    if (!sceneRef.current) {
-      sceneRef.current = new THREE.Scene();
-      sceneRef.current.background = new THREE.Color(backgroundColor);
-      cameraRef.current = new THREE.PerspectiveCamera(
-        50,
-        mount.clientWidth / mount.clientHeight,
-        0.1,
-        1000
+    console.log('Updating building with data:', buildingData);
+
+    // Remove existing building objects
+    scene.children = scene.children.filter(
+      (child) =>
+        ![
+          'building',
+          'roof',
+          'buildingLines',
+          'roofLines',
+          'gridHelper',
+          'axesHelper',
+          'testCube',
+        ].includes(child.name)
+    );
+
+    // Add a grid helper
+    const gridHelper = new THREE.GridHelper(200, 20);
+    gridHelper.name = 'gridHelper';
+    scene.add(gridHelper);
+
+    // Add an axes helper
+    const axesHelper = new THREE.AxesHelper(100);
+    axesHelper.name = 'axesHelper';
+    scene.add(axesHelper);
+
+    const { building, roof, buildingLines, roofLines } =
+      createBuilding(buildingData);
+
+    // Assign names to the objects for easier identification
+    building.name = 'building';
+    roof.name = 'roof';
+    buildingLines.name = 'buildingLines';
+    roofLines.name = 'roofLines';
+
+    console.log('Building created:', building);
+
+    scene.add(building, roof, buildingLines, roofLines);
+
+    addBayLines(buildingData.lewBaySpacing, 'leftEndwall', scene, buildingData);
+    addBayLines(
+      buildingData.rewBaySpacing,
+      'rightEndwall',
+      scene,
+      buildingData
+    );
+    addBayLines(
+      buildingData.sidewallBaySpacing,
+      'frontSidewall',
+      scene,
+      buildingData
+    );
+
+    // Add a test cube
+    const testCube = new THREE.Mesh(
+      new THREE.BoxGeometry(
+        buildingData.width,
+        buildingData.eaveHeight,
+        buildingData.length
+      ),
+      new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
+    );
+    testCube.position.set(0, buildingData.eaveHeight / 2, 0);
+    testCube.name = 'testCube';
+    scene.add(testCube);
+
+    if (camera) {
+      const { width, length, eaveHeight } = buildingData;
+      const distance = Math.max(width, length, eaveHeight) * 2;
+      camera.position.set(distance, distance, distance);
+      camera.lookAt(0, eaveHeight / 2, 0);
+      console.log('Camera position:', camera.position);
+      console.log(
+        'Camera looking at:',
+        new THREE.Vector3(0, eaveHeight / 2, 0)
       );
-      rendererRef.current = new THREE.WebGLRenderer({ antialias: true });
-      rendererRef.current.setSize(mount.clientWidth, mount.clientHeight);
-      mount.appendChild(rendererRef.current.domElement);
-
-      controlsRef.current = new OrbitControls(
-        cameraRef.current,
-        rendererRef.current.domElement
-      );
+      console.log('Camera up vector:', camera.up);
     }
 
-    // Function to update or create the building
-    const updateBuilding = () => {
-      // Clear existing meshes
-      while (sceneRef.current.children.length > 0) {
-        sceneRef.current.remove(sceneRef.current.children[0]);
-      }
+    if (renderer) {
+      console.log('Renderer DOM element:', renderer.domElement);
+      console.log('Renderer size:', renderer.getSize(new THREE.Vector2()));
+    }
 
-      const width = Number(buildingData.width) || 10;
-      const length = Number(buildingData.length) || 10;
-      const eaveHeight = Number(buildingData.eaveHeight) || 5;
-      const roofPitch = Number(buildingData.roofPitch) || 0;
+    console.log(
+      'Scene contents:',
+      scene.children.map((child) => ({ name: child.name, type: child.type }))
+    );
 
-      // Create building
-      const buildingGeometry = new THREE.BoxGeometry(width, eaveHeight, length);
-      const buildingMaterial = new THREE.MeshBasicMaterial({
-        color: 0xcccccc,
-        transparent: true,
-        opacity: 0.7,
+    // Render the scene
+    if (renderer && camera) {
+      console.log('Rendering scene');
+      renderer.render(scene, camera);
+    } else {
+      console.log('Cannot render: renderer or camera is null', {
+        renderer,
+        camera,
       });
-      const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
-      building.position.y = eaveHeight / 2; // Center the building vertically
-      sceneRef.current.add(building);
+    }
+  }, [buildingData, isSetup, scene, renderer, camera]);
 
-      // Add roof
-      const roofHeight =
-        (width / 2) * Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
-      const roofGeometry = new THREE.BufferGeometry();
-      const vertices = new Float32Array([
-        -width / 2,
-        0,
-        length / 2,
-        width / 2,
-        0,
-        length / 2,
-        0,
-        roofHeight,
-        length / 2,
-        -width / 2,
-        0,
-        -length / 2,
-        width / 2,
-        0,
-        -length / 2,
-        0,
-        roofHeight,
-        -length / 2,
-      ]);
-      const indices = [0, 1, 2, 3, 4, 5, 0, 2, 5, 5, 3, 0, 1, 2, 5, 5, 4, 1];
-      roofGeometry.setAttribute(
-        'position',
-        new THREE.BufferAttribute(vertices, 3)
-      );
-      roofGeometry.setIndex(indices);
-      roofGeometry.computeVertexNormals();
-
-      const roofMaterial = new THREE.MeshBasicMaterial({
-        color: 0xaaaaaa,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.7,
-      });
-      const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-      roof.position.y = eaveHeight; // Place the roof at the eave height
-      sceneRef.current.add(roof);
-
-      // Add edges to building and roof
-      const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
-      const buildingEdges = new THREE.EdgesGeometry(buildingGeometry);
-      const buildingLines = new THREE.LineSegments(
-        buildingEdges,
-        edgesMaterial
-      );
-      buildingLines.position.y = eaveHeight / 2; // Match building position
-      sceneRef.current.add(buildingLines);
-
-      const roofEdges = new THREE.EdgesGeometry(roofGeometry);
-      const roofLines = new THREE.LineSegments(roofEdges, edgesMaterial);
-      roofLines.position.y = eaveHeight; // Match roof position
-      sceneRef.current.add(roofLines);
-
-      // Update camera position
-      cameraRef.current.position.set(
-        width * 1.5,
-        eaveHeight * 1.5,
-        length * 1.5
-      );
-      cameraRef.current.lookAt(0, eaveHeight / 2, 0);
-    };
+  useEffect(() => {
+    console.log('First useEffect triggered', { isSetup });
+    if (!isSetup) return;
 
     updateBuilding();
-
-    // Animation loop
-    const animate = () => {
-      frameIdRef.current = requestAnimationFrame(animate);
-      controlsRef.current.update();
-      rendererRef.current.render(sceneRef.current, cameraRef.current);
-    };
     animate();
+    if (renderer && scene && camera) {
+      console.log('Forcing render in first useEffect');
+      renderer.render(scene, camera);
+    }
+  }, [isSetup, updateBuilding, animate, renderer, scene, camera]);
 
-    // Cleanup function
-    return () => {
-      cancelAnimationFrame(frameIdRef.current);
-      if (controlsRef.current) {
-        controlsRef.current.dispose();
+  useEffect(() => {
+    console.log('Second useEffect triggered', { isSetup, currentView });
+    if (isSetup) {
+      updateCameraPosition(currentView);
+      updateBuilding();
+      if (renderer && scene && camera) {
+        console.log('Forcing render in second useEffect');
+        renderer.render(scene, camera);
       }
-      if (rendererRef.current) {
-        rendererRef.current.dispose();
-      }
-      if (mount.contains(rendererRef.current.domElement)) {
-        mount.removeChild(rendererRef.current.domElement);
-      }
-      // Clear all references
-      sceneRef.current = null;
-      cameraRef.current = null;
-      rendererRef.current = null;
-      controlsRef.current = null;
-    };
-  }, [buildingData, backgroundColor]);
+    }
+  }, [
+    currentView,
+    isSetup,
+    updateCameraPosition,
+    updateBuilding,
+    renderer,
+    scene,
+    camera,
+  ]);
 
-  return <div ref={mountRef} style={{ width: '250px', height: '250px' }} />;
+  useEffect(() => {
+    if (renderer && !canvasRef.current) {
+      canvasRef.current = renderer.domElement;
+      mountRef.current.appendChild(canvasRef.current);
+    }
+  }, [renderer]);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      const style = window.getComputedStyle(canvasRef.current);
+      console.log('Canvas computed style:', {
+        width: style.width,
+        height: style.height,
+        display: style.display,
+        visibility: style.visibility,
+        opacity: style.opacity,
+      });
+    }
+  }, [canvasRef.current]);
+
+  useEffect(() => {
+    if (mountRef.current) {
+      const rect = mountRef.current.getBoundingClientRect();
+      console.log('Mount element rect:', rect);
+      if (rect.width === 0 || rect.height === 0) {
+        console.error('Mount element has zero width or height');
+      }
+    }
+  }, []);
+
+  const handleViewChange = (view) => {
+    console.log('handleViewChange called', { view });
+    setCurrentView(view);
+  };
+
+  return (
+    <div>
+      <div ref={mountRef} style={{ width: '250px', height: '250px' }} />
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginTop: '10px',
+        }}
+      >
+        <button onClick={() => handleViewChange('L')}>L</button>
+        <button onClick={() => handleViewChange('R')}>R</button>
+        <button onClick={() => handleViewChange('FS')}>FS</button>
+        <button onClick={() => handleViewChange('BS')}>BS</button>
+        <button onClick={() => handleViewChange('T')}>T</button>
+        <button onClick={() => handleViewChange('ISO')}>ISO</button>
+      </div>
+    </div>
+  );
 };
 
 export default BuildingSketch;
