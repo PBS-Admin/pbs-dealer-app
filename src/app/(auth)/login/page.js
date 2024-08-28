@@ -40,7 +40,7 @@ export default function Login() {
     <main className={styles.loginMain}>
       <form className={styles.loginCard} onSubmit={handleSubmit}>
         <Link href="/" className="backButton">
-          <FontAwesomeIcon icon={faArrowLeft} s />
+          <FontAwesomeIcon icon={faArrowLeft} />
         </Link>
         <Image alt="PBS Buildings Logo" src={logo} className="image" />
         <h1 className="title">Login</h1>

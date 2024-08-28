@@ -23,6 +23,17 @@
     background: var(--light-orange);
 }
 
+.sketchBox{
+    align-items: center;
+    grid-column: 1;    
+    border-radius: 1em;    
+}
+
+.sketch{    
+    display: flex;
+    justify-content: center;
+}
+
 .carouselNav {
     display: flex;
     align-items: center;
@@ -85,31 +96,14 @@
 
 /* END */
 
-
-.radioGroup{
-    accent-color: var(--dark-blue);
-    display: flex;    
-    gap: 1em;    
-    border: none;
-    background-color: rgba(0, 0, 0, 0.10);
-    padding: .5em;
-    border-radius: .5em;
-    align-self: center;
-    font-size: 11px;
-}
-
-.radioGroup div{
-    display: flex;
-    flex-flow: column nowrap;
-}
-
 .buildingContainer {
     display: flex;
-    flex-flow: column nowrap;
+    flex-flow: column nowrap;    
     padding: .5em;
     gap: .25em;
     background-color: var(--dark-blue);
     border-radius: 10px;
+    justify-content: center;        
 }
 
 .buildingContainer input {
@@ -136,7 +130,7 @@
     font-weight: 600;
     align-items: center;
     gap: 1em;
-    justify-content: flex-end;
+    justify-content: flex-end;    
 }
 
 .buildingProjectContainer label {
@@ -199,33 +193,15 @@
     color: white;
 }
 
-.panelImage{
-    align-self: center;
-    height: auto;    
-    width: 150px;    
-    justify-self: center;
-}
-
-@media screen and (min-width: 350px) {
-    .radioGroup{
-      font-size: 3.15vw;
-    }
-}
-  
-@media screen and (min-width: 476px) {
-    .radioGroup{
-      font-size: 15px;
-    }
-}
-
 @media screen and (min-width: 600px) {
     .pageTitle {
         font-size: 2em;
     }
-
-    .panelImage{        
-        width: 200px;            
-    }
 }
 
-  
+@media screen and (min-width: 1000px) {
+    .sketchBox{        
+        border-radius: 0 1em 1em 0;  
+        margin-top: 5em;      
+    }
+}  

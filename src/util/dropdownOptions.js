@@ -10,7 +10,7 @@ import {
   corrugated,
   tuffRib,
   flatSoffit,
-} from '../../../../public/images';
+} from '../../public/images';
 
 export const shapes = [
   { id: 'symmetrical', label: 'Symmetrical' },
