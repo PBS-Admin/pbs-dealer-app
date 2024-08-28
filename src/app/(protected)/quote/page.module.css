@@ -103,7 +103,7 @@
     gap: .25em;
     background-color: var(--dark-blue);
     border-radius: 10px;
-    justify-content: center;        
+    /* justify-content: center;         */
 }
 
 .buildingContainer input {

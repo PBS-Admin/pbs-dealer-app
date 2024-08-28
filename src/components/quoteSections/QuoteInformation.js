@@ -7,7 +7,7 @@ const QuoteInformation = ({ values, handleChange }) => {
         <header className="cardHeader">
           <h3>Customer Information</h3>
         </header>
-        <div className="cardGrid">
+        <div className="nameGrid">
           <div className="cardInput">
             <label htmlFor="customerName">Customer Name:</label>
             <input
@@ -30,7 +30,10 @@ const QuoteInformation = ({ values, handleChange }) => {
               placeholder="Contact Name"
             />
           </div>
-          <div className="cardInput">
+        </div>
+        <h4>Address</h4>
+        <div className="addressGrid">
+          <div className="cardInput span24">
             <label htmlFor="customerStreet">Street Address:</label>
             <input
               type="text"
@@ -41,7 +44,7 @@ const QuoteInformation = ({ values, handleChange }) => {
               placeholder="Street Address"
             />
           </div>
-          <div className="cardInput">
+          <div className="cardInput span12">
             <label htmlFor="customerCity">City:</label>
             <input
               type="text"
@@ -74,7 +77,7 @@ const QuoteInformation = ({ values, handleChange }) => {
               placeholder="Zip"
             />
           </div>
-          <div className="cardInput">
+          <div className="cardInput span12">
             <label htmlFor="customerPhone">Phone:</label>
             <input
               type="text"
@@ -85,7 +88,7 @@ const QuoteInformation = ({ values, handleChange }) => {
               placeholder="Phone"
             />
           </div>
-          <div className="cardInput">
+          <div className="cardInput span12">
             <label htmlFor="customerFax">Fax:</label>
             <input
               type="text"
@@ -96,7 +99,7 @@ const QuoteInformation = ({ values, handleChange }) => {
               placeholder="Fax"
             />
           </div>
-          <div className="cardInput">
+          <div className="cardInput span12">
             <label htmlFor="customerCell">Cell:</label>
             <input
               type="text"
@@ -107,7 +110,7 @@ const QuoteInformation = ({ values, handleChange }) => {
               placeholder="Cell"
             />
           </div>
-          <div className="cardInput">
+          <div className="cardInput span12">
             <label htmlFor="customerEmail">Email:</label>
             <input
               type="text"
@@ -125,7 +128,7 @@ const QuoteInformation = ({ values, handleChange }) => {
         <header className="cardHeader">
           <h3>Project Information</h3>
         </header>
-        <div className="cardGrid">
+        <div className="nameGrid">
           <div className="cardInput">
             <label htmlFor="projectName">Project Name:</label>
             <input
@@ -148,7 +151,10 @@ const QuoteInformation = ({ values, handleChange }) => {
               placeholder="Project For"
             />
           </div>
-          <div className="cardInput">
+        </div>
+        <h4>Address</h4>
+        <div className="addressGrid">
+          <div className="cardInput span24">
             <label htmlFor="projectAddress">Street Address:</label>
             <input
               type="text"
@@ -159,7 +165,7 @@ const QuoteInformation = ({ values, handleChange }) => {
               placeholder="Address"
             />
           </div>
-          <div className="cardInput">
+          <div className="cardInput span12">
             <label htmlFor="projectCity">City:</label>
             <input
               type="text"
@@ -192,7 +198,8 @@ const QuoteInformation = ({ values, handleChange }) => {
               placeholder="Zip"
             />
           </div>
-          <div className="cardInput">
+          <div className="span24"></div>
+          <div className="cardInput span12">
             <label htmlFor="projectCounty">County:</label>
             <input
               type="text"
@@ -203,7 +210,7 @@ const QuoteInformation = ({ values, handleChange }) => {
               placeholder="County"
             />
           </div>
-          <div className="cardInput">
+          <div className="cardInput span12">
             <label htmlFor="buildingUse">Building Use:</label>
             <input
               type="text"
