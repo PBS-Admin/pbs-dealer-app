@@ -556,7 +556,7 @@ export default function ClientQuote({ session }) {
         {/* Building Project Page */}
         {activeCard == 'building-project' && (
           <section className="page">
-            <div className="card gap-1">
+            <div className="projectCard">
               {/* Buildings section */}
               {values.buildings.map((building, index) => (
                 <div key={index} className={styles.buildingContainer}>
@@ -577,6 +577,9 @@ export default function ClientQuote({ session }) {
                       id={`buildingWidth-${index}`}
                       name={`buildingWidth-${index}`}
                       value={building.width}
+                      onChange={(name, value) =>
+                        handleNestedChange(activeBuilding, 'width', value)
+                      }
                       placeholder="Feet"
                     />
                   </div>
@@ -587,6 +590,9 @@ export default function ClientQuote({ session }) {
                       id={`buildingLength-${index}`}
                       name={`buildingLength-${index}`}
                       value={building.length}
+                      onChange={(name, value) =>
+                        handleNestedChange(activeBuilding, 'length', value)
+                      }
                       placeholder="Feet"
                     />
                   </div>
@@ -599,6 +605,9 @@ export default function ClientQuote({ session }) {
                       id={`buildingOffsetX-${index}`}
                       name={`buildingOffsetX-${index}`}
                       value={building.offsetX}
+                      onChange={(name, value) =>
+                        handleNestedChange(activeBuilding, 'offsetX', value)
+                      }
                       placeholder="Feet From Left"
                     />
                   </div>
@@ -611,6 +620,9 @@ export default function ClientQuote({ session }) {
                       id={`buildingOffsetY-${index}`}
                       name={`buildingOffsetY-${index}`}
                       value={building.offsetY}
+                      onChange={(name, value) =>
+                        handleNestedChange(activeBuilding, 'offsetY', value)
+                      }
                       placeholder="Feet From Back"
                     />
                   </div>
@@ -623,6 +635,9 @@ export default function ClientQuote({ session }) {
                       id={`buildingRotation-${index}`}
                       name={`buildingRotation-${index}`}
                       value={building.rotation}
+                      onChange={(name, value) =>
+                        handleNestedChange(activeBuilding, 'rotation', value)
+                      }
                       min="0"
                       max="360"
                       step="15"
@@ -636,8 +651,8 @@ export default function ClientQuote({ session }) {
                       id={`buildingCommonWall-${index}`}
                       name={`buildingCommonWall-${index}`}
                       value={building.commonWall}
-                      onChange={(e) =>
-                        handleNestedChange(index, 'commonWall', e.target.value)
+                      onChange={(name, value) =>
+                        handleNestedChange(index, 'commonWall', value)
                       }
                     >
                       <option value="">Select a building</option>
@@ -958,7 +973,7 @@ export default function ClientQuote({ session }) {
                         <Image
                           alt={`${selectedSoffitPanel.label}`}
                           src={selectedSoffitPanel.image}
-                          className={styles.panelImage}
+                          className="panelImage"
                         />
                       )}
                     </>
@@ -1246,7 +1261,7 @@ export default function ClientQuote({ session }) {
                         <Image
                           alt={`${selectedCanopyRoofPanel.label}`}
                           src={selectedCanopyRoofPanel.image}
-                          className={styles.panelImage}
+                          className="panelImage"
                         />
                       )}
                   </div>
@@ -1319,7 +1334,7 @@ export default function ClientQuote({ session }) {
                         <Image
                           alt={`${selectedCanopySoffitPanel.label}`}
                           src={selectedCanopySoffitPanel.image}
-                          className={styles.panelImage}
+                          className="panelImage"
                         />
                       )}
                   </div>
@@ -1622,7 +1637,7 @@ export default function ClientQuote({ session }) {
                         <Image
                           alt={`${selectedPartitionLeftPanel.label}`}
                           src={selectedPartitionLeftPanel.image}
-                          className={styles.panelImage}
+                          className="panelImage"
                         />
                       )}
                   </div>
@@ -1695,7 +1710,7 @@ export default function ClientQuote({ session }) {
                         <Image
                           alt={`${selectedPartitionRightPanel.label}`}
                           src={selectedPartitionRightPanel.image}
-                          className={styles.panelImage}
+                          className="panelImage"
                         />
                       )}
                   </div>
@@ -1921,7 +1936,7 @@ export default function ClientQuote({ session }) {
                       <Image
                         alt={`${selectedLinerPanel.label}`}
                         src={selectedLinerPanel.image}
-                        className={styles.panelImage}
+                        className="panelImage"
                       />
                     )}
                   </div>

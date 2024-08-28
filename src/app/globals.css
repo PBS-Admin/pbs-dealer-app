@@ -134,6 +134,8 @@ p{
   display: grid;
   gap: 1em;
   margin: 1vw;
+  /* align-items: center;
+  justify-content: center; */
 }
 
 .card{
@@ -242,7 +244,7 @@ p{
 .center{
   align-self: center;
   justify-self: center;  
-  text-align: center;
+  text-align: center;  
 }
 
 .cardInput{
@@ -497,8 +499,18 @@ p{
   color: var(--background-white);
 }
 
-.gap-1{
+.projectCard{  
+  display: grid;
+  background-color: var(--background-white);
+  align-content: center;  
+  justify-items: center;
   gap: 1em;
+  justify-self: center;
+  align-self: center;  
+  flex-grow: 0;
+  width: 25em;
+  border-radius: 1em;
+  padding: .75em;    
 }
 
 /* END */
