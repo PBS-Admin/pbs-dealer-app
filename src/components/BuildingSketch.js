@@ -17,9 +17,14 @@ const BuildingSketch = ({
       mountRef,
       backgroundColor,
       {
+        shape: buildingData.shape,
         width: buildingData.width,
         length: buildingData.length,
         eaveHeight: buildingData.eaveHeight,
+        lowEaveHeight: buildingData.lowEaveHeight,
+        highEaveHeight: buildingData.highEaveHeight,
+        backEaveheight: buildingData.backEaveHeight,
+        frontEaveHeight: buildingData.frontEaveHeight,
       },
       currentView
     );

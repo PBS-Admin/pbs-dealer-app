@@ -50,28 +50,56 @@ export const useThreeSetup = (
     (view) => {
       if (!isSetup || !cameraRef.current) return;
 
-      const { width, length, eaveHeight } = buildingDimensions;
+      const {
+        shape,
+        width,
+        length,
+        lowEaveHeight,
+        highEaveHeight,
+        backEaveheight,
+        frontEaveHeight,
+        eaveHeight,
+      } = buildingDimensions;
       const maxDimension = Math.max(width, length, eaveHeight);
       const distance = maxDimension * 1.15;
 
+      console.log(shape);
+
+      const vertHeight = (() => {
+        switch (shape) {
+          case 'symmetrical':
+            return eaveHeight;
+          case 'singleSlope':
+          case 'leanTo':
+            return Math.max(lowEaveHeight, highEaveHeight);
+          case 'nonSymmetrical':
+            return Math.max(backEaveheight, frontEaveHeight);
+          default:
+            console.warn(
+              `Unknown shape: ${shape}. Using eaveHeight as fallback.`
+            );
+            return eaveHeight;
+        }
+      })();
+
       switch (view) {
         case 'L': // Left Endwall view
-          cameraRef.current.position.set(0, eaveHeight / 2, width * 1.5);
-          cameraRef.current.lookAt(0, eaveHeight / 2, 0);
+          cameraRef.current.position.set(0, vertHeight / 2, width * 1.5);
+          cameraRef.current.lookAt(0, vertHeight / 2, 0);
 
           break;
         case 'R': // Right Endwall view
-          cameraRef.current.position.set(0, eaveHeight / 2, -width * 1.5);
-          cameraRef.current.lookAt(0, eaveHeight / 2, 0);
+          cameraRef.current.position.set(0, vertHeight / 2, -width * 1.5);
+          cameraRef.current.lookAt(0, vertHeight / 2, 0);
           break;
         case 'FS': // Front Sidewall view
-          cameraRef.current.position.set(length * 1.25, eaveHeight / 2, 0);
-          cameraRef.current.lookAt(0, eaveHeight / 2, 0);
+          cameraRef.current.position.set(length * 1.25, vertHeight / 2, 0);
+          cameraRef.current.lookAt(0, vertHeight / 2, 0);
 
           break;
         case 'BS': // Back Sidewall view
-          cameraRef.current.position.set(-length * 1.25, eaveHeight / 2, 0);
-          cameraRef.current.lookAt(0, eaveHeight / 2, 0);
+          cameraRef.current.position.set(-length * 1.25, vertHeight / 2, 0);
+          cameraRef.current.lookAt(0, vertHeight / 2, 0);
           break;
         case 'T': // Top view
           cameraRef.current.position.set(0, distance, 0);
@@ -83,7 +111,7 @@ export const useThreeSetup = (
             distance * 0.6,
             distance * 0.6
           );
-          cameraRef.current.lookAt(0, eaveHeight / 2, 0);
+          cameraRef.current.lookAt(0, vertHeight / 2, 0);
       }
 
       if (rendererRef.current && sceneRef.current) {

@@ -1,6 +1,22 @@
 import * as THREE from 'three';
 
 export const createBuilding = (buildingData) => {
+  const { shape } = buildingData;
+
+  switch (shape) {
+    case 'symmetrical':
+      return createSymmetricalBuilding(buildingData);
+    case 'singleSlope':
+    case 'leanTo':
+      return createSingleSlopeBuilding(buildingData);
+    case 'nonSymmetrical':
+      return createNonSymmetricalBuilding(buildingData);
+    default:
+      throw new Error(`Unsupported building shape: ${shape}`);
+  }
+};
+
+const createSymmetricalBuilding = (buildingData) => {
   const { width, length, eaveHeight, roofPitch } = buildingData;
 
   // Create building
@@ -16,7 +32,7 @@ export const createBuilding = (buildingData) => {
   // Create roof
   const roofHeight =
     (width / 2) * Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
-  const roofGeometry = createRoofGeometry(
+  const roofGeometry = createSymmetricRoofGeometry(
     width,
     length,
     eaveHeight,
@@ -42,7 +58,7 @@ export const createBuilding = (buildingData) => {
   return { building, roof, buildingLines, roofLines };
 };
 
-const createRoofGeometry = (width, length, eaveHeight, roofHeight) => {
+const createSymmetricRoofGeometry = (width, length, eaveHeight, roofHeight) => {
   const roofGeometry = new THREE.BufferGeometry();
   const vertices = new Float32Array([
     -width / 2,
@@ -71,6 +87,329 @@ const createRoofGeometry = (width, length, eaveHeight, roofHeight) => {
   return roofGeometry;
 };
 
+// Placeholder functions for other shapes
+const createSingleSlopeBuilding = (buildingData) => {
+  const { width, length, lowEaveHeight, highEaveHeight, roofPitch } =
+    buildingData;
+
+  // Create building
+  const buildingGeometry = new THREE.BufferGeometry();
+  const vertices = new Float32Array([
+    // Front face
+    -width / 2,
+    0,
+    length / 2,
+    width / 2,
+    0,
+    length / 2,
+    width / 2,
+    highEaveHeight,
+    length / 2,
+    -width / 2,
+    lowEaveHeight,
+    length / 2,
+    // Back face
+    -width / 2,
+    0,
+    -length / 2,
+    width / 2,
+    0,
+    -length / 2,
+    width / 2,
+    highEaveHeight,
+    -length / 2,
+    -width / 2,
+    lowEaveHeight,
+    -length / 2,
+  ]);
+  const indices = [
+    0,
+    1,
+    2,
+    2,
+    3,
+    0, // Front face
+    4,
+    5,
+    6,
+    6,
+    7,
+    4, // Back face
+    0,
+    3,
+    7,
+    7,
+    4,
+    0, // Left face
+    1,
+    5,
+    6,
+    6,
+    2,
+    1, // Right face
+    3,
+    2,
+    6,
+    6,
+    7,
+    3, // Top face
+    0,
+    4,
+    5,
+    5,
+    1,
+    0, // Bottom face
+  ];
+  buildingGeometry.setAttribute(
+    'position',
+    new THREE.BufferAttribute(vertices, 3)
+  );
+  buildingGeometry.setIndex(indices);
+  buildingGeometry.computeVertexNormals();
+
+  const buildingMaterial = new THREE.MeshBasicMaterial({
+    color: 0xcccccc,
+    transparent: true,
+    opacity: 0.7,
+  });
+  const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
+
+  // Create roof (in this case, the roof is the same as the top face of the building)
+  const roofGeometry = new THREE.BufferGeometry();
+  const roofVertices = new Float32Array([
+    -width / 2,
+    lowEaveHeight,
+    length / 2,
+    width / 2,
+    highEaveHeight,
+    length / 2,
+    width / 2,
+    highEaveHeight,
+    -length / 2,
+    -width / 2,
+    lowEaveHeight,
+    -length / 2,
+  ]);
+  const roofIndices = [0, 1, 2, 2, 3, 0];
+  roofGeometry.setAttribute(
+    'position',
+    new THREE.BufferAttribute(roofVertices, 3)
+  );
+  roofGeometry.setIndex(roofIndices);
+  roofGeometry.computeVertexNormals();
+
+  const roofMaterial = new THREE.MeshBasicMaterial({
+    color: 0xcccccc,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.7,
+  });
+  const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+
+  // Add edges
+  const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+  const buildingEdges = new THREE.EdgesGeometry(buildingGeometry);
+  const buildingLines = new THREE.LineSegments(buildingEdges, edgesMaterial);
+
+  const roofEdges = new THREE.EdgesGeometry(roofGeometry);
+  const roofLines = new THREE.LineSegments(roofEdges, edgesMaterial);
+
+  return { building, roof, buildingLines, roofLines };
+};
+
+const createNonSymmetricalBuilding = (buildingData) => {
+  const {
+    width,
+    length,
+    backEaveHeight,
+    backRoofPitch,
+    frontEaveHeight,
+    frontRoofPitch,
+    backPeakOffset,
+  } = buildingData;
+
+  // Calculate roof height (using the higher of the two pitches)
+  const roofHeight =
+    (width / 2) *
+    Math.tan((Math.max(backRoofPitch, frontRoofPitch) * Math.PI) / 180);
+
+  const peakHeight = Math.max(frontEaveHeight, backEaveHeight) + roofHeight;
+  // Create building
+  const buildingGeometry = new THREE.BufferGeometry();
+  const vertices = new Float32Array([
+    // Front face
+    -width / 2,
+    0,
+    length / 2,
+    width / 2,
+    0,
+    length / 2,
+    width / 2,
+    frontEaveHeight,
+    length / 2,
+    -width / 2,
+    backEaveHeight,
+    length / 2,
+    // Back face
+    -width / 2,
+    0,
+    -length / 2,
+    width / 2,
+    0,
+    -length / 2,
+    width / 2,
+    frontEaveHeight,
+    -length / 2,
+    -width / 2,
+    backEaveHeight,
+    -length / 2,
+    // Peak Calcs
+    -width / 2 + backPeakOffset,
+    peakHeight,
+    -length / 2,
+    -width / 2 + backPeakOffset,
+    peakHeight,
+    length / 2,
+  ]);
+  const indices = [
+    1,
+    2,
+    9,
+    1,
+    9,
+    3,
+    1,
+    3,
+    0, // Left Endwall face
+    5,
+    6,
+    8,
+    5,
+    8,
+    7,
+    5,
+    7,
+    4, // Right Endwall face
+    0,
+    3,
+    7,
+    7,
+    4,
+    0, // Back Sidewall face
+    1,
+    5,
+    6,
+    6,
+    2,
+    1, // Front Sidewall face
+    0,
+    4,
+    5,
+    5,
+    1,
+    0, // Bottom face
+  ];
+  buildingGeometry.setAttribute(
+    'position',
+    new THREE.BufferAttribute(vertices, 3)
+  );
+  buildingGeometry.setIndex(indices);
+  buildingGeometry.computeVertexNormals();
+
+  const buildingMaterial = new THREE.MeshBasicMaterial({
+    color: 0xcccccc,
+    transparent: true,
+    opacity: 0.7,
+  });
+  const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
+
+  // Create roof
+  const roofGeometry = createNonSymmetricalRoofGeometry(
+    width,
+    length,
+    backEaveHeight,
+    frontEaveHeight,
+    roofHeight,
+    backPeakOffset
+  );
+  const roofMaterial = new THREE.MeshBasicMaterial({
+    color: 0xcccccc,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.7,
+  });
+  const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+
+  // Add edges
+  const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+  const buildingEdges = new THREE.EdgesGeometry(buildingGeometry);
+  const buildingLines = new THREE.LineSegments(buildingEdges, edgesMaterial);
+
+  const roofEdges = new THREE.EdgesGeometry(roofGeometry);
+  const roofLines = new THREE.LineSegments(roofEdges, edgesMaterial);
+
+  return { building, roof, buildingLines, roofLines };
+};
+
+const createNonSymmetricalRoofGeometry = (
+  width,
+  length,
+  backEaveHeight,
+  frontEaveHeight,
+  roofHeight,
+  backPeakOffset
+) => {
+  const roofGeometry = new THREE.BufferGeometry();
+  const peakHeight = Math.max(backEaveHeight, frontEaveHeight) + roofHeight;
+  const peakPosition = -width / 2 + backPeakOffset;
+
+  const vertices = new Float32Array([
+    // Front eave
+    width / 2,
+    frontEaveHeight,
+    -length / 2,
+    width / 2,
+    frontEaveHeight,
+    length / 2,
+    // Peak
+    peakPosition,
+    peakHeight,
+    -length / 2,
+    peakPosition,
+    peakHeight,
+    length / 2,
+    // Back eave
+    -width / 2,
+    backEaveHeight,
+    -length / 2,
+    -width / 2,
+    backEaveHeight,
+    length / 2,
+  ]);
+
+  const indices = [
+    0,
+    1,
+    2,
+    2,
+    1,
+    3, // Front slope
+    4,
+    5,
+    3,
+    4,
+    3,
+    2, // Back slope
+  ];
+
+  roofGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+  roofGeometry.setIndex(indices);
+  roofGeometry.computeVertexNormals();
+
+  return roofGeometry;
+};
+
+// todo: Fix addBayLines to work with other shapes
 export const addBayLines = (spacing, wall, scene, buildingData) => {
   // Check if spacing is undefined, null, or an empty array
   if (!spacing || spacing.length === 0) {
