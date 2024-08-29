@@ -455,67 +455,263 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
       return; // Skip drawing a line for the first bay
     }
 
-    const { width, length, eaveHeight, roofPitch } = buildingData;
-    const roofHeight =
-      (width / 2) * Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
+    const {
+      shape,
+      width,
+      length,
+      eaveHeight,
+      lowEaveHeight,
+      highEaveHeight,
+      backEaveHeight,
+      frontEaveHeight,
+      backPeakOffset,
+      backRoofPitch,
+      frontRoofPitch,
+      roofPitch,
+    } = buildingData;
 
-    let start, end, height, roofStart, roofMid, roofEnd;
+    let start,
+      end,
+      height,
+      roofStart,
+      roofMid,
+      roofEnd,
+      roofHeight,
+      frontMax,
+      backMax;
 
-    switch (wall) {
-      case 'leftEndwall':
-      case 'rightEndwall':
-        height =
-          (width / 2 - Math.abs(width / 2 - position)) *
-          Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
-        start = new THREE.Vector3(
-          width / 2 - position,
-          0,
-          wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
-        );
-        end = new THREE.Vector3(
-          width / 2 - position,
-          eaveHeight + height,
-          wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
-        );
-        createLine(start, end);
+    switch (shape) {
+      case 'symmetrical':
+        roofHeight =
+          (width / 2) * Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
+
+        switch (wall) {
+          case 'leftEndwall':
+          case 'rightEndwall':
+            height =
+              (width / 2 - Math.abs(width / 2 - position)) *
+              Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
+            start = new THREE.Vector3(
+              width / 2 - position,
+              0,
+              wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
+            );
+            end = new THREE.Vector3(
+              width / 2 - position,
+              eaveHeight + height,
+              wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
+            );
+            createLine(start, end);
+            break;
+          case 'frontSidewall':
+          case 'backSidewall':
+            // Front sidewall line
+            start = new THREE.Vector3(
+              -width / 2 - 0.1,
+              0,
+              -length / 2 + position
+            );
+            end = new THREE.Vector3(
+              -width / 2 - 0.1,
+              eaveHeight,
+              -length / 2 + position
+            );
+            createLine(start, end);
+
+            // Back sidewall line
+            start = new THREE.Vector3(
+              width / 2 + 0.1,
+              0,
+              -length / 2 + position
+            );
+            end = new THREE.Vector3(
+              width / 2 + 0.1,
+              eaveHeight,
+              -length / 2 + position
+            );
+            createLine(start, end);
+
+            // Roof line
+            roofStart = new THREE.Vector3(
+              -width / 2,
+              eaveHeight,
+              -length / 2 + position
+            );
+            roofMid = new THREE.Vector3(
+              0,
+              eaveHeight + roofHeight,
+              -length / 2 + position
+            );
+            roofEnd = new THREE.Vector3(
+              width / 2,
+              eaveHeight,
+              -length / 2 + position
+            );
+            createRoofLine(roofStart, roofMid, roofEnd);
+            break;
+        }
         break;
-      case 'frontSidewall':
-      case 'backSidewall':
-        // Front sidewall line
-        start = new THREE.Vector3(-width / 2 - 0.1, 0, -length / 2 + position);
-        end = new THREE.Vector3(
-          -width / 2 - 0.1,
-          eaveHeight,
-          -length / 2 + position
-        );
-        createLine(start, end);
+      case 'singleSlope':
+      case 'leanTo':
+        switch (wall) {
+          case 'leftEndwall':
+          case 'rightEndwall':
+            height = lowEaveHeight + (position * roofPitch) / 12;
+            start = new THREE.Vector3(
+              -width / 2 + position,
+              0,
+              wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
+            );
+            end = new THREE.Vector3(
+              -width / 2 + position,
+              height,
+              wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
+            );
+            createLine(start, end);
+            break;
+          case 'frontSidewall':
+          case 'backSidewall':
+            // Front sidewall line
+            start = new THREE.Vector3(
+              width / 2 + 0.1,
+              0,
+              -length / 2 + position
+            );
+            end = new THREE.Vector3(
+              width / 2 + 0.1,
+              highEaveHeight,
+              -length / 2 + position
+            );
+            createLine(start, end);
 
-        // Back sidewall line
-        start = new THREE.Vector3(width / 2 + 0.1, 0, -length / 2 + position);
-        end = new THREE.Vector3(
-          width / 2 + 0.1,
-          eaveHeight,
-          -length / 2 + position
-        );
-        createLine(start, end);
+            // Back sidewall line
+            start = new THREE.Vector3(
+              -width / 2 - 0.1,
+              0,
+              -length / 2 + position
+            );
+            end = new THREE.Vector3(
+              -width / 2 - 0.1,
+              lowEaveHeight,
+              -length / 2 + position
+            );
+            createLine(start, end);
 
-        // Roof line
-        roofStart = new THREE.Vector3(
-          -width / 2,
-          eaveHeight,
-          -length / 2 + position
-        );
-        roofMid = new THREE.Vector3(
-          0,
-          eaveHeight + roofHeight,
-          -length / 2 + position
-        );
-        roofEnd = new THREE.Vector3(
-          width / 2,
-          eaveHeight,
-          -length / 2 + position
-        );
-        createRoofLine(roofStart, roofMid, roofEnd);
+            // Roof line
+            roofStart = new THREE.Vector3(
+              -width / 2,
+              lowEaveHeight + 0.1,
+              -length / 2 + position
+            );
+            roofEnd = new THREE.Vector3(
+              width / 2,
+              highEaveHeight + 0.1,
+              -length / 2 + position
+            );
+            createLine(roofStart, roofEnd);
+            break;
+        }
+        break;
+      case 'nonSymmetrical':
+        roofHeight =
+          (width / 2) * Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
+
+        switch (wall) {
+          case 'leftEndwall':
+            height =
+              position < backPeakOffset
+                ? backEaveHeight +
+                  position *
+                    Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180)
+                : frontEaveHeight +
+                  (width - position) *
+                    Math.tan((((frontRoofPitch * 100) / 12) * Math.PI) / 180);
+            start = new THREE.Vector3(
+              -width / 2 + position,
+              0,
+              length / 2 + 0.1
+            );
+            end = new THREE.Vector3(
+              -width / 2 + position,
+              height,
+              length / 2 + 0.1
+            );
+            createLine(start, end);
+            break;
+          case 'rightEndwall':
+            height =
+              width - position < backPeakOffset
+                ? backEaveHeight +
+                  (width - position) *
+                    Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180)
+                : frontEaveHeight +
+                  position *
+                    Math.tan((((frontRoofPitch * 100) / 12) * Math.PI) / 180);
+            start = new THREE.Vector3(
+              width / 2 - position,
+              0,
+              -length / 2 - 0.1
+            );
+            end = new THREE.Vector3(
+              width / 2 - position,
+              height,
+              -length / 2 - 0.1
+            );
+            createLine(start, end);
+            break;
+          case 'frontSidewall':
+          case 'backSidewall':
+            // Front sidewall line
+            start = new THREE.Vector3(
+              width / 2 + 0.1,
+              0,
+              -length / 2 + position
+            );
+            end = new THREE.Vector3(
+              width / 2 + 0.1,
+              frontEaveHeight,
+              -length / 2 + position
+            );
+            createLine(start, end);
+
+            // Back sidewall line
+            start = new THREE.Vector3(
+              -width / 2 - 0.1,
+              0,
+              -length / 2 + position
+            );
+            end = new THREE.Vector3(
+              -width / 2 - 0.1,
+              backEaveHeight,
+              -length / 2 + position
+            );
+            createLine(start, end);
+
+            frontMax =
+              frontEaveHeight +
+              ((width - backPeakOffset) * frontRoofPitch) / 12;
+
+            backMax = backEaveHeight + (backPeakOffset * frontRoofPitch) / 12;
+
+            // Roof line
+            roofStart = new THREE.Vector3(
+              width / 2,
+              frontEaveHeight,
+              -length / 2 + position
+            );
+            roofMid = new THREE.Vector3(
+              -width / 2 + backPeakOffset,
+              Math.max(frontMax, backMax),
+              -length / 2 + position
+            );
+            roofEnd = new THREE.Vector3(
+              -width / 2,
+              backEaveHeight,
+              -length / 2 + position
+            );
+            createRoofLine(roofStart, roofMid, roofEnd);
+            break;
+        }
         break;
     }
 

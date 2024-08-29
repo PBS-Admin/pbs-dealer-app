@@ -63,8 +63,6 @@ export const useThreeSetup = (
       const maxDimension = Math.max(width, length, eaveHeight);
       const distance = maxDimension * 1.15;
 
-      console.log(shape);
-
       const vertHeight = (() => {
         switch (shape) {
           case 'symmetrical':

@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.1.2] - 2024-08-24
+## [0.1.3] - 2024-08-28
 
 ###### Goal of change is to start work on Building Sketch and finish adding input fields and layout
 
@@ -14,6 +14,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 ### Fixed
+
+## [0.1.2] - 2024-08-24
+
+###### Goal of change is to start work on Building Sketch and finish adding input fields and layout
+
+### Added
+
+- Added Building Sketches for other building shapes, singleSlope, leanTo, nonSymmetrical
+
+- Added bay spacing and bracing lines for symmetrical buildings
+
+- Added additional components for input validation
+
+- Added Hooks for navigation and for Three.js 3D sketch
+
+### Changed
+
+- Changed styling for main components on building project page
+
+### Fixed
+
+- Refactored codebase to separate logic for selected pages from their individual inputs in the form
 
 ## [0.1.1] - 2024-08-07
 
