@@ -27,7 +27,7 @@ function useFormState(initialState) {
                 // Calculate roof pitch if we have all necessary values
                 if (
                   width > 0 &&
-                  lowEaveHeight >= 0 &&
+                  lowEaveHeight > 0 &&
                   highEaveHeight > lowEaveHeight
                 ) {
                   const calculatedPitch =
@@ -41,7 +41,7 @@ function useFormState(initialState) {
 
               case 'roofPitch':
                 // Adjust highEaveHeight based on new roof pitch
-                if (width > 0 && lowEaveHeight >= 0 && roofPitch >= 0) {
+                if (width > 0 && lowEaveHeight > 0 && roofPitch > 0) {
                   const rise = (width * roofPitch) / 12;
                   updatedBuilding.highEaveHeight = Number(
                     (lowEaveHeight + rise).toFixed(2)
@@ -51,9 +51,42 @@ function useFormState(initialState) {
             }
           }
           // Future expansion for nonSymmetrical shape
-          else if (building.shape === 'nonSymmetrical') {
-            // Add calculations for nonSymmetrical shape here
-          }
+          // else if (building.shape === 'nonSymmetrical') {
+          //   const {
+          //     width,
+          //     backPeakOffset,
+          //     backEaveHeight,
+          //     frontEaveHeight,
+          //     backRoofPitch,
+          //     frontRoofPitch,
+          //   } = updatedBuilding;
+
+          //   switch (field) {
+          //     case 'width':
+          //     case 'lowEaveHeight':
+          //     case 'highEaveHeight':
+          //       // Calculate roof pitch if we have all necessary values
+          //       if (width > 0 && backEaveHeight > 0 && frontEaveHeight > 0) {
+          //         const calculatedPitch =
+          //           ((highEaveHeight - lowEaveHeight) / width) * 12;
+          //         updatedBuilding.roofPitch = Math.min(
+          //           6,
+          //           Math.max(0, Number(calculatedPitch.toFixed(2)))
+          //         );
+          //       }
+          //       break;
+
+          //     case 'roofPitch':
+          //       // Adjust highEaveHeight based on new roof pitch
+          //       if (width > 0 && lowEaveHeight > 0 && roofPitch > 0) {
+          //         const rise = (width * roofPitch) / 12;
+          //         updatedBuilding.highEaveHeight = Number(
+          //           (lowEaveHeight + rise).toFixed(2)
+          //         );
+          //       }
+          //       break;
+          //   }
+          // }
 
           return updatedBuilding;
         }
