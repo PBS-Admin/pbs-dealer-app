@@ -27,10 +27,10 @@ const useNavigation = (activeBuilding, initialIndex = 0) => {
       id: 'bldg-options',
       label: 'Building ' + (activeBuilding + 1) + ' - Options',
     },
-    {
-      id: 'bldg-cranes',
-      label: 'Building ' + (activeBuilding + 1) + ' - Cranes',
-    },
+    // {
+    //   id: 'bldg-cranes',
+    //   label: 'Building ' + (activeBuilding + 1) + ' - Cranes',
+    // },
     {
       id: 'bldg-openings',
       label: 'Building ' + (activeBuilding + 1) + ' - Openings',

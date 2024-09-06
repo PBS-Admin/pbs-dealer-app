@@ -84,6 +84,70 @@ function useFormState(initialState) {
     }));
   };
 
+  const handleWainscotChange = (buildingIndex, wainscotIndex, field, value) => {
+    setValues((prev) => ({
+      ...prev,
+      buildings: prev.buildings.map((building, bIndex) =>
+        bIndex === buildingIndex
+          ? {
+              ...building,
+              wainscots: building.wainscots.map((wainscot, wIndex) =>
+                wIndex === wainscotIndex
+                  ? { ...wainscot, [field]: value }
+                  : wainscot
+              ),
+            }
+          : building
+      ),
+    }));
+  };
+
+  const handlePartialWallChange = (
+    buildingIndex,
+    partialWallIndex,
+    field,
+    value
+  ) => {
+    setValues((prev) => ({
+      ...prev,
+      buildings: prev.buildings.map((building, bIndex) =>
+        bIndex === buildingIndex
+          ? {
+              ...building,
+              partialWalls: building.partialWalls.map((partialWall, pwIndex) =>
+                pwIndex === partialWallIndex
+                  ? { ...partialWall, [field]: value }
+                  : partialWall
+              ),
+            }
+          : building
+      ),
+    }));
+  };
+
+  const handleWallSkirtChange = (
+    buildingIndex,
+    wallSkirtIndex,
+    field,
+    value
+  ) => {
+    setValues((prev) => ({
+      ...prev,
+      buildings: prev.buildings.map((building, bIndex) =>
+        bIndex === buildingIndex
+          ? {
+              ...building,
+              wallSkirts: building.wallSkirts.map((wallSkirt, wsIndex) =>
+                wsIndex === wallSkirtIndex
+                  ? { ...wallSkirt, [field]: value }
+                  : wallSkirt
+              ),
+            }
+          : building
+      ),
+    }));
+  };
+
   return {
     values,
     lastChangedWall,
@@ -92,6 +156,9 @@ function useFormState(initialState) {
     handleCanopyChange,
     handlePartitionChange,
     handleLinerPanelChange,
+    handleWainscotChange,
+    handlePartialWallChange,
+    handleWallSkirtChange,
     setValues,
   };
 }

@@ -219,3 +219,29 @@ export const orientations = [
   { id: 't', label: 'Transverse' },
   { id: 'l', label: 'Longitudinal' },
 ];
+
+export const panelOptions = [
+  { id: 'break', label: 'Break Panel' },
+  { id: 'lap', label: 'Lap Panel' },
+];
+
+export const topOfWall = [
+  { id: 'ba', label: 'Base Angle' },
+  { id: 'bc', label: 'Base Channel' },
+  { id: 'cg', label: 'Cee Girt' },
+  { id: 'hrc', label: 'Hot Rolled Channel' },
+  { id: 'hrb', label: 'Hot Rolled Beam' },
+];
+
+export const polycarbWallSize = [
+  { id: '3', label: '3\'-0""' },
+  { id: '4', label: '4\'-0""' },
+  { id: '5', label: '5\'-0""' },
+];
+
+export const polycarbRoofSize = [{ id: '10', label: '10\'-0""' }];
+
+export const polycarbColor = [
+  { id: 'clear', label: 'Clear' },
+  { id: 'white', label: 'White' },
+];

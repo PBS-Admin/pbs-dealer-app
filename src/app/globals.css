@@ -73,7 +73,7 @@ h2, h3{
 }
 
 p{
-  color: var(--background-white);
+  color: var(--black);
 }
 
 /* !! Global Class Styles */
@@ -213,6 +213,31 @@ p{
   margin: .5em; 
 }
 
+.wainscotGrid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(50px, 1fr));  
+  gap: .25em;
+  align-items: center; 
+  margin: .5em; 
+}
+
+.polycarbGrid{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(50px, 1fr));  
+  gap: .25em;
+  align-items: center;   
+  margin: .5em;  
+}
+
+.small{  
+  font-size: .65em;  
+  align-self: center;
+}
+
+.hidden{
+  display: none;
+}
+
 .radioGroup{
   accent-color: var(--dark-blue);
   display: flex;    
@@ -305,6 +330,10 @@ p{
   margin-block: .5em;  
   height: 1px;
   background: var(--div-gradient);
+}
+
+.full{
+  grid-column: span 8;
 }
 
 .column{
@@ -585,6 +614,14 @@ p{
 
   .linerGrid{    
     grid-template-columns: repeat(4, minmax(50px, 1fr)) 2em;        
+  }
+
+  .wainscotGrid{    
+    grid-template-columns: repeat(5, minmax(50px, 1fr)) 2em;        
+  }
+
+  .polycarbGrid{    
+    grid-template-columns: repeat(7, minmax(50px, 1fr));        
   }
 
   .w5{
