@@ -141,6 +141,12 @@ export const initialState = {
       frontRoofPolySize: '10',
       frontRoofPolyColor: 'clear',
       frontRoofPolyQty: '',
+      openings: {
+        fsw: [],
+        bsw: [],
+        lew: [],
+        rew: [],
+      },
     },
   ],
 };

@@ -148,6 +148,33 @@ function useFormState(initialState) {
     }));
   };
 
+  const handleOpeningChange = (
+    buildingIndex,
+    wall,
+    openingIndex,
+    field,
+    value
+  ) => {
+    setValues((prev) => ({
+      ...prev,
+      buildings: prev.buildings.map((building, bIndex) =>
+        bIndex === buildingIndex
+          ? {
+              ...building,
+              openings: {
+                ...building.openings,
+                [wall]: building.openings[wall].map((opening, oIndex) =>
+                  oIndex === openingIndex
+                    ? { ...opening, [field]: value }
+                    : opening
+                ),
+              },
+            }
+          : building
+      ),
+    }));
+  };
+
   return {
     values,
     lastChangedWall,
@@ -159,6 +186,7 @@ function useFormState(initialState) {
     handleWainscotChange,
     handlePartialWallChange,
     handleWallSkirtChange,
+    handleOpeningChange,
     setValues,
   };
 }

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, Fragment, act } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import styles from './page.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -21,8 +21,9 @@ import QuoteInformation from '../../../components/quoteSections/QuoteInformation
 import DesignCodes from '../../../components/quoteSections/DesignCodes';
 import BuildingLayout from '../../../components/quoteSections/BuildingLayout';
 import BuildingOptions from '../../../components/quoteSections/BuildingOptions';
-import BuildingExtensions from '../../..//components/quoteSections/BuildingExtensions';
-import BuildingPartitions from '../../..//components/quoteSections/BuildingPartitions';
+import BuildingExtensions from '../../../components/quoteSections/BuildingExtensions';
+import BuildingPartitions from '../../../components/quoteSections/BuildingPartitions';
+import BuildingOpenings from '../../../components/quoteSections/BuildingOpenings';
 
 import CopyBuildingDialog from '../../../components/CopyBuildingDialog';
 import DeleteDialog from '../../../components/DeleteDialog';
@@ -54,6 +55,7 @@ export default function ClientQuote({ session }) {
     handleWainscotChange,
     handlePartialWallChange,
     handleWallSkirtChange,
+    handleOpeningChange,
     setValues,
   } = useFormState(initialState);
 
@@ -174,6 +176,12 @@ export default function ClientQuote({ session }) {
           frontRoofPolySize: '10',
           frontRoofPolyColor: 'clear',
           frontRoofPolyQty: '',
+          openings: {
+            fsw: [],
+            bsw: [],
+            lew: [],
+            rew: [],
+          },
         },
       ],
     }));
@@ -553,7 +561,17 @@ export default function ClientQuote({ session }) {
           </>
         )}
         {activeCard == 'bldg-cranes' && <section></section>}
-        {activeCard == 'bldg-openings' && <section></section>}
+        {activeCard == 'bldg-openings' && (
+          <>
+            <BuildingOpenings
+              values={values}
+              activeBuilding={activeBuilding}
+              handleOpeningChange={handleOpeningChange}
+              setValues={setValues}
+              isDesktop={isDesktop}
+            />
+          </>
+        )}
         {activeCard == 'accessories' && <section></section>}
         {activeCard == 'finalize-quote' && (
           <section>

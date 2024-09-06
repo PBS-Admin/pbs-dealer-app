@@ -142,7 +142,7 @@ p{
   display: grid;
   background-color: var(--background-white);
   border-radius: 1em;
-  padding: .75em;  
+  padding: .75em;    
 }
 
 .card header{
@@ -227,6 +227,19 @@ p{
   gap: .25em;
   align-items: center;   
   margin: .5em;  
+}
+
+.openingGrid{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(50px, 1fr));  
+  gap: .25em;
+  align-items: center;   
+  margin: .5em;  
+}
+
+.fullWidth{
+  grid-column: span 4;
+
 }
 
 .small{  
@@ -345,6 +358,42 @@ p{
 
 .column input, .column input:focus{  
   outline: none;
+}
+
+.tabsContainer {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.tabsContainer::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+.tabList {
+  display: flex;
+  border-bottom: 1px solid var(--background-white);
+  margin-bottom: 16px;
+  min-width: max-content;
+  padding-bottom: 2px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.activeTab {
+  border-bottom: 2px solid var(--light-blue);
+  color: var(--light-blue);  
 }
 
 
@@ -621,6 +670,10 @@ p{
   }
 
   .polycarbGrid{    
+    grid-template-columns: repeat(7, minmax(50px, 1fr));        
+  }
+
+  .openingGrid{    
     grid-template-columns: repeat(7, minmax(50px, 1fr));        
   }
 

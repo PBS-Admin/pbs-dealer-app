@@ -21,58 +21,86 @@ const BuildingPartitions = ({
   const [activePartition, setActivePartition] = useState(0);
 
   const addPartition = (buildingIndex) => {
-    setValues((prev) => ({
-      ...prev,
-      buildings: prev.buildings.map((building, index) =>
-        index === buildingIndex
-          ? {
-              ...building,
-              partitions: [
-                ...building.partitions,
-                {
-                  orientation: 't',
-                  start: '',
-                  end: '',
-                  offset: '',
-                  height: '',
-                  baySpacing: '',
-                  insulation: 'vrr4',
-                  leftPanelType: 'pbr',
-                  leftPanelGauge: '',
-                  leftPanelFinish: '',
-                  rightPanelType: 'pbr',
-                  rightPanelGauge: '',
-                  rightPanelFinish: '',
-                },
-              ],
-            }
-          : building
-      ),
-    }));
+    setValues((prev) => {
+      const newBuilding = { ...prev.buildings[buildingIndex] };
+      const newPartitionIndex = newBuilding.partitions.length;
+
+      // Add new partition
+      newBuilding.partitions = [
+        ...newBuilding.partitions,
+        {
+          orientation: 't',
+          start: '',
+          end: '',
+          offset: '',
+          height: '',
+          baySpacing: '',
+          insulation: 'vrr4',
+          leftPanelType: 'pbr',
+          leftPanelGauge: '',
+          leftPanelFinish: '',
+          rightPanelType: 'pbr',
+          rightPanelGauge: '',
+          rightPanelFinish: '',
+        },
+      ];
+
+      // Add new wall to openings
+      const newWallKey = `partition${newPartitionIndex + 1}`;
+      newBuilding.openings = {
+        ...newBuilding.openings,
+        [newWallKey]: [],
+      };
+
+      return {
+        ...prev,
+        buildings: prev.buildings.map((building, index) =>
+          index === buildingIndex ? newBuilding : building
+        ),
+      };
+    });
   };
 
   const removePartition = (buildingIndex, partitionIndex) => {
     setValues((prev) => {
-      const newBuildings = prev.buildings.map((building, bIndex) =>
-        bIndex === buildingIndex
-          ? {
-              ...building,
-              partitions: building.partitions.filter(
-                (_, pIndex) => pIndex !== partitionIndex
-              ),
-            }
-          : building
+      const newBuilding = { ...prev.buildings[buildingIndex] };
+
+      // Remove partition
+      newBuilding.partitions = newBuilding.partitions.filter(
+        (_, pIndex) => pIndex !== partitionIndex
       );
 
+      // Remove corresponding wall from openings
+      const wallKeyToRemove = `partition${partitionIndex + 1}`;
+      const { [wallKeyToRemove]: _, ...remainingOpenings } =
+        newBuilding.openings;
+      newBuilding.openings = remainingOpenings;
+
+      // Rename remaining partition walls in openings
+      Object.keys(newBuilding.openings)
+        .filter((key) => key.startsWith('partition'))
+        .forEach((key, index) => {
+          const newKey = `partition${index + 1}`;
+          if (key !== newKey) {
+            newBuilding.openings[newKey] = newBuilding.openings[key];
+            delete newBuilding.openings[key];
+          }
+        });
+
       // Update activePartition if necessary
-      const remainingPartitions = newBuildings[buildingIndex].partitions.length;
-      if (partitionIndex <= activePartition && activePartition > 0) {
+      const remainingPartitions = newBuilding.partitions.length;
+      if (partitionIndex <= prev.activePartition && prev.activePartition > 0) {
         setActivePartition(
-          Math.min(activePartition - 1, remainingPartitions - 1)
+          Math.min(prev.activePartition - 1, remainingPartitions - 1)
         );
       }
 
-      return { ...prev, buildings: newBuildings };
+      return {
+        ...prev,
+        buildings: prev.buildings.map((building, index) =>
+          index === buildingIndex ? newBuilding : building
+        ),
+      };
     });
   };
 
