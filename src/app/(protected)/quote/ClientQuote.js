@@ -24,6 +24,7 @@ import BuildingOptions from '../../../components/quoteSections/BuildingOptions';
 import BuildingExtensions from '../../../components/quoteSections/BuildingExtensions';
 import BuildingPartitions from '../../../components/quoteSections/BuildingPartitions';
 import BuildingOpenings from '../../../components/quoteSections/BuildingOpenings';
+import FinalizeQuote from '../../../components/quoteSections/FinalizeQuote';
 
 import CopyBuildingDialog from '../../../components/CopyBuildingDialog';
 import DeleteDialog from '../../../components/DeleteDialog';
@@ -573,11 +574,7 @@ export default function ClientQuote({ session }) {
           </>
         )}
         {activeCard == 'accessories' && <section></section>}
-        {activeCard == 'finalize-quote' && (
-          <section>
-            <button type="submit">Submit Quote</button>
-          </section>
-        )}
+        {activeCard == 'finalize-quote' && <FinalizeQuote />}
         {!isDesktop &&
           (values.buildings[activeBuilding].width > 0 ||
             values.buildings[activeBuilding].length > 0) && (
