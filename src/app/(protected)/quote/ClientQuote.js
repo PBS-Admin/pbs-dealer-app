@@ -30,6 +30,7 @@ import CopyBuildingDialog from '../../../components/CopyBuildingDialog';
 import DeleteDialog from '../../../components/DeleteDialog';
 import ReusableSelect from '../../../components/ReusableSelect';
 import BuildingSketch from '../../../components/BuildingSketch';
+import FeetInchesInput from '../../../components/Inputs/FeetInchesInput';
 import { logo } from '../../../../public/images';
 
 import PageHeader from '@/components/PageHeader';
@@ -57,6 +58,7 @@ export default function ClientQuote({ session }) {
     handlePartialWallChange,
     handleWallSkirtChange,
     handleOpeningChange,
+    handleCalcChange,
     setValues,
   } = useFormState(initialState);
 
@@ -381,59 +383,47 @@ export default function ClientQuote({ session }) {
                     </button>
                   </div>
                   <div className={styles.buildingProjectContainer}>
-                    <label htmlFor={`buildingWidth-${index}`}>Width:</label>
-                    <input
-                      type="text"
-                      id={`buildingWidth-${index}`}
-                      name={`buildingWidth-${index}`}
+                    <FeetInchesInput
+                      name={`buildingWidth-${activeBuilding}`}
+                      label="Width:"
                       value={building.width}
                       onChange={(name, value) =>
                         handleNestedChange(activeBuilding, 'width', value)
                       }
-                      placeholder="Feet"
+                      row={true}
                     />
                   </div>
                   <div className={styles.buildingProjectContainer}>
-                    <label htmlFor={`buildingLength-${index}`}>Length:</label>
-                    <input
-                      type="text"
-                      id={`buildingLength-${index}`}
-                      name={`buildingLength-${index}`}
+                    <FeetInchesInput
+                      name={`buildingLength-${activeBuilding}`}
+                      label="Length:"
                       value={building.length}
                       onChange={(name, value) =>
                         handleNestedChange(activeBuilding, 'length', value)
                       }
-                      placeholder="Feet"
+                      row={true}
                     />
                   </div>
                   <div className={styles.buildingProjectContainer}>
-                    <label htmlFor={`buildingOffsetX-${index}`}>
-                      Left/Right:
-                    </label>
-                    <input
-                      type="text"
-                      id={`buildingOffsetX-${index}`}
-                      name={`buildingOffsetX-${index}`}
+                    <FeetInchesInput
+                      name={`buildingOffsetX-${activeBuilding}`}
+                      label="Left/Right:"
                       value={building.offsetX}
                       onChange={(name, value) =>
                         handleNestedChange(activeBuilding, 'offsetX', value)
                       }
-                      placeholder="Feet From Left"
+                      row={true}
                     />
                   </div>
                   <div className={styles.buildingProjectContainer}>
-                    <label htmlFor={`buildingOffsetY-${index}`}>
-                      Back/Front:
-                    </label>
-                    <input
-                      type="text"
-                      id={`buildingOffsetY-${index}`}
-                      name={`buildingOffsetY-${index}`}
+                    <FeetInchesInput
+                      name={`buildingOffsetY-${activeBuilding}`}
+                      label="Back/Front:"
                       value={building.offsetY}
                       onChange={(name, value) =>
                         handleNestedChange(activeBuilding, 'offsetY', value)
                       }
-                      placeholder="Feet From Back"
+                      row={true}
                     />
                   </div>
                   <div className={styles.buildingProjectContainer}>
@@ -518,6 +508,7 @@ export default function ClientQuote({ session }) {
             values={values}
             activeBuilding={activeBuilding}
             handleNestedChange={handleNestedChange}
+            handleCalcChange={handleCalcChange}
           />
         )}
         {/* Building Extensions Page */}

@@ -305,6 +305,28 @@ p{
   outline: 1px solid var(--orange);
 }
 
+.projInput{
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 1em;
+}
+
+.calcInput{
+  display: flex;
+  justify-content: space-between;
+}
+
+.calcInput button{
+  margin-right: .5em;  
+  background-color: var(--dark-blue);
+  color: var(--background-white);
+  padding: .25em .5em;
+  border-radius: .5em;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
 .cardRow{
   display: flex;
   flex-flow: row nowrap;

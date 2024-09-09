@@ -26,7 +26,12 @@ import RoofPitchInput from '../Inputs/RoofPitchInput';
 import BaySpacingInput from '../Inputs/BaySpacingInput';
 import BaySelectionInput from '../Inputs/BaySelectionInput';
 
-const BuildingLayout = ({ values, activeBuilding, handleNestedChange }) => {
+const BuildingLayout = ({
+  values,
+  activeBuilding,
+  handleNestedChange,
+  handleCalcChange,
+}) => {
   const selectedRoofPanel = roofPanels.find(
     (panel) => panel.id === values.buildings[activeBuilding].roofPanelType
   );
@@ -109,6 +114,8 @@ const BuildingLayout = ({ values, activeBuilding, handleNestedChange }) => {
                 onChange={(name, value) =>
                   handleNestedChange(activeBuilding, 'lowEaveHeight', value)
                 }
+                calc={true}
+                onCalc={() => handleCalcChange(activeBuilding, 'lowEaveHeight')}
               />
               <FeetInchesInput
                 name={`buildingHighEaveHeight-${activeBuilding}`}
@@ -117,10 +124,27 @@ const BuildingLayout = ({ values, activeBuilding, handleNestedChange }) => {
                 onChange={(name, value) =>
                   handleNestedChange(activeBuilding, 'highEaveHeight', value)
                 }
+                calc={true}
+                onCalc={() =>
+                  handleCalcChange(activeBuilding, 'highEaveHeight')
+                }
               />
             </>
           )}
-          {values.buildings[activeBuilding].shape != 'nonSymmetrical' && (
+          {(values.buildings[activeBuilding].shape == 'singleSlope' ||
+            values.buildings[activeBuilding].shape == 'leanTo') && (
+            <RoofPitchInput
+              name={`buildingRoofPitch-${activeBuilding}`}
+              label="Roof Pitch:"
+              value={values.buildings[activeBuilding].roofPitch}
+              onChange={(name, value) =>
+                handleNestedChange(activeBuilding, 'roofPitch', value)
+              }
+              calc={true}
+              onCalc={() => handleCalcChange(activeBuilding, 'roofPitch')}
+            />
+          )}
+          {values.buildings[activeBuilding].shape == 'symmetrical' && (
             <RoofPitchInput
               name={`buildingRoofPitch-${activeBuilding}`}
               label="Roof Pitch:"

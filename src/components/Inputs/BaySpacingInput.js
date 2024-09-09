@@ -110,6 +110,7 @@ const BaySpacingInput = ({
         onBlur={handleBlur}
         // onFocus={suggestDistribution}
         placeholder="25'-0&quot;, 25'-0&quot; or 4x20"
+        onFocus={(e) => e.target.select()}
       />
       {error && <div style={{ color: 'red', fontSize: '0.8em' }}>{error}</div>}
     </div>

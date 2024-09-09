@@ -31,7 +31,15 @@ const parseFeetInches = (input) => {
   return null;
 };
 
-const FeetInchesInput = ({ value, onChange, name, label }) => {
+const FeetInchesInput = ({
+  value,
+  onChange,
+  name,
+  label,
+  row,
+  calc,
+  onCalc,
+}) => {
   const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
@@ -58,9 +66,20 @@ const FeetInchesInput = ({ value, onChange, name, label }) => {
     }
   };
 
+  const condition = row ? 'projInput' : '';
+  const calcClass = calc ? 'calcInput' : '';
+
   return (
-    <div className="cardInput">
-      <label htmlFor={name}>{label}</label>
+    <div className={`cardInput ${condition}`}>
+      <div className={`${calcClass}`}>
+        <label htmlFor={name}>{label}</label>
+        {calc && (
+          <button type="button" onClick={onCalc}>
+            Calc
+          </button>
+        )}
+      </div>
+
       <input
         type="text"
         id={name}
@@ -69,6 +88,7 @@ const FeetInchesInput = ({ value, onChange, name, label }) => {
         onChange={handleInputChange}
         onBlur={handleBlur}
         placeholder="0'-0&quot;"
+        onFocus={(e) => e.target.select()}
       />
     </div>
   );

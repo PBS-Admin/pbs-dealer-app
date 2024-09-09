@@ -18,7 +18,7 @@ const parseRoofPitch = (input) => {
   return null;
 };
 
-const RoofPitchInput = ({ value, onChange, name, label }) => {
+const RoofPitchInput = ({ value, onChange, name, label, calc, onCalc }) => {
   const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
@@ -41,9 +41,18 @@ const RoofPitchInput = ({ value, onChange, name, label }) => {
     }
   };
 
+  const calcClass = calc ? 'calcInput' : '';
+
   return (
     <div className="cardInput">
-      <label htmlFor={name}>{label}</label>
+      <div className={`${calcClass}`}>
+        <label htmlFor={name}>{label}</label>
+        {calc && (
+          <button type="button" onClick={onCalc}>
+            Calc
+          </button>
+        )}
+      </div>
       <input
         type="text"
         id={name}
@@ -52,6 +61,7 @@ const RoofPitchInput = ({ value, onChange, name, label }) => {
         onChange={handleInputChange}
         onBlur={handleBlur}
         placeholder="0:12"
+        onFocus={(e) => e.target.select()}
       />
     </div>
   );

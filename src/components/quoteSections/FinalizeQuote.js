@@ -8,8 +8,9 @@ const QuoteInformation = ({ values, handleChange }) => {
           <h3>Finalize Quote</h3>
         </header>
         <div className="cardGrid">
-          <div></div>
-          <button type="submit">Submit Quote</button>
+          <div className="cardInput">
+            <button type="submit">Submit Quote</button>
+          </div>
         </div>
       </section>
     </>

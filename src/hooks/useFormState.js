@@ -175,6 +175,59 @@ function useFormState(initialState) {
     }));
   };
 
+  const handleCalcChange = (buildingIndex, field) => {
+    setValues((prev) => {
+      const building = prev.buildings[buildingIndex];
+      const { width, lowEaveHeight, highEaveHeight, roofPitch } = building;
+
+      let calculatedValue;
+
+      switch (field) {
+        case 'lowEaveHeight':
+          calculatedValue = highEaveHeight - (width * roofPitch) / 12;
+          break;
+        case 'highEaveHeight':
+          calculatedValue = lowEaveHeight + (width * roofPitch) / 12;
+          break;
+        case 'roofPitch':
+          calculatedValue = ((highEaveHeight - lowEaveHeight) / width) * 12;
+          break;
+        default:
+          return prev; // If the field is not recognized, return the previous state unchanged
+      }
+
+      // Round the calculated value to 2 decimal places
+      calculatedValue = Math.round(calculatedValue * 100) / 100;
+
+      // Perform validation
+      if (
+        field === 'roofPitch' &&
+        (calculatedValue < 0 || calculatedValue > 12 || isNaN(calculatedValue))
+      ) {
+        console.error('Calculated roof pitch is out of valid range (0-12)');
+        return prev; // Return previous state if validation fails
+      }
+
+      if (
+        (field === 'lowEaveHeight' || field === 'highEaveHeight') &&
+        calculatedValue <= 0
+      ) {
+        console.error('Calculated eave height must be greater than 0');
+        return prev; // Return previous state if validation fails
+      }
+
+      // If all checks pass, update the state
+      return {
+        ...prev,
+        buildings: prev.buildings.map((building, index) =>
+          index === buildingIndex
+            ? { ...building, [field]: calculatedValue }
+            : building
+        ),
+      };
+    });
+  };
+
   return {
     values,
     lastChangedWall,
@@ -187,6 +240,7 @@ function useFormState(initialState) {
     handlePartialWallChange,
     handleWallSkirtChange,
     handleOpeningChange,
+    handleCalcChange,
     setValues,
   };
 }
