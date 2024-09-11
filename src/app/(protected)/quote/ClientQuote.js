@@ -35,15 +35,17 @@ import { logo } from '../../../../public/images';
 
 import PageHeader from '@/components/PageHeader';
 
-export default function ClientQuote({ session }) {
+export default function ClientQuote({ session, quoteId, initialQuoteData }) {
   // State variables
   const [isDesktop, setDesktop] = useState(false);
   const [activeBuilding, setActiveBuilding] = useState(0);
+  const [currentQuote, setCurrentQuote] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [buildingToDelete, setBuildingToDelete] = useState(null);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [sourceBuildingIndex, setSourceBuildingIndex] = useState(0);
+  const [error, setError] = useState('');
 
   // Hooks
   const {
@@ -272,14 +274,43 @@ export default function ClientQuote({ session }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted with values:', values);
-    // Here you would typically send the data to your backend
+    setError('');
+
+    let company = session.user.company;
+
+    try {
+      const response = await fetch('/api/auth/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentQuote, company, values }),
+      });
+
+      if (response.ok) {
+        // router.push('/dashboard');
+        const data = await response.json();
+        if (isNaN(data.message)) {
+          console.log(data.message);
+        } else {
+          setCurrentQuote(data.message);
+        }
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Something went wrong');
+      }
+    } catch (error) {
+      setError('An error occurred. Please try again.');
+    }
   };
 
   // Checking for screen width to conditionally render DOM elements
   useEffect(() => {
+    if (initialQuoteData) {
+      console.log('initial quote data is changed');
+      setValues(initialQuoteData);
+    }
+
     if (window.innerWidth > 1000) {
       setDesktop(true);
     } else {
@@ -295,7 +326,7 @@ export default function ClientQuote({ session }) {
     };
     window.addEventListener('resize', updateMedia);
     return () => window.removeEventListener('resize', updateMedia);
-  }, [currentIndex]);
+  }, [initialQuoteData, currentIndex]);
 
   return (
     <main>

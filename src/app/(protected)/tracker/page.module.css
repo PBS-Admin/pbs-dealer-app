@@ -1,0 +1,19 @@
+.quoteTable {
+    margin-top: 20px;
+    width: 100%;
+  }
+  
+  .quoteTable table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .quoteTable th, .quoteTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .quoteTable th {
+    background-color: #f2f2f2;
+  }

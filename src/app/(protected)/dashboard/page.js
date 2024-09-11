@@ -31,8 +31,8 @@ export default async function Dashboard() {
             className={styles.dashImage}
           />
         </Link>
-        <Link href="/quote" className={styles.buttonCard}>
-          <h3 className={styles.cardTitle}>Create New Quote</h3>
+        <Link href="/tracker" className={styles.buttonCard}>
+          <h3 className={styles.cardTitle}>Open Quotes</h3>
           <Image
             alt="PBS Buildings Logo"
             src={newQuote}
