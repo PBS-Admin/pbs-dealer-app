@@ -7,13 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.1.4] - 2024-09-05
 
-###### Goal of change is to correct the building layout input fields that are interdependent and provide valid input into the building sketch
+###### Goal of change is to ensure that quotes can be saved, updated, retrieved and deleted from the database
 
 ### Added
+ 
+ - Added api endpoints for open quotes, deleting quotes, and saving quotes to the database
+ - Added a tracker page to display quotes that are tied to your company
  
 ### Changed
 
 ### Fixed
+
+- Fixed Building Sketches to work for multiple shapes and corrected bay and bracing lines to work with all shapes. 
 
 ## [0.1.3] - 2024-08-28
 
@@ -42,9 +47,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Added Hooks for navigation and for Three.js 3D sketch
 
-### Changed
+- Added Building Sketches for other building shapes, singleSlope, leanTo, nonSymmetrical
 
- - Changed styling for main components on building project page
+- Added bay spacing and bracing lines for symmetrical buildings
+
+- Added additional components for input validation
+
+- Added Hooks for navigation and for Three.js 3D sketch
+
+### Changed
 
 ### Fixed
 

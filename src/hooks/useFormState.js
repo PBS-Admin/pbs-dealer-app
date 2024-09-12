@@ -10,12 +10,92 @@ function useFormState(initialState) {
   };
 
   const handleNestedChange = (buildingIndex, field, value) => {
-    setValues((prev) => ({
-      ...prev,
-      buildings: prev.buildings.map((building, index) =>
-        index === buildingIndex ? { ...building, [field]: value } : building
-      ),
-    }));
+    setValues((prev) => {
+      const updatedBuildings = prev.buildings.map((building, index) => {
+        if (index === buildingIndex) {
+          let updatedBuilding = { ...building, [field]: value };
+
+          // Handle calculations for singleSlope and leanTo shapes
+          if (building.shape === 'singleSlope' || building.shape === 'leanTo') {
+            const { width, lowEaveHeight, highEaveHeight, roofPitch } =
+              updatedBuilding;
+
+            switch (field) {
+              case 'width':
+              case 'lowEaveHeight':
+              case 'highEaveHeight':
+                // Calculate roof pitch if we have all necessary values
+                if (
+                  width > 0 &&
+                  lowEaveHeight > 0 &&
+                  highEaveHeight > lowEaveHeight
+                ) {
+                  const calculatedPitch =
+                    ((highEaveHeight - lowEaveHeight) / width) * 12;
+                  updatedBuilding.roofPitch = Math.min(
+                    6,
+                    Math.max(0, Number(calculatedPitch.toFixed(2)))
+                  );
+                }
+                break;
+
+              case 'roofPitch':
+                // Adjust highEaveHeight based on new roof pitch
+                if (width > 0 && lowEaveHeight > 0 && roofPitch > 0) {
+                  const rise = (width * roofPitch) / 12;
+                  updatedBuilding.highEaveHeight = Number(
+                    (lowEaveHeight + rise).toFixed(2)
+                  );
+                }
+                break;
+            }
+          }
+          // Future expansion for nonSymmetrical shape
+          // else if (building.shape === 'nonSymmetrical') {
+          //   const {
+          //     width,
+          //     backPeakOffset,
+          //     backEaveHeight,
+          //     frontEaveHeight,
+          //     backRoofPitch,
+          //     frontRoofPitch,
+          //   } = updatedBuilding;
+
+          //   switch (field) {
+          //     case 'width':
+          //     case 'lowEaveHeight':
+          //     case 'highEaveHeight':
+          //       // Calculate roof pitch if we have all necessary values
+          //       if (width > 0 && backEaveHeight > 0 && frontEaveHeight > 0) {
+          //         const calculatedPitch =
+          //           ((highEaveHeight - lowEaveHeight) / width) * 12;
+          //         updatedBuilding.roofPitch = Math.min(
+          //           6,
+          //           Math.max(0, Number(calculatedPitch.toFixed(2)))
+          //         );
+          //       }
+          //       break;
+
+          //     case 'roofPitch':
+          //       // Adjust highEaveHeight based on new roof pitch
+          //       if (width > 0 && lowEaveHeight > 0 && roofPitch > 0) {
+          //         const rise = (width * roofPitch) / 12;
+          //         updatedBuilding.highEaveHeight = Number(
+          //           (lowEaveHeight + rise).toFixed(2)
+          //         );
+          //       }
+          //       break;
+          //   }
+          // }
+
+          return updatedBuilding;
+        }
+        return building;
+      });
+
+      return { ...prev, buildings: updatedBuildings };
+    });
+
     // Update lastChangedWall when relevant fields change
     if (field === 'lewBaySpacing') setLastChangedWall('leftEndwall');
     if (field === 'rewBaySpacing') setLastChangedWall('rightEndwall');

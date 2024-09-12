@@ -158,6 +158,22 @@ p{
   margin-block: .5em;
 }
 
+.nameGrid{
+  display: grid;
+  grid-template-columns: 1fr;  
+  gap: .5em;
+  align-items: flex-end;
+  justify-content: center;  
+}
+
+.addressGrid{
+  display: grid;
+  grid-template-columns: 1fr;  
+  gap: .5em;
+  align-items: flex-end;
+  justify-content: center;  
+}
+
 .cardGrid{
   display: grid;
   grid-template-columns: 1fr;  
@@ -209,8 +225,8 @@ p{
   display: grid;
   grid-template-columns: repeat(2, minmax(50px, 1fr));  
   gap: .25em;
-  align-items: center; 
-  margin: .5em; 
+  align-items: center;   
+  margin: .5em;   
 }
 
 .wainscotGrid{
@@ -424,8 +440,16 @@ p{
   width: 5em;  
 }
 
+.span12{
+  grid-column: span 1;
+}
+
 .span2{
   grid-column: span 2;
+}
+
+.span24{
+  grid-column: span 1;
 }
 
 .iconPrim{  
@@ -447,6 +471,8 @@ p{
   font-size: 1em;
   border-radius: .5em;
   justify-self: flex-end; 
+  align-self: flex-end;  
+  margin-bottom: .5em;
   background: none;
   color: var(--light-red);  
   transition: all .3s ease;
@@ -644,6 +670,18 @@ p{
     font-size: 15px;
   }
 
+  .nameGrid{
+    grid-template-columns: repeat(2, minmax(150px, 1fr));  
+  }
+
+  .addressGrid{
+    grid-template-columns: repeat(2, minmax(150px, 1fr));  
+  }
+
+  .span24{
+    grid-column: span 2;
+  }
+
   .cardGrid{
     grid-template-columns: repeat(2, minmax(150px, 1fr));  
   }
@@ -704,7 +742,19 @@ p{
   }
 }
 
-@media screen and (min-width: 1500px) {  
+@media screen and (min-width: 1500px) {
+  .addressGrid{
+    grid-template-columns: repeat(8, minmax(150px, 1fr));  
+  }
+  
+  .span12{
+    grid-column: span 2;
+  }
+
+  .span24{
+    grid-column: span 4;
+  }
+
   .cardGrid{
     grid-template-columns: repeat(4, minmax(150px, 1fr));  
   }
