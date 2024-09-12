@@ -1,10 +1,37 @@
-import Link from 'next/link';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import styles from './page.module.css';
 import PageHeader from '@/components/PageHeader';
-import { query } from '../../../../lib/db';
+import QuoteTable from '@/components/QuoteTable';
+
+async function getQuotes(company) {
+  const url = new URL(
+    '/api/auth/open',
+    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+  );
+  url.searchParams.append('company', company);
+
+  try {
+    const res = await fetch(url.toString(), {
+      method: 'GET',
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error(
+        `Failed to fetch quotes: ${res.status} ${res.statusText}`
+      );
+    }
+    return res.json();
+  } catch (error) {
+    console.error('Error in getQuotes:', error);
+    throw error;
+  }
+}
 
 export default async function Tracker() {
   const session = await getServerSession(authOptions);
@@ -17,12 +44,11 @@ export default async function Tracker() {
   let error = null;
 
   try {
-    quotes = await query('SELECT id, Company FROM Quotes WHERE Company = ?', [
-      session.user.company,
-    ]);
+    const data = await getQuotes(session.user.company);
+    quotes = data.quotes;
   } catch (err) {
     console.error('Error fetching quotes:', err);
-    error = `Error fetching quotes: ${err.message}`;
+    error = err.message;
   }
 
   return (
@@ -31,43 +57,8 @@ export default async function Tracker() {
 
       {error && <div className={styles.error}>{error}</div>}
 
-      <div className={styles.quoteTable}>
-        <h2>Company Quotes</h2>
-        {quotes.length > 0 ? (
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Company</th>
-              </tr>
-            </thead>
-            <tbody>
-              {quotes.map((quote) => (
-                <tr key={quote.ID} className={styles.quoteRow}>
-                  <td>
-                    <Link
-                      href={`/quote/${quote.ID}`}
-                      className={styles.quoteLink}
-                    >
-                      {quote.ID}
-                    </Link>
-                  </td>
-                  <td>
-                    <Link
-                      href={`/quote/${quote.ID}`}
-                      className={styles.quoteLink}
-                    >
-                      {quote.Company}
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p>No quotes found.</p>
-        )}
-      </div>
+      {error && <div className={styles.error}>{error}</div>}
+      <QuoteTable initialQuotes={quotes} />
     </main>
   );
 }

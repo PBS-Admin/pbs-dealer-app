@@ -6,6 +6,9 @@ export async function POST(req) {
     let result;
     const { currentQuote, company, values } = await req.json();
 
+    console.log(currentQuote);
+    console.log(company);
+
     if (currentQuote == 0) {
       // Store the new user in the database
       result = await query(

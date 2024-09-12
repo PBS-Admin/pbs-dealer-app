@@ -14,21 +14,22 @@ export default async function Quote({ params }) {
   const quoteId = params.id;
   let quoteData = null;
   let error = null;
+  if (quoteId != 0 && quoteId != null) {
+    try {
+      const results = await query(
+        'SELECT * FROM Quotes WHERE id = ? AND Company = ?',
+        [quoteId, session.user.company]
+      );
 
-  try {
-    const results = await query(
-      'SELECT * FROM Quotes WHERE id = ? AND Company = ?',
-      [quoteId, session.user.company]
-    );
-
-    if (results.length > 0) {
-      quoteData = results[0].QuoteData;
-    } else {
-      error = 'Quote not found';
+      if (results.length > 0) {
+        quoteData = results[0].QuoteData;
+      } else {
+        error = 'Quote not found';
+      }
+    } catch (err) {
+      console.error('Error fetching quote:', err);
+      error = `Error fetching quote: ${err.message}`;
     }
-  } catch (err) {
-    console.error('Error fetching quote:', err);
-    error = `Error fetching quote: ${err.message}`;
   }
 
   if (error) {

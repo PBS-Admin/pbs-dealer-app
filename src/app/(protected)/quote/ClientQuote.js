@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import styles from './page.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -46,6 +46,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [sourceBuildingIndex, setSourceBuildingIndex] = useState(0);
   const [error, setError] = useState('');
+  const initialRender = useRef(true);
 
   // Hooks
   const {
@@ -306,9 +307,12 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
 
   // Checking for screen width to conditionally render DOM elements
   useEffect(() => {
-    if (initialQuoteData) {
-      console.log('initial quote data is changed');
-      setValues(initialQuoteData);
+    if (initialRender.current) {
+      if (initialQuoteData) {
+        setCurrentQuote(quoteId);
+        setValues(initialQuoteData);
+      }
+      initialRender.current = false;
     }
 
     if (window.innerWidth > 1000) {
