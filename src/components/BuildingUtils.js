@@ -636,13 +636,11 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
               -width / 2 + position,
               0,
               wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
-
             );
             end = new THREE.Vector3(
               -width / 2 + position,
               height,
               wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
-
             );
             createLine(start, end);
             break;
