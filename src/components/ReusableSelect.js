@@ -1,9 +1,19 @@
 import React from 'react';
 
-const ReusableSelect = ({ id, name, value, onChange, options, label }) => {
+const ReusableSelect = ({
+  id,
+  name,
+  value,
+  onChange,
+  options,
+  label,
+  labelHide,
+}) => {
   return (
     <div className="cardInput">
-      <label htmlFor={id}>{label}</label>
+      <label className={labelHide} htmlFor={id}>
+        {label}
+      </label>
       <select
         className="selectInput"
         id={id}

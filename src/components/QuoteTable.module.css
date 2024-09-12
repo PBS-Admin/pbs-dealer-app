@@ -1,0 +1,62 @@
+.dashMain{    
+    grid-template-columns: 1fr;   
+  }
+  
+  .quoteTable {
+    justify-self: center;
+    align-self: start;
+    margin-top: 1em;
+    display: grid;
+    gap: .5em;  
+  }
+  
+  .quoteTable table {
+    width: 100%;
+    border-collapse: collapse;  
+  }
+  
+  .quoteTable th, .quoteTable td {
+    border: 1px solid var(--background-white);  
+    text-align: center;  
+  }
+  
+  .quoteTable th {
+    background-color: var(--background-white);
+  }
+  
+  .quoteTable tr{  
+    transition: all ease .3s;
+  }
+  
+  .quoteTable td a{
+    text-decoration: none;
+    color: var(--background-white);  
+    display: block;  
+    padding: .5em;    
+    transition: all ease .3s;
+  }
+  
+  .quoteTable tr:hover{  
+    background-color: var(--light-blue);
+  }
+  
+  .quoteTable td:last-child {
+    background-color: var(--dark-blue);
+    cursor: pointer;
+    padding: .5em;
+    transition: all ease .3s;
+  }
+
+  .quoteTable td:last-child:hover {
+    background-color: var(--red);    
+  }
+
+  .removeQuote {
+    font-size: 1em;
+    padding: .5em;
+    border: none;
+    border-radius: 5px;
+    color: var(--background-white);
+    align-self: flex-end;
+    background: var(--red);
+  }

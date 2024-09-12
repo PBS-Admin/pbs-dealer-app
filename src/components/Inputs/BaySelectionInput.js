@@ -76,6 +76,7 @@ const BaySelectionInput = ({
             <button
               type="button"
               key={bayNumber}
+              type="button"
               onClick={() => handleBayClick(bayNumber)}
               style={{
                 width: '40px',

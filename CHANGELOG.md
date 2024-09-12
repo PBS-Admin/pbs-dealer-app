@@ -5,13 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.4] - 2024-09-05
+
+###### Goal of change is to ensure that quotes can be saved, updated, retrieved and deleted from the database
+
+### Added
+ 
+ - Added api endpoints for open quotes, deleting quotes, and saving quotes to the database
+ - Added a tracker page to display quotes that are tied to your company
+ 
+### Changed
+
+### Fixed
+
+- Fixed Building Sketches to work for multiple shapes and corrected bay and bracing lines to work with all shapes. 
+
 ## [0.1.3] - 2024-08-28
 
-###### Goal of change is to start work on Building Sketch and finish adding input fields and layout
+###### Goal of change is to correct some recent things in and test the deployment of the application
 
 ### Added
 
+- Added production environment variables into Vercel and tested deloyment of application with database access
+ 
 ### Changed
+
+- Corrected some dependent input in the building shape, eave heights and roof pitches
 
 ### Fixed
 
@@ -20,6 +39,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ###### Goal of change is to start work on Building Sketch and finish adding input fields and layout
 
 ### Added
+- Added Building Sketches for other building shapes, singleSlope, leanTo, nonSymmetrical
+
+- Added bay spacing and bracing lines for symmetrical buildings
+
+- Added additional components for input validation
+
+- Added Hooks for navigation and for Three.js 3D sketch
 
 - Added Building Sketches for other building shapes, singleSlope, leanTo, nonSymmetrical
 
@@ -30,8 +56,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added Hooks for navigation and for Three.js 3D sketch
 
 ### Changed
-
-- Changed styling for main components on building project page
 
 ### Fixed
 

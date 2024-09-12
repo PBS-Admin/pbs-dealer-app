@@ -73,7 +73,7 @@ h2, h3{
 }
 
 p{
-  color: var(--background-white);
+  color: var(--black);
 }
 
 /* !! Global Class Styles */
@@ -142,7 +142,7 @@ p{
   display: grid;
   background-color: var(--background-white);
   border-radius: 1em;
-  padding: .75em;  
+  padding: .75em;    
 }
 
 .card header{
@@ -229,6 +229,44 @@ p{
   margin: .5em;   
 }
 
+.wainscotGrid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(50px, 1fr));  
+  gap: .25em;
+  align-items: center; 
+  margin: .5em; 
+}
+
+.polycarbGrid{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(50px, 1fr));  
+  gap: .25em;
+  align-items: center;   
+  margin: .5em;  
+}
+
+.openingGrid{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(50px, 1fr));  
+  gap: .25em;
+  align-items: center;   
+  margin: .5em;  
+}
+
+.fullWidth{
+  grid-column: span 4;
+
+}
+
+.small{  
+  font-size: .65em;  
+  align-self: center;
+}
+
+.hidden{
+  display: none;
+}
+
 .radioGroup{
   accent-color: var(--dark-blue);
   display: flex;    
@@ -283,6 +321,28 @@ p{
   outline: 1px solid var(--orange);
 }
 
+.projInput{
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 1em;
+}
+
+.calcInput{
+  display: flex;
+  justify-content: space-between;
+}
+
+.calcInput button{
+  margin-right: .5em;  
+  background-color: var(--dark-blue);
+  color: var(--background-white);
+  padding: .25em .5em;
+  border-radius: .5em;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
 .cardRow{
   display: flex;
   flex-flow: row nowrap;
@@ -323,6 +383,10 @@ p{
   background: var(--div-gradient);
 }
 
+.full{
+  grid-column: span 8;
+}
+
 .column{
   flex-flow: row nowrap;
   align-items: center;
@@ -332,6 +396,42 @@ p{
 
 .column input, .column input:focus{  
   outline: none;
+}
+
+.tabsContainer {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.tabsContainer::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+.tabList {
+  display: flex;
+  border-bottom: 1px solid var(--background-white);
+  margin-bottom: 16px;
+  min-width: max-content;
+  padding-bottom: 2px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.activeTab {
+  border-bottom: 2px solid var(--light-blue);
+  color: var(--light-blue);  
 }
 
 
@@ -623,6 +723,18 @@ p{
 
   .linerGrid{    
     grid-template-columns: repeat(4, minmax(50px, 1fr)) 2em;        
+  }
+
+  .wainscotGrid{    
+    grid-template-columns: repeat(5, minmax(50px, 1fr)) 2em;        
+  }
+
+  .polycarbGrid{    
+    grid-template-columns: repeat(7, minmax(50px, 1fr));        
+  }
+
+  .openingGrid{    
+    grid-template-columns: repeat(7, minmax(50px, 1fr));        
   }
 
   .w5{
