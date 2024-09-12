@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useState } from 'react';
 import DeleteDialog from './DeleteDialog';
 import styles from './QuoteTable.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 export default function QuoteTable({ initialQuotes }) {
   const [quotes, setQuotes] = useState(initialQuotes);
@@ -90,12 +92,12 @@ export default function QuoteTable({ initialQuotes }) {
                     {quote.QuoteData.customerName}
                   </Link>
                 </td>
-                <td>
+                <td onClick={() => openDeleteDialog(quote.ID)}>
                   <button
                     className={styles.removeQuote}
-                    onClick={() => openDeleteDialog(quote.ID)}
+                    style={{ cursor: 'pointer' }}
                   >
-                    Delete
+                    <FontAwesomeIcon icon={faTrash} />
                   </button>
                 </td>
               </tr>

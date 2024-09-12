@@ -40,6 +40,17 @@
     background-color: var(--light-blue);
   }
   
+  .quoteTable td:last-child {
+    background-color: var(--dark-blue);
+    cursor: pointer;
+    padding: .5em;
+    transition: all ease .3s;
+  }
+
+  .quoteTable td:last-child:hover {
+    background-color: var(--red);    
+  }
+
   .removeQuote {
     font-size: 1em;
     padding: .5em;
