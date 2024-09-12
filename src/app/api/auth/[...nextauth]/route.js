@@ -2,6 +2,7 @@ import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { compare } from 'bcrypt';
 import { query } from '../../../../lib/db';
+import jwt from 'jsonwebtoken';
 
 export const authOptions = {
   providers: [
@@ -60,15 +61,17 @@ export const authOptions = {
         token.company = user.company;
         token.permission = user.permission;
       }
+      // Sign the token
+      const encodedToken = jwt.sign(token, process.env.NEXTAUTH_SECRET);
+      token.accessToken = encodedToken;
       return token;
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id;
-        session.user.email = token.email;
-        session.user.company = token.company;
-        session.user.permission = token.permission;
-      }
+      session.user.id = token.id;
+      session.user.email = token.email;
+      session.user.company = token.company;
+      session.user.permission = token.permission;
+      session.user.accessToken = token.accessToken;
       return session;
     },
   },
