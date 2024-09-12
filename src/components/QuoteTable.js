@@ -28,7 +28,7 @@ export default function QuoteTable({ initialQuotes }) {
     try {
       const url = new URL(
         `/api/quotes/${quoteToDelete}`,
-        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+        window.location.origin
       );
 
       const response = await fetch(url.toString(), {

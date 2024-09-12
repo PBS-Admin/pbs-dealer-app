@@ -5,38 +5,35 @@ import styles from './page.module.css';
 import PageHeader from '@/components/PageHeader';
 import QuoteTable from '@/components/QuoteTable';
 
-async function getQuotes(company) {
-  const url = new URL(
-    '/api/auth/open',
-    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-  );
+async function getQuotes(company, sessionToken) {
+  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  const url = new URL('/api/auth/open', baseUrl);
   url.searchParams.append('company', company);
 
-  try {
-    const res = await fetch(url.toString(), {
-      method: 'GET',
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  const res = await fetch(url.toString(), {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${sessionToken}`,
+    },
+  });
 
-    if (!res.ok) {
-      throw new Error(
-        `Failed to fetch quotes: ${res.status} ${res.statusText}`
-      );
-    }
-    return res.json();
-  } catch (error) {
-    console.error('Error in getQuotes:', error);
-    throw error;
+  if (!res.ok) {
+    console.error('Fetch failed:', res.status, res.statusText);
+    throw new Error(`Failed to fetch quotes: ${res.status} ${res.statusText}`);
   }
+  const data = await res.json();
+  console.log('Fetch successful, data:', data);
+  return data;
 }
 
 export default async function Tracker() {
+  console.log('Entering Tracker component');
   const session = await getServerSession(authOptions);
+  console.log('Session in Tracker:', session);
 
   if (!session) {
+    console.log('No session, redirecting to login');
     redirect('/login');
   }
 
@@ -44,7 +41,10 @@ export default async function Tracker() {
   let error = null;
 
   try {
-    const data = await getQuotes(session.user.company);
+    const data = await getQuotes(
+      session.user.company,
+      session.user.accessToken
+    );
     quotes = data.quotes;
   } catch (err) {
     console.error('Error fetching quotes:', err);
