@@ -10,7 +10,7 @@ First, install all your dependencies
 npm install --save-dev prettier eslint-plugin-prettier eslint-config-prettier nodemon concurrently @types/bcrypt three @types/three
 
 npm install -save express jsonwebtoken bcryptjs dotenv
-@fortawesome/fontawesome-free @fortawesome/fontawesome-svg-core @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons next-pwa next react react-dom next-auth bcrypt mariadb
+@fortawesome/fontawesome-free @fortawesome/fontawesome-svg-core @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons next-pwa next react react-dom next-auth bcrypt mariadb @fortawesome/free-regular-svg-icons
 ```
 
 Next, run the development server to ensure it is working:

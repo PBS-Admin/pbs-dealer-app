@@ -289,7 +289,6 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
       });
 
       if (response.ok) {
-        // router.push('/dashboard');
         const data = await response.json();
         if (isNaN(data.message)) {
           console.log(data.message);

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { hash } from 'bcrypt';
-import { query } from '../../../../lib/db';
+import { query, endPool } from '../../../../lib/db';
 
 export async function POST(req) {
   try {
@@ -33,5 +33,7 @@ export async function POST(req) {
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: 'An error occurred' }, { status: 500 });
+  } finally {
+    await endPool;
   }
 }

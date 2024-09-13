@@ -6,6 +6,7 @@ import DeleteDialog from './DeleteDialog';
 import styles from './QuoteTable.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 
 export default function QuoteTable({ initialQuotes }) {
   const [quotes, setQuotes] = useState(initialQuotes);
@@ -59,9 +60,12 @@ export default function QuoteTable({ initialQuotes }) {
         <table>
           <thead>
             <tr>
-              <th>ID</th>
+              <th>Submitted</th>
+              <th>Quote</th>
+              <th>Rev</th>
               <th>Project</th>
               <th>Customer</th>
+              <th>Date Started</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -73,7 +77,17 @@ export default function QuoteTable({ initialQuotes }) {
                     href={`/quote/${quote.ID}`}
                     className={styles.quoteLink}
                   >
-                    {quote.ID}
+                    {quote.Submitted ? (
+                      <FontAwesomeIcon
+                        icon={faCircleCheck}
+                        style={{ color: 'var(--green)' }}
+                      />
+                    ) : (
+                      <FontAwesomeIcon
+                        icon={faCircle}
+                        style={{ color: 'var(--red)' }}
+                      />
+                    )}
                   </Link>
                 </td>
                 <td>
@@ -81,7 +95,7 @@ export default function QuoteTable({ initialQuotes }) {
                     href={`/quote/${quote.ID}`}
                     className={styles.quoteLink}
                   >
-                    {quote.QuoteData.projectName}
+                    {quote.Quote}
                   </Link>
                 </td>
                 <td>
@@ -89,7 +103,35 @@ export default function QuoteTable({ initialQuotes }) {
                     href={`/quote/${quote.ID}`}
                     className={styles.quoteLink}
                   >
-                    {quote.QuoteData.customerName}
+                    {quote.Rev}
+                  </Link>
+                </td>
+                <td>
+                  <Link
+                    href={`/quote/${quote.ID}`}
+                    className={styles.quoteLink}
+                  >
+                    {quote.ProjectName}
+                  </Link>
+                </td>
+                <td>
+                  <Link
+                    href={`/quote/${quote.ID}`}
+                    className={styles.quoteLink}
+                  >
+                    {quote.Customer}
+                  </Link>
+                </td>
+                <td>
+                  <Link
+                    href={`/quote/${quote.ID}`}
+                    className={styles.quoteLink}
+                  >
+                    {new Date(quote.DateStarted).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'numeric',
+                      day: 'numeric',
+                    })}
                   </Link>
                 </td>
                 <td onClick={() => openDeleteDialog(quote.ID)}>

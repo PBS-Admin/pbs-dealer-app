@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { query } from '../../../../lib/db';
+import { query, manualCleanup } from '../../../../lib/db';
 import jwt from 'jsonwebtoken';
 
 export async function GET(req) {
@@ -39,15 +39,25 @@ export async function GET(req) {
 
     // Only select the columns we need
     const result = await query(
-      'SELECT ID, Company, QuoteData FROM Quotes WHERE Company = ? AND Active = 1',
+      'SELECT ID, Submitted, Quote, Rev, Customer, ProjectName, DateStarted FROM Quotes WHERE Company = ? AND Active = 1',
       [company]
     );
 
     // Parse QuoteData for each quote
     const parsedQuotes = result.map((quote) => ({
       ...quote,
-      QuoteData: JSON.parse(quote.QuoteData),
+      ID: quote.ID,
+      Submitted: quote.Submitted,
+      Quote: quote.Quote,
+      Rev: quote.Rev,
+      Customer: quote.Customer,
+      ProjectName: quote.ProjectName,
+      DateStarted: quote.DateStarted,
     }));
+
+    if (process.env.NODE_ENV === 'development') {
+      await manualCleanup();
+    }
 
     return NextResponse.json({ quotes: parsedQuotes }, { status: 200 });
   } catch (error) {
