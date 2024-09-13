@@ -23,14 +23,12 @@ async function getQuotes(company, sessionToken) {
     throw new Error(`Failed to fetch quotes: ${res.status} ${res.statusText}`);
   }
   const data = await res.json();
-  console.log('Fetch successful, data:', data);
   return data;
 }
 
 export default async function Tracker() {
   console.log('Entering Tracker component');
   const session = await getServerSession(authOptions);
-  console.log('Session in Tracker:', session);
 
   if (!session) {
     console.log('No session, redirecting to login');

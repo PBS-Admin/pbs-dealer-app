@@ -1,30 +1,44 @@
 import { NextResponse } from 'next/server';
-import { query } from '../../../../lib/db';
+import { query, transaction, manualCleanup } from '../../../../lib/db';
 
 export async function POST(req) {
   try {
-    let result;
+    let result, quoteNum;
     const { currentQuote, company, values } = await req.json();
 
-    console.log(currentQuote);
-    console.log(company);
-
     if (currentQuote == 0) {
-      // Store the new user in the database
-      result = await query(
-        'INSERT INTO Quotes (Company, QuoteData) VALUES (?, ?)',
-        [company, JSON.stringify(values)]
-      );
+      await transaction(async (conn) => {
+        quoteNum = await conn.query('SELECT NextQuoteNum From NextQuoteNumber');
 
+        result = await conn.query(
+          'INSERT INTO Quotes (Quote, Customer, ProjectName, Company, QuoteData, Active, DateStarted) VALUES (?, ?, ?, ?, ?, 1, Now())',
+          [
+            quoteNum[0].NextQuoteNum,
+            values.customerName,
+            values.projectName,
+            company,
+            JSON.stringify(values),
+          ]
+        );
+      });
       const quoteId = result.insertId;
+
+      if (process.env.NODE_ENV === 'development') {
+        await manualCleanup();
+      }
 
       return NextResponse.json({ message: `${quoteId}` }, { status: 201 });
     } else if (currentQuote > 0) {
       // Store the new user in the database
-      result = await query('UPDATE Quotes SET QuoteData = ? WHERE id = ?', [
-        JSON.stringify(values),
-        currentQuote,
-      ]);
+      result = await query(
+        'UPDATE Quotes SET QuoteData = ?, Customer = ?, ProjectName = ? WHERE id = ?',
+        [
+          JSON.stringify(values),
+          values.customerName,
+          values.projectName,
+          currentQuote,
+        ]
+      );
 
       return NextResponse.json({ message: `Quote updated` }, { status: 201 });
     }

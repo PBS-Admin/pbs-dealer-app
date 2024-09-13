@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { compare } from 'bcrypt';
-import { query } from '../../../../lib/db';
+import { query, manualCleanup } from '../../../../lib/db';
 import jwt from 'jsonwebtoken';
 
 export const authOptions = {
@@ -41,6 +41,10 @@ export const authOptions = {
 
         if (!isPasswordCorrect) {
           return null;
+        }
+
+        if (process.env.NODE_ENV === 'development') {
+          await manualCleanup();
         }
 
         console.log('Authorization successful');
