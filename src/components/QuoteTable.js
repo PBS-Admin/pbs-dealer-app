@@ -54,110 +54,112 @@ export default function QuoteTable({ initialQuotes }) {
   };
 
   return (
-    <div className={styles.quoteTable}>
+    <div className={styles.quoteContainer}>
       <h2>Company Quotes</h2>
-      {quotes.length > 0 ? (
-        <table>
-          <thead>
-            <tr>
-              <th>Submitted</th>
-              <th>Quote</th>
-              <th>Rev</th>
-              <th>Project</th>
-              <th>Customer</th>
-              <th>Date Started</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {quotes.map((quote) => (
-              <tr key={quote.ID} className={styles.quoteRow}>
-                <td>
-                  <Link
-                    href={`/quote/${quote.ID}`}
-                    className={styles.quoteLink}
-                  >
-                    {quote.Submitted ? (
-                      <FontAwesomeIcon
-                        icon={faCircleCheck}
-                        style={{ color: 'var(--green)' }}
-                      />
-                    ) : (
-                      <FontAwesomeIcon
-                        icon={faCircle}
-                        style={{ color: 'var(--red)' }}
-                      />
-                    )}
-                  </Link>
-                </td>
-                <td>
-                  <Link
-                    href={`/quote/${quote.ID}`}
-                    className={styles.quoteLink}
-                  >
-                    {quote.Quote}
-                  </Link>
-                </td>
-                <td>
-                  <Link
-                    href={`/quote/${quote.ID}`}
-                    className={styles.quoteLink}
-                  >
-                    {quote.Rev}
-                  </Link>
-                </td>
-                <td>
-                  <Link
-                    href={`/quote/${quote.ID}`}
-                    className={styles.quoteLink}
-                  >
-                    {quote.ProjectName}
-                  </Link>
-                </td>
-                <td>
-                  <Link
-                    href={`/quote/${quote.ID}`}
-                    className={styles.quoteLink}
-                  >
-                    {quote.Customer}
-                  </Link>
-                </td>
-                <td>
-                  <Link
-                    href={`/quote/${quote.ID}`}
-                    className={styles.quoteLink}
-                  >
-                    {new Date(quote.DateStarted).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'numeric',
-                      day: 'numeric',
-                    })}
-                  </Link>
-                </td>
-                <td onClick={() => openDeleteDialog(quote.ID)}>
-                  <button
-                    className={styles.removeQuote}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </button>
-                </td>
+      <div className={styles.quoteTable}>
+        {quotes.length > 0 ? (
+          <table>
+            <thead>
+              <tr>
+                <th>Submitted</th>
+                <th>Quote</th>
+                <th>Rev</th>
+                <th>Project</th>
+                <th>Customer</th>
+                <th>Date Started</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>No quotes found.</p>
-      )}
-      {isDeleteDialogOpen && (
-        <DeleteDialog
-          isOpen={isDeleteDialogOpen}
-          onDelete={handleDeleteQuote}
-          onClose={closeDeleteDialog}
-          title="Confirm Deletion"
-          message="Are you sure you want to delete this quote?"
-        />
-      )}
+            </thead>
+            <tbody>
+              {quotes.map((quote) => (
+                <tr key={quote.ID} className={styles.quoteRow}>
+                  <td>
+                    <Link
+                      href={`/quote/${quote.ID}`}
+                      className={styles.quoteLink}
+                    >
+                      {quote.Submitted ? (
+                        <FontAwesomeIcon
+                          icon={faCircleCheck}
+                          style={{ color: 'var(--green)' }}
+                        />
+                      ) : (
+                        <FontAwesomeIcon
+                          icon={faCircle}
+                          style={{ color: 'var(--red)' }}
+                        />
+                      )}
+                    </Link>
+                  </td>
+                  <td>
+                    <Link
+                      href={`/quote/${quote.ID}`}
+                      className={styles.quoteLink}
+                    >
+                      {quote.Quote}
+                    </Link>
+                  </td>
+                  <td>
+                    <Link
+                      href={`/quote/${quote.ID}`}
+                      className={styles.quoteLink}
+                    >
+                      {quote.Rev}
+                    </Link>
+                  </td>
+                  <td>
+                    <Link
+                      href={`/quote/${quote.ID}`}
+                      className={styles.quoteLink}
+                    >
+                      {quote.ProjectName}
+                    </Link>
+                  </td>
+                  <td>
+                    <Link
+                      href={`/quote/${quote.ID}`}
+                      className={styles.quoteLink}
+                    >
+                      {quote.Customer}
+                    </Link>
+                  </td>
+                  <td>
+                    <Link
+                      href={`/quote/${quote.ID}`}
+                      className={styles.quoteLink}
+                    >
+                      {new Date(quote.DateStarted).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                      })}
+                    </Link>
+                  </td>
+                  <td onClick={() => openDeleteDialog(quote.ID)}>
+                    <button
+                      className={styles.removeQuote}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>No quotes found.</p>
+        )}
+        {isDeleteDialogOpen && (
+          <DeleteDialog
+            isOpen={isDeleteDialogOpen}
+            onDelete={handleDeleteQuote}
+            onClose={closeDeleteDialog}
+            title="Confirm Deletion"
+            message="Are you sure you want to delete this quote?"
+          />
+        )}
+      </div>
     </div>
   );
 }

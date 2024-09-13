@@ -38,16 +38,48 @@ export default async function Tracker() {
   let quotes = [];
   let error = null;
 
-  try {
-    const data = await getQuotes(
-      session.user.company,
-      session.user.accessToken
-    );
-    quotes = data.quotes;
-  } catch (err) {
-    console.error('Error fetching quotes:', err);
-    error = err.message;
-  }
+  // ! This is for development code and should be commented out before going live
+  quotes = [
+    {
+      ID: 13,
+      Submitted: 0,
+      Quote: 13256,
+      Rev: 0,
+      Customer: 'Testing Cust 1',
+      ProjectName: 'Testing Proj 1',
+      DateStarted: '2024-09-13T20:24:00.000Z',
+    },
+    {
+      ID: 14,
+      Submitted: 0,
+      Quote: 13257,
+      Rev: 0,
+      Customer: 'Testing Cust 2',
+      ProjectName: 'Testing Proj 2',
+      DateStarted: '2024-09-14T20:24:00.000Z',
+    },
+    {
+      ID: 15,
+      Submitted: 1,
+      Quote: 13258,
+      Rev: 0,
+      Customer: 'Testing Cust 3',
+      ProjectName: 'Testing Proj 3',
+      DateStarted: '2024-09-15T20:24:00.000Z',
+    },
+  ];
+
+  // ! This is for production code and should be changed before going live
+  // try {
+  //   const data = await getQuotes(
+  //     session.user.company,
+  //     session.user.accessToken
+  //   );
+  //   quotes = data.quotes;
+  // } catch (err) {
+  //   console.error('Error fetching quotes:', err);
+  //   error = err.message;
+  // }
 
   return (
     <main className={styles.dashMain}>
