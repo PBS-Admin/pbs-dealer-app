@@ -5,13 +5,17 @@ import { useState } from 'react';
 import DeleteDialog from './DeleteDialog';
 import styles from './QuoteTable.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
+import CopyDialog from './CopyDialog';
+import { getQuote } from '../util/quoteUtils';
 
-export default function QuoteTable({ initialQuotes }) {
+export default function QuoteTable({ initialQuotes, onCopyQuote }) {
   const [quotes, setQuotes] = useState(initialQuotes);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [quoteToDelete, setQuoteToDelete] = useState(null);
+  const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
+  const [quoteToCopy, setQuoteToCopy] = useState(null);
 
   const openDeleteDialog = (quoteId) => {
     setQuoteToDelete(quoteId);
@@ -21,6 +25,16 @@ export default function QuoteTable({ initialQuotes }) {
   const closeDeleteDialog = () => {
     setIsDeleteDialogOpen(false);
     setQuoteToDelete(null);
+  };
+
+  const openCopyDialog = (quoteId) => {
+    setQuoteToCopy(quoteId);
+    setIsCopyDialogOpen(true);
+  };
+
+  const closeCopyDialog = () => {
+    setIsCopyDialogOpen(false);
+    setQuoteToCopy(null);
   };
 
   const handleDeleteQuote = async () => {
@@ -50,6 +64,51 @@ export default function QuoteTable({ initialQuotes }) {
     } catch (error) {
       console.error('Error deleting quote:', error);
       alert('Failed to delete quote. Please try again.');
+    }
+  };
+
+  const handleCopyQuote = async () => {
+    if (!quoteToCopy) return;
+
+    try {
+      console.log('testing handle copy in Table');
+      const quote = await onCopyQuote(quoteToCopy);
+
+      const currentQuote = 0;
+      const company = quote.Company;
+      const values = JSON.parse(quote.QuoteData);
+
+      try {
+        console.log('attempting to save');
+        const response = await fetch('/api/auth/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentQuote, company, values }),
+        });
+
+        if (response.ok) {
+          console.log('Response was ok');
+          const data = await response.json();
+
+          if (isNaN(data.message.quoteId)) {
+            console.log("Couldn't find a quote id");
+          } else {
+            quote.ID = data.message.quoteId;
+            quote.Quote = data.message.quoteNum;
+            setQuotes([...quotes, quote]);
+          }
+        } else {
+          console.log('Response was not ok');
+        }
+      } catch (error) {
+        console.log('Errored out');
+        alert('Failed to copy quote. Please try again.');
+      }
+
+      closeCopyDialog();
+    } catch (error) {
+      console.error('Error copying quote:', error);
+      alert('Failed to copy quote. Please try again.');
     }
   };
 
@@ -135,12 +194,20 @@ export default function QuoteTable({ initialQuotes }) {
                       })}
                     </Link>
                   </td>
-                  <td onClick={() => openDeleteDialog(quote.ID)}>
+                  <td>
                     <button
-                      className={styles.removeQuote}
+                      className={`${styles.removeQuote} ${styles.actionButton}`}
                       style={{ cursor: 'pointer' }}
+                      onClick={() => openDeleteDialog(quote.ID)}
                     >
                       <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                    <button
+                      className={`${styles.copyQuote} ${styles.actionButton}`}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => openCopyDialog(quote.ID)}
+                    >
+                      <FontAwesomeIcon icon={faCopy} />
                     </button>
                   </td>
                 </tr>
@@ -157,6 +224,15 @@ export default function QuoteTable({ initialQuotes }) {
             onClose={closeDeleteDialog}
             title="Confirm Deletion"
             message="Are you sure you want to delete this quote?"
+          />
+        )}
+        {isCopyDialogOpen && (
+          <CopyDialog
+            isOpen={isCopyDialogOpen}
+            onCopy={handleCopyQuote}
+            onClose={closeCopyDialog}
+            title="Confirm Copy"
+            message="Do you want to copy this quote to a new building?"
           />
         )}
       </div>

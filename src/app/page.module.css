@@ -28,3 +28,7 @@
     top: 20px;
     right: 20px;
 }
+
+.splashVersion{
+    color: var(--background-white);
+}
