@@ -281,6 +281,10 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
 
     let company = session.user.company;
 
+    console.log('qnum: ' + currentQuote);
+    console.log('comp: ' + company);
+    console.log('dat: ' + values);
+
     try {
       const response = await fetch('/api/auth/save', {
         method: 'POST',

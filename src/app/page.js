@@ -19,7 +19,7 @@ export default function Home() {
           Login
         </Link>
       </section>
-      <p>version: {APP_VERSION}</p>
+      <p className={styles.splashVersion}>version: {APP_VERSION}</p>
     </main>
   );
 }
