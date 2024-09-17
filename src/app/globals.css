@@ -639,6 +639,29 @@ p{
   padding: .75em;    
 }
 
+/* Building Sketch Styles */
+.sketchButtonContainer{  
+  display: flex;  
+  width: 100%;
+  outline: 1px solid red;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.sketchButton{
+  aspect-ratio: 1 /1;
+  padding: .35em;  
+  border: none;
+  background-color: var(--light-blue);
+  border-radius: .25em;
+  border: var(--background-white);
+  color: var(--background-white);
+}
+
+.test{
+  outline: 1px solid blue;      
+}
+
 /* END */
 
 @media screen and (min-width: 350px) {
@@ -709,7 +732,7 @@ p{
 
 @media screen and (min-width: 1000px) {
   main{
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 350px 1fr;
     grid-template-rows: 100px 1fr 600px;    
   }
 

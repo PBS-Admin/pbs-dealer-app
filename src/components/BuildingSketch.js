@@ -12,7 +12,7 @@ const BuildingSketch = ({
   const canvasRef = useRef(null);
   const updateCountRef = useRef(0);
   const [currentView, setCurrentView] = useState('ISO');
-  const { scene, camera, renderer, animate, isSetup, updateCameraPosition } =
+  const { scene, camera, renderer, controls, isSetup, updateCameraPosition } =
     useThreeSetup(
       mountRef,
       backgroundColor,
@@ -128,13 +128,6 @@ const BuildingSketch = ({
   }, [buildingData, isSetup, updateBuilding]);
 
   useEffect(() => {
-    if (!isSetup) return;
-
-    updateBuilding();
-    animate();
-  }, [isSetup, updateBuilding, animate]);
-
-  useEffect(() => {
     if (isSetup) {
       updateCameraPosition(currentView);
     }
@@ -152,21 +145,36 @@ const BuildingSketch = ({
   };
 
   return (
-    <div>
-      <div ref={mountRef} style={{ width: '250px', height: '250px' }} />
+    <div className="test">
       <div
+        ref={mountRef}
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: '10px',
+          width: '300px',
+          height: '300px',
         }}
-      >
-        <button onClick={() => handleViewChange('L')}>L</button>
-        <button onClick={() => handleViewChange('R')}>R</button>
-        <button onClick={() => handleViewChange('FS')}>FS</button>
-        <button onClick={() => handleViewChange('BS')}>BS</button>
-        <button onClick={() => handleViewChange('T')}>T</button>
-        <button onClick={() => handleViewChange('ISO')}>ISO</button>
+      />
+      <div className="sketchButtonContainer">
+        <button className="sketchButton" onClick={() => handleViewChange('L')}>
+          LEW
+        </button>
+        <button className="sketchButton" onClick={() => handleViewChange('R')}>
+          REW
+        </button>
+        <button className="sketchButton" onClick={() => handleViewChange('FS')}>
+          FSW
+        </button>
+        <button className="sketchButton" onClick={() => handleViewChange('BS')}>
+          BSW
+        </button>
+        <button className="sketchButton" onClick={() => handleViewChange('T')}>
+          TOP
+        </button>
+        <button
+          className="sketchButton"
+          onClick={() => handleViewChange('ISO')}
+        >
+          ISO
+        </button>
       </div>
     </div>
   );
