@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 export const useThreeSetup = (
   mountRef,
@@ -10,7 +11,9 @@ export const useThreeSetup = (
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const rendererRef = useRef(null);
+  const controlsRef = useRef(null);
   const frameIdRef = useRef(null);
+  const animateRef = useRef(null);
 
   const [isSetup, setIsSetup] = useState(false);
 
@@ -32,6 +35,33 @@ export const useThreeSetup = (
     rendererRef.current.setSize(mount.clientWidth, mount.clientHeight);
     mount.appendChild(rendererRef.current.domElement);
 
+    // Setup OrbitControls
+    controlsRef.current = new OrbitControls(
+      cameraRef.current,
+      rendererRef.current.domElement
+    );
+    controlsRef.current.enableDamping = true;
+    controlsRef.current.dampingFactor = 0.25;
+    controlsRef.current.enableZoom = true;
+    controlsRef.current.enablePan = true;
+
+    // Enable controls by default
+    controlsRef.current.enabled = true;
+
+    // Define the animate function
+    animateRef.current = () => {
+      frameIdRef.current = requestAnimationFrame(animateRef.current);
+      if (controlsRef.current) {
+        controlsRef.current.update();
+      }
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
+    };
+
+    // Start the animation loop
+    animateRef.current();
+
     setIsSetup(true);
 
     // Cleanup function
@@ -43,74 +73,55 @@ export const useThreeSetup = (
       if (mount.contains(rendererRef.current.domElement)) {
         mount.removeChild(rendererRef.current.domElement);
       }
+      if (controlsRef.current) {
+        controlsRef.current.dispose();
+      }
     };
-  }, [mountRef, backgroundColor, isSetup]);
+  }, [mountRef, backgroundColor]);
 
   const updateCameraPosition = useCallback(
     (view) => {
-      if (!isSetup || !cameraRef.current) return;
+      if (!isSetup || !cameraRef.current || !controlsRef.current) return;
 
-      const {
-        shape,
-        width,
-        length,
-        lowEaveHeight,
-        highEaveHeight,
-        backEaveheight,
-        frontEaveHeight,
-        eaveHeight,
-      } = buildingDimensions;
+      const { width, length, eaveHeight } = buildingDimensions;
       const maxDimension = Math.max(width, length, eaveHeight);
-      const distance = maxDimension * 1.15;
+      const distance = maxDimension * 1.35;
 
-      const vertHeight = (() => {
-        switch (shape) {
-          case 'symmetrical':
-            return eaveHeight;
-          case 'singleSlope':
-          case 'leanTo':
-            return Math.max(lowEaveHeight, highEaveHeight);
-          case 'nonSymmetrical':
-            return Math.max(backEaveheight, frontEaveHeight);
-          default:
-            console.warn(
-              `Unknown shape: ${shape}. Using eaveHeight as fallback.`
-            );
-            return eaveHeight;
-        }
-      })();
+      // Enable controls for all views
+      controlsRef.current.enabled = true;
+
+      let targetPosition = new THREE.Vector3(0, eaveHeight / 2, 0);
 
       switch (view) {
         case 'L': // Left Endwall view
-          cameraRef.current.position.set(0, vertHeight / 2, width * 1.5);
-          cameraRef.current.lookAt(0, vertHeight / 2, 0);
-
+          cameraRef.current.position.set(0, eaveHeight / 2, distance);
           break;
         case 'R': // Right Endwall view
-          cameraRef.current.position.set(0, vertHeight / 2, -width * 1.5);
-          cameraRef.current.lookAt(0, vertHeight / 2, 0);
+          cameraRef.current.position.set(0, eaveHeight / 2, -distance);
           break;
         case 'FS': // Front Sidewall view
-          cameraRef.current.position.set(length * 1.25, vertHeight / 2, 0);
-          cameraRef.current.lookAt(0, vertHeight / 2, 0);
-
+          cameraRef.current.position.set(distance, eaveHeight / 2, 0);
           break;
         case 'BS': // Back Sidewall view
-          cameraRef.current.position.set(-length * 1.25, vertHeight / 2, 0);
-          cameraRef.current.lookAt(0, vertHeight / 2, 0);
+          cameraRef.current.position.set(-distance, eaveHeight / 2, 0);
           break;
         case 'T': // Top view
           cameraRef.current.position.set(0, distance, 0);
-          cameraRef.current.lookAt(0, 0, 0);
+          targetPosition.set(-1, 0, 0);
           break;
-        default: // ISO view
+        default: // ISO view and free view
           cameraRef.current.position.set(
             distance * 0.6,
             distance * 0.6,
             distance * 0.6
           );
-          cameraRef.current.lookAt(0, vertHeight / 2, 0);
       }
+
+      cameraRef.current.lookAt(targetPosition);
+      controlsRef.current.target.copy(targetPosition);
+      // cameraRef.current.lookAt(0, eaveHeight / 2, 0);
+      // controlsRef.current.target.set(0, eaveHeight / 2, 0);
+      controlsRef.current.update();
 
       if (rendererRef.current && sceneRef.current) {
         rendererRef.current.render(sceneRef.current, cameraRef.current);
@@ -119,22 +130,11 @@ export const useThreeSetup = (
     [buildingDimensions, isSetup]
   );
 
-  useEffect(() => {
-    updateCameraPosition(currentView);
-  }, [currentView, updateCameraPosition]);
-
-  const animate = useCallback(() => {
-    frameIdRef.current = requestAnimationFrame(animate);
-    if (rendererRef.current && sceneRef.current && cameraRef.current) {
-      rendererRef.current.render(sceneRef.current, cameraRef.current);
-    }
-  }, []);
-
   return {
     scene: sceneRef.current,
     camera: cameraRef.current,
     renderer: rendererRef.current,
-    animate,
+    controls: controlsRef.current,
     isSetup,
     updateCameraPosition,
   };
