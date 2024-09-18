@@ -10,6 +10,8 @@ import {
   faCopy,
   faPlus,
   faCheck,
+  faSave,
+  faFolderOpen,
 } from '@fortawesome/free-solid-svg-icons';
 
 import useFormState from '../../../hooks/useFormState';
@@ -28,10 +30,8 @@ import FinalizeQuote from '../../../components/quoteSections/FinalizeQuote';
 
 import CopyBuildingDialog from '../../../components/CopyBuildingDialog';
 import DeleteDialog from '../../../components/DeleteDialog';
-import ReusableSelect from '../../../components/ReusableSelect';
 import BuildingSketch from '../../../components/BuildingSketch';
 import FeetInchesInput from '../../../components/Inputs/FeetInchesInput';
-import { logo } from '../../../../public/images';
 
 import PageHeader from '@/components/PageHeader';
 
@@ -341,6 +341,19 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
       {/* Sidebar Navigation */}
       {isDesktop && (
         <div>
+          <div className={styles.tabContainer}>
+            <button
+              onClick={() => {
+                alert('This is not built yet');
+              }}
+              className={styles.openTab}
+            >
+              <FontAwesomeIcon icon={faFolderOpen} />
+            </button>
+            <button onClick={handleSubmit} className={styles.saveTab}>
+              <FontAwesomeIcon icon={faSave} />
+            </button>
+          </div>
           <nav className={styles.sidebar}>
             <button onClick={() => setActiveCardDirectly('quote-info')}>
               Project Information

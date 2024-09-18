@@ -1,5 +1,6 @@
 .quoteContainer{ 
- text-align: center;
+  margin-top: 1em;
+  text-align: center;
   overflow-x: auto;
   max-width: 100%;  
   transition: all ease .5s;

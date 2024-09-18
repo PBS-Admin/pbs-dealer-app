@@ -75,7 +75,7 @@ export default async function Tracker() {
 
   return (
     <main className={styles.dashMain}>
-      <PageHeader session={session} title="Dashboard" isLogOut={true} />
+      <PageHeader session={session} title="Quote Tracker" isLogOut={false} />
 
       {error && <div className={styles.error}>{error}</div>}
 

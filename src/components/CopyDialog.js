@@ -14,7 +14,7 @@ const CopyDialog = ({ isOpen, onClose, onCopy, title, message }) => {
           <button className="button nuetral" onClick={onClose}>
             Cancel
           </button>
-          <button className="button reject" onClick={onCopy}>
+          <button className="button prim" onClick={onCopy}>
             Copy
           </button>
         </div>

@@ -5,8 +5,7 @@
     background-color: var(--background-white);
     border-radius: 0 1em 1em 0;
     padding: 1em 0; 
-    align-self: flex-start;
-    margin-top: 1vw;
+    align-self: flex-start;    
 }
 
 .sidebar button {
@@ -21,6 +20,41 @@
 
 .sidebar button:hover {
     background: var(--light-orange);
+}
+
+.tabContainer{
+    margin-top: 1vw;
+    display: flex;
+    width: 100%;    
+    justify-content: flex-end;    
+    padding-inline: 1em;
+    gap: 1em;
+}
+
+.tabContainer button{    
+    aspect-ratio: 1 / 1;    
+    font-size: 1.5em;    
+    border: none;
+    color: var(--black);
+    padding:0 .5em;
+    border-radius: .5em .5em 0 0;
+    transition: all ease .3s;
+}
+
+.saveTab{    
+    background-color: var(--light-green);
+}
+
+.saveTab:hover{
+    background-color: var(--green);    
+}
+
+.openTab{
+    background-color: var(--light-blue);
+}
+
+.openTab:hover{
+    background-color: var(--blue);
 }
 
 .sketchBox{
