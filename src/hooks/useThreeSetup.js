@@ -85,7 +85,7 @@ export const useThreeSetup = (
 
       const { width, length, eaveHeight } = buildingDimensions;
       const maxDimension = Math.max(width, length, eaveHeight);
-      const distance = maxDimension * 1.5;
+      const distance = maxDimension * 1.35;
 
       // Enable controls for all views
       controlsRef.current.enabled = true;

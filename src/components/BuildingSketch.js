@@ -145,7 +145,7 @@ const BuildingSketch = ({
   };
 
   return (
-    <div className="test">
+    <div>
       <div
         ref={mountRef}
         style={{
