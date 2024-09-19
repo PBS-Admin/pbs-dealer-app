@@ -49,12 +49,12 @@
     background-color: var(--green);    
 }
 
-.openTab{
-    background-color: var(--light-blue);
+.deleteTab{
+    background-color: var(--light-red);
 }
 
-.openTab:hover{
-    background-color: var(--blue);
+.deleteTab:hover{
+    background-color: var(--red);
 }
 
 .sketchBox{
