@@ -8,7 +8,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import CopyDialog from './CopyDialog';
-import { getQuote } from '../util/quoteUtils';
 
 export default function QuoteTable({ initialQuotes, onCopyQuote }) {
   const [quotes, setQuotes] = useState(initialQuotes);

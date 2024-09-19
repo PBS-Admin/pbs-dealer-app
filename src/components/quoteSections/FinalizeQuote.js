@@ -1,6 +1,6 @@
 import React from 'react';
 
-const QuoteInformation = ({ values, handleChange }) => {
+const FinalizeQuote = ({ values, handleChange }) => {
   return (
     <>
       <section className="card start">
@@ -9,7 +9,17 @@ const QuoteInformation = ({ values, handleChange }) => {
         </header>
         <div className="cardGrid">
           <div className="cardInput">
-            <button type="submit">Submit Quote</button>
+            <button type="submit" className="button success">
+              Save Quote
+            </button>
+            <button
+              className="button accent"
+              onClick={() => {
+                alert('This is not built yet');
+              }}
+            >
+              Submit Quote
+            </button>
           </div>
         </div>
       </section>
@@ -17,4 +27,4 @@ const QuoteInformation = ({ values, handleChange }) => {
   );
 };
 
-export default QuoteInformation;
+export default FinalizeQuote;

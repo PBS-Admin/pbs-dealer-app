@@ -6,6 +6,7 @@
   --black: #141414;
   --dark-blue: #103494;
   --light-blue: #A3B9F5;
+  --blue: #7E9DF1;
   --orange: #F94C08;
   --light-orange: #FBB99D;
   --background-white: #F5F5F5;
@@ -21,7 +22,7 @@
 * {
   box-sizing: border-box;
   padding: 0;
-  margin: 0;  
+  margin: 0;   
 }
 
 *::-webkit-scrollbar {

@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import styles from './page.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,6 +11,7 @@ import {
   faCopy,
   faPlus,
   faCheck,
+  faSave,
 } from '@fortawesome/free-solid-svg-icons';
 
 import useFormState from '../../../hooks/useFormState';
@@ -28,10 +30,8 @@ import FinalizeQuote from '../../../components/quoteSections/FinalizeQuote';
 
 import CopyBuildingDialog from '../../../components/CopyBuildingDialog';
 import DeleteDialog from '../../../components/DeleteDialog';
-import ReusableSelect from '../../../components/ReusableSelect';
 import BuildingSketch from '../../../components/BuildingSketch';
 import FeetInchesInput from '../../../components/Inputs/FeetInchesInput';
-import { logo } from '../../../../public/images';
 
 import PageHeader from '@/components/PageHeader';
 
@@ -45,8 +45,12 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [sourceBuildingIndex, setSourceBuildingIndex] = useState(0);
+  const [isQuoteDeleteDialogOpen, setIsQuoteDeleteDialogOpen] = useState(false);
+
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState('');
   const initialRender = useRef(true);
+  const router = useRouter();
 
   // Hooks
   const {
@@ -299,12 +303,52 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         } else {
           setCurrentQuote(data.message);
         }
+
+        setSaveSuccess(true);
+        // Reset saveSuccess after 3 seconds
+        setTimeout(() => {
+          setSaveSuccess(false);
+        }, 3000);
       } else {
         const data = await response.json();
         setError(data.message || 'Something went wrong');
       }
     } catch (error) {
       setError('An error occurred. Please try again.');
+    }
+  };
+
+  const openQuoteDeleteDialog = () => {
+    setIsQuoteDeleteDialogOpen(true);
+  };
+
+  const closeQuoteDeleteDialog = () => {
+    setIsQuoteDeleteDialogOpen(false);
+  };
+
+  const handleDeleteQuote = async () => {
+    if (!session) return;
+
+    try {
+      const url = new URL(`/api/quotes/${quoteId}`, window.location.origin);
+
+      const response = await fetch(url.toString(), {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete quote');
+      }
+
+      router.push('/dashboard');
+      closeDeleteDialog();
+    } catch (error) {
+      console.error('Error deleting quote:', error);
+      alert('Failed to delete quote. Please try again.');
     }
   };
 
@@ -341,6 +385,19 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
       {/* Sidebar Navigation */}
       {isDesktop && (
         <div>
+          <div className={styles.tabContainer}>
+            {quoteId != 0 && (
+              <button
+                onClick={openQuoteDeleteDialog}
+                className={styles.deleteTab}
+              >
+                <FontAwesomeIcon icon={faTrash} />
+              </button>
+            )}
+            <button onClick={handleSubmit} className={styles.saveTab}>
+              <FontAwesomeIcon icon={saveSuccess ? faCheck : faSave} />
+            </button>
+          </div>
           <nav className={styles.sidebar}>
             <button onClick={() => setActiveCardDirectly('quote-info')}>
               Project Information
@@ -660,6 +717,13 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         onDelete={confirmRemoveBuilding}
         title="Confirm Deletion"
         message={`Are you sure you want to delete Building ${buildingToDelete !== null ? buildingToDelete + 1 : ''}?`}
+      />
+      <DeleteDialog
+        isOpen={isQuoteDeleteDialogOpen}
+        onClose={closeQuoteDeleteDialog}
+        onDelete={handleDeleteQuote}
+        title="Confirm Deletion"
+        message={`Are you sure you want to delete this whole quote?`}
       />
     </main>
   );
