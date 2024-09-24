@@ -656,12 +656,12 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
             start = new THREE.Vector3(
               width / 2 + 0.1,
               0,
-              -length / 2 + position
+              length / 2 - position
             );
             end = new THREE.Vector3(
               width / 2 + 0.1,
               frontEaveHeight,
-              -length / 2 + position
+              length / 2 - position
             );
             createLine(start, end);
 
@@ -669,12 +669,12 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
             start = new THREE.Vector3(
               -width / 2 - 0.1,
               0,
-              -length / 2 + position
+              length / 2 - position
             );
             end = new THREE.Vector3(
               -width / 2 - 0.1,
               backEaveHeight,
-              -length / 2 + position
+              length / 2 - position
             );
             createLine(start, end);
 
@@ -683,18 +683,18 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
               -width / 2,
               backEaveHeight + 0.1,
 
-              -length / 2 + position
+              length / 2 - position
             );
             roofMid = new THREE.Vector3(
               -width / 2 + backPeakOffset,
               peakHeight,
-              -length / 2 + position
+              length / 2 - position
             );
             roofEnd = new THREE.Vector3(
               width / 2,
               frontEaveHeight + 0.1,
 
-              -length / 2 + position
+              length / 2 - position
             );
             createRoofLine(roofStart, roofMid, roofEnd);
             break;
