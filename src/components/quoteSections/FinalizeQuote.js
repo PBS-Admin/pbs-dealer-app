@@ -20,6 +20,14 @@ const FinalizeQuote = ({ values, handleChange }) => {
             >
               Submit Quote
             </button>
+            <button
+              className="button prim"
+              onClick={() => {
+                alert('This is not built yet');
+              }}
+            >
+              Export to MBS
+            </button>
           </div>
         </div>
       </section>
