@@ -1,4 +1,12 @@
 import React from 'react';
+import ReusableSelect from '../Inputs/ReusableSelect';
+import {
+  buildingCodes,
+  exposure,
+  riskCategories,
+  seismicCategory,
+} from '../../util/dropdownOptions';
+import ReusableDouble from '../Inputs/ReusableDouble';
 
 const ProjectInformation = ({ values, handleChange }) => {
   return (
@@ -230,113 +238,115 @@ const ProjectInformation = ({ values, handleChange }) => {
         </header>
         <div className="cardGrid">
           <div className="cardInput">
-            <label htmlFor="buildingCode">Building Code:</label>
-            <input
-              type="text"
-              id="buildingCode"
-              name="buildingCode"
+            <ReusableSelect
+              id={`buildingCode`}
+              name={`buildingCode`}
               value={values.buildingCode}
               onChange={handleChange}
-              placeholder="Building Code"
+              options={buildingCodes}
+              label="Building Code:"
             />
           </div>
           <div className="cardInput">
-            <label htmlFor="riskCategory">Risk Category:</label>
-            <input
-              type="text"
-              id="riskCategory"
-              name="riskCategory"
+            <ReusableSelect
+              id={`riskCategory`}
+              name={`riskCategory`}
               value={values.riskCategory}
               onChange={handleChange}
-              placeholder="Risk Category"
+              options={riskCategories}
+              label="Risk Category:"
             />
           </div>
           <div className="cardInput">
-            <label htmlFor="windLoad">Wind Load:</label>
-            <input
-              type="text"
-              id="windLoad"
-              name="windLoad"
+            <ReusableDouble
+              id={'windLoad'}
               value={values.windLoad}
               onChange={handleChange}
-              placeholder="Wind Load"
+              name={'windLoad'}
+              label={'Wind Load (mph):'}
+              disabled={false}
+              placeholder={'0'}
             />
           </div>
           <div className="cardInput">
-            <label htmlFor="exposure">Exposure:</label>
-            <input
-              type="text"
-              id="exposure"
-              name="exposure"
+            <ReusableSelect
+              id={`exposure`}
+              name={`exposure`}
               value={values.exposure}
               onChange={handleChange}
-              placeholder="Exposure"
+              options={exposure}
+              label="Exposure:"
+              defaultValue="c"
             />
           </div>
           <div className="cardInput">
-            <label htmlFor="groundLoad">Ground Load:</label>
-            <input
-              type="text"
-              id="groundLoad"
-              name="groundLoad"
+            <ReusableDouble
+              id={'groundLoad'}
               value={values.groundLoad}
               onChange={handleChange}
-              placeholder="Ground Load"
+              name={'groundLoad'}
+              label={'Ground Load (psf):'}
+              disabled={false}
+              placeholder={'0'}
             />
           </div>
           <div className="cardInput">
-            <label htmlFor="seismicCategory">Seismic Category:</label>
-            <input
-              type="text"
-              id="seismicCategory"
-              name="seismicCategory"
+            <ReusableSelect
+              id={`seismicCategory`}
+              name={`seismicCategory`}
               value={values.seismicCategory}
               onChange={handleChange}
-              placeholder="Seismic Category"
+              options={seismicCategory}
+              label="Seismic Category:"
+              defaultValue="d"
             />
           </div>
           <div className="cardInput">
-            <label htmlFor="seismicSs">SeismicSs:</label>
-            <input
-              type="text"
-              id="seismicSs"
-              name="seismicSs"
+            <ReusableDouble
+              id={'seismicSs'}
               value={values.seismicSs}
               onChange={handleChange}
-              placeholder="SeismicSs"
+              name={'seismicSs'}
+              label={'Ss:'}
+              disabled={false}
+              placeholder={'0'}
+              decimalPlaces={3}
             />
           </div>
           <div className="cardInput">
-            <label htmlFor="seismicS1">SeismicS1:</label>
-            <input
-              type="text"
-              id="seismicS1"
-              name="seismicS1"
+            <ReusableDouble
+              id={'seismicS1'}
               value={values.seismicS1}
               onChange={handleChange}
-              placeholder="SeismicS1"
+              name={'seismicS1'}
+              label={'S1:'}
+              disabled={false}
+              placeholder={'0'}
+              decimalPlaces={3}
             />
           </div>
           <div className="cardInput">
-            <label htmlFor="seismicSms">SeismicSms:</label>
-            <input
-              type="text"
-              id="seismicSms"
-              name="seismicSms"
+            <ReusableDouble
+              id={'seismicSms'}
               value={values.seismicSms}
               onChange={handleChange}
-              placeholder="SeismicSms"
+              name={'seismicSms'}
+              label={'Sms:'}
+              disabled={false}
+              placeholder={'0'}
+              decimalPlaces={3}
             />
           </div>
           <div className="cardInput">
-            <label htmlFor="seismicSm1">SeismicSm1:</label>
-            <input
-              type="text"
-              id="seismicSm1"
-              name="seismicSm1"
+            <ReusableDouble
+              id={'seismicSm1'}
               value={values.seismicSm1}
               onChange={handleChange}
-              placeholder="SeismicSm1"
+              name={'seismicSm1'}
+              label={'Sm1:'}
+              disabled={false}
+              placeholder={'0'}
+              decimalPlaces={3}
             />
           </div>
         </div>

@@ -214,7 +214,7 @@ export default function QuoteTable({ initialQuotes, onCopyQuote }) {
             </tbody>
           </table>
         ) : (
-          <p>No quotes found.</p>
+          <p className={styles.message}>No quotes found.</p>
         )}
         {isDeleteDialogOpen && (
           <DeleteDialog

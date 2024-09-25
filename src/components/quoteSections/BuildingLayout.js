@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import ReusableSelect from '../../components/ReusableSelect';
+import ReusableSelect from '../Inputs/ReusableSelect';
 import {
   shapes,
   frames,

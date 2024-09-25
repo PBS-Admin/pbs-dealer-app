@@ -20,7 +20,6 @@ import useNavigation from '../../../hooks/useNavigation';
 import { initialState } from './_initialState';
 // Quote Form Section
 import ProjectInformation from '../../../components/quoteSections/ProjectInformation';
-import DesignCodes from '../../../components/quoteSections/DesignCodes';
 import BuildingLayout from '../../../components/quoteSections/BuildingLayout';
 import BuildingOptions from '../../../components/quoteSections/BuildingOptions';
 import BuildingExtensions from '../../../components/quoteSections/BuildingExtensions';

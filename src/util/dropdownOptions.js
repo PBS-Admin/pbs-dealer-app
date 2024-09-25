@@ -245,3 +245,32 @@ export const polycarbColor = [
   { id: 'clear', label: 'Clear' },
   { id: 'white', label: 'White' },
 ];
+
+export const buildingCodes = [
+  { id: 'ibc18', label: 'IBC18 (International Building Code 2018)' },
+  { id: 'ibc21', label: 'IBC21 (International Building Code 2021)' },
+  { id: 'ossc22', label: 'OSSC22 (Oregon Structural Specialty Code 2022)' },
+  { id: 'cbc22', label: 'CBC22 (California Building Code 2022)' },
+];
+
+export const riskCategories = [
+  { id: '1', label: 'I - Agricultural' },
+  { id: '2', label: 'II - Standard Occupancy' },
+  { id: '3', label: 'III - Substantial Facility' },
+  { id: '4', label: 'IV - Essential Facility' },
+];
+
+export const exposure = [
+  { id: 'b', label: 'B' },
+  { id: 'c', label: 'C' },
+  { id: 'd', label: 'D' },
+];
+
+export const seismicCategory = [
+  { id: 'a', label: 'A' },
+  { id: 'b', label: 'B' },
+  { id: 'c', label: 'C' },
+  { id: 'd', label: 'D' },
+  { id: 'e', label: 'E' },
+  { id: 'f', label: 'F' },
+];

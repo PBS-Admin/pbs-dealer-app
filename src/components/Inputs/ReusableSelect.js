@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const ReusableSelect = ({
   id,
@@ -8,7 +8,24 @@ const ReusableSelect = ({
   options,
   label,
   labelHide,
+  defaultValue,
 }) => {
+  const [internalValue, setInternalValue] = useState(
+    value || defaultValue || ''
+  );
+
+  useEffect(() => {
+    if (value !== undefined && value != '') {
+      setInternalValue(value);
+    }
+  }, [value]);
+
+  const handleChange = (e) => {
+    const newValue = e.target.value;
+    setInternalValue(newValue);
+    onChange(e);
+  };
+
   return (
     <div className="cardInput">
       <label className={labelHide} htmlFor={id}>
@@ -18,8 +35,8 @@ const ReusableSelect = ({
         className="selectInput"
         id={id}
         name={name}
-        value={value}
-        onChange={onChange}
+        value={internalValue}
+        onChange={handleChange}
       >
         {options.map((option) => (
           <option key={option.id} value={option.id}>
