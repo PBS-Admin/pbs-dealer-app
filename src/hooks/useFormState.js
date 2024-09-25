@@ -99,6 +99,86 @@ function useFormState(initialState) {
                   );
                 }
                 break;
+              case 'backRoofPitch':
+                // Calculate roof pitch if we have all necessary values
+                if (
+                  width > 0 &&
+                  backRoofPitch > 0 &&
+                  frontEaveHeight > 0 &&
+                  backPeakOffset > 0 &&
+                  frontRoofPitch > 0
+                ) {
+                  const peak =
+                    frontEaveHeight +
+                    (frontRoofPitch * (width - backPeakOffset)) / 12;
+                  const calculatedEaveHeight =
+                    peak - (backPeakOffset * backRoofPitch) / 12;
+                  updatedBuilding.backEaveHeight = Math.max(
+                    0,
+                    Number(calculatedEaveHeight.toFixed(2))
+                  );
+                }
+                break;
+              case 'frontRoofPitch':
+                // Calculate roof pitch if we have all necessary values
+                if (
+                  width > 0 &&
+                  backRoofPitch > 0 &&
+                  backEaveHeight > 0 &&
+                  backPeakOffset > 0 &&
+                  frontRoofPitch > 0
+                ) {
+                  const peak =
+                    backEaveHeight + (backRoofPitch * backPeakOffset) / 12;
+                  const calculatedEaveHeight =
+                    peak - ((width - backPeakOffset) * frontRoofPitch) / 12;
+                  updatedBuilding.frontEaveHeight = Math.max(
+                    0,
+                    Number(calculatedEaveHeight.toFixed(2))
+                  );
+                }
+                break;
+              case 'backPeakOffset':
+                // Calculate roof pitch if we have all necessary values
+                if (
+                  width > 0 &&
+                  frontEaveHeight > 0 &&
+                  backEaveHeight > 0 &&
+                  backPeakOffset > 0 &&
+                  backRoofPitch > 0 &&
+                  frontRoofPitch == 0
+                ) {
+                  const peak =
+                    backEaveHeight + (backRoofPitch * backPeakOffset) / 12;
+                  console.log('frp: ' + peak);
+                  const calculatedRoofPitch =
+                    ((peak - frontEaveHeight) / (width - backPeakOffset)) * 12;
+                  console.log('frpitch: ' + calculatedRoofPitch);
+                  updatedBuilding.frontRoofPitch = Math.min(
+                    6,
+                    Math.max(0, Number(calculatedRoofPitch.toFixed(2)))
+                  );
+                } else if (
+                  width > 0 &&
+                  frontEaveHeight > 0 &&
+                  backEaveHeight > 0 &&
+                  backPeakOffset > 0 &&
+                  frontRoofPitch > 0 &&
+                  backRoofPitch == 0
+                ) {
+                  const peak =
+                    frontEaveHeight +
+                    (frontRoofPitch * (width - backPeakOffset)) / 12;
+                  console.log('brp: ' + peak);
+                  const calculatedRoofPitch =
+                    ((peak - backEaveHeight) / backPeakOffset) * 12;
+                  console.log('brpitch: ' + calculatedRoofPitch);
+                  updatedBuilding.backRoofPitch = Math.min(
+                    6,
+                    Math.max(0, Number(calculatedRoofPitch.toFixed(2)))
+                  );
+                }
+                break;
             }
           }
 
