@@ -39,6 +39,7 @@ const FeetInchesInput = ({
   row,
   calc,
   onCalc,
+  disabled,
 }) => {
   const [inputValue, setInputValue] = useState('');
 
@@ -89,6 +90,7 @@ const FeetInchesInput = ({
         onBlur={handleBlur}
         placeholder="0'-0&quot;"
         onFocus={(e) => e.target.select()}
+        disabled={disabled}
       />
     </div>
   );

@@ -19,7 +19,7 @@ import useNavigation from '../../../hooks/useNavigation';
 
 import { initialState } from './_initialState';
 // Quote Form Section
-import QuoteInformation from '../../../components/quoteSections/QuoteInformation';
+import ProjectInformation from '../../../components/quoteSections/ProjectInformation';
 import DesignCodes from '../../../components/quoteSections/DesignCodes';
 import BuildingLayout from '../../../components/quoteSections/BuildingLayout';
 import BuildingOptions from '../../../components/quoteSections/BuildingOptions';
@@ -104,6 +104,12 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           swBaySpacing: '',
           lewBaySpacing: '',
           rewBaySpacing: '',
+          collateralLoad: '',
+          liveLoad: '',
+          deadLoad: '',
+          enclosure: '',
+          roofLoad: '',
+          thermalFactor: '',
           frameType: 'rigidFrame',
           intColSpacing: '',
           straightExtColumns: false,
@@ -195,6 +201,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         },
       ],
     }));
+    setActiveBuilding(values.buildings.length);
   };
 
   const removeBuilding = (indexToRemove) => {
@@ -284,10 +291,6 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
     setError('');
 
     let company = session.user.company;
-
-    console.log('qnum: ' + currentQuote);
-    console.log('comp: ' + company);
-    console.log('dat: ' + values);
 
     try {
       const response = await fetch('/api/auth/save', {
@@ -402,9 +405,9 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
             <button onClick={() => setActiveCardDirectly('quote-info')}>
               Project Information
             </button>
-            <button onClick={() => setActiveCardDirectly('design-code')}>
+            {/* <button onClick={() => setActiveCardDirectly('design-code')}>
               Design Codes
-            </button>
+            </button> */}
             <button onClick={() => setActiveCardDirectly('building-project')}>
               Building Project
             </button>
@@ -454,12 +457,12 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
       <form onSubmit={handleSubmit} className="inputForm">
         {/* Project Info Page */}
         {activeCard == 'quote-info' && (
-          <QuoteInformation values={values} handleChange={handleChange} />
+          <ProjectInformation values={values} handleChange={handleChange} />
         )}
         {/* Design Code Page */}
-        {activeCard == 'design-code' && (
+        {/* {activeCard == 'design-code' && (
           <DesignCodes values={values} handleChange={handleChange} />
-        )}
+        )} */}
         {/* Building Project Page */}
         {activeCard == 'building-project' && (
           <section className="page">
@@ -479,46 +482,50 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                   </div>
                   <div className={styles.buildingProjectContainer}>
                     <FeetInchesInput
-                      name={`buildingWidth-${activeBuilding}`}
+                      name={`buildingWidth-${index}`}
                       label="Width:"
                       value={building.width}
                       onChange={(name, value) =>
-                        handleNestedChange(activeBuilding, 'width', value)
+                        handleNestedChange(index, 'width', value)
                       }
                       row={true}
+                      disabled={index != activeBuilding}
                     />
                   </div>
                   <div className={styles.buildingProjectContainer}>
                     <FeetInchesInput
-                      name={`buildingLength-${activeBuilding}`}
+                      name={`buildingLength-${index}`}
                       label="Length:"
                       value={building.length}
                       onChange={(name, value) =>
-                        handleNestedChange(activeBuilding, 'length', value)
+                        handleNestedChange(index, 'length', value)
                       }
                       row={true}
+                      disabled={index != activeBuilding}
                     />
                   </div>
                   <div className={styles.buildingProjectContainer}>
                     <FeetInchesInput
-                      name={`buildingOffsetX-${activeBuilding}`}
+                      name={`buildingOffsetX-${index}`}
                       label="Left/Right:"
                       value={building.offsetX}
                       onChange={(name, value) =>
-                        handleNestedChange(activeBuilding, 'offsetX', value)
+                        handleNestedChange(index, 'offsetX', value)
                       }
                       row={true}
+                      disabled={index != activeBuilding}
                     />
                   </div>
                   <div className={styles.buildingProjectContainer}>
                     <FeetInchesInput
-                      name={`buildingOffsetY-${activeBuilding}`}
+                      name={`buildingOffsetY-${index}`}
                       label="Back/Front:"
                       value={building.offsetY}
                       onChange={(name, value) =>
-                        handleNestedChange(activeBuilding, 'offsetY', value)
+                        handleNestedChange(index, 'offsetY', value)
                       }
                       row={true}
+                      disabled={index != activeBuilding}
                     />
                   </div>
                   <div className={styles.buildingProjectContainer}>
@@ -531,11 +538,12 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       name={`buildingRotation-${index}`}
                       value={building.rotation}
                       onChange={(name, value) =>
-                        handleNestedChange(activeBuilding, 'rotation', value)
+                        handleNestedChange(index, 'rotation', value)
                       }
                       min="0"
                       max="360"
                       step="15"
+                      disabled={index != activeBuilding}
                     />
                   </div>
                   <div className={styles.buildingProjectContainer}>
@@ -549,6 +557,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       onChange={(name, value) =>
                         handleNestedChange(index, 'commonWall', value)
                       }
+                      disabled={index != activeBuilding}
                     >
                       <option value="">Select a building</option>
                       {values.buildings.map(
@@ -660,7 +669,9 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           </>
         )}
         {activeCard == 'accessories' && <section></section>}
-        {activeCard == 'finalize-quote' && <FinalizeQuote />}
+        {activeCard == 'finalize-quote' && (
+          <FinalizeQuote values={values} handleChange={handleChange} />
+        )}
         {!isDesktop &&
           (values.buildings[activeBuilding].width > 0 ||
             values.buildings[activeBuilding].length > 0) && (

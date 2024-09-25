@@ -150,10 +150,8 @@ function useFormState(initialState) {
                 ) {
                   const peak =
                     backEaveHeight + (backRoofPitch * backPeakOffset) / 12;
-                  console.log('frp: ' + peak);
                   const calculatedRoofPitch =
                     ((peak - frontEaveHeight) / (width - backPeakOffset)) * 12;
-                  console.log('frpitch: ' + calculatedRoofPitch);
                   updatedBuilding.frontRoofPitch = Math.min(
                     6,
                     Math.max(0, Number(calculatedRoofPitch.toFixed(2)))
@@ -169,10 +167,8 @@ function useFormState(initialState) {
                   const peak =
                     frontEaveHeight +
                     (frontRoofPitch * (width - backPeakOffset)) / 12;
-                  console.log('brp: ' + peak);
                   const calculatedRoofPitch =
                     ((peak - backEaveHeight) / backPeakOffset) * 12;
-                  console.log('brpitch: ' + calculatedRoofPitch);
                   updatedBuilding.backRoofPitch = Math.min(
                     6,
                     Math.max(0, Number(calculatedRoofPitch.toFixed(2)))

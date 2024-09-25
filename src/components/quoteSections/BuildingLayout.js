@@ -226,6 +226,100 @@ const BuildingLayout = ({
         </div>
       </section>
 
+      <section className="card start">
+        <header className="cardHeader">
+          <h3>Design Codes</h3>
+        </header>
+        <div className="cardGrid">
+          <div className="cardInput">
+            <label htmlFor="collateralLoad">Collateral Load:</label>
+            <input
+              type="text"
+              id="collateralLoad"
+              name="collateralLoad"
+              value={values.buildings[activeBuilding].collateralLoad}
+              onChange={(e) =>
+                handleNestedChange(
+                  activeBuilding,
+                  'collateralLoad',
+                  e.target.value
+                )
+              }
+              placeholder="Collateral Load"
+            />
+          </div>
+          <div className="cardInput">
+            <label htmlFor="liveLoad">Live Load:</label>
+            <input
+              type="text"
+              id="liveLoad"
+              name="liveLoad"
+              value={values.buildings[activeBuilding].liveLoad}
+              onChange={(e) =>
+                handleNestedChange(activeBuilding, 'liveLoad', e.target.value)
+              }
+              placeholder="Live Load"
+            />
+          </div>
+          <div className="cardInput">
+            <label htmlFor="deadLoad">Dead Load:</label>
+            <input
+              type="text"
+              id="deadLoad"
+              name="deadLoad"
+              value={values.buildings[activeBuilding].deadLoad}
+              onChange={(e) =>
+                handleNestedChange(activeBuilding, 'deadLoad', e.target.value)
+              }
+              placeholder="Dead Load"
+            />
+          </div>
+          <div className="cardInput">
+            <label htmlFor="enclosure">Enclosure:</label>
+            <input
+              type="text"
+              id="enclosure"
+              name="enclosure"
+              value={values.buildings[activeBuilding].enclosure}
+              onChange={(e) =>
+                handleNestedChange(activeBuilding, 'enclosure', e.target.value)
+              }
+              placeholder="Enclosure"
+            />
+          </div>
+          <div className="cardInput">
+            <label htmlFor="roofLoad">Roof Load:</label>
+            <input
+              type="text"
+              id="roofLoad"
+              name="roofLoad"
+              value={values.buildings[activeBuilding].roofLoad}
+              onChange={(e) =>
+                handleNestedChange(activeBuilding, 'roofLoad', e.target.value)
+              }
+              placeholder="Roof Load"
+            />
+          </div>
+          <div className="cardInput">
+            <label htmlFor="thermalFactor">Thermal Factor:</label>
+            <input
+              type="text"
+              id="thermalFactor"
+              name="thermalFactor"
+              value={values.buildings[activeBuilding].thermalFactor}
+              onChange={(e) =>
+                handleNestedChange(
+                  activeBuilding,
+                  'thermalFactor',
+                  e.target.value
+                )
+              }
+              placeholder="Thermal Factor"
+            />
+          </div>
+        </div>
+      </section>
+
       <section className="card">
         <header className="cardHeader">
           <h3>Frame Type</h3>
