@@ -1,6 +1,14 @@
 import React from 'react';
+import ReusableSelect from '../Inputs/ReusableSelect';
+import {
+  buildingCodes,
+  exposure,
+  riskCategories,
+  seismicCategory,
+} from '../../util/dropdownOptions';
+import ReusableDouble from '../Inputs/ReusableDouble';
 
-const QuoteInformation = ({ values, handleChange }) => {
+const ProjectInformation = ({ values, handleChange }) => {
   return (
     <>
       <section className="card start">
@@ -223,8 +231,128 @@ const QuoteInformation = ({ values, handleChange }) => {
           </div>
         </div>
       </section>
+
+      <section className="card start">
+        <header className="cardHeader">
+          <h3>Design Codes</h3>
+        </header>
+        <div className="cardGrid">
+          <div className="cardInput">
+            <ReusableSelect
+              id={`buildingCode`}
+              name={`buildingCode`}
+              value={values.buildingCode}
+              onChange={handleChange}
+              options={buildingCodes}
+              label="Building Code:"
+            />
+          </div>
+          <div className="cardInput">
+            <ReusableSelect
+              id={`riskCategory`}
+              name={`riskCategory`}
+              value={values.riskCategory}
+              onChange={handleChange}
+              options={riskCategories}
+              label="Risk Category:"
+            />
+          </div>
+          <div className="cardInput">
+            <ReusableDouble
+              id={'windLoad'}
+              value={values.windLoad}
+              onChange={handleChange}
+              name={'windLoad'}
+              label={'Wind Load (mph):'}
+              disabled={false}
+              placeholder={'0'}
+            />
+          </div>
+          <div className="cardInput">
+            <ReusableSelect
+              id={`exposure`}
+              name={`exposure`}
+              value={values.exposure}
+              onChange={handleChange}
+              options={exposure}
+              label="Exposure:"
+              defaultValue="c"
+            />
+          </div>
+          <div className="cardInput">
+            <ReusableDouble
+              id={'groundLoad'}
+              value={values.groundLoad}
+              onChange={handleChange}
+              name={'groundLoad'}
+              label={'Ground Load (psf):'}
+              disabled={false}
+              placeholder={'0'}
+            />
+          </div>
+          <div className="cardInput">
+            <ReusableSelect
+              id={`seismicCategory`}
+              name={`seismicCategory`}
+              value={values.seismicCategory}
+              onChange={handleChange}
+              options={seismicCategory}
+              label="Seismic Category:"
+              defaultValue="d"
+            />
+          </div>
+          <div className="cardInput">
+            <ReusableDouble
+              id={'seismicSs'}
+              value={values.seismicSs}
+              onChange={handleChange}
+              name={'seismicSs'}
+              label={'Ss:'}
+              disabled={false}
+              placeholder={'0'}
+              decimalPlaces={3}
+            />
+          </div>
+          <div className="cardInput">
+            <ReusableDouble
+              id={'seismicS1'}
+              value={values.seismicS1}
+              onChange={handleChange}
+              name={'seismicS1'}
+              label={'S1:'}
+              disabled={false}
+              placeholder={'0'}
+              decimalPlaces={3}
+            />
+          </div>
+          <div className="cardInput">
+            <ReusableDouble
+              id={'seismicSms'}
+              value={values.seismicSms}
+              onChange={handleChange}
+              name={'seismicSms'}
+              label={'Sms:'}
+              disabled={false}
+              placeholder={'0'}
+              decimalPlaces={3}
+            />
+          </div>
+          <div className="cardInput">
+            <ReusableDouble
+              id={'seismicSm1'}
+              value={values.seismicSm1}
+              onChange={handleChange}
+              name={'seismicSm1'}
+              label={'Sm1:'}
+              disabled={false}
+              placeholder={'0'}
+              decimalPlaces={3}
+            />
+          </div>
+        </div>
+      </section>
     </>
   );
 };
 
-export default QuoteInformation;
+export default ProjectInformation;

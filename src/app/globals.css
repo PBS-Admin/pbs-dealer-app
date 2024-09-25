@@ -316,10 +316,17 @@ p{
   border: none;
   outline: 1px solid var(--black);  
   padding-left: .25em;
+  transition: all .3s ease;
 }
 
 .cardInput input:focus{
-  outline: 1px solid var(--orange);
+  outline: 1px solid var(--orange);  
+}
+
+.cardInput input:disabled{
+  color: var(--background-white);  
+  border: 1px solid var(--background-white);
+  outline: none;
 }
 
 .projInput{

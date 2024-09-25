@@ -1,5 +1,5 @@
 import React from 'react';
-import ReusableSelect from '../ReusableSelect'; // Assuming this component exists
+import ReusableSelect from './ReusableSelect'; // Assuming this component exists
 
 const PolycarbReliteRow = ({
   wallName,

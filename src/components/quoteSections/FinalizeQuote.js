@@ -23,7 +23,7 @@ const FinalizeQuote = ({ values, handleChange }) => {
             <button
               className="button prim"
               onClick={() => {
-                alert('This is not built yet');
+                console.log(values);
               }}
             >
               Export to MBS

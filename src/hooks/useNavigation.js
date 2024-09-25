@@ -6,7 +6,7 @@ const useNavigation = (activeBuilding, initialIndex = 0) => {
       id: 'quote-info',
       label: 'Project Information',
     },
-    { id: 'design-code', label: 'Design Codes' },
+    // { id: 'design-code', label: 'Design Codes' },
     {
       id: 'building-project',
       label: 'Building Project',

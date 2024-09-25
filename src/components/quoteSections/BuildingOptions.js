@@ -1,6 +1,6 @@
 import { React, useState, Fragment } from 'react';
 import Image from 'next/image';
-import ReusableSelect from '../../components/ReusableSelect';
+import ReusableSelect from '../Inputs/ReusableSelect';
 import PolycarbReliteRow from '../../components/Inputs/PolycarbReliteRow';
 import {
   walls,

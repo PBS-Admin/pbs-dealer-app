@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment } from 'react';
 import Image from 'next/image';
-import ReusableSelect from '../../components/ReusableSelect';
+import ReusableSelect from '../Inputs/ReusableSelect';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import {

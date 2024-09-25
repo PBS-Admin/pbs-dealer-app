@@ -104,6 +104,11 @@
   background: var(--dark-blue);
 }
 
+.message{
+  color: var(--background-white);
+  padding: 1em;
+}
+
 @media screen and (min-width: 1000px) {
   .quoteContainer{     
      padding: 0 5em;
