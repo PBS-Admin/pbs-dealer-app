@@ -20,11 +20,14 @@ import {
   wallFinish,
   roofInsulation,
   wallInsulation,
+  enclosure,
+  thermalFactor,
 } from '../../util/dropdownOptions';
 import FeetInchesInput from '../Inputs/FeetInchesInput';
 import RoofPitchInput from '../Inputs/RoofPitchInput';
 import BaySpacingInput from '../Inputs/BaySpacingInput';
 import BaySelectionInput from '../Inputs/BaySelectionInput';
+import ReusableDouble from '../Inputs/ReusableDouble';
 
 const BuildingLayout = ({
   values,
@@ -232,11 +235,8 @@ const BuildingLayout = ({
         </header>
         <div className="cardGrid">
           <div className="cardInput">
-            <label htmlFor="collateralLoad">Collateral Load:</label>
-            <input
-              type="text"
-              id="collateralLoad"
-              name="collateralLoad"
+            <ReusableDouble
+              id={'collateralLoad'}
               value={values.buildings[activeBuilding].collateralLoad}
               onChange={(e) =>
                 handleNestedChange(
@@ -245,67 +245,72 @@ const BuildingLayout = ({
                   e.target.value
                 )
               }
-              placeholder="Collateral Load"
+              name={'collateralLoad'}
+              label={'Collateral Load (psf):'}
+              disabled={false}
+              placeholder={'0'}
+              decimalPlaces={2}
             />
           </div>
           <div className="cardInput">
-            <label htmlFor="liveLoad">Live Load:</label>
-            <input
-              type="text"
-              id="liveLoad"
-              name="liveLoad"
+            <ReusableDouble
+              id={'liveLoad'}
               value={values.buildings[activeBuilding].liveLoad}
               onChange={(e) =>
                 handleNestedChange(activeBuilding, 'liveLoad', e.target.value)
               }
-              placeholder="Live Load"
+              name={'liveLoad'}
+              label={'Live Load (psf):'}
+              disabled={false}
+              placeholder={'0'}
+              decimalPlaces={2}
             />
           </div>
           <div className="cardInput">
-            <label htmlFor="deadLoad">Dead Load:</label>
-            <input
-              type="text"
-              id="deadLoad"
-              name="deadLoad"
+            <ReusableDouble
+              id={'deadLoad'}
               value={values.buildings[activeBuilding].deadLoad}
               onChange={(e) =>
                 handleNestedChange(activeBuilding, 'deadLoad', e.target.value)
               }
-              placeholder="Dead Load"
+              name={'deadLoad'}
+              label={'Dead Load (psf):'}
+              disabled={false}
+              placeholder={'0'}
+              decimalPlaces={2}
             />
           </div>
           <div className="cardInput">
-            <label htmlFor="enclosure">Enclosure:</label>
-            <input
-              type="text"
-              id="enclosure"
-              name="enclosure"
+            <ReusableSelect
+              id={`enclosure`}
+              name={`enclosure`}
               value={values.buildings[activeBuilding].enclosure}
               onChange={(e) =>
                 handleNestedChange(activeBuilding, 'enclosure', e.target.value)
               }
-              placeholder="Enclosure"
+              options={enclosure}
+              label="Enclosure:"
+              defaultValue="closed"
             />
           </div>
           <div className="cardInput">
-            <label htmlFor="roofLoad">Roof Load:</label>
-            <input
-              type="text"
-              id="roofLoad"
-              name="roofLoad"
+            <ReusableDouble
+              id={'roofLoad'}
               value={values.buildings[activeBuilding].roofLoad}
               onChange={(e) =>
                 handleNestedChange(activeBuilding, 'roofLoad', e.target.value)
               }
-              placeholder="Roof Load"
+              name={'roofLoad'}
+              label={'Roof Load (psf):'}
+              disabled={false}
+              placeholder={'0'}
+              decimalPlaces={2}
             />
           </div>
           <div className="cardInput">
-            <label htmlFor="thermalFactor">Thermal Factor:</label>
-            <input
-              type="text"
-              id="thermalFactor"
-              name="thermalFactor"
+            <ReusableSelect
+              id={`thermalFactor`}
+              name={`thermalFactor`}
               value={values.buildings[activeBuilding].thermalFactor}
               onChange={(e) =>
                 handleNestedChange(
@@ -314,7 +319,9 @@ const BuildingLayout = ({
                   e.target.value
                 )
               }
-              placeholder="Thermal Factor"
+              options={thermalFactor}
+              label="Thermal Factor:"
+              defaultValue="heated"
             />
           </div>
         </div>
@@ -527,91 +534,105 @@ const BuildingLayout = ({
               }
             />
           )}
-          {values.buildings[activeBuilding].lewFrame == 'postAndBeam' && (
-            <ReusableSelect
-              id={`buildinglewBracing-${activeBuilding}`}
-              name={`buildinglewBracing-${activeBuilding}`}
-              value={values.buildings[activeBuilding].lewBracingType}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'lewBracingType',
-                  e.target.value
-                )
-              }
-              options={EndwallBracingType}
-              label="Left Endwall Bracing Type:"
-            />
-          )}
-          {values.buildings[activeBuilding].rewFrame == 'postAndBeam' && (
-            <ReusableSelect
-              id={`buildingrewBracing-${activeBuilding}`}
-              name={`buildingrewBracing-${activeBuilding}`}
-              value={values.buildings[activeBuilding].rewBracingType}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'rewBracingType',
-                  e.target.value
-                )
-              }
-              options={EndwallBracingType}
-              label="Right Endwall Bracing Type:"
-            />
-          )}
+          <ReusableSelect
+            id={`buildinglewBracing-${activeBuilding}`}
+            name={`buildinglewBracing-${activeBuilding}`}
+            value={
+              values.buildings[activeBuilding].lewFrame == 'postAndBeam'
+                ? values.buildings[activeBuilding].lewBracingType
+                : 'none'
+            }
+            onChange={(e) =>
+              handleNestedChange(
+                activeBuilding,
+                'lewBracingType',
+                e.target.value
+              )
+            }
+            options={EndwallBracingType}
+            label="Left Endwall Bracing Type:"
+            disabled={
+              values.buildings[activeBuilding].lewFrame != 'postAndBeam'
+            }
+          />
+          <ReusableSelect
+            id={`buildingrewBracing-${activeBuilding}`}
+            name={`buildingrewBracing-${activeBuilding}`}
+            value={
+              values.buildings[activeBuilding].rewFrame == 'postAndBeam'
+                ? values.buildings[activeBuilding].rewBracingType
+                : 'none'
+            }
+            onChange={(e) =>
+              handleNestedChange(
+                activeBuilding,
+                'rewBracingType',
+                e.target.value
+              )
+            }
+            options={EndwallBracingType}
+            label="Right Endwall Bracing Type:"
+            disabled={
+              values.buildings[activeBuilding].rewFrame != 'postAndBeam'
+            }
+          />
         </div>
         <div className="divider"></div>
 
         <h4>Wall Braced Bays</h4>
         <div className="cardGrid">
-          {values.buildings[activeBuilding].fswBracingType != 'torsional' && (
-            <BaySelectionInput
-              name={`buildingfswBracedBays-${activeBuilding}`}
-              label="Front Sidewall"
-              value={values.buildings[activeBuilding].fswBracedBays}
-              onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'fswBracedBays', value)
-              }
-              baySpacing={values.buildings[activeBuilding].sidewallBaySpacing}
-              multiSelect={true}
-            />
-          )}
-          {values.buildings[activeBuilding].bswBracingType != 'torsional' && (
-            <BaySelectionInput
-              name={`buildingbswBracedBays-${activeBuilding}`}
-              label="Back Sidewall"
-              value={values.buildings[activeBuilding].bswBracedBays}
-              onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'bswBracedBays', value)
-              }
-              baySpacing={values.buildings[activeBuilding].sidewallBaySpacing}
-              multiSelect={true}
-            />
-          )}
-          {values.buildings[activeBuilding].lewFrame == 'postAndBeam' && (
-            <BaySelectionInput
-              name={`buildinglewBracedBays-${activeBuilding}`}
-              label="Left Endwall"
-              value={values.buildings[activeBuilding].lewBracedBays}
-              onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'lewBracedBays', value)
-              }
-              baySpacing={values.buildings[activeBuilding].lewBaySpacing}
-              multiSelect={true}
-            />
-          )}
-          {values.buildings[activeBuilding].rewFrame == 'postAndBeam' && (
-            <BaySelectionInput
-              name={`buildingrewBracedBays-${activeBuilding}`}
-              label="Right Endwall"
-              value={values.buildings[activeBuilding].rewBracedBays}
-              onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'rewBracedBays', value)
-              }
-              baySpacing={values.buildings[activeBuilding].rewBaySpacing}
-              multiSelect={true}
-            />
-          )}
+          <BaySelectionInput
+            name={`buildingfswBracedBays-${activeBuilding}`}
+            label="Front Sidewall"
+            value={values.buildings[activeBuilding].fswBracedBays}
+            onChange={(name, value) =>
+              handleNestedChange(activeBuilding, 'fswBracedBays', value)
+            }
+            baySpacing={values.buildings[activeBuilding].sidewallBaySpacing}
+            multiSelect={true}
+            disabled={
+              values.buildings[activeBuilding].fswBracingType == 'torsional'
+            }
+          />
+          <BaySelectionInput
+            name={`buildingbswBracedBays-${activeBuilding}`}
+            label="Back Sidewall"
+            value={values.buildings[activeBuilding].bswBracedBays}
+            onChange={(name, value) =>
+              handleNestedChange(activeBuilding, 'bswBracedBays', value)
+            }
+            baySpacing={values.buildings[activeBuilding].sidewallBaySpacing}
+            multiSelect={true}
+            disabled={
+              values.buildings[activeBuilding].bswBracingType == 'torsional'
+            }
+          />
+          <BaySelectionInput
+            name={`buildinglewBracedBays-${activeBuilding}`}
+            label="Left Endwall"
+            value={values.buildings[activeBuilding].lewBracedBays}
+            onChange={(name, value) =>
+              handleNestedChange(activeBuilding, 'lewBracedBays', value)
+            }
+            baySpacing={values.buildings[activeBuilding].lewBaySpacing}
+            multiSelect={true}
+            disabled={
+              values.buildings[activeBuilding].lewFrame != 'postAndBeam'
+            }
+          />
+          <BaySelectionInput
+            name={`buildingrewBracedBays-${activeBuilding}`}
+            label="Right Endwall"
+            value={values.buildings[activeBuilding].rewBracedBays}
+            onChange={(name, value) =>
+              handleNestedChange(activeBuilding, 'rewBracedBays', value)
+            }
+            baySpacing={values.buildings[activeBuilding].rewBaySpacing}
+            multiSelect={true}
+            disabled={
+              values.buildings[activeBuilding].rewFrame != 'postAndBeam'
+            }
+          />
         </div>
 
         <h4>Roof Bracing</h4>

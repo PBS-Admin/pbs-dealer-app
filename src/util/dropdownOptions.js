@@ -266,6 +266,20 @@ export const exposure = [
   { id: 'd', label: 'D' },
 ];
 
+export const enclosure = [
+  { id: 'closed', label: 'Closed' },
+  { id: 'partial', label: 'Partial' },
+  { id: 'open', label: 'Open' },
+];
+
+export const thermalFactor = [
+  { id: 'greenhouse', label: 'Greenhouse' },
+  { id: 'heated', label: 'Heated' },
+  { id: 'insulated', label: 'Unheated w/ Insulation' },
+  { id: 'uninsulated', label: 'Unheated w/o Insulation' },
+  { id: 'freezing', label: 'Kept below freezing' },
+];
+
 export const seismicCategory = [
   { id: 'a', label: 'A' },
   { id: 'b', label: 'B' },

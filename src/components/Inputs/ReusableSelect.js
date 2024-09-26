@@ -9,6 +9,7 @@ const ReusableSelect = ({
   label,
   labelHide,
   defaultValue,
+  disabled,
 }) => {
   const [internalValue, setInternalValue] = useState(
     value || defaultValue || ''
@@ -37,6 +38,7 @@ const ReusableSelect = ({
         name={name}
         value={internalValue}
         onChange={handleChange}
+        disabled={disabled}
       >
         {options.map((option) => (
           <option key={option.id} value={option.id}>
