@@ -1,12 +1,44 @@
+import useWind from '@/util/oregonWind';
 import { useState } from 'react';
 
 function useFormState(initialState) {
   const [values, setValues] = useState(initialState);
   const [lastChangedWall, setLastChangedWall] = useState('frontSidewall');
 
+  const { getWindLoad } = useWind(initialState);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setValues((prev) => ({ ...prev, [name]: value }));
+
+    setValues((prev) => {
+      // Parse the value if it's a number field
+      const newValue = [
+        'collateralLoad',
+        'liveLoad',
+        'deadLoad',
+        'roofLoad',
+      ].includes(name)
+        ? parseFloat(value)
+        : value;
+
+      // Update buildings if the field exists in building objects
+      const updatedBuildings = prev.buildings.map((building) => {
+        if (name in building) {
+          return {
+            ...building,
+            [name]: building[name] == 0 ? newValue : building[name],
+          };
+        }
+        return building;
+      });
+
+      // Return the updated state
+      return {
+        ...prev,
+        [name]: newValue,
+        buildings: updatedBuildings,
+      };
+    });
   };
 
   const handleNestedChange = (buildingIndex, field, value) => {
@@ -345,12 +377,14 @@ function useFormState(initialState) {
     }));
   };
 
-  const handleCalcChange = (buildingIndex, field) => {
+  const handleCalcChange = (buildingIndex = 1, field) => {
     setValues((prev) => {
       const building = prev.buildings[buildingIndex];
+      // todo: fix this Building index causing undefined buildings
+      console.log(building);
       const { width, lowEaveHeight, highEaveHeight, roofPitch } = building;
 
-      let calculatedValue;
+      let calculatedValue, calcValue;
 
       switch (field) {
         case 'lowEaveHeight':
@@ -361,6 +395,9 @@ function useFormState(initialState) {
           break;
         case 'roofPitch':
           calculatedValue = ((highEaveHeight - lowEaveHeight) / width) * 12;
+          break;
+        case 'windLoad':
+          calculatedValue = getWindLoad;
           break;
         default:
           return prev; // If the field is not recognized, return the previous state unchanged

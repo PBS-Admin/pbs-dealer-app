@@ -17,6 +17,8 @@ const ReusableDouble = ({
   onChange,
   name,
   label,
+  calc,
+  onCalc,
   disabled = false,
   placeholder,
   decimalPlaces = 2,
@@ -55,9 +57,18 @@ const ReusableDouble = ({
     });
   };
 
+  const calcClass = calc ? 'calcInput' : '';
+
   return (
     <div className="cardInput">
-      <label htmlFor={name}>{label}</label>
+      <div className={`${calcClass}`}>
+        <label htmlFor={name}>{label}</label>
+        {calc && (
+          <button type="button" onClick={onCalc}>
+            Calc
+          </button>
+        )}
+      </div>
       <input
         type="text"
         id={name}

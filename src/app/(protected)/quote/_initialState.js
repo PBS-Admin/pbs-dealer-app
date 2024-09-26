@@ -21,6 +21,12 @@ export const initialState = {
   // Design Code Page
   buildingCode: '',
   riskCategory: '',
+  collateralLoad: '',
+  liveLoad: '',
+  deadLoad: '',
+  enclosure: '',
+  roofLoad: '',
+  thermalFactor: '',
   windLoad: '',
   exposure: '',
   groundLoad: '',

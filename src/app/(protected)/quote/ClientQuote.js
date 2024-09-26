@@ -103,11 +103,11 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           swBaySpacing: '',
           lewBaySpacing: '',
           rewBaySpacing: '',
-          collateralLoad: '',
-          liveLoad: '',
-          deadLoad: '',
+          collateralLoad: values.collateralLoad,
+          liveLoad: values.liveLoad,
+          deadLoad: values.deadLoad,
           enclosure: '',
-          roofLoad: '',
+          roofLoad: values.roofLoad,
           thermalFactor: '',
           frameType: 'rigidFrame',
           intColSpacing: '',
@@ -456,7 +456,11 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
       <form onSubmit={handleSubmit} className="inputForm">
         {/* Project Info Page */}
         {activeCard == 'quote-info' && (
-          <ProjectInformation values={values} handleChange={handleChange} />
+          <ProjectInformation
+            values={values}
+            handleChange={handleChange}
+            handleCalcChange={handleCalcChange}
+          />
         )}
         {/* Design Code Page */}
         {/* {activeCard == 'design-code' && (

@@ -233,97 +233,92 @@ const BuildingLayout = ({
         <header className="cardHeader">
           <h3>Design Codes</h3>
         </header>
+        <h4>Roof Load</h4>
         <div className="cardGrid">
-          <div className="cardInput">
-            <ReusableDouble
-              id={'collateralLoad'}
-              value={values.buildings[activeBuilding].collateralLoad}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'collateralLoad',
-                  e.target.value
-                )
-              }
-              name={'collateralLoad'}
-              label={'Collateral Load (psf):'}
-              disabled={false}
-              placeholder={'0'}
-              decimalPlaces={2}
-            />
-          </div>
-          <div className="cardInput">
-            <ReusableDouble
-              id={'liveLoad'}
-              value={values.buildings[activeBuilding].liveLoad}
-              onChange={(e) =>
-                handleNestedChange(activeBuilding, 'liveLoad', e.target.value)
-              }
-              name={'liveLoad'}
-              label={'Live Load (psf):'}
-              disabled={false}
-              placeholder={'0'}
-              decimalPlaces={2}
-            />
-          </div>
-          <div className="cardInput">
-            <ReusableDouble
-              id={'deadLoad'}
-              value={values.buildings[activeBuilding].deadLoad}
-              onChange={(e) =>
-                handleNestedChange(activeBuilding, 'deadLoad', e.target.value)
-              }
-              name={'deadLoad'}
-              label={'Dead Load (psf):'}
-              disabled={false}
-              placeholder={'0'}
-              decimalPlaces={2}
-            />
-          </div>
-          <div className="cardInput">
-            <ReusableSelect
-              id={`enclosure`}
-              name={`enclosure`}
-              value={values.buildings[activeBuilding].enclosure}
-              onChange={(e) =>
-                handleNestedChange(activeBuilding, 'enclosure', e.target.value)
-              }
-              options={enclosure}
-              label="Enclosure:"
-              defaultValue="closed"
-            />
-          </div>
-          <div className="cardInput">
-            <ReusableDouble
-              id={'roofLoad'}
-              value={values.buildings[activeBuilding].roofLoad}
-              onChange={(e) =>
-                handleNestedChange(activeBuilding, 'roofLoad', e.target.value)
-              }
-              name={'roofLoad'}
-              label={'Roof Load (psf):'}
-              disabled={false}
-              placeholder={'0'}
-              decimalPlaces={2}
-            />
-          </div>
-          <div className="cardInput">
-            <ReusableSelect
-              id={`thermalFactor`}
-              name={`thermalFactor`}
-              value={values.buildings[activeBuilding].thermalFactor}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'thermalFactor',
-                  e.target.value
-                )
-              }
-              options={thermalFactor}
-              label="Thermal Factor:"
-              defaultValue="heated"
-            />
-          </div>
+          <ReusableDouble
+            id={'collateralLoad'}
+            value={values.buildings[activeBuilding].collateralLoad}
+            onChange={(e) =>
+              handleNestedChange(
+                activeBuilding,
+                'collateralLoad',
+                e.target.value
+              )
+            }
+            name={'collateralLoad'}
+            label={'Collateral Load (psf):'}
+            disabled={false}
+            placeholder={'0'}
+            decimalPlaces={2}
+          />
+          <ReusableDouble
+            id={'liveLoad'}
+            value={values.buildings[activeBuilding].liveLoad}
+            onChange={(e) =>
+              handleNestedChange(activeBuilding, 'liveLoad', e.target.value)
+            }
+            name={'liveLoad'}
+            label={'Live Load (psf):'}
+            disabled={false}
+            placeholder={'0'}
+            decimalPlaces={2}
+          />
+          <ReusableDouble
+            id={'deadLoad'}
+            value={values.buildings[activeBuilding].deadLoad}
+            onChange={(e) =>
+              handleNestedChange(activeBuilding, 'deadLoad', e.target.value)
+            }
+            name={'deadLoad'}
+            label={'Dead Load (psf):'}
+            disabled={false}
+            placeholder={'0'}
+            decimalPlaces={2}
+          />
+        </div>
+        <h4>Wind Load</h4>
+        <div className="cardGrid">
+          <ReusableSelect
+            id={`enclosure`}
+            name={`enclosure`}
+            value={values.buildings[activeBuilding].enclosure}
+            onChange={(e) =>
+              handleNestedChange(activeBuilding, 'enclosure', e.target.value)
+            }
+            options={enclosure}
+            label="Enclosure:"
+            defaultValue="closed"
+          />
+        </div>
+        <h4>Snow Load</h4>
+        <div className="cardGrid">
+          <ReusableDouble
+            id={'roofLoad'}
+            value={values.buildings[activeBuilding].roofLoad}
+            onChange={(e) =>
+              handleNestedChange(activeBuilding, 'roofLoad', e.target.value)
+            }
+            name={'roofLoad'}
+            label={'Roof Load (psf):'}
+            disabled={false}
+            placeholder={'0'}
+            decimalPlaces={2}
+          />
+          <ReusableSelect
+            id={`thermalFactor`}
+            name={`thermalFactor`}
+            value={values.buildings[activeBuilding].thermalFactor}
+            onChange={(e) =>
+              handleNestedChange(
+                activeBuilding,
+                'thermalFactor',
+                e.target.value
+              )
+            }
+            options={thermalFactor}
+            label="Thermal Factor:"
+            defaultValue="heated"
+          />
         </div>
       </section>
 
