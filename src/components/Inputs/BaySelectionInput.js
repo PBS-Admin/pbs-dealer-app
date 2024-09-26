@@ -7,6 +7,7 @@ const BaySelectionInput = ({
   label,
   baySpacing,
   multiSelect = false,
+  disabled = false,
 }) => {
   const [selectedBays, setSelectedBays] = useState(value || []);
 
@@ -66,9 +67,15 @@ const BaySelectionInput = ({
   }, [value]);
 
   return (
-    <div className="cardInput">
+    <div className="cardInput start">
       <h5>{label}</h5>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+      <div
+        style={{
+          display: disabled ? 'none' : 'flex',
+          flexWrap: 'wrap',
+          gap: '8px',
+        }}
+      >
         {[...Array(numberOfBays)].map((_, index) => {
           const bayNumber = index + 1;
           const isSelected = selectedBays.includes(bayNumber);
@@ -76,7 +83,6 @@ const BaySelectionInput = ({
             <button
               type="button"
               key={bayNumber}
-              type="button"
               onClick={() => handleBayClick(bayNumber)}
               style={{
                 width: '40px',
