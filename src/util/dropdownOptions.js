@@ -254,10 +254,10 @@ export const buildingCodes = [
 ];
 
 export const riskCategories = [
-  { id: '1', label: 'I - Agricultural' },
-  { id: '2', label: 'II - Standard Occupancy' },
-  { id: '3', label: 'III - Substantial Facility' },
-  { id: '4', label: 'IV - Essential Facility' },
+  { id: 'I', label: 'I - Agricultural' },
+  { id: 'II', label: 'II - Standard Occupancy' },
+  { id: 'III', label: 'III - Substantial Facility' },
+  { id: 'IV', label: 'IV - Essential Facility' },
 ];
 
 export const exposure = [

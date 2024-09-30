@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ReusableSelect from '../Inputs/ReusableSelect';
 import {
   buildingCodes,
@@ -9,8 +9,102 @@ import {
   thermalFactor,
 } from '../../util/dropdownOptions';
 import ReusableDouble from '../Inputs/ReusableDouble';
+import ReusableDialog from '../ReusableDialog';
+import useWind from '@/hooks/useWind';
+import useGeocoding from '@/hooks/useGeocoding';
+import useSnow from '@/hooks/useSnow';
+import useSeismic from '@/hooks/useSeismic';
 
-const ProjectInformation = ({ values, handleChange, handleCalcChange }) => {
+const ProjectInformation = ({ values, handleChange, setValues }) => {
+  const { getWindLoad, currentPrompt, isDialogOpen, handleResponse } = useWind(
+    values,
+    setValues
+  );
+
+  const { getSnowLoad, snowData } = useSnow(values);
+  const { getSeismicLoad, seismicData } = useSeismic(values);
+  const { locationData, loading, error, fetchGeocodingData } = useGeocoding();
+  const [shouldGeocode, setShouldGeocode] = useState(false);
+
+  const handleAddressChange = useCallback(
+    (e) => {
+      const { name, value } = e.target;
+      handleChange(e); // Call the original handleChange function
+
+      // Check if all core fields are filled
+      if (
+        [
+          'projectAddress',
+          'projectCity',
+          'projectState',
+          'projectZip',
+        ].includes(name)
+      ) {
+        const updatedValues = { ...values, [name]: value };
+        const allCoreFilled = [
+          'projectAddress',
+          'projectCity',
+          'projectState',
+          'projectZip',
+        ].every((field) => updatedValues[field].trim() !== '');
+
+        setShouldGeocode(allCoreFilled);
+      }
+    },
+    [values, handleChange]
+  );
+
+  useEffect(() => {
+    if (shouldGeocode) {
+      const { projectAddress, projectCity, projectState, projectZip } = values;
+      const fullAddress = `${projectAddress}, ${projectCity}, ${projectState} ${projectZip}`;
+
+      const timeoutId = setTimeout(() => {
+        fetchGeocodingData(fullAddress);
+        setShouldGeocode(false);
+      }, 1000); // Wait for 1 second after the last change
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [shouldGeocode, values, fetchGeocodingData]);
+
+  useEffect(() => {
+    if (locationData) {
+      setValues((prevValues) => ({
+        ...prevValues,
+        projectLatitude: locationData.lat,
+        projectLongitude: locationData.lng,
+        projectCounty: locationData.county,
+        projectElevation: locationData.elevation,
+      }));
+    }
+  }, [locationData, setValues]);
+
+  useEffect(() => {
+    if (snowData) {
+      setValues((prevValues) => ({
+        ...prevValues,
+        groundLoad: snowData.snowload,
+      }));
+    }
+  }, [snowData, setValues]);
+
+  useEffect(() => {
+    if (seismicData) {
+      setValues((prevValues) => ({
+        ...prevValues,
+        seismicSs: seismicData.response.data.ss,
+        seismicS1: seismicData.response.data.s1,
+        seismicSms: seismicData.response.data.sms,
+        seismicSm1: seismicData.response.data.sm1,
+        sesimicFa: seismicData.response.data.fa,
+        sesimicFv: seismicData.response.data.fv,
+        sesimicSds: seismicData.response.data.sds,
+        sesimicSd1: seismicData.response.data.sd1,
+      }));
+    }
+  }, [seismicData, setValues]);
+
   return (
     <>
       <section className="card start">
@@ -171,7 +265,7 @@ const ProjectInformation = ({ values, handleChange, handleCalcChange }) => {
               id="projectAddress"
               name="projectAddress"
               value={values.projectAddress}
-              onChange={handleChange}
+              onChange={handleAddressChange}
               placeholder="Address"
             />
           </div>
@@ -182,7 +276,7 @@ const ProjectInformation = ({ values, handleChange, handleCalcChange }) => {
               id="projectCity"
               name="projectCity"
               value={values.projectCity}
-              onChange={handleChange}
+              onChange={handleAddressChange}
               placeholder="City"
             />
           </div>
@@ -193,7 +287,7 @@ const ProjectInformation = ({ values, handleChange, handleCalcChange }) => {
               id="projectState"
               name="projectState"
               value={values.projectState}
-              onChange={handleChange}
+              onChange={handleAddressChange}
               placeholder="State"
             />
           </div>
@@ -204,7 +298,7 @@ const ProjectInformation = ({ values, handleChange, handleCalcChange }) => {
               id="projectZip"
               name="projectZip"
               value={values.projectZip}
-              onChange={handleChange}
+              onChange={handleAddressChange}
               placeholder="Zip"
             />
           </div>
@@ -305,7 +399,7 @@ const ProjectInformation = ({ values, handleChange, handleCalcChange }) => {
             name={'windLoad'}
             label={'Wind Load (mph):'}
             calc={true}
-            onCalc={() => handleCalcChange('windLoad')}
+            onCalc={getWindLoad}
             disabled={false}
             placeholder={'0'}
           />
@@ -336,6 +430,8 @@ const ProjectInformation = ({ values, handleChange, handleCalcChange }) => {
             onChange={handleChange}
             name={'groundLoad'}
             label={'Ground Load (psf):'}
+            calc={true}
+            onCalc={getSnowLoad}
             disabled={false}
             placeholder={'0'}
           />
@@ -375,6 +471,8 @@ const ProjectInformation = ({ values, handleChange, handleCalcChange }) => {
             onChange={handleChange}
             name={'seismicSs'}
             label={'Ss:'}
+            calc={true}
+            onCalc={getSeismicLoad}
             disabled={false}
             placeholder={'0'}
             decimalPlaces={3}
@@ -411,6 +509,13 @@ const ProjectInformation = ({ values, handleChange, handleCalcChange }) => {
           />
         </div>
       </section>
+      <ReusableDialog
+        isOpen={isDialogOpen}
+        onClose={() => handleResponse(false)}
+        title="Wind Load Calculation"
+        message={currentPrompt?.Prompt}
+        onConfirm={() => handleResponse(true)}
+      />
     </>
   );
 };

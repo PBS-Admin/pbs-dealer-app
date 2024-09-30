@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
-function useWind(initialState) {
-  const [values, setValues] = useState(initialState);
+function useWind(initialFormValues, setFormValues) {
+  const [windPrompt, setWindPrompt] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [finalWindValue, setFinalWindValue] = useState(null);
 
-  let windPrompt = new Array();
   const OSSC19WindZones = {
     Baker: {
       Split: false,
@@ -480,61 +482,111 @@ function useWind(initialState) {
     },
   };
 
-  const getWindLoad = () => {
-    if (values.projectState != 'OR') {
-      // todo: set longitude and latitude when address is changed, then set the url here
-      //   var url =
-      //     'https://hazards.atcouncil.org/#/wind?lat=' +
-      //     jQuery('#projectLatitude').val() +
-      //     '&lng=' +
-      //     jQuery('#projectLongitude').val() +
-      //     '&address=' +
-      //     getProjectAddressURL();
-      //   openDefaultBrowser(url);
-    } else {
-      windPrompt = new Array();
-      var cat = 1;
-      cat = values.riskCategory == '1' ? 0 : cat;
-      cat = values.riskCategory == '2' ? 1 : cat;
-      cat = values.riskCategory == '3' ? 2 : cat;
-      cat = values.riskCategory == '4' ? 3 : cat;
-      var county = values.projectCounty;
+  const updateWindLoadValue = useCallback(
+    (windValue) => {
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        windLoad: windValue,
+        buildings: prevValues.buildings.map((building, index) =>
+          index === 0 ? { ...building, windLoad: windValue } : building
+        ),
+      }));
+    },
+    [setFormValues]
+  );
 
-      if (values.buildingCode == 'OSSC22' || values.buildingCode == 'OSSC19') {
-        if (OSSC19WindZones[county]['Split'] == false) {
-          for (let i = 0; i < OSSC19WindZones[county]['Zone'].length; i++) {
-            windPrompt.push({
-              Prompt: OSSC19WindZones[county]['Zone'][i]['Prompt'],
-              Wind: OSSC19WindZones[county]['Zone'][i]['Wind'][cat],
-            });
-          }
+  const getWindLoad = useCallback(() => {
+    const values = initialFormValues;
+    if (values.projectState !== 'OR') {
+      console.log('Not Oregon, wind load calculation not implemented');
+      return null;
+    }
+
+    const newWindPrompt = [];
+    const cat = ['1', '2', '3', '4'].indexOf(values.riskCategory);
+    const county = values.projectCounty;
+
+    if (values.buildingCode === 'ossc22' || values.buildingCode === 'ossc19') {
+      const countyData = OSSC19WindZones[county];
+      if (!countyData) {
+        console.error(`No data for county: ${county}`);
+        return null;
+      }
+
+      const zoneData =
+        !countyData.Split || values.projectLatitude > countyData.Split
+          ? countyData.Zone
+          : countyData.Zone2;
+
+      zoneData.forEach((zone) => {
+        newWindPrompt.push({
+          Prompt: zone.Prompt,
+          Wind: zone.Wind[cat],
+        });
+      });
+
+      setWindPrompt(newWindPrompt);
+      setCurrentIndex(0);
+
+      if (newWindPrompt.length > 0) {
+        if (
+          newWindPrompt[0].Prompt === false ||
+          newWindPrompt[0].Prompt === ''
+        ) {
+          const immediateWindValue = newWindPrompt[0].Wind;
+          setFinalWindValue(immediateWindValue);
+          updateWindLoadValue(immediateWindValue);
+          return immediateWindValue;
         } else {
-          if (
-            values.projectCounty != ''
-            // OSSC19WindZones[county]['Split'] < jQuery('#projectLatitude').val()
-          ) {
-            for (let i = 0; i < OSSC19WindZones[county]['Zone'].length; i++) {
-              windPrompt.push({
-                Prompt: OSSC19WindZones[county]['Zone'][i]['Prompt'],
-                Wind: OSSC19WindZones[county]['Zone'][i]['Wind'][cat],
-              });
-            }
-          } else {
-            for (let i = 0; i < OSSC19WindZones[county]['Zone2'].length; i++) {
-              windPrompt.push({
-                Prompt: OSSC19WindZones[county]['Zone2'][i]['Prompt'],
-                Wind: OSSC19WindZones[county]['Zone2'][i]['Wind'][cat],
-              });
-            }
-          }
+          setIsDialogOpen(true);
+          return null;
         }
-        // promptForWind();
       }
     }
-  };
+
+    console.log('Building code not supported');
+    return null;
+  }, [initialFormValues, updateWindLoadValue]);
+
+  const handleResponse = useCallback(
+    (response) => {
+      if (response) {
+        // User confirmed the prompt
+        const windValue = windPrompt[currentIndex].Wind;
+        setFinalWindValue(windValue);
+        updateWindLoadValue(windValue);
+        setIsDialogOpen(false);
+      } else {
+        // User cancelled the prompt, move to next prompt
+        const nextIndex = currentIndex + 1;
+        if (nextIndex < windPrompt.length) {
+          const nextPrompt = windPrompt[nextIndex];
+          if (nextPrompt.Prompt === false || nextPrompt.Prompt === '') {
+            // If next prompt is false or empty, use its wind value
+            setFinalWindValue(nextPrompt.Wind);
+            updateWindLoadValue(nextPrompt.Wind);
+            setIsDialogOpen(false);
+          } else {
+            // Move to next prompt
+            setCurrentIndex(nextIndex);
+          }
+        } else {
+          // We've reached the end of the prompts
+          setIsDialogOpen(false);
+          // You might want to set a default value or handle this case differently
+          console.log('Reached end of wind prompts without confirmation');
+        }
+      }
+    },
+    [currentIndex, windPrompt, updateWindLoadValue]
+  );
 
   return {
     getWindLoad,
+    currentPrompt: windPrompt[currentIndex],
+    isDialogOpen,
+    finalWindValue,
+    handleResponse,
   };
 }
 

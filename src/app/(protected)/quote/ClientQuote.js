@@ -14,8 +14,9 @@ import {
   faSave,
 } from '@fortawesome/free-solid-svg-icons';
 
-import useFormState from '../../../hooks/useFormState';
-import useNavigation from '../../../hooks/useNavigation';
+import useFormState from '@/hooks/useFormState';
+import useNavigation from '@/hooks/useNavigation';
+import useWind from '@/hooks/useWind';
 
 import { initialState } from './_initialState';
 // Quote Form Section
@@ -459,7 +460,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           <ProjectInformation
             values={values}
             handleChange={handleChange}
-            handleCalcChange={handleCalcChange}
+            setValues={setValues}
           />
         )}
         {/* Design Code Page */}

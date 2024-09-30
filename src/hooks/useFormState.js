@@ -1,11 +1,18 @@
-import useWind from '@/util/oregonWind';
+import useWind from '@/hooks/useWind';
 import { useState } from 'react';
+import ReusableDialog from '@/components/ReusableDialog';
 
 function useFormState(initialState) {
   const [values, setValues] = useState(initialState);
   const [lastChangedWall, setLastChangedWall] = useState('frontSidewall');
 
-  const { getWindLoad } = useWind(initialState);
+  const {
+    getWindLoad,
+    currentPrompt,
+    isDialogOpen,
+    finalWindValue,
+    handleResponse,
+  } = useWind();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -377,11 +384,10 @@ function useFormState(initialState) {
     }));
   };
 
-  const handleCalcChange = (buildingIndex = 1, field) => {
+  const handleCalcChange = (buildingIndex, field) => {
     setValues((prev) => {
       const building = prev.buildings[buildingIndex];
       // todo: fix this Building index causing undefined buildings
-      console.log(building);
       const { width, lowEaveHeight, highEaveHeight, roofPitch } = building;
 
       let calculatedValue, calcValue;
@@ -397,7 +403,7 @@ function useFormState(initialState) {
           calculatedValue = ((highEaveHeight - lowEaveHeight) / width) * 12;
           break;
         case 'windLoad':
-          calculatedValue = getWindLoad;
+          getWindLoad(values);
           break;
         default:
           return prev; // If the field is not recognized, return the previous state unchanged
