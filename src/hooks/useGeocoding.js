@@ -25,8 +25,6 @@ const useGeocoding = () => {
 
       const data = await response.json();
 
-      console.log('geocode Data: ', data);
-
       setLocationData({
         lat: data.latLng.lat,
         lng: data.latLng.lng,

@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import ReusableSelect from '../Inputs/ReusableSelect';
 import {
   buildingCodes,
@@ -27,34 +33,44 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
   const { getSnowLoad, snowData } = useSnow(values);
   const { getSeismicLoad, seismicData } = useSeismic(values);
   const { locationData, loading, error, fetchGeocodingData } = useGeocoding();
-  // const { address, inputRef, setAddress } = useAddress();
+
+  const projectInputRef = useRef(null);
+  const customerInputRef = useRef(null);
+
   const {
     addressDetails: projectAddressDetails,
-    isLoaded: isProjectAddressLoaded,
+    isReady: projectIsReady,
     resetAddressDetails: resetProjectAddressDetails,
-  } = useAddress(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY, 'projectAddress');
+  } = useAddress(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY, projectInputRef);
 
   const {
     addressDetails: customerAddressDetails,
-    isLoaded: isCustomerAddressLoaded,
+    isReady: customerIsReady,
     resetAddressDetails: resetCustomerAddressDetails,
-  } = useAddress(
-    process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-    'customerAddress'
+  } = useAddress(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY, customerInputRef);
+
+  const clearAddress = useCallback(
+    (addressType) => {
+      console.log('Clear address clicked');
+      const fields =
+        addressType === 'project'
+          ? ['projectAddress', 'projectCity', 'projectState', 'projectZip']
+          : ['customerAddress', 'customerCity', 'customerState', 'customerZip'];
+
+      setValues((prevValues) => {
+        const newValues = { ...prevValues };
+        fields.forEach((field) => (newValues[field] = ''));
+        return newValues;
+      });
+
+      if (addressType === 'project') {
+        resetProjectAddressDetails();
+      } else {
+        resetCustomerAddressDetails();
+      }
+    },
+    [setValues, resetProjectAddressDetails, resetCustomerAddressDetails]
   );
-
-  const clearAddress = (addressType) => {
-    const fields =
-      addressType === 'project'
-        ? ['projectAddress', 'projectCity', 'projectState', 'projectZip']
-        : ['customerAddress', 'customerCity', 'customerState', 'customerZip'];
-
-    setValues((prevValues) => {
-      const newValues = { ...prevValues };
-      fields.forEach((field) => (newValues[field] = ''));
-      return newValues;
-    });
-  };
 
   const handleAddressChange = useCallback(
     (e, addressType) => {
@@ -62,12 +78,12 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
       handleChange(e);
 
       if (name === 'projectAddress' || name === 'customerAddress') {
-        addressType === 'project'
-          ? resetProjectAddressDetails()
-          : resetCustomerAddressDetails();
+        if (value.trim() === '') {
+          clearAddress(addressType);
+        }
       }
     },
-    [handleChange, resetProjectAddressDetails, resetCustomerAddressDetails]
+    [handleChange, clearAddress]
   );
 
   const shouldGeocode = useMemo(() => {
@@ -188,11 +204,15 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
           <div className="cardInput span24">
             <label htmlFor="customerAddress" className="cardLabel">
               Street Address:
-              <button onClick={clearAddress} className="icon iconClear">
+              <button
+                onClick={() => clearAddress('customer')}
+                className="icon iconClear"
+              >
                 <FontAwesomeIcon icon={faEraser} />
               </button>
             </label>
             <input
+              ref={customerInputRef}
               type="text"
               id="customerAddress"
               name="customerAddress"
@@ -315,11 +335,15 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
           <div className="cardInput span24">
             <label htmlFor="projectAddress" className="cardLabel">
               Street Address:
-              <button onClick={clearAddress} className="icon iconClear">
+              <button
+                onClick={() => clearAddress('project')}
+                className="icon iconClear"
+              >
                 <FontAwesomeIcon icon={faEraser} />
               </button>
             </label>
             <input
+              ref={projectInputRef}
               type="text"
               id="projectAddress"
               name="projectAddress"
