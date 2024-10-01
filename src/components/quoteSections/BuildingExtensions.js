@@ -521,7 +521,7 @@ const BuildingExtensions = ({
                 </div>
                 <button
                   onClick={() => removeCanopy(activeBuilding, canopyIndex)}
-                  className="iconReject"
+                  className="icon iconReject"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>

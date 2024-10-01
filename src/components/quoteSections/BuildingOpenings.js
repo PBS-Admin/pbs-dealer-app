@@ -253,7 +253,7 @@ const BuildingOpenings = ({
         onClick={() =>
           removeOpening(activeBuilding, activeWallKey, openingIndex)
         }
-        className="iconReject"
+        className="icon iconReject"
       >
         <FontAwesomeIcon icon={faTrash} />
       </button>

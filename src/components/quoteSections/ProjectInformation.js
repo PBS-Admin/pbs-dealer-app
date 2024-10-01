@@ -1,14 +1,174 @@
-import React from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import ReusableSelect from '../Inputs/ReusableSelect';
 import {
   buildingCodes,
+  enclosure,
   exposure,
   riskCategories,
   seismicCategory,
+  thermalFactor,
 } from '../../util/dropdownOptions';
 import ReusableDouble from '../Inputs/ReusableDouble';
+import ReusableDialog from '../ReusableDialog';
+import useWind from '@/hooks/useWind';
+import useGeocoding from '@/hooks/useGeocoding';
+import useSnow from '@/hooks/useSnow';
+import useSeismic from '@/hooks/useSeismic';
+import useAddress from '@/hooks/useAddress';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEraser } from '@fortawesome/free-solid-svg-icons';
 
-const ProjectInformation = ({ values, handleChange }) => {
+const ProjectInformation = ({ values, handleChange, setValues }) => {
+  const { getWindLoad, currentPrompt, isDialogOpen, handleResponse } = useWind(
+    values,
+    setValues
+  );
+
+  const { getSnowLoad, snowData } = useSnow(values);
+  const { getSeismicLoad, seismicData } = useSeismic(values);
+  const { locationData, loading, error, fetchGeocodingData } = useGeocoding();
+
+  const projectInputRef = useRef(null);
+  const customerInputRef = useRef(null);
+
+  const {
+    addressDetails: projectAddressDetails,
+    isReady: projectIsReady,
+    resetAddressDetails: resetProjectAddressDetails,
+  } = useAddress(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY, projectInputRef);
+
+  const {
+    addressDetails: customerAddressDetails,
+    isReady: customerIsReady,
+    resetAddressDetails: resetCustomerAddressDetails,
+  } = useAddress(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY, customerInputRef);
+
+  const clearAddress = useCallback(
+    (addressType) => {
+      console.log('Clear address clicked');
+      const fields =
+        addressType === 'project'
+          ? ['projectAddress', 'projectCity', 'projectState', 'projectZip']
+          : ['customerAddress', 'customerCity', 'customerState', 'customerZip'];
+
+      setValues((prevValues) => {
+        const newValues = { ...prevValues };
+        fields.forEach((field) => (newValues[field] = ''));
+        return newValues;
+      });
+
+      if (addressType === 'project') {
+        resetProjectAddressDetails();
+      } else {
+        resetCustomerAddressDetails();
+      }
+    },
+    [setValues, resetProjectAddressDetails, resetCustomerAddressDetails]
+  );
+
+  const handleAddressChange = useCallback(
+    (e, addressType) => {
+      const { name, value } = e.target;
+      handleChange(e);
+
+      if (name === 'projectAddress' || name === 'customerAddress') {
+        if (value.trim() === '') {
+          clearAddress(addressType);
+        }
+      }
+    },
+    [handleChange, clearAddress]
+  );
+
+  const shouldGeocode = useMemo(() => {
+    return [
+      'projectAddress',
+      'projectCity',
+      'projectState',
+      'projectZip',
+    ].every((field) => values[field].trim() !== '');
+  }, [values]);
+
+  useEffect(() => {
+    if (projectAddressDetails) {
+      setValues((prevValues) => ({
+        ...prevValues,
+        projectAddress: projectAddressDetails.street,
+        projectCity: projectAddressDetails.city,
+        projectState: projectAddressDetails.state,
+        projectZip: projectAddressDetails.zip,
+      }));
+    }
+  }, [projectAddressDetails, setValues]);
+
+  useEffect(() => {
+    if (customerAddressDetails) {
+      setValues((prevValues) => ({
+        ...prevValues,
+        customerAddress: customerAddressDetails.street,
+        customerCity: customerAddressDetails.city,
+        customerState: customerAddressDetails.state,
+        customerZip: customerAddressDetails.zip,
+      }));
+    }
+  }, [customerAddressDetails, setValues]);
+
+  useEffect(() => {
+    if (shouldGeocode) {
+      const { projectAddress, projectCity, projectState, projectZip } = values;
+      const fullAddress = `${projectAddress}, ${projectCity}, ${projectState} ${projectZip}`;
+
+      const timeoutId = setTimeout(() => {
+        fetchGeocodingData(fullAddress);
+      }, 1000); // Wait for 1 second after the last change
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [shouldGeocode]);
+
+  useEffect(() => {
+    if (locationData) {
+      setValues((prevValues) => ({
+        ...prevValues,
+        projectLatitude: locationData.lat,
+        projectLongitude: locationData.lng,
+        projectCounty: locationData.county,
+        projectElevation: locationData.elevation,
+      }));
+    }
+  }, [locationData, setValues]);
+
+  useEffect(() => {
+    if (snowData) {
+      setValues((prevValues) => ({
+        ...prevValues,
+        groundLoad: snowData.snowload,
+      }));
+    }
+  }, [snowData, setValues]);
+
+  useEffect(() => {
+    if (seismicData) {
+      setValues((prevValues) => ({
+        ...prevValues,
+        seismicSs: seismicData.response.data.ss,
+        seismicS1: seismicData.response.data.s1,
+        seismicSms: seismicData.response.data.sms,
+        seismicSm1: seismicData.response.data.sm1,
+        sesimicFa: seismicData.response.data.fa,
+        sesimicFv: seismicData.response.data.fv,
+        sesimicSds: seismicData.response.data.sds,
+        sesimicSd1: seismicData.response.data.sd1,
+      }));
+    }
+  }, [seismicData, setValues]);
+
   return (
     <>
       <section className="card start">
@@ -42,13 +202,22 @@ const ProjectInformation = ({ values, handleChange }) => {
         <h4>Address</h4>
         <div className="addressGrid">
           <div className="cardInput span24">
-            <label htmlFor="customerStreet">Street Address:</label>
+            <label htmlFor="customerAddress" className="cardLabel">
+              Street Address:
+              <button
+                onClick={() => clearAddress('customer')}
+                className="icon iconClear"
+              >
+                <FontAwesomeIcon icon={faEraser} />
+              </button>
+            </label>
             <input
+              ref={customerInputRef}
               type="text"
-              id="customerStreet"
-              name="customerStreet"
-              value={values.customerStreet}
-              onChange={handleChange}
+              id="customerAddress"
+              name="customerAddress"
+              value={values.customerAddress}
+              onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="Street Address"
             />
           </div>
@@ -59,7 +228,7 @@ const ProjectInformation = ({ values, handleChange }) => {
               id="customerCity"
               name="customerCity"
               value={values.customerCity}
-              onChange={handleChange}
+              onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="City"
             />
           </div>
@@ -70,7 +239,7 @@ const ProjectInformation = ({ values, handleChange }) => {
               id="customerState"
               name="customerState"
               value={values.customerState}
-              onChange={handleChange}
+              onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="State"
             />
           </div>
@@ -81,7 +250,7 @@ const ProjectInformation = ({ values, handleChange }) => {
               id="customerZip"
               name="customerZip"
               value={values.customerZip}
-              onChange={handleChange}
+              onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="Zip"
             />
           </div>
@@ -161,15 +330,25 @@ const ProjectInformation = ({ values, handleChange }) => {
           </div>
         </div>
         <h4>Address</h4>
+
         <div className="addressGrid">
           <div className="cardInput span24">
-            <label htmlFor="projectAddress">Street Address:</label>
+            <label htmlFor="projectAddress" className="cardLabel">
+              Street Address:
+              <button
+                onClick={() => clearAddress('project')}
+                className="icon iconClear"
+              >
+                <FontAwesomeIcon icon={faEraser} />
+              </button>
+            </label>
             <input
+              ref={projectInputRef}
               type="text"
               id="projectAddress"
               name="projectAddress"
               value={values.projectAddress}
-              onChange={handleChange}
+              onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="Address"
             />
           </div>
@@ -180,7 +359,7 @@ const ProjectInformation = ({ values, handleChange }) => {
               id="projectCity"
               name="projectCity"
               value={values.projectCity}
-              onChange={handleChange}
+              onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="City"
             />
           </div>
@@ -191,7 +370,7 @@ const ProjectInformation = ({ values, handleChange }) => {
               id="projectState"
               name="projectState"
               value={values.projectState}
-              onChange={handleChange}
+              onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="State"
             />
           </div>
@@ -202,7 +381,7 @@ const ProjectInformation = ({ values, handleChange }) => {
               id="projectZip"
               name="projectZip"
               value={values.projectZip}
-              onChange={handleChange}
+              onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="Zip"
             />
           </div>
@@ -257,100 +436,169 @@ const ProjectInformation = ({ values, handleChange }) => {
               label="Risk Category:"
             />
           </div>
+        </div>
+        <h4>Roof Load</h4>
+        <div className="cardGrid">
           <div className="cardInput">
             <ReusableDouble
-              id={'windLoad'}
-              value={values.windLoad}
+              id={'collateralLoad'}
+              value={values.collateralLoad}
               onChange={handleChange}
-              name={'windLoad'}
-              label={'Wind Load (mph):'}
+              name={'collateralLoad'}
+              label={'Collateral Load (psf):'}
               disabled={false}
               placeholder={'0'}
             />
           </div>
           <div className="cardInput">
-            <ReusableSelect
-              id={`exposure`}
-              name={`exposure`}
-              value={values.exposure}
-              onChange={handleChange}
-              options={exposure}
-              label="Exposure:"
-              defaultValue="c"
-            />
-          </div>
-          <div className="cardInput">
             <ReusableDouble
-              id={'groundLoad'}
-              value={values.groundLoad}
+              id={'liveLoad'}
+              value={values.liveLoad}
               onChange={handleChange}
-              name={'groundLoad'}
-              label={'Ground Load (psf):'}
+              name={'liveLoad'}
+              label={'Live Load (psf):'}
               disabled={false}
               placeholder={'0'}
             />
           </div>
           <div className="cardInput">
-            <ReusableSelect
-              id={`seismicCategory`}
-              name={`seismicCategory`}
-              value={values.seismicCategory}
-              onChange={handleChange}
-              options={seismicCategory}
-              label="Seismic Category:"
-              defaultValue="d"
-            />
-          </div>
-          <div className="cardInput">
             <ReusableDouble
-              id={'seismicSs'}
-              value={values.seismicSs}
+              id={'deadLoad'}
+              value={values.deadLoad}
               onChange={handleChange}
-              name={'seismicSs'}
-              label={'Ss:'}
+              name={'deadLoad'}
+              label={'Dead Load (psf):'}
               disabled={false}
               placeholder={'0'}
-              decimalPlaces={3}
-            />
-          </div>
-          <div className="cardInput">
-            <ReusableDouble
-              id={'seismicS1'}
-              value={values.seismicS1}
-              onChange={handleChange}
-              name={'seismicS1'}
-              label={'S1:'}
-              disabled={false}
-              placeholder={'0'}
-              decimalPlaces={3}
-            />
-          </div>
-          <div className="cardInput">
-            <ReusableDouble
-              id={'seismicSms'}
-              value={values.seismicSms}
-              onChange={handleChange}
-              name={'seismicSms'}
-              label={'Sms:'}
-              disabled={false}
-              placeholder={'0'}
-              decimalPlaces={3}
-            />
-          </div>
-          <div className="cardInput">
-            <ReusableDouble
-              id={'seismicSm1'}
-              value={values.seismicSm1}
-              onChange={handleChange}
-              name={'seismicSm1'}
-              label={'Sm1:'}
-              disabled={false}
-              placeholder={'0'}
-              decimalPlaces={3}
             />
           </div>
         </div>
+        <h4>Wind Load</h4>
+        <div className="cardGrid">
+          <ReusableDouble
+            id={'windLoad'}
+            value={values.windLoad}
+            onChange={handleChange}
+            name={'windLoad'}
+            label={'Wind Load (mph):'}
+            calc={true}
+            onCalc={getWindLoad}
+            disabled={false}
+            placeholder={'0'}
+          />
+          <ReusableSelect
+            id={`exposure`}
+            name={`exposure`}
+            value={values.exposure}
+            onChange={handleChange}
+            options={exposure}
+            label="Exposure:"
+            defaultValue="c"
+          />
+          <ReusableSelect
+            id={`enclosure`}
+            name={`enclosure`}
+            value={values.enclosure}
+            onChange={handleChange}
+            options={enclosure}
+            label="Enclosure:"
+            defaultValue="closed"
+          />
+        </div>
+        <h4>Snow Load</h4>
+        <div className="cardGrid">
+          <ReusableDouble
+            id={'groundLoad'}
+            value={values.groundLoad}
+            onChange={handleChange}
+            name={'groundLoad'}
+            label={'Ground Load (psf):'}
+            calc={true}
+            onCalc={getSnowLoad}
+            disabled={false}
+            placeholder={'0'}
+          />
+          <ReusableDouble
+            id={'roofLoad'}
+            value={values.roofLoad}
+            onChange={handleChange}
+            name={'roofLoad'}
+            label={'Roof Load (psf):'}
+            disabled={false}
+            placeholder={'0'}
+          />
+          <ReusableSelect
+            id={`thermalFactor`}
+            name={`thermalFactor`}
+            value={values.thermalFactor}
+            onChange={handleChange}
+            options={thermalFactor}
+            label="Thermal Factor:"
+            defaultValue="heated"
+          />
+        </div>
+        <h4>Seismic Load</h4>
+        <div className="cardGrid">
+          <ReusableSelect
+            id={`seismicCategory`}
+            name={`seismicCategory`}
+            value={values.seismicCategory}
+            onChange={handleChange}
+            options={seismicCategory}
+            label="Seismic Category:"
+            defaultValue="d"
+          />
+          <ReusableDouble
+            id={'seismicSs'}
+            value={values.seismicSs}
+            onChange={handleChange}
+            name={'seismicSs'}
+            label={'Ss:'}
+            calc={true}
+            onCalc={getSeismicLoad}
+            disabled={false}
+            placeholder={'0'}
+            decimalPlaces={3}
+          />
+          <ReusableDouble
+            id={'seismicS1'}
+            value={values.seismicS1}
+            onChange={handleChange}
+            name={'seismicS1'}
+            label={'S1:'}
+            disabled={false}
+            placeholder={'0'}
+            decimalPlaces={3}
+          />
+          <ReusableDouble
+            id={'seismicSms'}
+            value={values.seismicSms}
+            onChange={handleChange}
+            name={'seismicSms'}
+            label={'Sms:'}
+            disabled={false}
+            placeholder={'0'}
+            decimalPlaces={3}
+          />
+          <ReusableDouble
+            id={'seismicSm1'}
+            value={values.seismicSm1}
+            onChange={handleChange}
+            name={'seismicSm1'}
+            label={'Sm1:'}
+            disabled={false}
+            placeholder={'0'}
+            decimalPlaces={3}
+          />
+        </div>
       </section>
+      <ReusableDialog
+        isOpen={isDialogOpen}
+        onClose={() => handleResponse(false)}
+        title="Wind Load Calculation"
+        message={currentPrompt?.Prompt}
+        onConfirm={() => handleResponse(true)}
+      />
     </>
   );
 };

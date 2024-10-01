@@ -301,7 +301,7 @@ const BuildingPartitions = ({
                   onClick={() =>
                     removePartition(activeBuilding, partitionIndex)
                   }
-                  className="iconReject"
+                  className="icon iconReject"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>

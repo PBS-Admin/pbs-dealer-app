@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalculator } from '@fortawesome/free-solid-svg-icons';
 
 const formatDouble = (value, decimalPlaces) => {
   const number = parseFloat(value);
@@ -17,6 +19,8 @@ const ReusableDouble = ({
   onChange,
   name,
   label,
+  calc,
+  onCalc,
   disabled = false,
   placeholder,
   decimalPlaces = 2,
@@ -55,9 +59,18 @@ const ReusableDouble = ({
     });
   };
 
+  const calcClass = calc ? 'calcInput' : '';
+
   return (
     <div className="cardInput">
-      <label htmlFor={name}>{label}</label>
+      <div className={`${calcClass}`}>
+        <label htmlFor={name}>{label}</label>
+        {calc && (
+          <button onClick={onCalc} className="icon iconSec">
+            <FontAwesomeIcon icon={faCalculator} />
+          </button>
+        )}
+      </div>
       <input
         type="text"
         id={name}
