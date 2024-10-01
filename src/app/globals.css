@@ -665,6 +665,12 @@ p{
   color: var(--background-white);
 }
 
+/* Hides the autocomplete google logo */
+.pac-container:after {
+  background-image: none !important;
+  height: 0px;
+}
+
 /* END */
 
 @media screen and (min-width: 350px) {
