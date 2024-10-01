@@ -15,6 +15,8 @@ import useGeocoding from '@/hooks/useGeocoding';
 import useSnow from '@/hooks/useSnow';
 import useSeismic from '@/hooks/useSeismic';
 import useAddress from '@/hooks/useAddress';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEraser } from '@fortawesome/free-solid-svg-icons';
 
 const ProjectInformation = ({ values, handleChange, setValues }) => {
   const { getWindLoad, currentPrompt, isDialogOpen, handleResponse } = useWind(
@@ -26,30 +28,46 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
   const { getSeismicLoad, seismicData } = useSeismic(values);
   const { locationData, loading, error, fetchGeocodingData } = useGeocoding();
   // const { address, inputRef, setAddress } = useAddress();
-  const { addressDetails, isLoaded, resetAddressDetails } = useAddress(
-    process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  const {
+    addressDetails: projectAddressDetails,
+    isLoaded: isProjectAddressLoaded,
+    resetAddressDetails: resetProjectAddressDetails,
+  } = useAddress(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY, 'projectAddress');
+
+  const {
+    addressDetails: customerAddressDetails,
+    isLoaded: isCustomerAddressLoaded,
+    resetAddressDetails: resetCustomerAddressDetails,
+  } = useAddress(
+    process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    'customerAddress'
   );
 
-  const clearAddress = () => {
-    setValues((prevValues) => ({
-      ...prevValues,
-      projectAddress: '',
-      projectCity: '',
-      projectState: '',
-      projectZip: '',
-    }));
+  const clearAddress = (addressType) => {
+    const fields =
+      addressType === 'project'
+        ? ['projectAddress', 'projectCity', 'projectState', 'projectZip']
+        : ['customerAddress', 'customerCity', 'customerState', 'customerZip'];
+
+    setValues((prevValues) => {
+      const newValues = { ...prevValues };
+      fields.forEach((field) => (newValues[field] = ''));
+      return newValues;
+    });
   };
 
   const handleAddressChange = useCallback(
-    (e) => {
+    (e, addressType) => {
       const { name, value } = e.target;
       handleChange(e);
 
-      if (name === 'projectAddress') {
-        resetAddressDetails();
+      if (name === 'projectAddress' || name === 'customerAddress') {
+        addressType === 'project'
+          ? resetProjectAddressDetails()
+          : resetCustomerAddressDetails();
       }
     },
-    [handleChange, resetAddressDetails]
+    [handleChange, resetProjectAddressDetails, resetCustomerAddressDetails]
   );
 
   const shouldGeocode = useMemo(() => {
@@ -62,16 +80,28 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
   }, [values]);
 
   useEffect(() => {
-    if (addressDetails) {
+    if (projectAddressDetails) {
       setValues((prevValues) => ({
         ...prevValues,
-        projectAddress: addressDetails.street,
-        projectCity: addressDetails.city,
-        projectState: addressDetails.state,
-        projectZip: addressDetails.zip,
+        projectAddress: projectAddressDetails.street,
+        projectCity: projectAddressDetails.city,
+        projectState: projectAddressDetails.state,
+        projectZip: projectAddressDetails.zip,
       }));
     }
-  }, [addressDetails, setValues]);
+  }, [projectAddressDetails, setValues]);
+
+  useEffect(() => {
+    if (customerAddressDetails) {
+      setValues((prevValues) => ({
+        ...prevValues,
+        customerAddress: customerAddressDetails.street,
+        customerCity: customerAddressDetails.city,
+        customerState: customerAddressDetails.state,
+        customerZip: customerAddressDetails.zip,
+      }));
+    }
+  }, [customerAddressDetails, setValues]);
 
   useEffect(() => {
     if (shouldGeocode) {
@@ -156,13 +186,18 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
         <h4>Address</h4>
         <div className="addressGrid">
           <div className="cardInput span24">
-            <label htmlFor="customerStreet">Street Address:</label>
+            <label htmlFor="customerAddress" className="cardLabel">
+              Street Address:
+              <button onClick={clearAddress} className="icon iconClear">
+                <FontAwesomeIcon icon={faEraser} />
+              </button>
+            </label>
             <input
               type="text"
-              id="customerStreet"
-              name="customerStreet"
-              value={values.customerStreet}
-              onChange={handleChange}
+              id="customerAddress"
+              name="customerAddress"
+              value={values.customerAddress}
+              onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="Street Address"
             />
           </div>
@@ -173,7 +208,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               id="customerCity"
               name="customerCity"
               value={values.customerCity}
-              onChange={handleChange}
+              onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="City"
             />
           </div>
@@ -184,7 +219,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               id="customerState"
               name="customerState"
               value={values.customerState}
-              onChange={handleChange}
+              onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="State"
             />
           </div>
@@ -195,7 +230,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               id="customerZip"
               name="customerZip"
               value={values.customerZip}
-              onChange={handleChange}
+              onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="Zip"
             />
           </div>
@@ -275,67 +310,21 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
           </div>
         </div>
         <h4>Address</h4>
-        {/* <div>
-          <label htmlFor="street">Street Address</label>
-          <input
-            id="street"
-            type="text"
-            ref={inputRef}
-            value={address.street}
-            onChange={(e) =>
-              setAddress((prev) => ({ ...prev, street: e.target.value }))
-            }
-          />
-        </div>
 
-        <div>
-          <label htmlFor="city">City</label>
-          <input
-            id="city"
-            type="text"
-            value={address.city}
-            onChange={(e) =>
-              setAddress((prev) => ({ ...prev, city: e.target.value }))
-            }
-          />
-        </div>
-
-        <div>
-          <label htmlFor="state">State</label>
-          <input
-            id="state"
-            type="text"
-            value={address.state}
-            onChange={(e) =>
-              setAddress((prev) => ({ ...prev, state: e.target.value }))
-            }
-          />
-        </div>
-
-        <div>
-          <label htmlFor="zipCode">Zip Code</label>
-          <input
-            id="zipCode"
-            type="text"
-            value={address.zipCode}
-            onChange={(e) =>
-              setAddress((prev) => ({ ...prev, zipCode: e.target.value }))
-            }
-          />
-        </div> */}
-        <h4>Address</h4>
-        <button className="button prim" onClick={clearAddress}>
-          Clear
-        </button>
         <div className="addressGrid">
           <div className="cardInput span24">
-            <label htmlFor="projectAddress">Street Address:</label>
+            <label htmlFor="projectAddress" className="cardLabel">
+              Street Address:
+              <button onClick={clearAddress} className="icon iconClear">
+                <FontAwesomeIcon icon={faEraser} />
+              </button>
+            </label>
             <input
               type="text"
               id="projectAddress"
               name="projectAddress"
               value={values.projectAddress}
-              onChange={handleAddressChange}
+              onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="Address"
             />
           </div>
@@ -346,7 +335,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               id="projectCity"
               name="projectCity"
               value={values.projectCity}
-              onChange={handleAddressChange}
+              onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="City"
             />
           </div>
@@ -357,7 +346,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               id="projectState"
               name="projectState"
               value={values.projectState}
-              onChange={handleAddressChange}
+              onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="State"
             />
           </div>
@@ -368,7 +357,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               id="projectZip"
               name="projectZip"
               value={values.projectZip}
-              onChange={handleAddressChange}
+              onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="Zip"
             />
           </div>

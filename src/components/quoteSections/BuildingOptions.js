@@ -365,7 +365,7 @@ const BuildingOptions = ({
                   onClick={() =>
                     removeLinerPanel(activeBuilding, linerPanelIndex)
                   }
-                  className="iconReject"
+                  className="icon iconReject"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -604,7 +604,7 @@ const BuildingOptions = ({
                 </div>
                 <button
                   onClick={() => removeWainscot(activeBuilding, wainscotIndex)}
-                  className="iconReject"
+                  className="icon iconReject"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -842,7 +842,7 @@ const BuildingOptions = ({
                   onClick={() =>
                     removePartialWall(activeBuilding, partialWallIndex)
                   }
-                  className="iconReject"
+                  className="icon iconReject"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -1007,7 +1007,7 @@ const BuildingOptions = ({
                   onClick={() =>
                     removeWallSkirt(activeBuilding, wallSkirtIndex)
                   }
-                  className="iconReject"
+                  className="icon iconReject"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>

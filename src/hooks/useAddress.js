@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import usePlaces from './usePlaces';
 
-const useAddress = (apiKey) => {
+const useAddress = (apiKey, inputId) => {
   const [autocomplete, setAutocomplete] = useState(null);
   const [addressDetails, setAddressDetails] = useState(null);
   const isLoaded = usePlaces(apiKey);
@@ -10,12 +10,12 @@ const useAddress = (apiKey) => {
     if (isLoaded && !autocomplete) {
       initAutocomplete();
     }
-  }, [isLoaded]);
+  }, [isLoaded, inputId]);
 
   const initAutocomplete = useCallback(() => {
-    const input = document.getElementById('projectAddress');
+    const input = document.getElementById(inputId);
     if (!input) {
-      console.error("Element with id 'projectAddress' not found");
+      console.error(`Element with id '${inputId}' not found`);
       return;
     }
 

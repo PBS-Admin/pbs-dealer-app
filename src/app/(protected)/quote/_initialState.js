@@ -2,7 +2,7 @@ export const initialState = {
   // Quote Information Page
   customerName: '',
   contactName: '',
-  customerStreet: '',
+  customerAddress: '',
   customerCity: '',
   customerState: '',
   customerZip: '',
