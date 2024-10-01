@@ -154,22 +154,43 @@ const BuildingSketch = ({
         }}
       />
       <div className="sketchButtonContainer">
-        <button className="sketchButton" onClick={() => handleViewChange('L')}>
+        <button
+          type="button"
+          className="sketchButton"
+          onClick={() => handleViewChange('L')}
+        >
           LEW
         </button>
-        <button className="sketchButton" onClick={() => handleViewChange('R')}>
+        <button
+          type="button"
+          className="sketchButton"
+          onClick={() => handleViewChange('R')}
+        >
           REW
         </button>
-        <button className="sketchButton" onClick={() => handleViewChange('FS')}>
+        <button
+          type="button"
+          className="sketchButton"
+          onClick={() => handleViewChange('FS')}
+        >
           FSW
         </button>
-        <button className="sketchButton" onClick={() => handleViewChange('BS')}>
+        <button
+          type="button"
+          className="sketchButton"
+          onClick={() => handleViewChange('BS')}
+        >
           BSW
         </button>
-        <button className="sketchButton" onClick={() => handleViewChange('T')}>
+        <button
+          type="button"
+          className="sketchButton"
+          onClick={() => handleViewChange('T')}
+        >
           TOP
         </button>
         <button
+          type="button"
           className="sketchButton"
           onClick={() => handleViewChange('ISO')}
         >

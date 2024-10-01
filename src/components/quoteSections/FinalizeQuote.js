@@ -1,6 +1,18 @@
 import React from 'react';
+import { useExport } from '@/hooks/useExport';
 
 const FinalizeQuote = ({ values, handleChange }) => {
+  const { createFolderAndFiles, status, isExporting } = useExport();
+
+  const handleExport = async () => {
+    const result = await createFolderAndFiles(values);
+    if (result) {
+      console.log('Export successful');
+    } else {
+      console.log('Export failed');
+    }
+  };
+
   return (
     <>
       <section className="card start">
@@ -13,6 +25,7 @@ const FinalizeQuote = ({ values, handleChange }) => {
               Save Quote
             </button>
             <button
+              type="button"
               className="button accent"
               onClick={() => {
                 alert('This is not built yet');
@@ -21,12 +34,12 @@ const FinalizeQuote = ({ values, handleChange }) => {
               Submit Quote
             </button>
             <button
+              type="button"
               className="button prim"
-              onClick={() => {
-                console.log(values);
-              }}
+              onClick={handleExport}
+              disabled={isExporting}
             >
-              Export to MBS
+              {isExporting ? 'Exporting...' : 'Export To MBS'}
             </button>
           </div>
         </div>

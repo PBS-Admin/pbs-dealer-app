@@ -16,6 +16,7 @@ import {
 } from '../../util/dropdownOptions';
 import ReusableDouble from '../Inputs/ReusableDouble';
 import ReusableDialog from '../ReusableDialog';
+import ReusableLoader from '../ReusableLoader';
 import useWind from '@/hooks/useWind';
 import useGeocoding from '@/hooks/useGeocoding';
 import useSnow from '@/hooks/useSnow';
@@ -205,6 +206,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             <label htmlFor="customerAddress" className="cardLabel">
               Street Address:
               <button
+                type="button"
                 onClick={() => clearAddress('customer')}
                 className="icon iconClear"
               >
@@ -336,6 +338,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             <label htmlFor="projectAddress" className="cardLabel">
               Street Address:
               <button
+                type="button"
                 onClick={() => clearAddress('project')}
                 className="icon iconClear"
               >
@@ -598,6 +601,11 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
         title="Wind Load Calculation"
         message={currentPrompt?.Prompt}
         onConfirm={() => handleResponse(true)}
+      />
+      <ReusableLoader
+        isOpen={loading}
+        title="Loading"
+        message="Please be patient"
       />
     </>
   );

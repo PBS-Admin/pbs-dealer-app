@@ -66,7 +66,7 @@ const ReusableDouble = ({
       <div className={`${calcClass}`}>
         <label htmlFor={name}>{label}</label>
         {calc && (
-          <button onClick={onCalc} className="icon iconSec">
+          <button type="button" onClick={onCalc} className="icon iconSec">
             <FontAwesomeIcon icon={faCalculator} />
           </button>
         )}
