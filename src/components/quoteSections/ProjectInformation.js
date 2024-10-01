@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import ReusableSelect from '../Inputs/ReusableSelect';
 import {
   buildingCodes,
@@ -14,6 +14,7 @@ import useWind from '@/hooks/useWind';
 import useGeocoding from '@/hooks/useGeocoding';
 import useSnow from '@/hooks/useSnow';
 import useSeismic from '@/hooks/useSeismic';
+import useAddress from '@/hooks/useAddress';
 
 const ProjectInformation = ({ values, handleChange, setValues }) => {
   const { getWindLoad, currentPrompt, isDialogOpen, handleResponse } = useWind(
@@ -24,35 +25,53 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
   const { getSnowLoad, snowData } = useSnow(values);
   const { getSeismicLoad, seismicData } = useSeismic(values);
   const { locationData, loading, error, fetchGeocodingData } = useGeocoding();
-  const [shouldGeocode, setShouldGeocode] = useState(false);
+  // const { address, inputRef, setAddress } = useAddress();
+  const { addressDetails, isLoaded, resetAddressDetails } = useAddress(
+    process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  );
+
+  const clearAddress = () => {
+    setValues((prevValues) => ({
+      ...prevValues,
+      projectAddress: '',
+      projectCity: '',
+      projectState: '',
+      projectZip: '',
+    }));
+  };
 
   const handleAddressChange = useCallback(
     (e) => {
       const { name, value } = e.target;
-      handleChange(e); // Call the original handleChange function
+      handleChange(e);
 
-      // Check if all core fields are filled
-      if (
-        [
-          'projectAddress',
-          'projectCity',
-          'projectState',
-          'projectZip',
-        ].includes(name)
-      ) {
-        const updatedValues = { ...values, [name]: value };
-        const allCoreFilled = [
-          'projectAddress',
-          'projectCity',
-          'projectState',
-          'projectZip',
-        ].every((field) => updatedValues[field].trim() !== '');
-
-        setShouldGeocode(allCoreFilled);
+      if (name === 'projectAddress') {
+        resetAddressDetails();
       }
     },
-    [values, handleChange]
+    [handleChange, resetAddressDetails]
   );
+
+  const shouldGeocode = useMemo(() => {
+    return [
+      'projectAddress',
+      'projectCity',
+      'projectState',
+      'projectZip',
+    ].every((field) => values[field].trim() !== '');
+  }, [values]);
+
+  useEffect(() => {
+    if (addressDetails) {
+      setValues((prevValues) => ({
+        ...prevValues,
+        projectAddress: addressDetails.street,
+        projectCity: addressDetails.city,
+        projectState: addressDetails.state,
+        projectZip: addressDetails.zip,
+      }));
+    }
+  }, [addressDetails, setValues]);
 
   useEffect(() => {
     if (shouldGeocode) {
@@ -61,12 +80,11 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
 
       const timeoutId = setTimeout(() => {
         fetchGeocodingData(fullAddress);
-        setShouldGeocode(false);
       }, 1000); // Wait for 1 second after the last change
 
       return () => clearTimeout(timeoutId);
     }
-  }, [shouldGeocode, values, fetchGeocodingData]);
+  }, [shouldGeocode]);
 
   useEffect(() => {
     if (locationData) {
@@ -257,6 +275,58 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
           </div>
         </div>
         <h4>Address</h4>
+        {/* <div>
+          <label htmlFor="street">Street Address</label>
+          <input
+            id="street"
+            type="text"
+            ref={inputRef}
+            value={address.street}
+            onChange={(e) =>
+              setAddress((prev) => ({ ...prev, street: e.target.value }))
+            }
+          />
+        </div>
+
+        <div>
+          <label htmlFor="city">City</label>
+          <input
+            id="city"
+            type="text"
+            value={address.city}
+            onChange={(e) =>
+              setAddress((prev) => ({ ...prev, city: e.target.value }))
+            }
+          />
+        </div>
+
+        <div>
+          <label htmlFor="state">State</label>
+          <input
+            id="state"
+            type="text"
+            value={address.state}
+            onChange={(e) =>
+              setAddress((prev) => ({ ...prev, state: e.target.value }))
+            }
+          />
+        </div>
+
+        <div>
+          <label htmlFor="zipCode">Zip Code</label>
+          <input
+            id="zipCode"
+            type="text"
+            value={address.zipCode}
+            onChange={(e) =>
+              setAddress((prev) => ({ ...prev, zipCode: e.target.value }))
+            }
+          />
+        </div> */}
+        <h4>Address</h4>
+        <button className="button prim" onClick={clearAddress}>
+          Clear
+        </button>
         <div className="addressGrid">
           <div className="cardInput span24">
             <label htmlFor="projectAddress">Street Address:</label>

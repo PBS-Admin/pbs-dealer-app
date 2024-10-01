@@ -16,10 +16,6 @@ export async function GET(req) {
       );
     }
 
-    console.log(
-      `https://earthquake.usgs.gov/ws/designmaps/${site}.json?latitude=${lat}&longitude=${lon}&variant=0&siteClass=${siteClass}&title=Example&riskCategory=${risk}`
-    );
-
     const response = await fetch(
       `https://earthquake.usgs.gov/ws/designmaps/${site}.json?latitude=${lat}&longitude=${lon}&variant=0&siteClass=${siteClass}&title=Example&riskCategory=${risk}`
     );

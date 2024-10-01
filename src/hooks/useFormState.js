@@ -402,9 +402,6 @@ function useFormState(initialState) {
         case 'roofPitch':
           calculatedValue = ((highEaveHeight - lowEaveHeight) / width) * 12;
           break;
-        case 'windLoad':
-          getWindLoad(values);
-          break;
         default:
           return prev; // If the field is not recognized, return the previous state unchanged
       }

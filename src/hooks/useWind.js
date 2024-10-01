@@ -503,7 +503,7 @@ function useWind(initialFormValues, setFormValues) {
     }
 
     const newWindPrompt = [];
-    const cat = ['1', '2', '3', '4'].indexOf(values.riskCategory);
+    const cat = ['I', 'II', 'III', 'IV'].indexOf(values.riskCategory);
     const county = values.projectCounty;
 
     if (values.buildingCode === 'ossc22' || values.buildingCode === 'ossc19') {
