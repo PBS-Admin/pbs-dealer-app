@@ -689,8 +689,58 @@ p{
   height: 0px;
 }
 
+
+/* Grid Layout */
+.grid, .grid2, .grid3, .grid4, .grid6, .grid8 {
+  display: grid;
+  grid-template-columns: 1fr;  
+  gap: 0 .5em;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.span2, .span3, .span4, .span5, .span6, .span7, .span8 {
+  grid-column: span 1;
+}
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: 1fr;  
+  grid-template-rows: repeat(5, 1fr);  
+  gap: 0 .5em;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.panelGrid .panelType {
+  grid-column: 1;
+  grid-row: 3;
+}
+
+.panelGrid .panelGauge {
+  grid-column: 1;
+  grid-row: 4;
+}
+
+.panelGrid .panelFinish {
+  grid-column: 1;
+  grid-row: 5;
+}
+
+.panelGrid .panelImage {
+  grid-column: 1;
+  grid-row: 1 / 3;
+}
+
+
 /* END */
 
+
+/*
+.onPhone  =    0px -  767px
+.onTablet =  768px - 1199px
+.onLaptop = 1200px - 1499px
+*/
 @media screen and (min-width: 350px) {
   .cardInput label, .cardInput input, .cardInput select, .cardRow label, .cardRow input, .cardRow select{
     font-size: 3.15vw;
@@ -701,11 +751,13 @@ p{
   }
 }
 
+
 @media screen and (min-width: 476px) {
   .radioGroup{
     font-size: 15px;
   }
 }
+
 
 @media screen and (min-width: 550px) {
   .pageHeaderLeft {
@@ -754,8 +806,152 @@ p{
   
   .panelImage{        
     width: 200px;            
+  }
+
+  /* Grid Layout */
+  .grid2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid2 .span2 {
+    grid-column: span 2;
+  }
+
+  .grid2:has(.panelGrid) {
+    grid-template-columns: 1fr;  
+  }
+
+  .grid4 {
+    grid-template-columns: repeat(2, 1fr);  
+  }
+
+  .grid4:has(.panelGrid) {
+    grid-template-columns: 1fr;  
+  }
+
+  .grid4 .span2, .grid4 .span3 {
+    grid-column: span 1;
+  }
+
+  .grid6 {
+    grid-template-columns: repeat(2, 1fr);  
+  }
+
+  .grid6 .span2, .grid6 .span4, .grid6 .span5 {
+    grid-column: span 2;
+  }
+
+  .grid8 {
+    grid-template-columns: repeat(2, 1fr);  
+  }
+
+  .grid8 .span5, .grid8 .span6, .grid8 .span7 {
+    grid-column: span 2;
+  }
 }
+
+
+@media screen and (min-width: 768px) {
+  .onPhone {
+    display: none !important;
+  }
+
+  /* Grid Layout */
+  .grid4 .divider.onLaptop {
+    grid-column: span 2;
+  }
+
+  .grid3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid3 .span2 {
+    grid-column: span 2;
+  }
+
+  .grid4:has(.panelGrid) {
+    grid-template-columns: repeat(2, 1fr); 
+  }
+
+  .grid6 {
+    grid-template-columns: repeat(6, minmax(60px, 1fr));  
+  }
+
+  .grid6 div, .grid6 .span2 {
+    grid-column: span 2;
+  }
+
+  .grid6 .span3 {
+    grid-column: span 3;
+  }
+
+  .grid6 .span4 {
+    grid-column: span 4;
+  }
+
+  .grid6 .span5 {
+    grid-column: span 6;
+  }
+
+  .panelGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;  
+    grid-template-rows: 1fr 1fr;  
+    gap: 0 .5em;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  
+  .panelGrid .panelType {
+    grid-column: 1 / span 2;
+    grid-row: 1;
+  }
+  
+  .panelGrid .panelGauge {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  
+  .panelGrid .panelFinish {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  
+  .panelGrid .panelImage {
+    grid-column: 3 / 4;
+    grid-row: 1 / 3;
+  }
+
+  .grid4 .panelGrid {
+    display: grid;
+    grid-template-columns:  minmax(60px, 1fr);  
+    grid-template-rows: repeat(5, 1fr);  
+    gap: 0 .5em;
+    align-items: flex-end;
+    justify-content: center;
+  }
+    
+  .grid4 .panelGrid .panelType {
+    grid-column: 1;
+    grid-row: 3;
+  }
+    
+  .grid4 .panelGrid .panelGauge {
+    grid-column: 1;
+    grid-row: 4;
+  }
+    
+  .grid4 .panelGrid .panelFinish {
+    grid-column: 1;
+    grid-row: 5;
+  }
+    
+  .grid4 .panelGrid .panelImage {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
 }
+
 
 @media screen and (min-width: 1000px) {
   main{
@@ -790,9 +986,90 @@ p{
   .w5{
     justify-self: center;
   }
+
+  /* Grid Layout */
+  .grid4 {
+    /*grid-template-columns: repeat(4, 1fr);*/
+    grid-template-columns: repeat(4, minmax(140px, 1fr));
+  }
+
+  .grid4:has(.panelGrid) {
+    grid-template-columns: repeat(2, 1fr); 
+  }
+
+  .grid4 .span2 {
+    grid-column: span 2;
+  }
+
+  .grid4 .span3 {
+    grid-column: span 3;
+  }
 }
 
+
+@media screen and (min-width: 1200px) {
+  .onTablet {
+    display: none !important;
+  }
+
+  /* Grid Layout */
+  .grid2:has(.panelGrid) {
+    grid-template-columns: repeat(2, 1fr); 
+  }
+
+  .grid6 {
+    /*grid-template-columns: repeat(6, 1fr);*/
+    grid-template-columns: repeat(6, minmax(80px, 1fr));
+  }
+
+  .grid6 div {
+    grid-column: span 1;
+  }
+
+  .grid6 .span2 {
+    grid-column: span 2;
+  }
+
+  .grid6 .span3 {
+    grid-column: span 3;
+  }
+
+  .grid6 .span4 {
+    grid-column: span 4;
+  }
+
+  .grid6 .span5 {
+    grid-column: span 5;
+  }
+
+  .grid8 {
+    /*grid-template-columns: repeat(4, 1fr);*/
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+  }
+
+  .grid8 .span2 {
+    grid-column: span 1;
+  }
+
+  .grid8 .span3, .grid8 .span4 {
+    grid-column: span 2;
+  }
+
+  .grid8 .span5, .grid8 .span6 {
+    grid-column: span 3;
+  }
+
+  .grid8 .span7 {
+    grid-column: span 4;
+  }
+}
+
+
 @media screen and (min-width: 1500px) {
+  .onLaptop {
+    display: none !important;
+  }
+
   .addressGrid{
     grid-template-columns: repeat(8, minmax(150px, 1fr));  
   }
@@ -818,5 +1095,43 @@ p{
   
   .radioGrid{    
     grid-template-columns: repeat(4, minmax(150px, 1fr));        
+  }
+
+  /* Grid Layout */
+  .grid4:has(.panelGrid) {
+    grid-template-columns: repeat(4, minmax(140px, 1fr));
+  }
+
+  .grid8 {
+    /*grid-template-columns: repeat(8, 1fr);*/
+    grid-template-columns: repeat(8, minmax(120px, 1fr));
+  }
+
+  .span2 {
+    grid-column: span 2 !important;
+  }
+
+  .span3 {
+    grid-column: span 3 !important;
+  }
+
+  .span4 {
+    grid-column: span 4 !important;
+  }
+
+  .span5 {
+    grid-column: span 5 !important;
+  }
+
+  .span6 {
+    grid-column: span 6 !important;
+  }
+
+  .span7 {
+    grid-column: span 7 !important;
+  }
+
+  .span8 {
+    grid-column: span 8 !important;
   }
 }
