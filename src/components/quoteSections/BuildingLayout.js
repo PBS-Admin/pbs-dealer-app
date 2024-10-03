@@ -48,10 +48,9 @@ const BuildingLayout = ({
         <header>
           <h3>Building Shape</h3>
         </header>
-        <h4>Building Size</h4>
 
-        <div className="radioGrid">
-          <fieldset className="radio radioGroup">
+        <div className="grid4">
+          <fieldset className="radioGroup span2 center">
             {shapes.map(({ id, label }) => (
               <div key={id}>
                 <input
@@ -79,8 +78,8 @@ const BuildingLayout = ({
             />
           )}
         </div>
-        <div className="divider"></div>
-        <div className="cardGrid">
+        <h4>Building Size</h4>
+        <div className="grid4">
           <FeetInchesInput
             name={`buildingWidth-${activeBuilding}`}
             label="Width:"
@@ -98,64 +97,64 @@ const BuildingLayout = ({
             }
           />
           {values.buildings[activeBuilding].shape == 'symmetrical' && (
-            <FeetInchesInput
-              name={`buildingEaveHeight-${activeBuilding}`}
-              label="Eave Height:"
-              value={values.buildings[activeBuilding].eaveHeight}
-              onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'eaveHeight', value)
-              }
-            />
-          )}
-          {(values.buildings[activeBuilding].shape == 'singleSlope' ||
-            values.buildings[activeBuilding].shape == 'leanTo') && (
             <>
               <FeetInchesInput
-                name={`buildingLowEaveHeight-${activeBuilding}`}
-                label="Low Eave Height:"
-                value={values.buildings[activeBuilding].lowEaveHeight}
+                name={`buildingBackEaveHeight-${activeBuilding}`}
+                label="Eave Height:"
+                value={values.buildings[activeBuilding].backEaveHeight}
                 onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'lowEaveHeight', value)
+                  handleNestedChange(activeBuilding, 'backEaveHeight', value)
                 }
-                calc={true}
-                onCalc={() => handleCalcChange(activeBuilding, 'lowEaveHeight')}
               />
-              <FeetInchesInput
-                name={`buildingHighEaveHeight-${activeBuilding}`}
-                label="High Eave Height:"
-                value={values.buildings[activeBuilding].highEaveHeight}
+              <div className="desktopOnly"></div>
+              <RoofPitchInput
+                name={`buildingBackRoofPitch-${activeBuilding}`}
+                label="Roof Pitch:"
+                value={values.buildings[activeBuilding].backRoofPitch}
                 onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'highEaveHeight', value)
-                }
-                calc={true}
-                onCalc={() =>
-                  handleCalcChange(activeBuilding, 'highEaveHeight')
+                  handleNestedChange(activeBuilding, 'backRoofPitch', value)
                 }
               />
             </>
           )}
           {(values.buildings[activeBuilding].shape == 'singleSlope' ||
             values.buildings[activeBuilding].shape == 'leanTo') && (
-            <RoofPitchInput
-              name={`buildingRoofPitch-${activeBuilding}`}
-              label="Roof Pitch:"
-              value={values.buildings[activeBuilding].roofPitch}
-              onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'roofPitch', value)
-              }
-              calc={true}
-              onCalc={() => handleCalcChange(activeBuilding, 'roofPitch')}
-            />
-          )}
-          {values.buildings[activeBuilding].shape == 'symmetrical' && (
-            <RoofPitchInput
-              name={`buildingRoofPitch-${activeBuilding}`}
-              label="Roof Pitch:"
-              value={values.buildings[activeBuilding].roofPitch}
-              onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'roofPitch', value)
-              }
-            />
+            <>
+              <FeetInchesInput
+                name={`buildingBackEaveHeight-${activeBuilding}`}
+                label="Low Eave Height:"
+                value={values.buildings[activeBuilding].backEaveHeight}
+                onChange={(name, value) =>
+                  handleNestedChange(activeBuilding, 'backEaveHeight', value)
+                }
+                calc={true}
+                onCalc={() =>
+                  handleCalcChange(activeBuilding, 'backEaveHeight')
+                }
+              />
+              <FeetInchesInput
+                name={`buildingFrontEaveHeight-${activeBuilding}`}
+                label="High Eave Height:"
+                value={values.buildings[activeBuilding].frontEaveHeight}
+                onChange={(name, value) =>
+                  handleNestedChange(activeBuilding, 'frontEaveHeight', value)
+                }
+                calc={true}
+                onCalc={() =>
+                  handleCalcChange(activeBuilding, 'frontEaveHeight')
+                }
+              />
+              <RoofPitchInput
+                name={`buildingBackRoofPitch-${activeBuilding}`}
+                label="Roof Pitch:"
+                value={values.buildings[activeBuilding].backRoofPitch}
+                onChange={(name, value) =>
+                  handleNestedChange(activeBuilding, 'backRoofPitch', value)
+                }
+                calc={true}
+                onCalc={() => handleCalcChange(activeBuilding, 'backRoofPitch')}
+              />
+            </>
           )}
           {values.buildings[activeBuilding].shape == 'nonSymmetrical' && (
             <>
@@ -195,33 +194,33 @@ const BuildingLayout = ({
           )}
         </div>
         <h4>Bay Spacing</h4>
-        <div className="cardGrid">
+        <div className="grid3">
           <BaySpacingInput
-            name={`buildingSidewallBaySpacing-${activeBuilding}`}
+            name={`buildingRoofBaySpacing-${activeBuilding}`}
             label="Sidewall Bay Spacing:"
-            value={values.buildings[activeBuilding].sidewallBaySpacing}
+            value={values.buildings[activeBuilding].roofBaySpacing}
             onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'sidewallBaySpacing', value)
+              handleNestedChange(activeBuilding, 'roofBaySpacing', value)
             }
             compareLabel="building length"
             compareValue={values.buildings[activeBuilding].length}
           />
           <BaySpacingInput
-            name={`buildingLEWBaySpacing-${activeBuilding}`}
+            name={`buildingLeftBaySpacing-${activeBuilding}`}
             label="Left Endwall Bay Spacing:"
-            value={values.buildings[activeBuilding].lewBaySpacing}
+            value={values.buildings[activeBuilding].leftBaySpacing}
             onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'lewBaySpacing', value)
+              handleNestedChange(activeBuilding, 'leftBaySpacing', value)
             }
             compareLabel="building width"
             compareValue={values.buildings[activeBuilding].width}
           />
           <BaySpacingInput
-            name={`buildingREWBaySpacing-${activeBuilding}`}
+            name={`buildingRightBaySpacing-${activeBuilding}`}
             label="Right Endwall Bay Spacing:"
-            value={values.buildings[activeBuilding].rewBaySpacing}
+            value={values.buildings[activeBuilding].rightBaySpacing}
             onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'rewBaySpacing', value)
+              handleNestedChange(activeBuilding, 'rightBaySpacing', value)
             }
             compareLabel="building width"
             compareValue={values.buildings[activeBuilding].width}
@@ -229,12 +228,14 @@ const BuildingLayout = ({
         </div>
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
-          <h3>Design Codes</h3>
+          <h3>
+            Design Codes <small>- Individual Building Override</small>
+          </h3>
         </header>
         <h4>Roof Load</h4>
-        <div className="cardGrid">
+        <div className="grid3">
           <ReusableDouble
             id={'collateralLoad'}
             value={values.buildings[activeBuilding].collateralLoad}
@@ -277,7 +278,7 @@ const BuildingLayout = ({
           />
         </div>
         <h4>Wind Load</h4>
-        <div className="cardGrid">
+        <div className="grid3">
           <ReusableSelect
             id={`enclosure`}
             name={`enclosure`}
@@ -291,14 +292,14 @@ const BuildingLayout = ({
           />
         </div>
         <h4>Snow Load</h4>
-        <div className="cardGrid">
+        <div className="grid3">
           <ReusableDouble
-            id={'roofLoad'}
-            value={values.buildings[activeBuilding].roofLoad}
+            id={'roofSnowLoad'}
+            value={values.buildings[activeBuilding].roofSnowLoad}
             onChange={(e) =>
-              handleNestedChange(activeBuilding, 'roofLoad', e.target.value)
+              handleNestedChange(activeBuilding, 'roofSnowLoad', e.target.value)
             }
-            name={'roofLoad'}
+            name={'roofSnowLoad'}
             label={'Roof Load (psf):'}
             disabled={false}
             placeholder={'0'}
@@ -326,8 +327,8 @@ const BuildingLayout = ({
         <header className="cardHeader">
           <h3>Frame Type</h3>
         </header>
-        <div className="radioGrid">
-          <fieldset className="center radioGroup">
+        <div className="grid4">
+          <fieldset className="radioGroup center">
             {frames.map(({ id, label }) => (
               <div key={id}>
                 <input
@@ -360,7 +361,8 @@ const BuildingLayout = ({
               compareValue={values.buildings[activeBuilding].width}
             />
           )}
-          <div className="center">
+          {/* <div className="onPhone">&nbsp;</div> */}
+          <div className="checkboxGroup center">
             <div className="checkRow">
               <input
                 type="checkbox"
@@ -399,22 +401,38 @@ const BuildingLayout = ({
             </div>
           </div>
         </div>
-        <div className="divider"></div>
 
         <h4>Endwall Frames</h4>
-        <div className="frameGrid">
-          <div className="cardInput">
-            <ReusableSelect
-              id={`buildinglewFrame-${activeBuilding}`}
-              name={`buildinglewFrame-${activeBuilding}`}
-              value={values.buildings[activeBuilding].lewFrame}
-              onChange={(e) =>
-                handleNestedChange(activeBuilding, 'lewFrame', e.target.value)
-              }
-              options={FrameOptions}
-              label="Left Endwall Frame:"
-            />
-            {values.buildings[activeBuilding].lewFrame == 'insetRF' && (
+        <div className="grid6">
+          <ReusableSelect
+            id={`buildingleftFrame-${activeBuilding}`}
+            name={`buildingleftFrame-${activeBuilding}`}
+            value={values.buildings[activeBuilding].leftFrame}
+            onChange={(e) =>
+              handleNestedChange(activeBuilding, 'leftFrame', e.target.value)
+            }
+            options={FrameOptions}
+            label="Left Endwall Frame:"
+          />
+          {values.buildings[activeBuilding].leftFrame == 'postAndBeam' && (
+            <div className="span2"></div>
+          )}
+          {values.buildings[activeBuilding].leftFrame != 'postAndBeam' &&
+            values.buildings[activeBuilding].leftFrame != 'insetRF' && (
+              <BaySpacingInput
+                name={`buildingLeftEndwallIntColSpacing-${activeBuilding}`}
+                label="Interior Column Spacing:"
+                className="span2"
+                value={values.buildings[activeBuilding].leftIntColSpacing}
+                onChange={(name, value) =>
+                  handleNestedChange(activeBuilding, 'leftIntColSpacing', value)
+                }
+                compareLabel="building width"
+                compareValue={values.buildings[activeBuilding].width}
+              />
+            )}
+          {values.buildings[activeBuilding].leftFrame == 'insetRF' && (
+            <>
               <BaySelectionInput
                 name={`buildingLeftEndwallInset-${activeBuilding}`}
                 label="Inset # of Bays"
@@ -425,31 +443,51 @@ const BuildingLayout = ({
                 baySpacing={values.buildings[activeBuilding].sidewallBaySpacing}
                 multiSelect={false}
               />
-            )}
-          </div>
-          <BaySpacingInput
-            name={`buildingLeftEndwallIntColSpacing-${activeBuilding}`}
-            label="Interior Column Spacing:"
-            value={values.buildings[activeBuilding].lewIntColSpacing}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'lewIntColSpacing', value)
+              <BaySpacingInput
+                name={`buildingLeftEndwallIntColSpacing-${activeBuilding}`}
+                label="Interior Column Spacing:"
+                value={values.buildings[activeBuilding].leftIntColSpacing}
+                onChange={(name, value) =>
+                  handleNestedChange(activeBuilding, 'leftIntColSpacing', value)
+                }
+                compareLabel="building width"
+                compareValue={values.buildings[activeBuilding].width}
+              />
+            </>
+          )}
+          <ReusableSelect
+            id={`buildingrightFrame-${activeBuilding}`}
+            name={`buildingrightFrame-${activeBuilding}`}
+            value={values.buildings[activeBuilding].rightFrame}
+            onChange={(e) =>
+              handleNestedChange(activeBuilding, 'rightFrame', e.target.value)
             }
-            compareLabel="building width"
-            compareValue={values.buildings[activeBuilding].width}
+            options={FrameOptions}
+            label="Right Endwall Frame:"
           />
-          <div className="tabHide divider"></div>
-          <div className="cardInput">
-            <ReusableSelect
-              id={`buildingrewFrame-${activeBuilding}`}
-              name={`buildingrewFrame-${activeBuilding}`}
-              value={values.buildings[activeBuilding].rewFrame}
-              onChange={(e) =>
-                handleNestedChange(activeBuilding, 'rewFrame', e.target.value)
-              }
-              options={FrameOptions}
-              label="Right Endwall Frame:"
-            />
-            {values.buildings[activeBuilding].rewFrame == 'insetRF' && (
+          {values.buildings[activeBuilding].rightFrame == 'postAndBeam' && (
+            <div className="span2"></div>
+          )}
+          {values.buildings[activeBuilding].rightFrame != 'postAndBeam' &&
+            values.buildings[activeBuilding].rightFrame != 'insetRF' && (
+              <BaySpacingInput
+                name={`buildingRightEndwallIntColSpacing-${activeBuilding}`}
+                label="Interior Column Spacing:"
+                className="span2"
+                value={values.buildings[activeBuilding].rightIntColSpacing}
+                onChange={(name, value) =>
+                  handleNestedChange(
+                    activeBuilding,
+                    'rightIntColSpacing',
+                    value
+                  )
+                }
+                compareLabel="building width"
+                compareValue={values.buildings[activeBuilding].width}
+              />
+            )}
+          {values.buildings[activeBuilding].rightFrame == 'insetRF' && (
+            <>
               <BaySelectionInput
                 name={`buildingRightEndwallInset-${activeBuilding}`}
                 label="Inset # of Bays"
@@ -460,19 +498,22 @@ const BuildingLayout = ({
                 baySpacing={values.buildings[activeBuilding].sidewallBaySpacing}
                 multiSelect={false}
               />
-            )}
-          </div>
-
-          <BaySpacingInput
-            name={`buildingRightEndwallIntColSpacing-${activeBuilding}`}
-            label="Interior Column Spacing:"
-            value={values.buildings[activeBuilding].rewIntColSpacing}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'rewIntColSpacing', value)
-            }
-            compareLabel="building width"
-            compareValue={values.buildings[activeBuilding].width}
-          />
+              <BaySpacingInput
+                name={`buildingRightEndwallIntColSpacing-${activeBuilding}`}
+                label="Interior Column Spacing:"
+                value={values.buildings[activeBuilding].rightIntColSpacing}
+                onChange={(name, value) =>
+                  handleNestedChange(
+                    activeBuilding,
+                    'rightIntColSpacing',
+                    value
+                  )
+                }
+                compareLabel="building width"
+                compareValue={values.buildings[activeBuilding].width}
+              />
+            </>
+          )}
         </div>
       </section>
 
@@ -533,7 +574,7 @@ const BuildingLayout = ({
             id={`buildinglewBracing-${activeBuilding}`}
             name={`buildinglewBracing-${activeBuilding}`}
             value={
-              values.buildings[activeBuilding].lewFrame == 'postAndBeam'
+              values.buildings[activeBuilding].leftFrame == 'postAndBeam'
                 ? values.buildings[activeBuilding].lewBracingType
                 : 'none'
             }
@@ -547,14 +588,14 @@ const BuildingLayout = ({
             options={EndwallBracingType}
             label="Left Endwall Bracing Type:"
             disabled={
-              values.buildings[activeBuilding].lewFrame != 'postAndBeam'
+              values.buildings[activeBuilding].leftFrame != 'postAndBeam'
             }
           />
           <ReusableSelect
             id={`buildingrewBracing-${activeBuilding}`}
             name={`buildingrewBracing-${activeBuilding}`}
             value={
-              values.buildings[activeBuilding].rewFrame == 'postAndBeam'
+              values.buildings[activeBuilding].rightFrame == 'postAndBeam'
                 ? values.buildings[activeBuilding].rewBracingType
                 : 'none'
             }
@@ -568,7 +609,7 @@ const BuildingLayout = ({
             options={EndwallBracingType}
             label="Right Endwall Bracing Type:"
             disabled={
-              values.buildings[activeBuilding].rewFrame != 'postAndBeam'
+              values.buildings[activeBuilding].rightFrame != 'postAndBeam'
             }
           />
         </div>
@@ -612,7 +653,7 @@ const BuildingLayout = ({
             baySpacing={values.buildings[activeBuilding].lewBaySpacing}
             multiSelect={true}
             disabled={
-              values.buildings[activeBuilding].lewFrame != 'postAndBeam'
+              values.buildings[activeBuilding].leftFrame != 'postAndBeam'
             }
           />
           <BaySelectionInput
@@ -625,7 +666,7 @@ const BuildingLayout = ({
             baySpacing={values.buildings[activeBuilding].rewBaySpacing}
             multiSelect={true}
             disabled={
-              values.buildings[activeBuilding].rewFrame != 'postAndBeam'
+              values.buildings[activeBuilding].rightFrame != 'postAndBeam'
             }
           />
         </div>

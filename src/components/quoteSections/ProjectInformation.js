@@ -171,11 +171,11 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
 
   return (
     <>
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
           <h3>Customer Information</h3>
         </header>
-        <div className="nameGrid">
+        <div className="grid2">
           <div className="cardInput">
             <label htmlFor="customerName">Customer Name:</label>
             <input
@@ -200,8 +200,8 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
           </div>
         </div>
         <h4>Address</h4>
-        <div className="addressGrid">
-          <div className="cardInput span24">
+        <div className="grid8">
+          <div className="cardInput span4">
             <label htmlFor="customerAddress" className="cardLabel">
               Street Address:
               <button
@@ -221,7 +221,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               placeholder="Street Address"
             />
           </div>
-          <div className="cardInput span12">
+          <div className="cardInput span2">
             <label htmlFor="customerCity">City:</label>
             <input
               type="text"
@@ -254,7 +254,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               placeholder="Zip"
             />
           </div>
-          <div className="cardInput span12">
+          <div className="cardInput span2">
             <label htmlFor="customerPhone">Phone:</label>
             <input
               type="text"
@@ -265,7 +265,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               placeholder="Phone"
             />
           </div>
-          <div className="cardInput span12">
+          <div className="cardInput span2">
             <label htmlFor="customerFax">Fax:</label>
             <input
               type="text"
@@ -276,7 +276,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               placeholder="Fax"
             />
           </div>
-          <div className="cardInput span12">
+          <div className="cardInput span2">
             <label htmlFor="customerCell">Cell:</label>
             <input
               type="text"
@@ -287,7 +287,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               placeholder="Cell"
             />
           </div>
-          <div className="cardInput span12">
+          <div className="cardInput span2">
             <label htmlFor="customerEmail">Email:</label>
             <input
               type="text"
@@ -301,11 +301,11 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
         </div>
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
           <h3>Project Information</h3>
         </header>
-        <div className="nameGrid">
+        <div className="grid2">
           <div className="cardInput">
             <label htmlFor="projectName">Project Name:</label>
             <input
@@ -331,8 +331,8 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
         </div>
         <h4>Address</h4>
 
-        <div className="addressGrid">
-          <div className="cardInput span24">
+        <div className="grid8">
+          <div className="cardInput span4">
             <label htmlFor="projectAddress" className="cardLabel">
               Street Address:
               <button
@@ -352,7 +352,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               placeholder="Address"
             />
           </div>
-          <div className="cardInput span12">
+          <div className="cardInput span2">
             <label htmlFor="projectCity">City:</label>
             <input
               type="text"
@@ -385,8 +385,8 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               placeholder="Zip"
             />
           </div>
-          <div className="span24"></div>
-          <div className="cardInput span12">
+          <div className="span4 desktopOnly"></div>
+          <div className="cardInput span2">
             <label htmlFor="projectCounty">County:</label>
             <input
               type="text"
@@ -397,7 +397,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               placeholder="County"
             />
           </div>
-          <div className="cardInput span12">
+          <div className="cardInput span2">
             <label htmlFor="buildingUse">Building Use:</label>
             <input
               type="text"
@@ -411,85 +411,76 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
         </div>
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
           <h3>Design Codes</h3>
         </header>
-        <div className="cardGrid">
-          <div className="cardInput">
-            <ReusableSelect
-              id={`buildingCode`}
-              name={`buildingCode`}
-              value={values.buildingCode}
-              onChange={handleChange}
-              options={buildingCodes}
-              label="Building Code:"
-            />
-          </div>
-          <div className="cardInput">
-            <ReusableSelect
-              id={`riskCategory`}
-              name={`riskCategory`}
-              value={values.riskCategory}
-              onChange={handleChange}
-              options={riskCategories}
-              label="Risk Category:"
-            />
-          </div>
+        <div className="grid2">
+          <ReusableSelect
+            id={`buildingCode`}
+            name={`buildingCode`}
+            value={values.buildingCode}
+            onChange={handleChange}
+            options={buildingCodes}
+            label="Building Code:"
+          />
+          <ReusableSelect
+            id={`riskCategory`}
+            name={`riskCategory`}
+            value={values.riskCategory}
+            onChange={handleChange}
+            options={riskCategories}
+            label="Risk Category:"
+          />
         </div>
         <h4>Roof Load</h4>
-        <div className="cardGrid">
-          <div className="cardInput">
-            <ReusableDouble
-              id={'collateralLoad'}
-              value={values.collateralLoad}
-              onChange={handleChange}
-              name={'collateralLoad'}
-              label={'Collateral Load (psf):'}
-              disabled={false}
-              placeholder={'0'}
-            />
-          </div>
-          <div className="cardInput">
-            <ReusableDouble
-              id={'liveLoad'}
-              value={values.liveLoad}
-              onChange={handleChange}
-              name={'liveLoad'}
-              label={'Live Load (psf):'}
-              disabled={false}
-              placeholder={'0'}
-            />
-          </div>
-          <div className="cardInput">
-            <ReusableDouble
-              id={'deadLoad'}
-              value={values.deadLoad}
-              onChange={handleChange}
-              name={'deadLoad'}
-              label={'Dead Load (psf):'}
-              disabled={false}
-              placeholder={'0'}
-            />
-          </div>
+        <div className="grid3">
+          <ReusableDouble
+            id={'collateralLoad'}
+            value={values.collateralLoad}
+            onChange={handleChange}
+            name={'collateralLoad'}
+            label={'Collateral Load (psf):'}
+            disabled={false}
+            placeholder={'0'}
+          />
+          <ReusableDouble
+            id={'liveLoad'}
+            value={values.liveLoad}
+            onChange={handleChange}
+            name={'liveLoad'}
+            label={'Live Load (psf):'}
+            disabled={false}
+            placeholder={'0'}
+          />
+          <ReusableDouble
+            id={'deadLoad'}
+            value={values.deadLoad}
+            onChange={handleChange}
+            name={'deadLoad'}
+            label={'Dead Load (psf):'}
+            disabled={false}
+            placeholder={'0'}
+          />
         </div>
         <h4>Wind Load</h4>
-        <div className="cardGrid">
+        <div className="grid3">
           <ReusableDouble
             id={'windLoad'}
             value={values.windLoad}
             onChange={handleChange}
             name={'windLoad'}
             label={'Wind Load (mph):'}
-            calc={true}
-            onCalc={getWindLoad}
+            icon={'faCalculator'}
+            iconColor={'blue'}
+            iconOnClick={getWindLoad}
             disabled={false}
             placeholder={'0'}
           />
           <ReusableSelect
-            id={`exposure`}
-            name={`exposure`}
-            value={values.exposure}
+            id={`windExposure`}
+            name={`windExposure`}
+            value={values.windExposure}
             onChange={handleChange}
             options={exposure}
             label="Exposure:"
@@ -506,23 +497,24 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
           />
         </div>
         <h4>Snow Load</h4>
-        <div className="cardGrid">
+        <div className="grid3">
           <ReusableDouble
-            id={'groundLoad'}
-            value={values.groundLoad}
+            id={'groundSnowLoad'}
+            value={values.groundSnowLoad}
             onChange={handleChange}
-            name={'groundLoad'}
+            name={'groundSnowLoad'}
             label={'Ground Load (psf):'}
-            calc={true}
-            onCalc={getSnowLoad}
+            icon={'faCalculator'}
+            iconColor={'blue'}
+            iconOnClick={getSnowLoad}
             disabled={false}
             placeholder={'0'}
           />
           <ReusableDouble
-            id={'roofLoad'}
-            value={values.roofLoad}
+            id={'roofSnowLoad'}
+            value={values.roofSnowLoad}
             onChange={handleChange}
-            name={'roofLoad'}
+            name={'roofSnowLoad'}
             label={'Roof Load (psf):'}
             disabled={false}
             placeholder={'0'}
@@ -538,14 +530,18 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
           />
         </div>
         <h4>Seismic Load</h4>
-        <div className="cardGrid">
+        <div className="grid6">
           <ReusableSelect
             id={`seismicCategory`}
             name={`seismicCategory`}
+            className="span2"
             value={values.seismicCategory}
             onChange={handleChange}
             options={seismicCategory}
             label="Seismic Category:"
+            icon={'faCalculator'}
+            iconColor={'blue'}
+            iconOnClick={getSeismicLoad}
             defaultValue="d"
           />
           <ReusableDouble
@@ -554,8 +550,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             onChange={handleChange}
             name={'seismicSs'}
             label={'Ss:'}
-            calc={true}
-            onCalc={getSeismicLoad}
             disabled={false}
             placeholder={'0'}
             decimalPlaces={3}
@@ -565,7 +559,11 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             value={values.seismicS1}
             onChange={handleChange}
             name={'seismicS1'}
-            label={'S1:'}
+            label={
+              <>
+                S<small>1</small>:
+              </>
+            }
             disabled={false}
             placeholder={'0'}
             decimalPlaces={3}
@@ -585,7 +583,11 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             value={values.seismicSm1}
             onChange={handleChange}
             name={'seismicSm1'}
-            label={'Sm1:'}
+            label={
+              <>
+                Sm<small>1</small>:
+              </>
+            }
             disabled={false}
             placeholder={'0'}
             decimalPlaces={3}

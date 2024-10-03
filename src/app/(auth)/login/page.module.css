@@ -31,12 +31,12 @@
 
 .loginInputs input{
     border: none;
-    outline: 1px solid var(--black);
+    outline: 1px solid var(--drak-grey);
     line-height: 1.5em;
     border-radius: .25em;    
     padding-left: .25em;
 }
 
 .loginInputs input:focus{    
-    outline: 1px solid var(--orange);    
+    outline: 1px solid var(--blue);    
 }

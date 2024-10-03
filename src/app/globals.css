@@ -13,9 +13,10 @@
   --red: #FB4B4B;
   --light-red: #FD8787;
   --green: #4CB852;
-  --light-green: #8AD08E;  
+  --light-green: #8AD08E;
+  --dark-grey: #666666;
   --gray: #A2A2A2;
-  --light-gray: #CCCCCC; 
+  --light-gray: #CCCCCC;
   --div-gradient: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(16,52,148,1) 50%, rgba(255,255,255,0) 100%);
 }
 
@@ -43,14 +44,13 @@
   background-color: var(--light-orange);
 }
 
-html{
+html {
   -moz-text-size-adjust: none;
   -webkit-text-size-adjust: none;
   text-size-adjust: none;
 }
 
-html,
-body {
+html, body {
   max-width: 100vw;
   overflow-x: hidden;
 }
@@ -64,16 +64,16 @@ main {
   background-color: var(--dark-blue);  
 }
 
-h1, h4, h5{
+h1, h4, h5 {
   color: var(--dark-blue);
   text-align: center;
 }
 
-h2, h3{
+h2, h3 {
   color: var(--background-white);
 }
 
-p{
+p {
   color: var(--black);
 }
 
@@ -146,7 +146,7 @@ p{
   padding: .75em;    
 }
 
-.card header{
+.card header {
   background-color: var(--dark-blue);
   width: 100%;
   border-radius: .5em .5em 0 0;
@@ -155,9 +155,9 @@ p{
   margin-bottom: .5em;
 }
 
-.card h4{
+.card h4 {
   justify-self: flex-start;
-  margin-block: .5em;
+  margin-block: 1em 0em;
 }
 
 .nameGrid{
@@ -269,7 +269,7 @@ p{
   display: none;
 }
 
-.radioGroup{
+.radioGroup {
   accent-color: var(--dark-blue);
   display: flex;    
   gap: 1em;    
@@ -279,17 +279,23 @@ p{
   border-radius: .5em;
   align-self: center;
   font-size: 11px;
+  width: 100%;
 }
 
-.radioGroup div{
+.radioGroup div {
   display: flex;
   flex-flow: column nowrap;
+  margin: auto;
 }
 
-.radio{
+.checkboxGroup {
+  margin: 10px 0;
+}
+
+/*radio can be deleted, use center instead*/
+.radio {
   align-self: center;
   justify-self: center;
-  grid-column: span 2;
   text-align: center;
 }
 
@@ -303,19 +309,20 @@ p{
   text-align: center;  
 }
 
-.cardInput{
+.cardInput {
   display: flex;
   flex-flow: column nowrap;
   justify-content: center; 
   gap: .25em;
-  padding: .25em; 
+  padding: .25em;
+  min-height: 64px;
 }
-
-.cardInput input{
-  line-height: 1.75em;
+/*
+.cardInput input {
+  line-height: 1.8em;
   border-radius: .25em;
   border: none;
-  outline: 1px solid var(--black);  
+  outline: 1px solid var(--dark-grey);  
   padding-left: .25em;
   transition: all .3s ease;
 }
@@ -329,11 +336,12 @@ p{
   border: 1px solid var(--background-white);
   outline: none;
 }
-
-.cardLabel{  
-  align-items: center;
+*/
+.cardInput label, .cardLabel {  
+  align-items: flex-end;
   justify-content: space-between;
   display: flex;
+  min-height: 30px;
 }
 
 .projInput{
@@ -341,13 +349,13 @@ p{
   align-items: center;
   gap: 1em;
 }
-
+/*
 .calcInput{
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
+*/
 .cardRow{
   display: flex;
   flex-flow: row nowrap;
@@ -360,7 +368,7 @@ p{
   line-height: 1.75em;
   border-radius: .25em;
   border: none;
-  outline: 1px solid var(--black);  
+  outline: 1px solid var(--black);
   padding-left: .25em;
 }
 
@@ -368,9 +376,36 @@ p{
   outline: 1px solid var(--orange);
 }
 
-.selectInput{  
-  height: 1.95em;    
+
+input[type='text'] {
+  line-height: 1.75em;
+  border-radius: .25em;
+  border: none;
+  outline: 1px solid var(--dark-grey);  
+  padding-left: .25em;
+  transition: all .3s ease;
 }
+
+input[type='text']:focus {
+  outline: 1px solid var(--blue);  
+}
+
+input[type='text']:disabled {
+  color: var(--background-white);  
+  border: 1px solid var(--background-white);
+  outline: none;
+}
+
+select {  
+  height: 1.75em;    
+  border-radius: .25em;
+  border: none;
+  outline: 1px solid var(--dark-grey);  
+  padding-left: .25em;
+  transition: all .3s ease;
+}
+
+
 
 .checkRow{
   font-size: .75em;
@@ -469,7 +504,10 @@ p{
   color: var(--light-blue);  
 }
 
-.icon{
+
+
+
+.icon {
   border-color: transparent;  
   width: 2em;
   height: 2em;
@@ -481,6 +519,27 @@ p{
   transition: all .3s ease;
 }
 
+.icon.blue {
+  color: var(--dark-blue);    
+}
+
+.icon.blue:hover {  
+  background-color: var(--dark-blue);
+  color: var(--background-white); 
+}
+
+.icon.red {  
+  color: var(--red);    
+}
+
+.icon.red:hover {  
+  background-color: var(--red);
+  color: var(--background-white); 
+}
+
+
+
+
 .iconReject{  
   color: var(--light-red);
   margin-bottom: .5em;    
@@ -490,7 +549,7 @@ p{
   background-color: var(--red);
   color: var(--background-white); 
 }
-
+/*
 .iconSec{  
   color: var(--dark-blue);    
 }
@@ -499,7 +558,7 @@ p{
   background-color: var(--dark-blue);
   color: var(--background-white); 
 }
-
+*/
 .iconClear{  
   color: var(--light-red);    
 }
@@ -673,7 +732,7 @@ p{
   margin-top: 10px;
 }
 
-.sketchButton{
+.sketchButton {
   aspect-ratio: 1 /1;
   padding: .35em;  
   border: none;
@@ -681,6 +740,7 @@ p{
   border-radius: .25em;
   border: var(--background-white);
   color: var(--background-white);
+  min-width: 36px;
 }
 
 /* Hides the autocomplete google logo */
@@ -732,14 +792,18 @@ p{
   grid-row: 1 / 3;
 }
 
+.desktopOnly {
+  display: none;
+}
 
 /* END */
 
 
 /*
-.onPhone  =    0px -  767px
-.onTablet =  768px - 1199px
-.onLaptop = 1200px - 1499px
+.onPhone, .phoneOnly     =    0px -  767px
+.onTablet, .tabletOnly   =  768px - 1199px
+.onLaptop, .laptopOnly   = 1200px - 1499px
+.onDesktop, .desktopOnly = 1500px +
 */
 @media screen and (min-width: 350px) {
   .cardInput label, .cardInput input, .cardInput select, .cardRow label, .cardRow input, .cardRow select{
@@ -799,7 +863,7 @@ p{
     justify-content: center;
     padding: .5em 2em;
   }
-
+/*this tabhide can be deleted*/
   .tabHide{
     display: none;
   }
@@ -1068,6 +1132,9 @@ p{
 @media screen and (min-width: 1500px) {
   .onLaptop {
     display: none !important;
+  }
+  .desktopOnly {
+    display: block;
   }
 
   .addressGrid{

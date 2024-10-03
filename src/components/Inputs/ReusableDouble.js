@@ -18,9 +18,11 @@ const ReusableDouble = ({
   value,
   onChange,
   name,
+  className = '',
   label,
-  calc,
-  onCalc,
+  icon = '',
+  iconColor = '',
+  iconOnClick = null,
   disabled = false,
   placeholder,
   decimalPlaces = 2,
@@ -59,18 +61,16 @@ const ReusableDouble = ({
     });
   };
 
-  const calcClass = calc ? 'calcInput' : '';
-
   return (
-    <div className="cardInput">
-      <div className={`${calcClass}`}>
-        <label htmlFor={name}>{label}</label>
-        {calc && (
-          <button onClick={onCalc} className="icon iconSec">
+    <div className={`cardInput ${className}`}>
+      <label htmlFor={name}>
+        <span>{label}</span>
+        {icon && (
+          <button onClick={iconOnClick} className={`icon ${iconColor}`}>
             <FontAwesomeIcon icon={faCalculator} />
           </button>
         )}
-      </div>
+      </label>
       <input
         type="text"
         id={name}

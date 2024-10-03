@@ -5,6 +5,7 @@ const BaySelectionInput = ({
   onChange,
   name,
   label,
+  className = '',
   baySpacing,
   multiSelect = false,
   disabled = false,
@@ -67,7 +68,7 @@ const BaySelectionInput = ({
   }, [value]);
 
   return (
-    <div className="cardInput start">
+    <div className={`cardInput ${className}`}>
       <h5>{label}</h5>
       <div
         style={{
