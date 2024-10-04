@@ -20,9 +20,6 @@ const BuildingSketch = ({
         shape: buildingData.shape,
         width: buildingData.width,
         length: buildingData.length,
-        eaveHeight: buildingData.eaveHeight,
-        lowEaveHeight: buildingData.lowEaveHeight,
-        highEaveHeight: buildingData.highEaveHeight,
         backEaveheight: buildingData.backEaveHeight,
         frontEaveHeight: buildingData.frontEaveHeight,
       },
@@ -61,22 +58,27 @@ const BuildingSketch = ({
 
     scene.add(building, roof, buildingLines, roofLines);
 
-    addBayLines(buildingData.lewBaySpacing, 'leftEndwall', scene, buildingData);
     addBayLines(
-      buildingData.rewBaySpacing,
+      buildingData.leftBaySpacing,
+      'leftEndwall',
+      scene,
+      buildingData
+    );
+    addBayLines(
+      buildingData.rightBaySpacing,
       'rightEndwall',
       scene,
       buildingData
     );
     addBayLines(
-      buildingData.sidewallBaySpacing,
+      buildingData.roofBaySpacing,
       'frontSidewall',
       scene,
       buildingData
     );
 
     addBraceLines(
-      buildingData.sidewallBaySpacing,
+      buildingData.roofBaySpacing,
       buildingData.fswBracedBays,
       'frontSidewall',
       scene,
@@ -84,7 +86,7 @@ const BuildingSketch = ({
     );
 
     addBraceLines(
-      buildingData.sidewallBaySpacing,
+      buildingData.roofBaySpacing,
       buildingData.bswBracedBays,
       'backSidewall',
       scene,
@@ -92,7 +94,7 @@ const BuildingSketch = ({
     );
 
     addBraceLines(
-      buildingData.lewBaySpacing,
+      buildingData.leftBaySpacing,
       buildingData.lewBracedBays,
       'leftEndwall',
       scene,
@@ -100,7 +102,7 @@ const BuildingSketch = ({
     );
 
     addBraceLines(
-      buildingData.rewBaySpacing,
+      buildingData.rightBaySpacing,
       buildingData.rewBracedBays,
       'rightEndwall',
       scene,
@@ -108,7 +110,7 @@ const BuildingSketch = ({
     );
 
     addBraceLines(
-      buildingData.sidewallBaySpacing,
+      buildingData.roofBaySpacing,
       buildingData.roofBracedBays,
       'roof',
       scene,

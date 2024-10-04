@@ -385,7 +385,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               placeholder="Zip"
             />
           </div>
-          <div className="span4 desktopOnly"></div>
+          <div className="span4 onDesktop"></div>
           <div className="cardInput span2">
             <label htmlFor="projectCounty">County:</label>
             <input

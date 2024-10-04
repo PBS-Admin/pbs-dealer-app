@@ -226,9 +226,9 @@ function useFormState(initialState) {
     });
 
     // Update lastChangedWall when relevant fields change
-    if (field === 'lewBaySpacing') setLastChangedWall('leftEndwall');
-    if (field === 'rewBaySpacing') setLastChangedWall('rightEndwall');
-    if (field === 'sidewallBaySpacing') setLastChangedWall('frontSidewall');
+    if (field === 'leftBaySpacing') setLastChangedWall('leftEndwall');
+    if (field === 'rightBaySpacing') setLastChangedWall('rightEndwall');
+    if (field === 'roofBaySpacing') setLastChangedWall('frontSidewall');
   };
 
   const handleCanopyChange = (buildingIndex, canopyIndex, field, value) => {
