@@ -153,6 +153,7 @@ p {
   padding: .25em;
   text-align: center;
   margin-bottom: .5em;
+  max-height: 31px;
 }
 
 .card h4 {
@@ -265,8 +266,8 @@ p {
   align-self: center;
 }
 
-.hidden{
-  display: none;
+.hidden {
+  display: none !important;
 }
 
 .radioGroup {
@@ -320,6 +321,10 @@ p {
   gap: .25em;
   padding: .25em;
   min-height: 64px;
+}
+
+.cardInput:has(label.offOnDesktop) {
+  min-height: unset;
 }
 /*
 .cardInput input {
@@ -481,7 +486,8 @@ select {
 
 /* Global Button Classes */
 .w5{
-  width: 5em;  
+  width: 5em;
+  max-height: 42px;  
 }
 
 .span12{
@@ -578,6 +584,11 @@ select {
   border-radius: .5em;
   padding: 1em;  
   text-decoration: none;
+}
+
+button.small {
+  width: 5em;
+  padding: 0.25em;
 }
 
 .prim{  
@@ -756,7 +767,7 @@ select {
 
 
 /* Grid Layout */
-.grid, .grid2, .grid3, .grid4, .grid6, .grid8 {
+.grid, .grid2, .grid3, .grid4, .grid6, .grid8, .tableGrid8 {
   display: grid;
   grid-template-columns: 1fr;  
   gap: 0 .5em;
@@ -930,6 +941,10 @@ select {
     grid-template-columns: repeat(2, 1fr);  
   }
 
+  .tableGrid8 {
+    grid-template-columns: repeat(2, 1fr);  
+  }
+
   .grid8 .span5, .grid8 .span6, .grid8 .span7 {
     grid-column: span 2;
   }
@@ -1071,11 +1086,11 @@ select {
   .openingGrid{    
     grid-template-columns: repeat(7, minmax(50px, 1fr));        
   }
-
+/*
   .w5{
     justify-self: center;
   }
-
+*/
   /* Grid Layout */
   .grid4 {
     /*grid-template-columns: repeat(4, 1fr);*/
@@ -1152,6 +1167,10 @@ select {
     grid-template-columns: repeat(4, minmax(180px, 1fr));
   }
 
+  .tableGrid8 {
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+  }
+
   .grid8 .span2 {
     grid-column: span 1;
   }
@@ -1214,6 +1233,10 @@ select {
   .grid8 {
     /*grid-template-columns: repeat(8, 1fr);*/
     grid-template-columns: repeat(8, minmax(120px, 1fr));
+  }
+
+  .tableGrid8 {
+    grid-template-columns: repeat(7, minmax(120px, 1fr)) 28px;
   }
 
   .span2 {

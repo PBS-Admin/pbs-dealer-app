@@ -308,37 +308,52 @@ const BuildingExtensions = ({
         <header>
           <h3>Canopies</h3>
         </header>
-        <div className="tableGrid">
-          {values.buildings[activeBuilding].canopies.map(
-            (canopy, canopyIndex) => (
-              <Fragment
-                key={`building-${activeBuilding}-canopy-${canopyIndex}`}
-              >
-                <div className="cardInput">
-                  <ReusableSelect
-                    id={`building-${activeBuilding}-canopyWall-${canopyIndex}`}
-                    name={`building-${activeBuilding}-canopyWall-${canopyIndex}`}
-                    value={canopy.wall}
-                    onChange={(e) =>
-                      handleCanopyChange(
-                        activeBuilding,
-                        canopyIndex,
-                        'wall',
-                        e.target.value
-                      )
+        {values.buildings[activeBuilding].canopies.length > 0 && (
+          <div className="onDesktop">
+            <div className="tableGrid8">
+              <h5>Wall</h5>
+              <h5>Width</h5>
+              <h5>Slope</h5>
+              <h5>Start Bay</h5>
+              <h5>End Bay</h5>
+              <h5>Elevation</h5>
+              <h5>Add Columns</h5>
+              <h5></h5>
+            </div>
+          </div>
+        )}
+        {values.buildings[activeBuilding].canopies.map(
+          (canopy, canopyIndex) => (
+            <Fragment key={`building-${activeBuilding}-canopy-${canopyIndex}`}>
+              <div className="tableGrid8">
+                <ReusableSelect
+                  id={`building-${activeBuilding}-canopyWall-${canopyIndex}`}
+                  name={`building-${activeBuilding}-canopyWall-${canopyIndex}`}
+                  labelClass="offOnDesktop"
+                  value={canopy.wall}
+                  onChange={(e) =>
+                    handleCanopyChange(
+                      activeBuilding,
+                      canopyIndex,
+                      'wall',
+                      e.target.value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeCanopy !== canopyIndex) {
+                      setActiveCanopy(canopyIndex);
                     }
-                    onFocus={() => {
-                      if (activeCanopy !== canopyIndex) {
-                        setActiveCanopy(canopyIndex);
-                      }
-                    }}
-                    options={walls}
-                  />
-                </div>
+                  }}
+                  options={walls}
+                  label="Wall"
+                />
                 <div className="cardInput">
                   <label
+                    className="offOnDesktop"
                     htmlFor={`building-${activeBuilding}-canopyWidth-${canopyIndex}`}
-                  ></label>
+                  >
+                    Width
+                  </label>
                   <input
                     type="text"
                     id={`building-${activeBuilding}-canopyWidth-${canopyIndex}`}
@@ -362,8 +377,11 @@ const BuildingExtensions = ({
                 </div>
                 <div className="cardInput">
                   <label
+                    className="offOnDesktop"
                     htmlFor={`building-${activeBuilding}-canopySlope-${canopyIndex}`}
-                  ></label>
+                  >
+                    Slope
+                  </label>
                   <input
                     type="text"
                     id={`building-${activeBuilding}-canopySlope-${canopyIndex}`}
@@ -387,8 +405,11 @@ const BuildingExtensions = ({
                 </div>
                 <div className="cardInput">
                   <label
+                    className="offOnDesktop"
                     htmlFor={`building-${activeBuilding}-canopyStartBay-${canopyIndex}`}
-                  ></label>
+                  >
+                    Start Bay
+                  </label>
                   <input
                     type="text"
                     id={`building-${activeBuilding}-canopyStartBay-${canopyIndex}`}
@@ -412,8 +433,11 @@ const BuildingExtensions = ({
                 </div>
                 <div className="cardInput">
                   <label
+                    className="offOnDesktop"
                     htmlFor={`building-${activeBuilding}-canopyEndBay-${canopyIndex}`}
-                  ></label>
+                  >
+                    End Bay
+                  </label>
                   <input
                     type="text"
                     id={`building-${activeBuilding}-canopyEndBay-${canopyIndex}`}
@@ -432,13 +456,16 @@ const BuildingExtensions = ({
                         setActiveCanopy(canopyIndex);
                       }
                     }}
-                    placeholder="Bay #"
+                    placeholder="Bay#"
                   />
                 </div>
                 <div className="cardInput">
                   <label
+                    className="offOnDesktop"
                     htmlFor={`building-${activeBuilding}-canopyElevation-${canopyIndex}`}
-                  ></label>
+                  >
+                    Elevation
+                  </label>
                   <input
                     type="text"
                     id={`building-${activeBuilding}-canopyElevation-${canopyIndex}`}
@@ -488,31 +515,26 @@ const BuildingExtensions = ({
                 </div>
                 <button
                   onClick={() => removeCanopy(activeBuilding, canopyIndex)}
-                  className="icon iconReject"
+                  className="icon red"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
-                {!isDesktop && (
-                  <>
-                    <div></div>
-                    <div className="divider span2"></div>
-                  </>
-                )}
-              </Fragment>
-            )
-          )}
-          <button
-            type="button"
-            className="button success w5"
-            onClick={() => addCanopy(activeBuilding)}
-          >
-            Add
-          </button>
-        </div>
+              </div>
+              <div className="divider offOnDesktop"></div>
+            </Fragment>
+          )
+        )}
+        <button
+          type="button"
+          className="button success w5"
+          onClick={() => addCanopy(activeBuilding)}
+        >
+          Add
+        </button>
 
         {values.buildings[activeBuilding].canopies.length > 0 && (
           <>
-            <div className="divider"></div>
+            <div className="divider onDesktop"></div>
             <div className="grid2">
               <div className="panelGrid">
                 <ReusableSelect

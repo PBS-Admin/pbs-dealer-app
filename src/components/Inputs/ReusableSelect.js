@@ -10,7 +10,7 @@ const ReusableSelect = ({
   onChange,
   options,
   label,
-  labelHide,
+  labelClass,
   icon = '',
   iconColor = '',
   iconOnClick = null,
@@ -35,7 +35,7 @@ const ReusableSelect = ({
 
   return (
     <div className={`cardInput ${className}`}>
-      <label className={labelHide} htmlFor={id}>
+      <label className={labelClass} htmlFor={id}>
         <span>{label}</span>
         {icon && (
           <button onClick={iconOnClick} className={`icon ${iconColor}`}>
