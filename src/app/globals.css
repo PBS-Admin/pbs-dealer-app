@@ -700,7 +700,8 @@ select {
 .panelImage {
   align-self: center;
   height: auto;    
-  width: 150px;    
+  width: 90%;
+  max-width: 280px;    
   justify-self: center;
 }
 
