@@ -83,29 +83,29 @@ export const useThreeSetup = (
     (view) => {
       if (!isSetup || !cameraRef.current || !controlsRef.current) return;
 
-      const { width, length, eaveHeight } = buildingDimensions;
-      const maxDimension = Math.max(width, length, eaveHeight);
+      const { width, length, backEaveHeight } = buildingDimensions;
+      const maxDimension = Math.max(width, length, backEaveHeight);
       const distance = maxDimension * 1.35;
 
       // Enable controls for all views
       controlsRef.current.enabled = true;
 
-      let targetPosition = new THREE.Vector3(0, eaveHeight / 2, 0);
+      let targetPosition = new THREE.Vector3(0, backEaveHeight / 2, 0);
 
       switch (view) {
-        case 'L': // Left Endwall view
-          cameraRef.current.position.set(0, eaveHeight / 2, distance);
+        case 'LEW': // Left Endwall view
+          cameraRef.current.position.set(0, backEaveHeight / 2, distance);
           break;
-        case 'R': // Right Endwall view
-          cameraRef.current.position.set(0, eaveHeight / 2, -distance);
+        case 'REW': // Right Endwall view
+          cameraRef.current.position.set(0, backEaveHeight / 2, -distance);
           break;
-        case 'FS': // Front Sidewall view
-          cameraRef.current.position.set(distance, eaveHeight / 2, 0);
+        case 'FSW': // Front Sidewall view
+          cameraRef.current.position.set(distance, backEaveHeight / 2, 0);
           break;
-        case 'BS': // Back Sidewall view
-          cameraRef.current.position.set(-distance, eaveHeight / 2, 0);
+        case 'BSW': // Back Sidewall view
+          cameraRef.current.position.set(-distance, backEaveHeight / 2, 0);
           break;
-        case 'T': // Top view
+        case 'TOP': // Top view
           cameraRef.current.position.set(0, distance, 0);
           targetPosition.set(-1, 0, 0);
           break;
@@ -119,8 +119,8 @@ export const useThreeSetup = (
 
       cameraRef.current.lookAt(targetPosition);
       controlsRef.current.target.copy(targetPosition);
-      // cameraRef.current.lookAt(0, eaveHeight / 2, 0);
-      // controlsRef.current.target.set(0, eaveHeight / 2, 0);
+      // cameraRef.current.lookAt(0, backEaveHeight / 2, 0);
+      // controlsRef.current.target.set(0, backEaveHeight / 2, 0);
       controlsRef.current.update();
 
       if (rendererRef.current && sceneRef.current) {

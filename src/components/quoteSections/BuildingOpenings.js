@@ -67,24 +67,24 @@ const BuildingOpenings = ({
   const walls = useMemo(() => {
     const mainWalls = [
       {
-        key: 'fsw',
+        key: 'front',
         name: 'Front Sidewall',
-        girtType: values.buildings[activeBuilding].fswGirtType,
+        girtType: values.buildings[activeBuilding].frontGirtType,
       },
       {
-        key: 'bsw',
+        key: 'back',
         name: 'Back Sidewall',
-        girtType: values.buildings[activeBuilding].bswGirtType,
+        girtType: values.buildings[activeBuilding].backGirtType,
       },
       {
-        key: 'lew',
+        key: 'left',
         name: 'Left Endwall',
-        girtType: values.buildings[activeBuilding].lewGirtType,
+        girtType: values.buildings[activeBuilding].leftGirtType,
       },
       {
-        key: 'rew',
+        key: 'right',
         name: 'Right Endwall',
-        girtType: values.buildings[activeBuilding].rewGirtType,
+        girtType: values.buildings[activeBuilding].rightGirtType,
       },
     ].filter((wall) => wall.girtType !== 'open');
 

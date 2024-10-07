@@ -498,29 +498,29 @@ const BuildingLayout = ({
         <div className="grid4 alignTop">
           <div className="grid">
             <ReusableSelect
-              id={`buildingfswBracing-${activeBuilding}`}
-              name={`buildingfswBracing-${activeBuilding}`}
-              value={values.buildings[activeBuilding].fswBracingType}
+              id={`buildingfrontBracing-${activeBuilding}`}
+              name={`buildingfrontBracing-${activeBuilding}`}
+              value={values.buildings[activeBuilding].frontBracingType}
               onChange={(e) =>
                 handleNestedChange(
                   activeBuilding,
-                  'fswBracingType',
+                  'frontBracingType',
                   e.target.value
                 )
               }
               options={SidewallBracingType}
               label="Front Sidewall Bracing Type:"
             />
-            {values.buildings[activeBuilding].fswBracingType == 'tier' && (
+            {values.buildings[activeBuilding].frontBracingType == 'tier' && (
               <>
                 <FeetInchesInput
-                  name={`buildingfswBracingHeight-${activeBuilding}`}
+                  name={`buildingfrontBracingHeight-${activeBuilding}`}
                   label="Height of Portal Frame:"
-                  value={values.buildings[activeBuilding].fswBracingHeight}
+                  value={values.buildings[activeBuilding].frontBracingHeight}
                   onChange={(name, value) =>
                     handleNestedChange(
                       activeBuilding,
-                      'fswBracingHeight',
+                      'frontBracingHeight',
                       value
                     )
                   }
@@ -531,29 +531,29 @@ const BuildingLayout = ({
           </div>
           <div className="grid">
             <ReusableSelect
-              id={`buildingbswBracing-${activeBuilding}`}
-              name={`buildingbswBracing-${activeBuilding}`}
-              value={values.buildings[activeBuilding].bswBracingType}
+              id={`buildingbackBracing-${activeBuilding}`}
+              name={`buildingbackBracing-${activeBuilding}`}
+              value={values.buildings[activeBuilding].backBracingType}
               onChange={(e) =>
                 handleNestedChange(
                   activeBuilding,
-                  'bswBracingType',
+                  'backBracingType',
                   e.target.value
                 )
               }
               options={SidewallBracingType}
               label="Back Sidewall Bracing Type:"
             />
-            {values.buildings[activeBuilding].bswBracingType == 'tier' && (
+            {values.buildings[activeBuilding].backBracingType == 'tier' && (
               <>
                 <FeetInchesInput
-                  name={`buildingbswBracingHeight-${activeBuilding}`}
+                  name={`buildingbackBracingHeight-${activeBuilding}`}
                   label="Height of Portal Frame:"
-                  value={values.buildings[activeBuilding].bswBracingHeight}
+                  value={values.buildings[activeBuilding].backBracingHeight}
                   onChange={(name, value) =>
                     handleNestedChange(
                       activeBuilding,
-                      'bswBracingHeight',
+                      'backBracingHeight',
                       value
                     )
                   }
@@ -564,17 +564,17 @@ const BuildingLayout = ({
           </div>
           <div className="grid">
             <ReusableSelect
-              id={`buildinglewBracing-${activeBuilding}`}
-              name={`buildinglewBracing-${activeBuilding}`}
+              id={`buildingleftBracing-${activeBuilding}`}
+              name={`buildingleftBracing-${activeBuilding}`}
               value={
                 values.buildings[activeBuilding].leftFrame == 'postAndBeam'
-                  ? values.buildings[activeBuilding].lewBracingType
+                  ? values.buildings[activeBuilding].leftBracingType
                   : 'none'
               }
               onChange={(e) =>
                 handleNestedChange(
                   activeBuilding,
-                  'lewBracingType',
+                  'leftBracingType',
                   e.target.value
                 )
               }
@@ -586,17 +586,17 @@ const BuildingLayout = ({
             />
           </div>
           <ReusableSelect
-            id={`buildingrewBracing-${activeBuilding}`}
-            name={`buildingrewBracing-${activeBuilding}`}
+            id={`buildingrightBracing-${activeBuilding}`}
+            name={`buildingrightBracing-${activeBuilding}`}
             value={
               values.buildings[activeBuilding].rightFrame == 'postAndBeam'
-                ? values.buildings[activeBuilding].rewBracingType
+                ? values.buildings[activeBuilding].rightBracingType
                 : 'none'
             }
             onChange={(e) =>
               handleNestedChange(
                 activeBuilding,
-                'rewBracingType',
+                'rightBracingType',
                 e.target.value
               )
             }
@@ -612,37 +612,37 @@ const BuildingLayout = ({
         <h4>Wall Braced Bays</h4>
         <div className="grid4 alignTop">
           <BaySelectionInput
-            name={`buildingfswBracedBays-${activeBuilding}`}
+            name={`buildingfrontBracedBays-${activeBuilding}`}
             label="Front Sidewall"
-            value={values.buildings[activeBuilding].fswBracedBays}
+            value={values.buildings[activeBuilding].frontBracedBays}
             onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'fswBracedBays', value)
+              handleNestedChange(activeBuilding, 'frontBracedBays', value)
             }
             baySpacing={values.buildings[activeBuilding].roofBaySpacing}
             multiSelect={true}
             disabled={
-              values.buildings[activeBuilding].fswBracingType == 'torsional'
+              values.buildings[activeBuilding].frontBracingType == 'torsional'
             }
           />
           <BaySelectionInput
-            name={`buildingbswBracedBays-${activeBuilding}`}
+            name={`buildingbackBracedBays-${activeBuilding}`}
             label="Back Sidewall"
-            value={values.buildings[activeBuilding].bswBracedBays}
+            value={values.buildings[activeBuilding].backBracedBays}
             onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'bswBracedBays', value)
+              handleNestedChange(activeBuilding, 'backBracedBays', value)
             }
             baySpacing={values.buildings[activeBuilding].roofBaySpacing}
             multiSelect={true}
             disabled={
-              values.buildings[activeBuilding].bswBracingType == 'torsional'
+              values.buildings[activeBuilding].backBracingType == 'torsional'
             }
           />
           <BaySelectionInput
-            name={`buildinglewBracedBays-${activeBuilding}`}
+            name={`buildingleftBracedBays-${activeBuilding}`}
             label="Left Endwall"
-            value={values.buildings[activeBuilding].lewBracedBays}
+            value={values.buildings[activeBuilding].leftBracedBays}
             onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'lewBracedBays', value)
+              handleNestedChange(activeBuilding, 'leftBracedBays', value)
             }
             baySpacing={values.buildings[activeBuilding].leftBaySpacing}
             multiSelect={true}
@@ -651,11 +651,11 @@ const BuildingLayout = ({
             }
           />
           <BaySelectionInput
-            name={`buildingrewBracedBays-${activeBuilding}`}
+            name={`buildingrightBracedBays-${activeBuilding}`}
             label="Right Endwall"
-            value={values.buildings[activeBuilding].rewBracedBays}
+            value={values.buildings[activeBuilding].rightBracedBays}
             onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'rewBracedBays', value)
+              handleNestedChange(activeBuilding, 'rightBracedBays', value)
             }
             baySpacing={values.buildings[activeBuilding].rightBaySpacing}
             multiSelect={true}
@@ -713,29 +713,29 @@ const BuildingLayout = ({
         <div className="grid4 alignTop">
           <div className="grid">
             <ReusableSelect
-              id={`buildingfswGirtType-${activeBuilding}`}
-              name={`buildingfswGirtType-${activeBuilding}`}
-              value={values.buildings[activeBuilding].fswGirtType}
+              id={`buildingfrontGirtType-${activeBuilding}`}
+              name={`buildingfrontGirtType-${activeBuilding}`}
+              value={values.buildings[activeBuilding].frontGirtType}
               onChange={(e) =>
                 handleNestedChange(
                   activeBuilding,
-                  'fswGirtType',
+                  'frontGirtType',
                   e.target.value
                 )
               }
               options={girtTypes}
               label="Front Sidewall Girt Type:"
             />
-            {values.buildings[activeBuilding].fswGirtType != 'open' && (
+            {values.buildings[activeBuilding].frontGirtType != 'open' && (
               <>
                 <ReusableSelect
-                  id={`buildingfswGirtSpacing-${activeBuilding}`}
-                  name={`buildingfswGirtSpacing-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].fswGirtSpacing}
+                  id={`buildingfrontGirtSpacing-${activeBuilding}`}
+                  name={`buildingfrontGirtSpacing-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].frontGirtSpacing}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
-                      'fswGirtSpacing',
+                      'frontGirtSpacing',
                       e.target.value
                     )
                   }
@@ -762,29 +762,29 @@ const BuildingLayout = ({
           <div className="divider offOnPhone"></div>
           <div className="grid">
             <ReusableSelect
-              id={`buildingbswGirtType-${activeBuilding}`}
-              name={`buildingbswGirtType-${activeBuilding}`}
-              value={values.buildings[activeBuilding].bswGirtType}
+              id={`buildingbackGirtType-${activeBuilding}`}
+              name={`buildingbackGirtType-${activeBuilding}`}
+              value={values.buildings[activeBuilding].backGirtType}
               onChange={(e) =>
                 handleNestedChange(
                   activeBuilding,
-                  'bswGirtType',
+                  'backGirtType',
                   e.target.value
                 )
               }
               options={girtTypes}
               label="Back Sidewall Girt Type:"
             />
-            {values.buildings[activeBuilding].bswGirtType != 'open' && (
+            {values.buildings[activeBuilding].backGirtType != 'open' && (
               <>
                 <ReusableSelect
-                  id={`buildingbswGirtSpacing-${activeBuilding}`}
-                  name={`buildingbswGirtSpacing-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].bswGirtSpacing}
+                  id={`buildingbackGirtSpacing-${activeBuilding}`}
+                  name={`buildingbackGirtSpacing-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].backGirtSpacing}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
-                      'bswGirtSpacing',
+                      'backGirtSpacing',
                       e.target.value
                     )
                   }
@@ -811,29 +811,29 @@ const BuildingLayout = ({
           <div className="divider showWithSidebar span2"></div>
           <div className="grid">
             <ReusableSelect
-              id={`buildinglewGirtType-${activeBuilding}`}
-              name={`buildinglewGirtType-${activeBuilding}`}
-              value={values.buildings[activeBuilding].lewGirtType}
+              id={`buildingleftGirtType-${activeBuilding}`}
+              name={`buildingleftGirtType-${activeBuilding}`}
+              value={values.buildings[activeBuilding].leftGirtType}
               onChange={(e) =>
                 handleNestedChange(
                   activeBuilding,
-                  'lewGirtType',
+                  'leftGirtType',
                   e.target.value
                 )
               }
               options={girtTypes}
               label="Left Endwall Girt Type:"
             />
-            {values.buildings[activeBuilding].lewGirtType != 'open' && (
+            {values.buildings[activeBuilding].leftGirtType != 'open' && (
               <>
                 <ReusableSelect
-                  id={`buildinglewGirtSpacing-${activeBuilding}`}
-                  name={`buildinglewGirtSpacing-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].lewGirtSpacing}
+                  id={`buildingleftGirtSpacing-${activeBuilding}`}
+                  name={`buildingleftGirtSpacing-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].leftGirtSpacing}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
-                      'lewGirtSpacing',
+                      'leftGirtSpacing',
                       e.target.value
                     )
                   }
@@ -860,29 +860,29 @@ const BuildingLayout = ({
           <div className="divider offOnPhone"></div>
           <div className="grid">
             <ReusableSelect
-              id={`buildingrewGirtType-${activeBuilding}`}
-              name={`buildingrewGirtType-${activeBuilding}`}
-              value={values.buildings[activeBuilding].rewGirtType}
+              id={`buildingrightGirtType-${activeBuilding}`}
+              name={`buildingrightGirtType-${activeBuilding}`}
+              value={values.buildings[activeBuilding].rightGirtType}
               onChange={(e) =>
                 handleNestedChange(
                   activeBuilding,
-                  'rewGirtType',
+                  'rightGirtType',
                   e.target.value
                 )
               }
               options={girtTypes}
               label="Right Endwall Girt Type:"
             />
-            {values.buildings[activeBuilding].rewGirtType != 'open' && (
+            {values.buildings[activeBuilding].rightGirtType != 'open' && (
               <>
                 <ReusableSelect
-                  id={`buildingrewGirtSpacing-${activeBuilding}`}
-                  name={`buildingrewGirtSpacing-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].rewGirtSpacing}
+                  id={`buildingrightGirtSpacing-${activeBuilding}`}
+                  name={`buildingrightGirtSpacing-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].rightGirtSpacing}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
-                      'rewGirtSpacing',
+                      'rightGirtSpacing',
                       e.target.value
                     )
                   }

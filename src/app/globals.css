@@ -1128,7 +1128,7 @@ button.small {
 @media screen and (min-width: 1000px) {
   main{
     grid-template-columns: 350px 1fr;
-    grid-template-rows: 100px 1fr 600px;    
+    grid-template-rows: 100px 1fr 100px;    
   }
 
   .hideWithSidebar {

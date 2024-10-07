@@ -102,11 +102,11 @@ const BuildingExtensions = ({
         <div className="grid4 alignTop">
           <div className="grid">
             <FeetInchesInput
-              name={`buildingFswExtensionWidth-${activeBuilding}`}
+              name={`buildingfrontExtensionWidth-${activeBuilding}`}
               label="Front Sidewall Extension Width:"
-              value={values.buildings[activeBuilding].fswExtensionWidth}
+              value={values.buildings[activeBuilding].frontExtensionWidth}
               onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'fswExtensionWidth', value)
+                handleNestedChange(activeBuilding, 'frontExtensionWidth', value)
               }
             />
             <div className="checkboxGroup">
@@ -155,11 +155,11 @@ const BuildingExtensions = ({
           </div>
           <div className="grid">
             <FeetInchesInput
-              name={`buildingBswExtensionWidth-${activeBuilding}`}
+              name={`buildingbackExtensionWidth-${activeBuilding}`}
               label="Back Sidewall Extension Width:"
-              value={values.buildings[activeBuilding].bswExtensionWidth}
+              value={values.buildings[activeBuilding].backExtensionWidth}
               onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'bswExtensionWidth', value)
+                handleNestedChange(activeBuilding, 'backExtensionWidth', value)
               }
             />
             <div className="checkboxGroup">
@@ -207,19 +207,19 @@ const BuildingExtensions = ({
             </div>
           </div>
           <FeetInchesInput
-            name={`buildingLewExtensionWidth-${activeBuilding}`}
+            name={`buildingleftExtensionWidth-${activeBuilding}`}
             label="Left Endwall Extension Width:"
-            value={values.buildings[activeBuilding].lewExtensionWidth}
+            value={values.buildings[activeBuilding].leftExtensionWidth}
             onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'lewExtensionWidth', value)
+              handleNestedChange(activeBuilding, 'leftExtensionWidth', value)
             }
           />
           <FeetInchesInput
-            name={`buildingRewExtensionWidth-${activeBuilding}`}
+            name={`buildingrightExtensionWidth-${activeBuilding}`}
             label="Right Endwall Extension Width:"
-            value={values.buildings[activeBuilding].rewExtensionWidth}
+            value={values.buildings[activeBuilding].rightExtensionWidth}
             onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'rewExtensionWidth', value)
+              handleNestedChange(activeBuilding, 'rightExtensionWidth', value)
             }
           />
         </div>

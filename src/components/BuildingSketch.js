@@ -79,7 +79,7 @@ const BuildingSketch = ({
 
     addBraceLines(
       buildingData.roofBaySpacing,
-      buildingData.fswBracedBays,
+      buildingData.frontBracedBays,
       'frontSidewall',
       scene,
       buildingData
@@ -87,7 +87,7 @@ const BuildingSketch = ({
 
     addBraceLines(
       buildingData.roofBaySpacing,
-      buildingData.bswBracedBays,
+      buildingData.backBracedBays,
       'backSidewall',
       scene,
       buildingData
@@ -95,7 +95,7 @@ const BuildingSketch = ({
 
     addBraceLines(
       buildingData.leftBaySpacing,
-      buildingData.lewBracedBays,
+      buildingData.leftBracedBays,
       'leftEndwall',
       scene,
       buildingData
@@ -103,7 +103,7 @@ const BuildingSketch = ({
 
     addBraceLines(
       buildingData.rightBaySpacing,
-      buildingData.rewBracedBays,
+      buildingData.rightBracedBays,
       'rightEndwall',
       scene,
       buildingData
@@ -156,19 +156,34 @@ const BuildingSketch = ({
         }}
       />
       <div className="sketchButtonContainer">
-        <button className="sketchButton" onClick={() => handleViewChange('L')}>
+        <button
+          className="sketchButton"
+          onClick={() => handleViewChange('LEW')}
+        >
           LEW
         </button>
-        <button className="sketchButton" onClick={() => handleViewChange('R')}>
+        <button
+          className="sketchButton"
+          onClick={() => handleViewChange('REW')}
+        >
           REW
         </button>
-        <button className="sketchButton" onClick={() => handleViewChange('FS')}>
+        <button
+          className="sketchButton"
+          onClick={() => handleViewChange('FSW')}
+        >
           FSW
         </button>
-        <button className="sketchButton" onClick={() => handleViewChange('BS')}>
+        <button
+          className="sketchButton"
+          onClick={() => handleViewChange('BSW')}
+        >
           BSW
         </button>
-        <button className="sketchButton" onClick={() => handleViewChange('T')}>
+        <button
+          className="sketchButton"
+          onClick={() => handleViewChange('TOP')}
+        >
           TOP
         </button>
         <button

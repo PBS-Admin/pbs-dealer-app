@@ -21,9 +21,9 @@ const BuildingOptions = ({
   activeBuilding,
   handleNestedChange,
   handleLinerPanelChange,
-  handleWainscotChange,
+  handleftainscotChange,
   handlePartialWallChange,
-  handleWallSkirtChange,
+  handleftallSkirtChange,
   setValues,
   isDesktop,
 }) => {
@@ -513,7 +513,7 @@ const BuildingOptions = ({
                   labelClass="offOnTablet"
                   value={wainscot.wall}
                   onChange={(e) =>
-                    handleWainscotChange(
+                    handleftainscotChange(
                       activeBuilding,
                       wainscotIndex,
                       'wall',
@@ -543,7 +543,7 @@ const BuildingOptions = ({
                     name={`building-${activeBuilding}-wainscotStart-${wainscotIndex}`}
                     value={wainscot.start}
                     onChange={(e) =>
-                      handleWainscotChange(
+                      handleftainscotChange(
                         activeBuilding,
                         wainscotIndex,
                         'start',
@@ -573,7 +573,7 @@ const BuildingOptions = ({
                     name={`building-${activeBuilding}-wainscotEnd-${wainscotIndex}`}
                     value={wainscot.end}
                     onChange={(e) =>
-                      handleWainscotChange(
+                      handleftainscotChange(
                         activeBuilding,
                         wainscotIndex,
                         'end',
@@ -601,7 +601,7 @@ const BuildingOptions = ({
                     name={`building-${activeBuilding}-wainscotHeight-${wainscotIndex}`}
                     value={wainscot.height}
                     onChange={(e) =>
-                      handleWainscotChange(
+                      handleftainscotChange(
                         activeBuilding,
                         wainscotIndex,
                         'height',
@@ -622,7 +622,7 @@ const BuildingOptions = ({
                   labelClass="offOnTablet"
                   value={wainscot.panelOption}
                   onChange={(e) =>
-                    handleWainscotChange(
+                    handleftainscotChange(
                       activeBuilding,
                       wainscotIndex,
                       'panelOption',
@@ -670,7 +670,7 @@ const BuildingOptions = ({
                       .panelType
                   }
                   onChange={(e) =>
-                    handleWainscotChange(
+                    handleftainscotChange(
                       activeBuilding,
                       activeWainscot,
                       'panelType',
@@ -689,7 +689,7 @@ const BuildingOptions = ({
                       .panelGauge
                   }
                   onChange={(e) =>
-                    handleWainscotChange(
+                    handleftainscotChange(
                       activeBuilding,
                       activeWainscot,
                       'panelGauge',
@@ -708,7 +708,7 @@ const BuildingOptions = ({
                       .panelFinish
                   }
                   onChange={(e) =>
-                    handleWainscotChange(
+                    handleftainscotChange(
                       activeBuilding,
                       activeWainscot,
                       'panelFinish',
@@ -945,7 +945,7 @@ const BuildingOptions = ({
                   labelClass="offOnTablet"
                   value={wallSkirt.wall}
                   onChange={(e) =>
-                    handleWallSkirtChange(
+                    handleftallSkirtChange(
                       activeBuilding,
                       wallSkirtIndex,
                       'wall',
@@ -973,7 +973,7 @@ const BuildingOptions = ({
                     name={`building-${activeBuilding}-wallSkirtStartBay-${wallSkirtIndex}`}
                     value={wallSkirt.startBay}
                     onChange={(e) =>
-                      handleWallSkirtChange(
+                      handleftallSkirtChange(
                         activeBuilding,
                         wallSkirtIndex,
                         'startBay',
@@ -1001,7 +1001,7 @@ const BuildingOptions = ({
                     name={`building-${activeBuilding}-wallSkirtEndBay-${wallSkirtIndex}`}
                     value={wallSkirt.endBay}
                     onChange={(e) =>
-                      handleWallSkirtChange(
+                      handleftallSkirtChange(
                         activeBuilding,
                         wallSkirtIndex,
                         'endBay',
@@ -1029,7 +1029,7 @@ const BuildingOptions = ({
                     name={`building-${activeBuilding}-wallSkirtHeight-${wallSkirtIndex}`}
                     value={wallSkirt.height}
                     onChange={(e) =>
-                      handleWallSkirtChange(
+                      handleftallSkirtChange(
                         activeBuilding,
                         wallSkirtIndex,
                         'height',
@@ -1052,7 +1052,7 @@ const BuildingOptions = ({
                       name={`building-${activeBuilding}-wallSkirtCutColumns-${wallSkirtIndex}`}
                       checked={wallSkirt.cutColumns}
                       onChange={(e) =>
-                        handleWallSkirtChange(
+                        handleftallSkirtChange(
                           activeBuilding,
                           wallSkirtIndex,
                           'cutColumns',
@@ -1094,22 +1094,22 @@ const BuildingOptions = ({
           <h3>Polycarbonate Relites</h3>
         </header>
         <h4>Wall Relites</h4>
-        {values.buildings[activeBuilding].fswGirtType != 'open' ||
-        values.buildings[activeBuilding].bswGirtType != 'open' ||
-        values.buildings[activeBuilding].lewGirtType != 'open' ||
-        values.buildings[activeBuilding].rewGirtType != 'open' ? (
+        {values.buildings[activeBuilding].frontGirtType != 'open' ||
+        values.buildings[activeBuilding].backGirtType != 'open' ||
+        values.buildings[activeBuilding].leftGirtType != 'open' ||
+        values.buildings[activeBuilding].rightGirtType != 'open' ? (
           <div className="grid4 alignTop">
             <div className="grid">
-              {values.buildings[activeBuilding].fswGirtType != 'open' ? (
+              {values.buildings[activeBuilding].frontGirtType != 'open' ? (
                 <>
                   <ReusableSelect
-                    id={`buildingfswPolySize-${activeBuilding}`}
-                    name={`buildingfswPolySize-${activeBuilding}`}
-                    value={values.buildings[activeBuilding].fswPolySize}
+                    id={`buildingfrontPolySize-${activeBuilding}`}
+                    name={`buildingfrontPolySize-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].frontPolySize}
                     onChange={(e) =>
                       handleNestedChange(
                         activeBuilding,
-                        'fswPolySize',
+                        'frontPolySize',
                         e.target.value
                       )
                     }
@@ -1117,13 +1117,13 @@ const BuildingOptions = ({
                     label="Front Sidewall Relite Size:"
                   />
                   <ReusableSelect
-                    id={`buildingfswPolyColor-${activeBuilding}`}
-                    name={`buildingfswPolyColor-${activeBuilding}`}
-                    value={values.buildings[activeBuilding].fswPolyColor}
+                    id={`buildingfrontPolyColor-${activeBuilding}`}
+                    name={`buildingfrontPolyColor-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].frontPolyColor}
                     onChange={(e) =>
                       handleNestedChange(
                         activeBuilding,
-                        'fswPolyColor',
+                        'frontPolyColor',
                         e.target.value
                       )
                     }
@@ -1131,14 +1131,14 @@ const BuildingOptions = ({
                     label="Front Sidewall Relite Color:"
                   />
                   <div className="cardInput">
-                    <label htmlFor="fswPolyQty">
+                    <label htmlFor="frontPolyQty">
                       Front Sidewall Relite Qty:
                     </label>
                     <input
                       type="text"
-                      id="fswPolyQty"
-                      name="fswPolyQty"
-                      value={values.buildings[activeBuilding].fswPolyQty}
+                      id="frontPolyQty"
+                      name="frontPolyQty"
+                      value={values.buildings[activeBuilding].frontPolyQty}
                       // onChange={(e) => handleNestedChange(e, 'project')}
                       placeholder="Qty"
                     />
@@ -1155,16 +1155,16 @@ const BuildingOptions = ({
 
             <div className="divider offOnPhone"></div>
             <div className="grid">
-              {values.buildings[activeBuilding].bswGirtType != 'open' ? (
+              {values.buildings[activeBuilding].backGirtType != 'open' ? (
                 <>
                   <ReusableSelect
-                    id={`buildingbswPolySize-${activeBuilding}`}
-                    name={`buildingbswPolySize-${activeBuilding}`}
-                    value={values.buildings[activeBuilding].bswPolySize}
+                    id={`buildingbackPolySize-${activeBuilding}`}
+                    name={`buildingbackPolySize-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].backPolySize}
                     onChange={(e) =>
                       handleNestedChange(
                         activeBuilding,
-                        'bswPolySize',
+                        'backPolySize',
                         e.target.value
                       )
                     }
@@ -1172,13 +1172,13 @@ const BuildingOptions = ({
                     label="Back Sidewall Relite Size:"
                   />
                   <ReusableSelect
-                    id={`buildingbswPolyColor-${activeBuilding}`}
-                    name={`buildingbswPolyColor-${activeBuilding}`}
-                    value={values.buildings[activeBuilding].bswPolyColor}
+                    id={`buildingbackPolyColor-${activeBuilding}`}
+                    name={`buildingbackPolyColor-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].backPolyColor}
                     onChange={(e) =>
                       handleNestedChange(
                         activeBuilding,
-                        'bswPolyColor',
+                        'backPolyColor',
                         e.target.value
                       )
                     }
@@ -1186,14 +1186,14 @@ const BuildingOptions = ({
                     label="Back Sidewall Relite Color:"
                   />
                   <div className="cardInput">
-                    <label htmlFor="bswPolyQty">
+                    <label htmlFor="backPolyQty">
                       Back Sidewall Relite Qty:
                     </label>
                     <input
                       type="text"
-                      id="bswPolyQty"
-                      name="bswPolyQty"
-                      value={values.buildings[activeBuilding].bswPolyQty}
+                      id="backPolyQty"
+                      name="backPolyQty"
+                      value={values.buildings[activeBuilding].backPolyQty}
                       // onChange={(e) => handleNestedChange(e, 'project')}
                       placeholder="Qty"
                     />
@@ -1210,16 +1210,16 @@ const BuildingOptions = ({
 
             <div className="divider showWithSidebar span2"></div>
             <div className="grid">
-              {values.buildings[activeBuilding].lewGirtType != 'open' ? (
+              {values.buildings[activeBuilding].leftGirtType != 'open' ? (
                 <>
                   <ReusableSelect
-                    id={`buildinglewPolySize-${activeBuilding}`}
-                    name={`buildinglewPolySize-${activeBuilding}`}
-                    value={values.buildings[activeBuilding].lewPolySize}
+                    id={`buildingleftPolySize-${activeBuilding}`}
+                    name={`buildingleftPolySize-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].leftPolySize}
                     onChange={(e) =>
                       handleNestedChange(
                         activeBuilding,
-                        'lewPolySize',
+                        'leftPolySize',
                         e.target.value
                       )
                     }
@@ -1227,13 +1227,13 @@ const BuildingOptions = ({
                     label="Left Endwall Relite Size:"
                   />
                   <ReusableSelect
-                    id={`buildinglewPolyColor-${activeBuilding}`}
-                    name={`buildinglewPolyColor-${activeBuilding}`}
-                    value={values.buildings[activeBuilding].lewPolyColor}
+                    id={`buildingleftPolyColor-${activeBuilding}`}
+                    name={`buildingleftPolyColor-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].leftPolyColor}
                     onChange={(e) =>
                       handleNestedChange(
                         activeBuilding,
-                        'lewPolyColor',
+                        'leftPolyColor',
                         e.target.value
                       )
                     }
@@ -1241,12 +1241,14 @@ const BuildingOptions = ({
                     label="Left Endwall Relite Color:"
                   />
                   <div className="cardInput">
-                    <label htmlFor="lewPolyQty">Left Endwall Relite Qty:</label>
+                    <label htmlFor="leftPolyQty">
+                      Left Endwall Relite Qty:
+                    </label>
                     <input
                       type="text"
-                      id="lewPolyQty"
-                      name="lewPolyQty"
-                      value={values.buildings[activeBuilding].lewPolyQty}
+                      id="leftPolyQty"
+                      name="leftPolyQty"
+                      value={values.buildings[activeBuilding].leftPolyQty}
                       // onChange={(e) => handleNestedChange(e, 'project')}
                       placeholder="Qty"
                     />
@@ -1263,16 +1265,16 @@ const BuildingOptions = ({
 
             <div className="divider offOnPhone"></div>
             <div className="grid">
-              {values.buildings[activeBuilding].rewGirtType != 'open' ? (
+              {values.buildings[activeBuilding].rightGirtType != 'open' ? (
                 <>
                   <ReusableSelect
-                    id={`buildingrewPolySize-${activeBuilding}`}
-                    name={`buildingrewPolySize-${activeBuilding}`}
-                    value={values.buildings[activeBuilding].rewPolySize}
+                    id={`buildingrightPolySize-${activeBuilding}`}
+                    name={`buildingrightPolySize-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].rightPolySize}
                     onChange={(e) =>
                       handleNestedChange(
                         activeBuilding,
-                        'rewPolySize',
+                        'rightPolySize',
                         e.target.value
                       )
                     }
@@ -1280,13 +1282,13 @@ const BuildingOptions = ({
                     label="Right Endwall Relite Size:"
                   />
                   <ReusableSelect
-                    id={`buildingrewPolyColor-${activeBuilding}`}
-                    name={`buildingrewPolyColor-${activeBuilding}`}
-                    value={values.buildings[activeBuilding].rewPolyColor}
+                    id={`buildingrightPolyColor-${activeBuilding}`}
+                    name={`buildingrightPolyColor-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].rightPolyColor}
                     onChange={(e) =>
                       handleNestedChange(
                         activeBuilding,
-                        'rewPolyColor',
+                        'rightPolyColor',
                         e.target.value
                       )
                     }
@@ -1294,14 +1296,14 @@ const BuildingOptions = ({
                     label="Right Endwall Relite Color:"
                   />
                   <div className="cardInput">
-                    <label htmlFor="rewPolyQty">
+                    <label htmlFor="rightPolyQty">
                       Right Endwall Relite Qty:
                     </label>
                     <input
                       type="text"
-                      id="rewPolyQty"
-                      name="rewPolyQty"
-                      value={values.buildings[activeBuilding].rewPolyQty}
+                      id="rightPolyQty"
+                      name="rightPolyQty"
+                      value={values.buildings[activeBuilding].rightPolyQty}
                       // onChange={(e) => handleNestedChange(e, 'project')}
                       placeholder="Qty"
                     />

@@ -110,7 +110,7 @@ export const roofPanels = [
   { id: 'insulated', label: 'Insulated Panels (See Notes)', image: blank },
   { id: 'insulatedOthers', label: 'Insulated Panels - By Others' },
   { id: 'ssOthers', label: 'Standing Seam Panels - By Others', image: blank },
-  { id: 'screwdownOthers', label: 'Screwdown Panels - By Others' },
+  { id: 'scrightdownOthers', label: 'Scrightdown Panels - By Others' },
 ];
 
 export const roofGauge = [
@@ -209,10 +209,10 @@ export const extInsulation = [
 ];
 
 export const walls = [
-  { id: 'fsw', label: 'Front Sidewall' },
-  { id: 'bsw', label: 'Back Sidewall' },
-  { id: 'lew', label: 'Left Endwall' },
-  { id: 'rew', label: 'Right Endwall' },
+  { id: 'front', label: 'Front Sidewall' },
+  { id: 'back', label: 'Back Sidewall' },
+  { id: 'left', label: 'Left Endwall' },
+  { id: 'right', label: 'Right Endwall' },
 ];
 
 export const orientations = [
