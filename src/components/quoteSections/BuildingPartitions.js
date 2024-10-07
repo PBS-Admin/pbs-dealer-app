@@ -120,7 +120,7 @@ const BuildingPartitions = ({
 
   return (
     <>
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Partition Walls</h3>
         </header>
@@ -128,9 +128,15 @@ const BuildingPartitions = ({
           <div className="onDesktop">
             <div className="tableGrid8">
               <h5>Orientation</h5>
-              <h5>Start</h5>
-              <h5>End</h5>
-              <h5>Offset</h5>
+              <h5>
+                Start <small>(Left to Right)</small>
+              </h5>
+              <h5>
+                End <small>(Left to Right)</small>
+              </h5>
+              <h5>
+                Offset <small>(Back to Front)</small>
+              </h5>
               <h5>Height</h5>
               <h5>Bay Spacing</h5>
               <h5>Insulation</h5>
@@ -170,7 +176,9 @@ const BuildingPartitions = ({
                     className="offOnDesktop"
                     htmlFor={`building-${activeBuilding}-partitionStart-${partitionIndex}`}
                   >
-                    Start
+                    <span>
+                      Start <small>(Left to Right)</small>
+                    </span>
                   </label>
                   <input
                     type="text"
@@ -198,7 +206,9 @@ const BuildingPartitions = ({
                     className="offOnDesktop"
                     htmlFor={`building-${activeBuilding}-partitionEnd-${partitionIndex}`}
                   >
-                    End
+                    <span>
+                      End <small>(Left to Right)</small>
+                    </span>
                   </label>
                   <input
                     type="text"
@@ -226,7 +236,9 @@ const BuildingPartitions = ({
                     className="offOnDesktop"
                     htmlFor={`building-${activeBuilding}-partitionOffset-${partitionIndex}`}
                   >
-                    Offset
+                    <span>
+                      Offset <small>(Back to Front)</small>
+                    </span>
                   </label>
                   <input
                     type="text"
@@ -274,7 +286,7 @@ const BuildingPartitions = ({
                         setActivePartition(partitionIndex);
                       }
                     }}
-                    placeholder="Bay #"
+                    placeholder="Leave Blank for Full Ht"
                   />
                 </div>
                 <div className="cardInput">
@@ -339,14 +351,19 @@ const BuildingPartitions = ({
             </Fragment>
           )
         )}
-        <button
-          type="button"
-          className="button success w5"
-          onClick={() => addPartition(activeBuilding)}
-        >
-          Add
-        </button>
-
+        {values.buildings[activeBuilding].partitions.length > 5 ? (
+          <button type="button" className="button w5 disabled">
+            6 Max
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="button success w5"
+            onClick={() => addPartition(activeBuilding)}
+          >
+            Add
+          </button>
+        )}
         {values.buildings[activeBuilding].partitions.length > 0 && (
           <>
             <div className="divider onDesktop"></div>

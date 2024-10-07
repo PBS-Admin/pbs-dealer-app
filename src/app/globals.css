@@ -323,7 +323,7 @@ p {
   min-height: 64px;
 }
 
-.cardInput:has(label.offOnDesktop) {
+.cardInput:has(label.offOnTablet), .cardInput:has(label.offOnDesktop) {
   min-height: unset;
 }
 /*
@@ -767,7 +767,7 @@ button.small {
 
 
 /* Grid Layout */
-.grid, .grid2, .grid3, .grid4, .grid6, .grid8, .tableGrid8 {
+.grid, .grid2, .grid3, .grid4, .grid6, .grid8, .tableGrid5, .tableGrid6, .tableGrid7, .tableGrid8 {
   display: grid;
   grid-template-columns: 1fr;  
   gap: 0 .5em;
@@ -929,7 +929,19 @@ button.small {
     grid-column: span 1;
   }
 
+  .tableGrid5 {
+    grid-template-columns: repeat(2, 1fr);  
+  }
+
+  .tableGrid5 .span2 {
+    grid-column: span 2;
+  }
+
   .grid6 {
+    grid-template-columns: repeat(2, 1fr);  
+  }
+
+  .tableGrid6 {
     grid-template-columns: repeat(2, 1fr);  
   }
 
@@ -977,12 +989,24 @@ button.small {
     grid-template-columns: repeat(2, 1fr); 
   }
 
+  .tableGrid5 {
+    grid-template-columns: repeat(4, minmax(60px, 1fr)) 28px;
+  }
+
+  .tableGrid5 .span2 {
+    grid-column: span 1;
+  }
+
   .grid6 {
     grid-template-columns: repeat(6, minmax(60px, 1fr));  
   }
 
   .grid6 div, .grid6 .span2 {
     grid-column: span 2;
+  }
+
+  .tableGrid6 {
+    grid-template-columns: repeat(5, minmax(60px, 1fr)) 28px;
   }
 
   .grid6 .span3 {
@@ -1137,6 +1161,10 @@ button.small {
     grid-column: span 2;
   }
 
+  .tableGrid5 {
+    grid-template-columns: repeat(4, minmax(80px, 1fr)) 28px;
+  }
+
   .grid6 {
     /*grid-template-columns: repeat(6, 1fr);*/
     grid-template-columns: repeat(6, minmax(80px, 1fr));
@@ -1144,6 +1172,10 @@ button.small {
 
   .grid6 div {
     grid-column: span 1;
+  }
+
+  .tableGrid6 {
+    grid-template-columns: repeat(5, minmax(80px, 1fr)) 28px;
   }
 
   .grid6 .span2 {
@@ -1265,5 +1297,9 @@ button.small {
 
   .span8 {
     grid-column: span 8 !important;
+  }
+
+  .tableGrid5 .span2 {
+    grid-column: span 1 !important;
   }
 }

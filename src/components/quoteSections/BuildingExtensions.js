@@ -487,31 +487,33 @@ const BuildingExtensions = ({
                     placeholder="Feet"
                   />
                 </div>
-                <div className="checkRow">
-                  <input
-                    type="checkbox"
-                    id={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
-                    name={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
-                    checked={canopy.addColumns}
-                    onChange={(e) =>
-                      handleCanopyChange(
-                        activeBuilding,
-                        canopyIndex,
-                        'addColumns',
-                        e.target.checked
-                      )
-                    }
-                    onFocus={() => {
-                      if (activeCanopy !== canopyIndex) {
-                        setActiveCanopy(canopyIndex);
+                <div className="checkboxGroup">
+                  <div className="checkRow">
+                    <input
+                      type="checkbox"
+                      id={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
+                      name={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
+                      checked={canopy.addColumns}
+                      onChange={(e) =>
+                        handleCanopyChange(
+                          activeBuilding,
+                          canopyIndex,
+                          'addColumns',
+                          e.target.checked
+                        )
                       }
-                    }}
-                  />
-                  <label
-                    htmlFor={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
-                  >
-                    Add Columns
-                  </label>
+                      onFocus={() => {
+                        if (activeCanopy !== canopyIndex) {
+                          setActiveCanopy(canopyIndex);
+                        }
+                      }}
+                    />
+                    <label
+                      htmlFor={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
+                    >
+                      Add Columns
+                    </label>
+                  </div>
                 </div>
                 <button
                   onClick={() => removeCanopy(activeBuilding, canopyIndex)}

@@ -243,43 +243,61 @@ const BuildingOptions = ({
   return (
     <>
       {/* Liner Panel Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Liner Panels</h3>
         </header>
-        <div className="linerGrid">
-          {values.buildings[activeBuilding].linerPanels.map(
-            (linerPanel, linerPanelIndex) => (
-              <Fragment
-                key={`building-${activeBuilding}-linerPanel-${linerPanelIndex}`}
-              >
-                <div className="cardInput">
-                  <ReusableSelect
-                    id={`building-${activeBuilding}-linerPanelWall-${linerPanelIndex}`}
-                    name={`building-${activeBuilding}-linerPanelWall-${linerPanelIndex}`}
-                    value={linerPanel.wall}
-                    onChange={(e) =>
-                      handleLinerPanelChange(
-                        activeBuilding,
-                        linerPanelIndex,
-                        'wall',
-                        e.target.value
-                      )
+        {values.buildings[activeBuilding].linerPanels.length > 0 && (
+          <div className="onTablet">
+            <div className="tableGrid5">
+              <h5>Wall</h5>
+              <h5>
+                Start <small>(Left to Right)</small>
+              </h5>
+              <h5>
+                End <small>(Left to Right)</small>
+              </h5>
+              <h5>Height</h5>
+              <h5></h5>
+              <h5></h5>
+            </div>
+          </div>
+        )}
+        {values.buildings[activeBuilding].linerPanels.map(
+          (linerPanel, linerPanelIndex) => (
+            <Fragment
+              key={`building-${activeBuilding}-linerPanel-${linerPanelIndex}`}
+            >
+              <div className="tableGrid5">
+                <ReusableSelect
+                  id={`building-${activeBuilding}-linerPanelWall-${linerPanelIndex}`}
+                  name={`building-${activeBuilding}-linerPanelWall-${linerPanelIndex}`}
+                  labelClass="offOnTablet"
+                  value={linerPanel.wall}
+                  onChange={(e) =>
+                    handleLinerPanelChange(
+                      activeBuilding,
+                      linerPanelIndex,
+                      'wall',
+                      e.target.value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeLinerPanel !== linerPanelIndex) {
+                      setActiveLinerPanel(linerPanelIndex);
                     }
-                    onFocus={() => {
-                      if (activeLinerPanel !== linerPanelIndex) {
-                        setActiveLinerPanel(linerPanelIndex);
-                      }
-                    }}
-                    options={walls}
-                    label="Wall"
-                  />
-                </div>
+                  }}
+                  options={walls}
+                  label="Wall"
+                />
                 <div className="cardInput">
                   <label
+                    className="offOnTablet"
                     htmlFor={`building-${activeBuilding}-linerPanelStart-${linerPanelIndex}`}
                   >
-                    Start (Left to Right)
+                    <span>
+                      Start <small>(Left to Right)</small>
+                    </span>
                   </label>
                   <input
                     type="text"
@@ -304,9 +322,12 @@ const BuildingOptions = ({
                 </div>
                 <div className="cardInput">
                   <label
+                    className="offOnTablet"
                     htmlFor={`building-${activeBuilding}-linerPanelEnd-${linerPanelIndex}`}
                   >
-                    End (Left to Right)
+                    <span>
+                      End <small>(Left to Right)</small>
+                    </span>
                   </label>
                   <input
                     type="text"
@@ -331,6 +352,7 @@ const BuildingOptions = ({
                 </div>
                 <div className="cardInput">
                   <label
+                    className="offOnTablet"
                     htmlFor={`building-${activeBuilding}-linerPanelHeight-${linerPanelIndex}`}
                   >
                     Height
@@ -353,46 +375,38 @@ const BuildingOptions = ({
                         setActiveLinerPanel(linerPanelIndex);
                       }
                     }}
-                    placeholder="Feet"
+                    placeholder="Leave Blank for Full Ht"
                   />
                 </div>
-                {!isDesktop && (
-                  <>
-                    <div></div>
-                  </>
-                )}
                 <button
                   onClick={() =>
                     removeLinerPanel(activeBuilding, linerPanelIndex)
                   }
-                  className="icon iconReject"
+                  className="icon red span2"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
-                {!isDesktop && (
-                  <>
-                    <div className="divider span2"></div>
-                  </>
-                )}
-              </Fragment>
-            )
-          )}
-          <button
-            type="button"
-            className="button success w5"
-            onClick={() => addLinerPanel(activeBuilding)}
-          >
-            Add
-          </button>
-        </div>
+              </div>
+              <div className="divider offOnTablet"></div>
+            </Fragment>
+          )
+        )}
+        <button
+          type="button"
+          className="button success w5"
+          onClick={() => addLinerPanel(activeBuilding)}
+        >
+          Add
+        </button>
 
-        <div className="divider"></div>
         {values.buildings[activeBuilding].linerPanels.length > 0 && (
-          <div className="extendGrid">
-            <div className="extGrid start"></div>
-            <div className="extGrid start">
-              <div className="cardInput">
+          <>
+            <div className="divider onDesktop"></div>
+            <div className="grid2">
+              <div className="onLaptop"></div>
+              <div className="panelGrid">
                 <ReusableSelect
+                  className="panelType"
                   id={`building-${activeBuilding}-linerPanelType${activeLinerPanel}`}
                   name={`building-${activeBuilding}-linerPanelType${activeLinerPanel}`}
                   value={
@@ -411,9 +425,8 @@ const BuildingOptions = ({
                   options={wallPanels}
                   label="Liner Panels:"
                 />
-              </div>
-              <div className="cardInput">
                 <ReusableSelect
+                  className="panelGauge"
                   id={`building-${activeBuilding}-linerPanelGauge${activeLinerPanel}`}
                   name={`building-${activeBuilding}-linerPanelGauge${activeLinerPanel}`}
                   value={
@@ -432,9 +445,8 @@ const BuildingOptions = ({
                   options={wallGauge}
                   label="Gauge:"
                 />
-              </div>
-              <div className="cardInput">
                 <ReusableSelect
+                  className="panelFinish"
                   id={`building-${activeBuilding}-linerPanelFinish${activeLinerPanel}`}
                   name={`building-${activeBuilding}-linerPanelFinish${activeLinerPanel}`}
                   value={
@@ -453,57 +465,77 @@ const BuildingOptions = ({
                   options={wallFinish}
                   label="Finish:"
                 />
+                <div className="cardInput panelImage">
+                  {selectedLinerPanel && selectedLinerPanel.image && (
+                    <Image
+                      alt={`${selectedLinerPanel.label}`}
+                      src={selectedLinerPanel.image}
+                      className="panelImage"
+                    />
+                  )}
+                </div>
               </div>
-              {selectedLinerPanel && selectedLinerPanel.image && (
-                <Image
-                  alt={`${selectedLinerPanel.label}`}
-                  src={selectedLinerPanel.image}
-                  className="panelImage"
-                />
-              )}
             </div>
-          </div>
+          </>
         )}
       </section>
 
       {/* Wainscot Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Wainscots</h3>
         </header>
-        <div className="wainscotGrid">
-          {values.buildings[activeBuilding].wainscots.map(
-            (wainscot, wainscotIndex) => (
-              <Fragment
-                key={`building-${activeBuilding}-wainscot-${wainscotIndex}`}
-              >
-                <div className="cardInput">
-                  <ReusableSelect
-                    id={`building-${activeBuilding}-wainscotWall-${wainscotIndex}`}
-                    name={`building-${activeBuilding}-wainscotWall-${wainscotIndex}`}
-                    value={wainscot.wall}
-                    onChange={(e) =>
-                      handleWainscotChange(
-                        activeBuilding,
-                        wainscotIndex,
-                        'wall',
-                        e.target.value
-                      )
+        {values.buildings[activeBuilding].wainscots.length > 0 && (
+          <div className="onTablet">
+            <div className="tableGrid6">
+              <h5>Wall</h5>
+              <h5>
+                Start <small>(Left to Right)</small>
+              </h5>
+              <h5>
+                End <small>(Left to Right)</small>
+              </h5>
+              <h5>Height</h5>
+              <h5>Panel Option</h5>
+              <h5></h5>
+            </div>
+          </div>
+        )}
+        {values.buildings[activeBuilding].wainscots.map(
+          (wainscot, wainscotIndex) => (
+            <Fragment
+              key={`building-${activeBuilding}-wainscot-${wainscotIndex}`}
+            >
+              <div className="tableGrid6">
+                <ReusableSelect
+                  id={`building-${activeBuilding}-wainscotWall-${wainscotIndex}`}
+                  name={`building-${activeBuilding}-wainscotWall-${wainscotIndex}`}
+                  labelClass="offOnTablet"
+                  value={wainscot.wall}
+                  onChange={(e) =>
+                    handleWainscotChange(
+                      activeBuilding,
+                      wainscotIndex,
+                      'wall',
+                      e.target.value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeWainscot !== wainscotIndex) {
+                      setActiveWainscot(wainscotIndex);
                     }
-                    onFocus={() => {
-                      if (activeWainscot !== wainscotIndex) {
-                        setActiveWainscot(wainscotIndex);
-                      }
-                    }}
-                    options={walls}
-                    label="Wall"
-                  />
-                </div>
+                  }}
+                  options={walls}
+                  label="Wall"
+                />
                 <div className="cardInput">
                   <label
+                    className="offOnTablet"
                     htmlFor={`building-${activeBuilding}-wainscotStart-${wainscotIndex}`}
                   >
-                    Start (Left to Right)
+                    <span>
+                      Start <small>(Left to Right)</small>
+                    </span>
                   </label>
                   <input
                     type="text"
@@ -528,9 +560,12 @@ const BuildingOptions = ({
                 </div>
                 <div className="cardInput">
                   <label
+                    className="offOnTablet"
                     htmlFor={`building-${activeBuilding}-wainscotEnd-${wainscotIndex}`}
                   >
-                    End (Left to Right)
+                    <span>
+                      End <small>(Left to Right)</small>
+                    </span>
                   </label>
                   <input
                     type="text"
@@ -555,6 +590,7 @@ const BuildingOptions = ({
                 </div>
                 <div className="cardInput">
                   <label
+                    className="offOnTablet"
                     htmlFor={`building-${activeBuilding}-wainscotHeight-${wainscotIndex}`}
                   >
                     Height
@@ -580,58 +616,53 @@ const BuildingOptions = ({
                     placeholder="Feet"
                   />
                 </div>
-                <div className="cardInput">
-                  <ReusableSelect
-                    id={`building-${activeBuilding}-wainscotPanelOption-${wainscotIndex}`}
-                    name={`building-${activeBuilding}-wainscotPanelOption-${wainscotIndex}`}
-                    value={wainscot.panelOption}
-                    onChange={(e) =>
-                      handleWainscotChange(
-                        activeBuilding,
-                        wainscotIndex,
-                        'panelOption',
-                        e.target.value
-                      )
+                <ReusableSelect
+                  id={`building-${activeBuilding}-wainscotPanelOption-${wainscotIndex}`}
+                  name={`building-${activeBuilding}-wainscotPanelOption-${wainscotIndex}`}
+                  labelClass="offOnTablet"
+                  value={wainscot.panelOption}
+                  onChange={(e) =>
+                    handleWainscotChange(
+                      activeBuilding,
+                      wainscotIndex,
+                      'panelOption',
+                      e.target.value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeWainscot !== wainscotIndex) {
+                      setActiveWainscot(wainscotIndex);
                     }
-                    onFocus={() => {
-                      if (activeWainscot !== wainscotIndex) {
-                        setActiveWainscot(wainscotIndex);
-                      }
-                    }}
-                    options={panelOptions}
-                    label="Panel Option"
-                  />
-                </div>
+                  }}
+                  options={panelOptions}
+                  label="Panel Option"
+                />
                 <button
                   onClick={() => removeWainscot(activeBuilding, wainscotIndex)}
-                  className="icon iconReject"
+                  className="icon red"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
-                {!isDesktop && (
-                  <>
-                    <div className="divider span2"></div>
-                  </>
-                )}
-              </Fragment>
-            )
-          )}
-          <button
-            type="button"
-            className="button success w5"
-            onClick={() => addWainscot(activeBuilding)}
-          >
-            Add
-          </button>
-        </div>
-
-        <div className="divider"></div>
+              </div>
+              <div className="divider offOnTablet"></div>
+            </Fragment>
+          )
+        )}
+        <button
+          type="button"
+          className="button success w5"
+          onClick={() => addWainscot(activeBuilding)}
+        >
+          Add
+        </button>
         {values.buildings[activeBuilding].wainscots.length > 0 && (
-          <div className="extendGrid">
-            <div className="extGrid start"></div>
-            <div className="extGrid start">
-              <div className="cardInput">
+          <>
+            <div className="divider onDesktop"></div>
+            <div className="grid2">
+              <div className="onLaptop"></div>
+              <div className="panelGrid">
                 <ReusableSelect
+                  className="panelType"
                   id={`building-${activeBuilding}-wainscotType${activeWainscot}`}
                   name={`building-${activeBuilding}-wainscotType${activeWainscot}`}
                   value={
@@ -649,9 +680,8 @@ const BuildingOptions = ({
                   options={wallPanels}
                   label="Liner Panels:"
                 />
-              </div>
-              <div className="cardInput">
                 <ReusableSelect
+                  className="panelGauge"
                   id={`building-${activeBuilding}-wainscotGauge${activeWainscot}`}
                   name={`building-${activeBuilding}-wainscotGauge${activeWainscot}`}
                   value={
@@ -669,9 +699,8 @@ const BuildingOptions = ({
                   options={wallGauge}
                   label="Gauge:"
                 />
-              </div>
-              <div className="cardInput">
                 <ReusableSelect
+                  className="panelFinish"
                   id={`building-${activeBuilding}-wainscotFinish${activeWainscot}`}
                   name={`building-${activeBuilding}-wainscotFinish${activeWainscot}`}
                   value={
@@ -689,57 +718,77 @@ const BuildingOptions = ({
                   options={wallFinish}
                   label="Finish:"
                 />
+                <div className="cardInput panelImage">
+                  {selectedWainscotPanel && selectedWainscotPanel.image && (
+                    <Image
+                      alt={`${selectedWainscotPanel.label}`}
+                      src={selectedWainscotPanel.image}
+                      className="panelImage"
+                    />
+                  )}
+                </div>
               </div>
-              {selectedWainscotPanel && selectedWainscotPanel.image && (
-                <Image
-                  alt={`${selectedWainscotPanel.label}`}
-                  src={selectedWainscotPanel.image}
-                  className="panelImage"
-                />
-              )}
             </div>
-          </div>
+          </>
         )}
       </section>
 
       {/* Partial Wall Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Partial Walls</h3>
         </header>
-        <div className="wainscotGrid">
-          {values.buildings[activeBuilding].partialWalls.map(
-            (partialWall, partialWallIndex) => (
-              <Fragment
-                key={`building-${activeBuilding}-partialWall-${partialWallIndex}`}
-              >
-                <div className="cardInput">
-                  <ReusableSelect
-                    id={`building-${activeBuilding}-partialWallWall-${partialWallIndex}`}
-                    name={`building-${activeBuilding}-partialWallWall-${partialWallIndex}`}
-                    value={partialWall.wall}
-                    onChange={(e) =>
-                      handlePartialWallChange(
-                        activeBuilding,
-                        partialWallIndex,
-                        'wall',
-                        e.target.value
-                      )
+        {values.buildings[activeBuilding].partialWalls.length > 0 && (
+          <div className="onTablet">
+            <div className="tableGrid6">
+              <h5>Wall</h5>
+              <h5>
+                Start <small>(Left to Right)</small>
+              </h5>
+              <h5>
+                End <small>(Left to Right)</small>
+              </h5>
+              <h5>Height</h5>
+              <h5>Top of Wall</h5>
+              <h5></h5>
+            </div>
+          </div>
+        )}
+        {values.buildings[activeBuilding].partialWalls.map(
+          (partialWall, partialWallIndex) => (
+            <Fragment
+              key={`building-${activeBuilding}-partialWall-${partialWallIndex}`}
+            >
+              <div className="tableGrid6">
+                <ReusableSelect
+                  id={`building-${activeBuilding}-partialWallWall-${partialWallIndex}`}
+                  name={`building-${activeBuilding}-partialWallWall-${partialWallIndex}`}
+                  labelClass="offOnTablet"
+                  value={partialWall.wall}
+                  onChange={(e) =>
+                    handlePartialWallChange(
+                      activeBuilding,
+                      partialWallIndex,
+                      'wall',
+                      e.target.value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activePartialWall !== partialWallIndex) {
+                      setActivePartialWall(partialWallIndex);
                     }
-                    onFocus={() => {
-                      if (activePartialWall !== partialWallIndex) {
-                        setActivePartialWall(partialWallIndex);
-                      }
-                    }}
-                    options={walls}
-                    label="Wall"
-                  />
-                </div>
+                  }}
+                  options={walls}
+                  label="Wall"
+                />
                 <div className="cardInput">
                   <label
+                    className="offOnTablet"
                     htmlFor={`building-${activeBuilding}-partialWallStart-${partialWallIndex}`}
                   >
-                    Start (Left to Right)
+                    <span>
+                      Start <small>(Left to Right)</small>
+                    </span>
                   </label>
                   <input
                     type="text"
@@ -764,9 +813,12 @@ const BuildingOptions = ({
                 </div>
                 <div className="cardInput">
                   <label
+                    className="offOnTablet"
                     htmlFor={`building-${activeBuilding}-partialWallEnd-${partialWallIndex}`}
                   >
-                    End (Left to Right)
+                    <span>
+                      End <small>(Left to Right)</small>
+                    </span>
                   </label>
                   <input
                     type="text"
@@ -791,6 +843,7 @@ const BuildingOptions = ({
                 </div>
                 <div className="cardInput">
                   <label
+                    className="offOnTablet"
                     htmlFor={`building-${activeBuilding}-partialWallHeight-${partialWallIndex}`}
                   >
                     Height
@@ -816,91 +869,100 @@ const BuildingOptions = ({
                     placeholder="Feet"
                   />
                 </div>
-                <div className="cardInput">
-                  <ReusableSelect
-                    id={`building-${activeBuilding}-partialWallTopWall-${partialWallIndex}`}
-                    name={`building-${activeBuilding}-partialWallTopWall-${partialWallIndex}`}
-                    value={partialWall.topOfWall}
-                    onChange={(e) =>
-                      handlePartialWallChange(
-                        activeBuilding,
-                        partialWallIndex,
-                        'topOfWall',
-                        e.target.value
-                      )
+                <ReusableSelect
+                  id={`building-${activeBuilding}-partialWallTopWall-${partialWallIndex}`}
+                  name={`building-${activeBuilding}-partialWallTopWall-${partialWallIndex}`}
+                  labelClass="offOnTablet"
+                  value={partialWall.topOfWall}
+                  onChange={(e) =>
+                    handlePartialWallChange(
+                      activeBuilding,
+                      partialWallIndex,
+                      'topOfWall',
+                      e.target.value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activePartialWall !== partialWallIndex) {
+                      setActivePartialWall(partialWallIndex);
                     }
-                    onFocus={() => {
-                      if (activePartialWall !== partialWallIndex) {
-                        setActivePartialWall(partialWallIndex);
-                      }
-                    }}
-                    options={topOfWall}
-                    label="Top of Wall"
-                  />
-                </div>
+                  }}
+                  options={topOfWall}
+                  label="Top of Wall"
+                />
                 <button
                   onClick={() =>
                     removePartialWall(activeBuilding, partialWallIndex)
                   }
-                  className="icon iconReject"
+                  className="icon red"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
-                {!isDesktop && (
-                  <>
-                    <div className="divider span2"></div>
-                  </>
-                )}
-              </Fragment>
-            )
-          )}
-          <button
-            type="button"
-            className="button success w5"
-            onClick={() => addPartialWall(activeBuilding)}
-          >
-            Add
-          </button>
-        </div>
-
-        <div className="divider"></div>
+              </div>
+              <div className="divider offOnTablet"></div>
+            </Fragment>
+          )
+        )}
+        <button
+          type="button"
+          className="button success w5"
+          onClick={() => addPartialWall(activeBuilding)}
+        >
+          Add
+        </button>
       </section>
 
       {/* Wall Skirt Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Wall Skirts</h3>
         </header>
-        <div className="wainscotGrid">
-          {values.buildings[activeBuilding].wallSkirts.map(
-            (wallSkirt, wallSkirtIndex) => (
-              <Fragment
-                key={`building-${activeBuilding}-wallSkirt-${wallSkirtIndex}`}
-              >
-                <div className="cardInput">
-                  <ReusableSelect
-                    id={`building-${activeBuilding}-wallSkirtWall-${wallSkirtIndex}`}
-                    name={`building-${activeBuilding}-wallSkirtWall-${wallSkirtIndex}`}
-                    value={wallSkirt.wall}
-                    onChange={(e) =>
-                      handleWallSkirtChange(
-                        activeBuilding,
-                        wallSkirtIndex,
-                        'wall',
-                        e.target.value
-                      )
+        {values.buildings[activeBuilding].wallSkirts.length > 0 && (
+          <div className="onTablet">
+            <div className="tableGrid6">
+              <h5>Wall</h5>
+              <h5>
+                Start <small>(Left to Right)</small>
+              </h5>
+              <h5>
+                End <small>(Left to Right)</small>
+              </h5>
+              <h5>Height</h5>
+              <h5>Column Option</h5>
+              <h5></h5>
+            </div>
+          </div>
+        )}
+        {values.buildings[activeBuilding].wallSkirts.map(
+          (wallSkirt, wallSkirtIndex) => (
+            <Fragment
+              key={`building-${activeBuilding}-wallSkirt-${wallSkirtIndex}`}
+            >
+              <div className="tableGrid6">
+                <ReusableSelect
+                  id={`building-${activeBuilding}-wallSkirtWall-${wallSkirtIndex}`}
+                  name={`building-${activeBuilding}-wallSkirtWall-${wallSkirtIndex}`}
+                  labelClass="offOnTablet"
+                  value={wallSkirt.wall}
+                  onChange={(e) =>
+                    handleWallSkirtChange(
+                      activeBuilding,
+                      wallSkirtIndex,
+                      'wall',
+                      e.target.value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeWallSkirt !== wallSkirtIndex) {
+                      setActiveWallSkirt(wallSkirtIndex);
                     }
-                    onFocus={() => {
-                      if (activeWallSkirt !== wallSkirtIndex) {
-                        setActiveWallSkirt(wallSkirtIndex);
-                      }
-                    }}
-                    options={walls}
-                    label="Wall"
-                  />
-                </div>
+                  }}
+                  options={walls}
+                  label="Wall"
+                />
                 <div className="cardInput">
                   <label
+                    className="offOnTablet"
                     htmlFor={`building-${activeBuilding}-wallSkirtStartBay-${wallSkirtIndex}`}
                   >
                     Start Bay
@@ -928,6 +990,7 @@ const BuildingOptions = ({
                 </div>
                 <div className="cardInput">
                   <label
+                    className="offOnTablet"
                     htmlFor={`building-${activeBuilding}-wallSkirtEndBay-${wallSkirtIndex}`}
                   >
                     End Bay
@@ -955,6 +1018,7 @@ const BuildingOptions = ({
                 </div>
                 <div className="cardInput">
                   <label
+                    className="offOnTablet"
                     htmlFor={`building-${activeBuilding}-wallSkirtHeight-${wallSkirtIndex}`}
                   >
                     Height
@@ -980,7 +1044,7 @@ const BuildingOptions = ({
                     placeholder="Feet"
                   />
                 </div>
-                <div className="center">
+                <div className="checkboxGroup">
                   <div className="checkRow">
                     <input
                       type="checkbox"
@@ -1007,32 +1071,25 @@ const BuildingOptions = ({
                   onClick={() =>
                     removeWallSkirt(activeBuilding, wallSkirtIndex)
                   }
-                  className="icon iconReject"
+                  className="icon red"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
-                {!isDesktop && (
-                  <>
-                    <div className="divider span2"></div>
-                  </>
-                )}
-              </Fragment>
-            )
-          )}
-          <button
-            type="button"
-            className="button success w5"
-            onClick={() => addWallSkirt(activeBuilding)}
-          >
-            Add
-          </button>
-        </div>
-
-        <div className="divider"></div>
+              </div>
+            </Fragment>
+          )
+        )}
+        <button
+          type="button"
+          className="button success w5"
+          onClick={() => addWallSkirt(activeBuilding)}
+        >
+          Add
+        </button>
       </section>
 
       {/* Polycarbonate Relite Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Polycarbonate Relites</h3>
         </header>
