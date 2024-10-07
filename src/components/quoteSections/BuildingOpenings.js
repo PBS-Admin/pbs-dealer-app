@@ -118,146 +118,149 @@ const BuildingOpenings = ({
 
   const renderOpeningInputs = (opening, openingIndex) => (
     <>
-      <div className="cardInput">
-        <label
-          htmlFor={`building-${activeBuilding}-openingBay-${openingIndex}`}
-        >
-          Bay
-        </label>
-        <input
-          type="text"
-          id={`building-${activeBuilding}-openingBay-${openingIndex}`}
-          value={opening.bay}
-          onChange={(e) =>
-            handleOpeningChange(
-              activeBuilding,
-              activeWallKey,
-              openingIndex,
-              'bay',
-              e.target.value
-            )
+      <div className="tableGrid7">
+        <div className="cardInput">
+          <label
+            className="offOnTablet"
+            htmlFor={`building-${activeBuilding}-openingBay-${openingIndex}`}
+          >
+            Bay
+          </label>
+          <input
+            type="text"
+            id={`building-${activeBuilding}-openingBay-${openingIndex}`}
+            value={opening.bay}
+            onChange={(e) =>
+              handleOpeningChange(
+                activeBuilding,
+                activeWallKey,
+                openingIndex,
+                'bay',
+                e.target.value
+              )
+            }
+          />
+        </div>
+        <div className="cardInput">
+          <label
+            className="offOnTablet"
+            htmlFor={`building-${activeBuilding}-openingType-${openingIndex}`}
+          >
+            Type
+          </label>
+          <input
+            type="text"
+            id={`building-${activeBuilding}-openingType-${openingIndex}`}
+            value={opening.openType}
+            onChange={(e) =>
+              handleOpeningChange(
+                activeBuilding,
+                activeWallKey,
+                openingIndex,
+                'openType',
+                e.target.value
+              )
+            }
+          />
+        </div>
+        <div className="cardInput">
+          <label
+            className="offOnTablet"
+            htmlFor={`building-${activeBuilding}-openingWidth-${openingIndex}`}
+          >
+            Width
+          </label>
+          <input
+            type="text"
+            id={`building-${activeBuilding}-openingWidth-${openingIndex}`}
+            value={opening.width}
+            onChange={(e) =>
+              handleOpeningChange(
+                activeBuilding,
+                activeWallKey,
+                openingIndex,
+                'width',
+                e.target.value
+              )
+            }
+          />
+        </div>
+        <div className="cardInput">
+          <label
+            className="offOnTablet"
+            htmlFor={`building-${activeBuilding}-openingHeight-${openingIndex}`}
+          >
+            Height
+          </label>
+          <input
+            type="text"
+            id={`building-${activeBuilding}-openingHeight-${openingIndex}`}
+            value={opening.height}
+            onChange={(e) =>
+              handleOpeningChange(
+                activeBuilding,
+                activeWallKey,
+                openingIndex,
+                'height',
+                e.target.value
+              )
+            }
+          />
+        </div>
+        <div className="cardInput">
+          <label
+            className="offOnTablet"
+            htmlFor={`building-${activeBuilding}-openingSill-${openingIndex}`}
+          >
+            Sill
+          </label>
+          <input
+            type="text"
+            id={`building-${activeBuilding}-openingSill-${openingIndex}`}
+            value={opening.sill}
+            onChange={(e) =>
+              handleOpeningChange(
+                activeBuilding,
+                activeWallKey,
+                openingIndex,
+                'sill',
+                e.target.value
+              )
+            }
+          />
+        </div>
+        <div className="cardInput">
+          <label
+            className="offOnTablet"
+            htmlFor={`building-${activeBuilding}-openingOffset-${openingIndex}`}
+          >
+            Offset
+          </label>
+          <input
+            type="text"
+            id={`building-${activeBuilding}-openingOffset-${openingIndex}`}
+            value={opening.offset}
+            onChange={(e) =>
+              handleOpeningChange(
+                activeBuilding,
+                activeWallKey,
+                openingIndex,
+                'offset',
+                e.target.value
+              )
+            }
+          />
+        </div>
+        <button
+          onClick={() =>
+            removeOpening(activeBuilding, activeWallKey, openingIndex)
           }
-        />
-      </div>
-      <div className="cardInput">
-        <label
-          htmlFor={`building-${activeBuilding}-openingType-${openingIndex}`}
+          className="icon red span2"
         >
-          Type
-        </label>
-        <input
-          type="text"
-          id={`building-${activeBuilding}-openingType-${openingIndex}`}
-          value={opening.openType}
-          onChange={(e) =>
-            handleOpeningChange(
-              activeBuilding,
-              activeWallKey,
-              openingIndex,
-              'openType',
-              e.target.value
-            )
-          }
-        />
+          <FontAwesomeIcon icon={faTrash} />
+        </button>
       </div>
-      <div className="cardInput">
-        <label
-          htmlFor={`building-${activeBuilding}-openingWidth-${openingIndex}`}
-        >
-          Width
-        </label>
-        <input
-          type="text"
-          id={`building-${activeBuilding}-openingWidth-${openingIndex}`}
-          value={opening.width}
-          onChange={(e) =>
-            handleOpeningChange(
-              activeBuilding,
-              activeWallKey,
-              openingIndex,
-              'width',
-              e.target.value
-            )
-          }
-        />
-      </div>
-      <div className="cardInput">
-        <label
-          htmlFor={`building-${activeBuilding}-openingHeight-${openingIndex}`}
-        >
-          Height
-        </label>
-        <input
-          type="text"
-          id={`building-${activeBuilding}-openingHeight-${openingIndex}`}
-          value={opening.height}
-          onChange={(e) =>
-            handleOpeningChange(
-              activeBuilding,
-              activeWallKey,
-              openingIndex,
-              'height',
-              e.target.value
-            )
-          }
-        />
-      </div>
-      <div className="cardInput">
-        <label
-          htmlFor={`building-${activeBuilding}-openingSill-${openingIndex}`}
-        >
-          Sill
-        </label>
-        <input
-          type="text"
-          id={`building-${activeBuilding}-openingSill-${openingIndex}`}
-          value={opening.sill}
-          onChange={(e) =>
-            handleOpeningChange(
-              activeBuilding,
-              activeWallKey,
-              openingIndex,
-              'sill',
-              e.target.value
-            )
-          }
-        />
-      </div>
-      <div className="cardInput">
-        <label
-          htmlFor={`building-${activeBuilding}-openingOffset-${openingIndex}`}
-        >
-          Offset
-        </label>
-        <input
-          type="text"
-          id={`building-${activeBuilding}-openingOffset-${openingIndex}`}
-          value={opening.offset}
-          onChange={(e) =>
-            handleOpeningChange(
-              activeBuilding,
-              activeWallKey,
-              openingIndex,
-              'offset',
-              e.target.value
-            )
-          }
-        />
-      </div>
-      {!isDesktop && (
-        <>
-          <div></div>
-        </>
-      )}
-      <button
-        onClick={() =>
-          removeOpening(activeBuilding, activeWallKey, openingIndex)
-        }
-        className="icon iconReject"
-      >
-        <FontAwesomeIcon icon={faTrash} />
-      </button>
-      {!isDesktop && <div className="divider fullWidth"></div>}
+      <div className="divider offOnTablet"></div>
     </>
   );
 
@@ -282,20 +285,29 @@ const BuildingOpenings = ({
         </div>
       </div>
       <div className="tabContent">
-        {/* {activeWallKey && (
-          <h4>{walls.find((wall) => wall.key === activeWallKey)?.name}</h4>
-        )} */}
-        <div className="openingGrid">
-          {values.buildings[activeBuilding].openings[activeWallKey]?.map(
-            (opening, index) => (
-              <Fragment
-                key={`building-${activeBuilding}-opening-${activeWallKey}-${index}`}
-              >
-                {renderOpeningInputs(opening, index)}
-              </Fragment>
-            )
-          )}
-        </div>
+        {values.buildings[activeBuilding].openings[activeWallKey].length >
+          0 && (
+          <div className="onTablet">
+            <div className="tableGrid7">
+              <h5>Bay</h5>
+              <h5>Type</h5>
+              <h5>Width</h5>
+              <h5>Height</h5>
+              <h5>Sill</h5>
+              <h5>Offset</h5>
+              <h5></h5>
+            </div>
+          </div>
+        )}
+        {values.buildings[activeBuilding].openings[activeWallKey]?.map(
+          (opening, index) => (
+            <Fragment
+              key={`building-${activeBuilding}-opening-${activeWallKey}-${index}`}
+            >
+              {renderOpeningInputs(opening, index)}
+            </Fragment>
+          )
+        )}
         <button
           type="button"
           className="button success w5"

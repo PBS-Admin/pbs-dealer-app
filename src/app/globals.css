@@ -977,6 +977,14 @@ button.small {
     grid-column: span 2;
   }
 
+  .tableGrid7 {
+    grid-template-columns: repeat(2, 1fr);  
+  }
+
+  .tableGrid7 .span2 {
+    grid-column: span 2;
+  }
+
   .grid8 {
     grid-template-columns: repeat(2, 1fr);  
   }
@@ -1047,6 +1055,14 @@ button.small {
 
   .grid6 .span5 {
     grid-column: span 6;
+  }
+
+  .tableGrid7 {
+    grid-template-columns: repeat(6, minmax(60px, 1fr)) 28px;
+  }
+
+  .tableGrid7 .span2 {
+    grid-column: span 1;
   }
 
   .panelGrid {
@@ -1230,6 +1246,10 @@ button.small {
     grid-column: span 5;
   }
 
+  .tableGrid7 {
+    grid-template-columns: repeat(6, minmax(80px, 1fr)) 28px;
+  }
+
   .grid8 {
     /*grid-template-columns: repeat(4, 1fr);*/
     grid-template-columns: repeat(4, minmax(180px, 1fr));
@@ -1336,6 +1356,10 @@ button.small {
   }
 
   .tableGrid5 .span2 {
+    grid-column: span 1 !important;
+  }
+
+  .tableGrid7 .span2 {
     grid-column: span 1 !important;
   }
 }
