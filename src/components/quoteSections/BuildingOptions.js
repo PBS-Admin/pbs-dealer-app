@@ -243,7 +243,7 @@ const BuildingOptions = ({
   return (
     <>
       {/* Liner Panel Options */}
-      <section className="card">
+      <section className="card start">
         <header>
           <h3>Liner Panels</h3>
         </header>
@@ -481,7 +481,7 @@ const BuildingOptions = ({
       </section>
 
       {/* Wainscot Options */}
-      <section className="card">
+      <section className="card start">
         <header>
           <h3>Wainscots</h3>
         </header>
@@ -734,7 +734,7 @@ const BuildingOptions = ({
       </section>
 
       {/* Partial Wall Options */}
-      <section className="card">
+      <section className="card start">
         <header>
           <h3>Partial Walls</h3>
         </header>
@@ -913,7 +913,7 @@ const BuildingOptions = ({
       </section>
 
       {/* Wall Skirt Options */}
-      <section className="card">
+      <section className="card start">
         <header>
           <h3>Wall Skirts</h3>
         </header>
@@ -1089,10 +1089,64 @@ const BuildingOptions = ({
       </section>
 
       {/* Polycarbonate Relite Options */}
-      <section className="card">
+      <section className="card start">
         <header>
           <h3>Polycarbonate Relites</h3>
         </header>
+        <h4>Wall Relites</h4>
+        <div className="grid4">
+          <div className="grid">
+            {values.buildings[activeBuilding].fswGirtType != 'open' ? (
+              <>
+                <ReusableSelect
+                  id={`buildingfswPolySize-${activeBuilding}`}
+                  name={`buildingfswPolySize-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].fswPolySize}
+                  onChange={(e) =>
+                    handleNestedChange(
+                      activeBuilding,
+                      'fswPolySize',
+                      e.target.value
+                    )
+                  }
+                  options={polycarbWallSize}
+                  label="Front Sidewall Relite Size:"
+                />
+                <ReusableSelect
+                  id={`buildingfswPolyColor-${activeBuilding}`}
+                  name={`buildingfswPolyColor-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].fswPolyColor}
+                  onChange={(e) =>
+                    handleNestedChange(
+                      activeBuilding,
+                      'fswPolyColor',
+                      e.target.value
+                    )
+                  }
+                  options={polycarbColor}
+                  label="Front Sidewall Relite Color:"
+                />
+                <div className="cardInput">
+                  <label htmlFor="fswPolyQty">Front Sidewall Relite Qty:</label>
+                  <input
+                    type="text"
+                    id="fswPolyQty"
+                    name="fswPolyQty"
+                    value={values.projectCity}
+                    onChange={(e) => handleNestedChange(e, 'project')}
+                    placeholder="Qty"
+                  />
+                </div>
+              </>
+            ) : (
+              <h5>No Relites Available Because Wall Is Opened</h5>
+            )}
+          </div>
+        </div>
+        <div className="divider"></div>
+
+        <div className="divider"></div>
+
         <h4>Wall Relites</h4>
         <div className="polycarbGrid">
           <div></div>

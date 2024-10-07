@@ -44,7 +44,7 @@ const BuildingLayout = ({
   );
   return (
     <>
-      <section className="card">
+      <section className="card start">
         <header>
           <h3>Building Shape</h3>
         </header>
@@ -228,7 +228,7 @@ const BuildingLayout = ({
         </div>
       </section>
 
-      <section className="card">
+      <section className="card start">
         <header className="cardHeader">
           <h3>
             Design Codes <small>- Individual Building Override</small>
@@ -323,7 +323,7 @@ const BuildingLayout = ({
         </div>
       </section>
 
-      <section className="card">
+      <section className="card start">
         <header className="cardHeader">
           <h3>Frame Type</h3>
         </header>
@@ -491,7 +491,7 @@ const BuildingLayout = ({
         </div>
       </section>
 
-      <section className="card">
+      <section className="card start">
         <header className="cardHeader">
           <h3>Bracing</h3>
         </header>
@@ -706,11 +706,11 @@ const BuildingLayout = ({
         </div>
       </section>
 
-      <section className="card">
+      <section className="card start">
         <header className="cardHeader">
           <h3>Purlins and Girts</h3>
         </header>
-        <div className="grid4">
+        <div className="grid4 alignTop">
           <div className="grid">
             <ReusableSelect
               id={`buildingfswGirtType-${activeBuilding}`}
@@ -759,7 +759,7 @@ const BuildingLayout = ({
               </>
             )}
           </div>
-          {/* <div className="divider offOnTablet"></div> */}
+          <div className="divider offOnPhone"></div>
           <div className="grid">
             <ReusableSelect
               id={`buildingbswGirtType-${activeBuilding}`}
@@ -808,7 +808,7 @@ const BuildingLayout = ({
               </>
             )}
           </div>
-          {/* <div className="divider onTablet"></div> */}
+          <div className="divider showWithSidebar span2"></div>
           <div className="grid">
             <ReusableSelect
               id={`buildinglewGirtType-${activeBuilding}`}
@@ -857,7 +857,7 @@ const BuildingLayout = ({
               </>
             )}
           </div>
-          {/* <div className="divider offOnTablet"></div> */}
+          <div className="divider offOnPhone"></div>
           <div className="grid">
             <ReusableSelect
               id={`buildingrewGirtType-${activeBuilding}`}
@@ -928,7 +928,7 @@ const BuildingLayout = ({
         </div>
       </section>
 
-      <section className="card">
+      <section className="card start">
         <header className="cardHeader">
           <h3>Sheeting & Insulation</h3>
         </header>

@@ -816,6 +816,8 @@ button.small {
 
 
 /*
+.showWithSidebar = 1000px
+
 .onPhone,   .offOnPhone   =  550px
 .onTablet,  .offOnTablet  =  768px
 .onLaptop,  .offOnLaptop  = 1200px
@@ -929,6 +931,10 @@ button.small {
     grid-column: span 1;
   }
 
+  .grid4 .divider.span2, .grid4 .divider.span3 {
+    grid-column: span 2;
+  }
+
   .tableGrid5 {
     grid-template-columns: repeat(2, 1fr);  
   }
@@ -973,15 +979,15 @@ button.small {
   }
 
   /* Grid Layout */
-  .grid4 .divider.onTablet {
-    grid-column: span 2;
-  }
-
   .grid3 {
     grid-template-columns: repeat(3, 1fr);
   }
 
   .grid3 .span2 {
+    grid-column: span 2;
+  }
+
+  .grid4 .divider.onTablet {
     grid-column: span 2;
   }
 
@@ -1085,6 +1091,10 @@ button.small {
   main{
     grid-template-columns: 350px 1fr;
     grid-template-rows: 100px 1fr 600px;    
+  }
+
+  .showWithSidebar {
+    display: none !important;
   }
 
   .inputForm{

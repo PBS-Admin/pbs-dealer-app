@@ -16,7 +16,6 @@ const BuildingPartitions = ({
   activeBuilding,
   handlePartitionChange,
   setValues,
-  isDesktop,
 }) => {
   const [activePartition, setActivePartition] = useState(0);
 
@@ -120,7 +119,7 @@ const BuildingPartitions = ({
 
   return (
     <>
-      <section className="card">
+      <section className="card start">
         <header>
           <h3>Partition Walls</h3>
         </header>
