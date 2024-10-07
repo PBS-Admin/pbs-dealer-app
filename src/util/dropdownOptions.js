@@ -234,14 +234,19 @@ export const topOfWall = [
 ];
 
 export const polycarbWallSize = [
-  { id: '3', label: '3\'-0""' },
-  { id: '4', label: '4\'-0""' },
-  { id: '5', label: '5\'-0""' },
+  { id: '3', label: '3\'-0"' },
+  { id: '4', label: '4\'-0"' },
+  { id: '5', label: '5\'-0"' },
 ];
 
-export const polycarbRoofSize = [{ id: '10', label: '10\'-0""' }];
+export const polycarbWallColor = [
+  { id: 'clear', label: 'Clear' },
+  { id: 'white', label: 'White' },
+];
 
-export const polycarbColor = [
+export const polycarbRoofSize = [{ id: '10', label: '10\'-0"' }];
+
+export const polycarbRoofColor = [
   { id: 'clear', label: 'Clear' },
   { id: 'white', label: 'White' },
 ];

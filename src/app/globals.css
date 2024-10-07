@@ -10,6 +10,7 @@
   --orange: #F94C08;
   --light-orange: #FBB99D;
   --background-white: #F5F5F5;
+  --background-disabled: #DDDDDD;
   --red: #FB4B4B;
   --light-red: #FD8787;
   --green: #4CB852;
@@ -17,7 +18,8 @@
   --dark-grey: #666666;
   --gray: #A2A2A2;
   --light-gray: #CCCCCC;
-  --div-gradient: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(16,52,148,1) 50%, rgba(255,255,255,0) 100%);
+  --black-gradient: linear-gradient(to bottom, #666666, #F5F5F5, #F5F5F5) 0% 50%;
+  --blue-gradient: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(16,52,148,1) 50%, rgba(255,255,255,0) 100%);
 }
 
 * {
@@ -293,6 +295,16 @@ p {
   margin: 10px 0;
 }
 
+.reliteGroup {
+  border: none;
+  background-color: rgba(0, 0, 0, 0.10);
+  padding: .5em;
+  border-radius: .5em;
+  align-self: center;
+  width: 100%;
+  margin-bottom: 1em;
+}
+
 /*radio can be deleted, use center instead*/
 .radio {
   align-self: center;
@@ -309,9 +321,9 @@ p {
 }
 
 .center{
-  align-self: center;
-  justify-self: center;  
-  text-align: center;  
+  align-self: center !important;
+  justify-self: center !important;  
+  text-align: center !important;  
 }
 
 .cardInput {
@@ -429,7 +441,7 @@ select {
 .divider{
   margin-block: .5em;  
   height: 1px;
-  background: var(--div-gradient);
+  background: var(--blue-gradient);
 }
 
 .full{
@@ -461,28 +473,38 @@ select {
 
 .tabList {
   display: flex;
-  border-bottom: 1px solid var(--background-white);
-  margin-bottom: 16px;
+  border-bottom: 1px solid var(--dark-grey);
   min-width: max-content;
-  padding-bottom: 2px;
 }
 
 .tab {
   padding: 8px 16px;
-  border: none;
-  background: none;
+  border: 1px solid var(--dark-grey);
+  border-radius: .25em .25em 0 0;
+  background: var(--background-disabled);
   cursor: pointer;
+  color: var(--dark-grey);  
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
+  margin: 0px 4px -1px 0;
 }
 
 .activeTab {
-  border-bottom: 2px solid var(--light-blue);
-  color: var(--light-blue);  
+  border-bottom: none;
+  background: var(--background-white);
+  color: var(--dark-blue);  
+  cursor: default;
 }
 
+.tabContent {
+  padding-top: 16px;
+  border-width: 1px;
+  border-style: solid;
+  border-image: var(--black-gradient);
+  border-top: 0;
+}
 
 /* Global Button Classes */
 .w5{
@@ -808,7 +830,7 @@ button.small {
   grid-row: 1 / 3;
 }
 
-.onPhone, .onTablet, .onLaptop, .onDesktop {
+.onPhone, .onTablet, .onLaptop, .onDesktop, .hideWithSidebar {
   display: none;
 }
 
@@ -816,7 +838,7 @@ button.small {
 
 
 /*
-.showWithSidebar = 1000px
+.showWithSidebar, .hideWithSidebar = 1000px
 
 .onPhone,   .offOnPhone   =  550px
 .onTablet,  .offOnTablet  =  768px
@@ -1091,6 +1113,10 @@ button.small {
   main{
     grid-template-columns: 350px 1fr;
     grid-template-rows: 100px 1fr 600px;    
+  }
+
+  .hideWithSidebar {
+    display: block;
   }
 
   .showWithSidebar {

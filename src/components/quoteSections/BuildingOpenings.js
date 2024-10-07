@@ -282,9 +282,9 @@ const BuildingOpenings = ({
         </div>
       </div>
       <div className="tabContent">
-        {activeWallKey && (
+        {/* {activeWallKey && (
           <h4>{walls.find((wall) => wall.key === activeWallKey)?.name}</h4>
-        )}
+        )} */}
         <div className="openingGrid">
           {values.buildings[activeBuilding].openings[activeWallKey]?.map(
             (opening, index) => (

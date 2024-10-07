@@ -1,7 +1,6 @@
 import { React, useState, Fragment } from 'react';
 import Image from 'next/image';
 import ReusableSelect from '../Inputs/ReusableSelect';
-import PolycarbReliteRow from '../../components/Inputs/PolycarbReliteRow';
 import {
   walls,
   wallPanels,
@@ -11,7 +10,8 @@ import {
   topOfWall,
   polycarbWallSize,
   polycarbRoofSize,
-  polycarbColor,
+  polycarbWallColor,
+  polycarbRoofColor,
 } from '../../util/dropdownOptions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -1094,146 +1094,460 @@ const BuildingOptions = ({
           <h3>Polycarbonate Relites</h3>
         </header>
         <h4>Wall Relites</h4>
-        <div className="grid4">
-          <div className="grid">
-            {values.buildings[activeBuilding].fswGirtType != 'open' ? (
-              <>
+        {values.buildings[activeBuilding].fswGirtType != 'open' ||
+        values.buildings[activeBuilding].bswGirtType != 'open' ||
+        values.buildings[activeBuilding].lewGirtType != 'open' ||
+        values.buildings[activeBuilding].rewGirtType != 'open' ? (
+          <div className="grid4 alignTop">
+            <div className="grid">
+              {values.buildings[activeBuilding].fswGirtType != 'open' ? (
+                <>
+                  <ReusableSelect
+                    id={`buildingfswPolySize-${activeBuilding}`}
+                    name={`buildingfswPolySize-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].fswPolySize}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'fswPolySize',
+                        e.target.value
+                      )
+                    }
+                    options={polycarbWallSize}
+                    label="Front Sidewall Relite Size:"
+                  />
+                  <ReusableSelect
+                    id={`buildingfswPolyColor-${activeBuilding}`}
+                    name={`buildingfswPolyColor-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].fswPolyColor}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'fswPolyColor',
+                        e.target.value
+                      )
+                    }
+                    options={polycarbWallColor}
+                    label="Front Sidewall Relite Color:"
+                  />
+                  <div className="cardInput">
+                    <label htmlFor="fswPolyQty">
+                      Front Sidewall Relite Qty:
+                    </label>
+                    <input
+                      type="text"
+                      id="fswPolyQty"
+                      name="fswPolyQty"
+                      value={values.buildings[activeBuilding].fswPolyQty}
+                      // onChange={(e) => handleNestedChange(e, 'project')}
+                      placeholder="Qty"
+                    />
+                  </div>
+                </>
+              ) : (
+                <h5>
+                  No Relites Available
+                  <br />
+                  Front Sidewall Is Open
+                </h5>
+              )}
+            </div>
+
+            <div className="divider offOnPhone"></div>
+            <div className="grid">
+              {values.buildings[activeBuilding].bswGirtType != 'open' ? (
+                <>
+                  <ReusableSelect
+                    id={`buildingbswPolySize-${activeBuilding}`}
+                    name={`buildingbswPolySize-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].bswPolySize}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'bswPolySize',
+                        e.target.value
+                      )
+                    }
+                    options={polycarbWallSize}
+                    label="Back Sidewall Relite Size:"
+                  />
+                  <ReusableSelect
+                    id={`buildingbswPolyColor-${activeBuilding}`}
+                    name={`buildingbswPolyColor-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].bswPolyColor}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'bswPolyColor',
+                        e.target.value
+                      )
+                    }
+                    options={polycarbWallColor}
+                    label="Back Sidewall Relite Color:"
+                  />
+                  <div className="cardInput">
+                    <label htmlFor="bswPolyQty">
+                      Back Sidewall Relite Qty:
+                    </label>
+                    <input
+                      type="text"
+                      id="bswPolyQty"
+                      name="bswPolyQty"
+                      value={values.buildings[activeBuilding].bswPolyQty}
+                      // onChange={(e) => handleNestedChange(e, 'project')}
+                      placeholder="Qty"
+                    />
+                  </div>
+                </>
+              ) : (
+                <h5>
+                  No Relites Available
+                  <br />
+                  Back Sidewall Is Open
+                </h5>
+              )}
+            </div>
+
+            <div className="divider showWithSidebar span2"></div>
+            <div className="grid">
+              {values.buildings[activeBuilding].lewGirtType != 'open' ? (
+                <>
+                  <ReusableSelect
+                    id={`buildinglewPolySize-${activeBuilding}`}
+                    name={`buildinglewPolySize-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].lewPolySize}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'lewPolySize',
+                        e.target.value
+                      )
+                    }
+                    options={polycarbWallSize}
+                    label="Left Endwall Relite Size:"
+                  />
+                  <ReusableSelect
+                    id={`buildinglewPolyColor-${activeBuilding}`}
+                    name={`buildinglewPolyColor-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].lewPolyColor}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'lewPolyColor',
+                        e.target.value
+                      )
+                    }
+                    options={polycarbWallColor}
+                    label="Left Endwall Relite Color:"
+                  />
+                  <div className="cardInput">
+                    <label htmlFor="lewPolyQty">Left Endwall Relite Qty:</label>
+                    <input
+                      type="text"
+                      id="lewPolyQty"
+                      name="lewPolyQty"
+                      value={values.buildings[activeBuilding].lewPolyQty}
+                      // onChange={(e) => handleNestedChange(e, 'project')}
+                      placeholder="Qty"
+                    />
+                  </div>
+                </>
+              ) : (
+                <h5>
+                  No Relites Available
+                  <br />
+                  Left Endwall Is Open
+                </h5>
+              )}
+            </div>
+
+            <div className="divider offOnPhone"></div>
+            <div className="grid">
+              {values.buildings[activeBuilding].rewGirtType != 'open' ? (
+                <>
+                  <ReusableSelect
+                    id={`buildingrewPolySize-${activeBuilding}`}
+                    name={`buildingrewPolySize-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].rewPolySize}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'rewPolySize',
+                        e.target.value
+                      )
+                    }
+                    options={polycarbWallSize}
+                    label="Right Endwall Relite Size:"
+                  />
+                  <ReusableSelect
+                    id={`buildingrewPolyColor-${activeBuilding}`}
+                    name={`buildingrewPolyColor-${activeBuilding}`}
+                    value={values.buildings[activeBuilding].rewPolyColor}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'rewPolyColor',
+                        e.target.value
+                      )
+                    }
+                    options={polycarbWallColor}
+                    label="Right Endwall Relite Color:"
+                  />
+                  <div className="cardInput">
+                    <label htmlFor="rewPolyQty">
+                      Right Endwall Relite Qty:
+                    </label>
+                    <input
+                      type="text"
+                      id="rewPolyQty"
+                      name="rewPolyQty"
+                      value={values.buildings[activeBuilding].rewPolyQty}
+                      // onChange={(e) => handleNestedChange(e, 'project')}
+                      placeholder="Qty"
+                    />
+                  </div>
+                </>
+              ) : (
+                <h5>
+                  No Relites Available
+                  <br />
+                  Right Endwall Is Open
+                </h5>
+              )}
+            </div>
+          </div>
+        ) : (
+          <h4 className="center">
+            No Relites Available
+            <br />
+            All Walls Are Open
+          </h4>
+        )}
+
+        <div className="divider"></div>
+        <h4>Roof Relites</h4>
+        <div className="grid4 alignTop">
+          {values.buildings[activeBuilding].shape == 'singleSlope' ||
+          values.buildings[activeBuilding].shape == 'leanTo' ? (
+            <>
+              <div className="grid">
                 <ReusableSelect
-                  id={`buildingfswPolySize-${activeBuilding}`}
-                  name={`buildingfswPolySize-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].fswPolySize}
+                  id={`buildingbackRoofPolySize-${activeBuilding}`}
+                  name={`buildingbackRoofPolySize-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].backRoofPolySize}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
-                      'fswPolySize',
+                      'backRoofPolySize',
                       e.target.value
                     )
                   }
-                  options={polycarbWallSize}
-                  label="Front Sidewall Relite Size:"
+                  options={polycarbRoofSize}
+                  label="Roof Relite Size:"
                 />
                 <ReusableSelect
-                  id={`buildingfswPolyColor-${activeBuilding}`}
-                  name={`buildingfswPolyColor-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].fswPolyColor}
+                  id={`buildingbackRoofPolyColor-${activeBuilding}`}
+                  name={`buildingbackRoofPolyColor-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].backRoofPolyColor}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
-                      'fswPolyColor',
+                      'backRoofPolyColor',
                       e.target.value
                     )
                   }
-                  options={polycarbColor}
-                  label="Front Sidewall Relite Color:"
+                  options={polycarbRoofColor}
+                  label="Roof Relite Color:"
                 />
                 <div className="cardInput">
-                  <label htmlFor="fswPolyQty">Front Sidewall Relite Qty:</label>
+                  <label htmlFor="backRoofPolyQty">Roof Relite Qty:</label>
                   <input
                     type="text"
-                    id="fswPolyQty"
-                    name="fswPolyQty"
-                    value={values.projectCity}
-                    onChange={(e) => handleNestedChange(e, 'project')}
+                    id="backRoofPolyQty"
+                    name="backRoofPolyQty"
+                    value={values.buildings[activeBuilding].backRoofPolyQty}
+                    // onChange={(e) => handleNestedChange(e, 'project')}
                     placeholder="Qty"
                   />
                 </div>
-              </>
-            ) : (
-              <h5>No Relites Available Because Wall Is Opened</h5>
-            )}
+              </div>
+              <div className="grid hideWithSidebar"></div>
+              <div className="divider offOnPhone span2"></div>
+            </>
+          ) : (
+            <>
+              <div className="grid">
+                <ReusableSelect
+                  id={`buildingbackRoofPolySize-${activeBuilding}`}
+                  name={`buildingbackRoofPolySize-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].backRoofPolySize}
+                  onChange={(e) =>
+                    handleNestedChange(
+                      activeBuilding,
+                      'backRoofPolySize',
+                      e.target.value
+                    )
+                  }
+                  options={polycarbRoofSize}
+                  label="Back Roof Relite Size:"
+                />
+                <ReusableSelect
+                  id={`buildingbackRoofPolyColor-${activeBuilding}`}
+                  name={`buildingbackRoofPolyColor-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].backRoofPolyColor}
+                  onChange={(e) =>
+                    handleNestedChange(
+                      activeBuilding,
+                      'backRoofPolyColor',
+                      e.target.value
+                    )
+                  }
+                  options={polycarbRoofColor}
+                  label="Back Roof Relite Color:"
+                />
+                <div className="cardInput">
+                  <label htmlFor="backRoofPolyQty">Back Roof Relite Qty:</label>
+                  <input
+                    type="text"
+                    id="backRoofPolyQty"
+                    name="backRoofPolyQty"
+                    value={values.buildings[activeBuilding].backRoofPolyQty}
+                    // onChange={(e) => handleNestedChange(e, 'project')}
+                    placeholder="Qty"
+                  />
+                </div>
+              </div>
+
+              <div className="divider offOnPhone"></div>
+              <div className="grid">
+                <ReusableSelect
+                  id={`buildingfrontRoofPolySize-${activeBuilding}`}
+                  name={`buildingfrontRoofPolySize-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].frontRoofPolySize}
+                  onChange={(e) =>
+                    handleNestedChange(
+                      activeBuilding,
+                      'frontRoofPolySize',
+                      e.target.value
+                    )
+                  }
+                  options={polycarbRoofSize}
+                  label="Front Roof Relite Size:"
+                />
+                <ReusableSelect
+                  id={`buildingfrontRoofPolyColor-${activeBuilding}`}
+                  name={`buildingfrontRoofPolyColor-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].frontRoofPolyColor}
+                  onChange={(e) =>
+                    handleNestedChange(
+                      activeBuilding,
+                      'frontRoofPolyColor',
+                      e.target.value
+                    )
+                  }
+                  options={polycarbRoofColor}
+                  label="Front Roof Relite Color:"
+                />
+                <div className="cardInput">
+                  <label htmlFor="frontRoofPolyQty">
+                    Front Roof Relite Qty:
+                  </label>
+                  <input
+                    type="text"
+                    id="frontRoofPolyQty"
+                    name="frontRoofPolyQty"
+                    value={values.buildings[activeBuilding].frontRoofPolyQty}
+                    // onChange={(e) => handleNestedChange(e, 'project')}
+                    placeholder="Qty"
+                  />
+                </div>
+              </div>
+              <div className="divider showWithSidebar span2"></div>
+            </>
+          )}
+          <div className="span2">
+            <div className="reliteGroup">
+              <h5>Sidewall Relite Qty Calculator</h5>
+              <div className="grid3">
+                <div className="center small">
+                  Continuous Panels: &nbsp;
+                  <strong>
+                    {Math.ceil(values.buildings[activeBuilding].length / 3)}
+                  </strong>
+                </div>
+                <div className="center small">
+                  Every Other Panel: &nbsp;
+                  <strong>
+                    {Math.floor(
+                      Math.floor(values.buildings[activeBuilding].length / 3) /
+                        2
+                    )}
+                  </strong>
+                </div>
+                <div className="center small">
+                  Every Third Panel: &nbsp;
+                  <strong>
+                    {Math.floor(
+                      Math.floor(values.buildings[activeBuilding].length / 3) /
+                        3
+                    )}
+                  </strong>
+                </div>
+              </div>
+            </div>
+            <div className="reliteGroup">
+              <h5>Endwall Relite Qty Calculator</h5>
+              <div className="grid3">
+                <div className="center small">
+                  Continuous Panels: &nbsp;
+                  <strong>
+                    {Math.ceil(values.buildings[activeBuilding].width / 3)}
+                  </strong>
+                </div>
+                <div className="center small">
+                  Every Other Panel: &nbsp;
+                  <strong>
+                    {Math.floor(
+                      Math.floor(values.buildings[activeBuilding].width / 3) / 2
+                    )}
+                  </strong>
+                </div>
+                <div className="center small">
+                  Every Third Panel: &nbsp;
+                  <strong>
+                    {Math.floor(
+                      Math.floor(values.buildings[activeBuilding].width / 3) / 3
+                    )}
+                  </strong>
+                </div>
+              </div>
+            </div>
+            <div className="reliteGroup">
+              <h5>Roof Relite Qty Calculator</h5>
+              <div className="grid3">
+                <div className="center small">(Every Other Panel Max)</div>
+                <div className="center small">
+                  Every Other Panel: &nbsp;
+                  <strong>
+                    {Math.floor(
+                      Math.floor(values.buildings[activeBuilding].length / 3) /
+                        2
+                    )}
+                  </strong>
+                </div>
+                <div className="center small">
+                  Every Third Panel: &nbsp;
+                  <strong>
+                    {Math.floor(
+                      Math.floor(values.buildings[activeBuilding].length / 3) /
+                        3
+                    )}
+                  </strong>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="divider"></div>
-
-        <div className="divider"></div>
-
-        <h4>Wall Relites</h4>
-        <div className="polycarbGrid">
-          <div></div>
-          <p className="center">Size</p>
-          <p className="center">Color</p>
-          <p className="center">Qty</p>
-        </div>
-        <div className="polycarbGrid">
-          <PolycarbReliteRow
-            wallName="Front Sidewall"
-            shortName="fsw"
-            activeBuilding={activeBuilding}
-            values={values}
-            handleNestedChange={handleNestedChange}
-            polycarbWallSize={polycarbWallSize}
-            polycarbColor={polycarbColor}
-            dimensionToUse="length"
-            isDesktop={isDesktop}
-          />
-          <PolycarbReliteRow
-            wallName="Back Sidewall"
-            shortName="bsw"
-            activeBuilding={activeBuilding}
-            values={values}
-            handleNestedChange={handleNestedChange}
-            polycarbWallSize={polycarbWallSize}
-            polycarbColor={polycarbColor}
-            dimensionToUse="length"
-            isDesktop={isDesktop}
-          />
-          <PolycarbReliteRow
-            wallName="Left Endwall"
-            shortName="lew"
-            activeBuilding={activeBuilding}
-            values={values}
-            handleNestedChange={handleNestedChange}
-            polycarbWallSize={polycarbWallSize}
-            polycarbColor={polycarbColor}
-            dimensionToUse="width"
-            isDesktop={isDesktop}
-          />
-          <PolycarbReliteRow
-            wallName="Right Endwall"
-            shortName="rew"
-            activeBuilding={activeBuilding}
-            values={values}
-            handleNestedChange={handleNestedChange}
-            polycarbWallSize={polycarbWallSize}
-            polycarbColor={polycarbColor}
-            dimensionToUse="width"
-            isDesktop={isDesktop}
-          />
-        </div>
-        <div className="divider"></div>
-        <h4>Roof Relites</h4>
-        <div className="polycarbGrid">
-          <div></div>
-          <p className="center">Size</p>
-          <p className="center">Color</p>
-          <p className="center">Qty</p>
-        </div>
-        <div className="polycarbGrid">
-          <PolycarbReliteRow
-            wallName="Back Roof"
-            shortName="backRoof"
-            activeBuilding={activeBuilding}
-            values={values}
-            handleNestedChange={handleNestedChange}
-            polycarbWallSize={polycarbRoofSize}
-            polycarbColor={polycarbColor}
-            dimensionToUse="length"
-            isDesktop={isDesktop}
-          />
-          <PolycarbReliteRow
-            wallName="Front Roof"
-            shortName="frontRoof"
-            activeBuilding={activeBuilding}
-            values={values}
-            handleNestedChange={handleNestedChange}
-            polycarbWallSize={polycarbRoofSize}
-            polycarbColor={polycarbColor}
-            dimensionToUse="length"
-            isDesktop={isDesktop}
-          />
-        </div>
-
-        <div className="divider"></div>
       </section>
     </>
   );
