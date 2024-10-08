@@ -52,7 +52,12 @@ function useFormState(initialState) {
     setValues((prev) => {
       const updatedBuildings = prev.buildings.map((building, index) => {
         if (index === buildingIndex) {
-          let updatedBuilding = { ...building, [field]: value };
+          let updatedBuilding;
+          if (field.includes('Gauge')) {
+            updatedBuilding = { ...building, [field]: parseInt(value) };
+          } else {
+            updatedBuilding = { ...building, [field]: value };
+          }
 
           // Handle calculations for singleSlope and leanTo shapes
           if (building.shape === 'singleSlope' || building.shape === 'leanTo') {
@@ -293,12 +298,7 @@ function useFormState(initialState) {
     }));
   };
 
-  const handleftainscotChange = (
-    buildingIndex,
-    wainscotIndex,
-    field,
-    value
-  ) => {
+  const handleWainscotChange = (buildingIndex, wainscotIndex, field, value) => {
     setValues((prev) => ({
       ...prev,
       buildings: prev.buildings.map((building, bIndex) =>
@@ -339,7 +339,7 @@ function useFormState(initialState) {
     }));
   };
 
-  const handleftallSkirtChange = (
+  const handleWallSkirtChange = (
     buildingIndex,
     wallSkirtIndex,
     field,
@@ -452,9 +452,9 @@ function useFormState(initialState) {
     handleCanopyChange,
     handlePartitionChange,
     handleLinerPanelChange,
-    handleftainscotChange,
+    handleWainscotChange,
     handlePartialWallChange,
-    handleftallSkirtChange,
+    handleWallSkirtChange,
     handleOpeningChange,
     handleCalcChange,
     setValues,

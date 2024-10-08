@@ -285,7 +285,7 @@ const BuildingOpenings = ({
         </div>
       </div>
       <div className="tabContent">
-        {values.buildings[activeBuilding].openings[activeWallKey].length >
+        {/* {values.buildings[activeBuilding].openings[activeWallKey].length >
           0 && (
           <div className="onTablet">
             <div className="tableGrid7">
@@ -298,7 +298,7 @@ const BuildingOpenings = ({
               <h5></h5>
             </div>
           </div>
-        )}
+        )} */}
         {values.buildings[activeBuilding].openings[activeWallKey]?.map(
           (opening, index) => (
             <Fragment

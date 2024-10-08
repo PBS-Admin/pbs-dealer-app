@@ -61,9 +61,9 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
     handleCanopyChange,
     handlePartitionChange,
     handleLinerPanelChange,
-    handleftainscotChange,
+    handleWainscotChange,
     handlePartialWallChange,
-    handleftallSkirtChange,
+    handleWallSkirtChange,
     handleOpeningChange,
     handleCalcChange,
     setValues,
@@ -648,9 +648,9 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               activeBuilding={activeBuilding}
               handleNestedChange={handleNestedChange}
               handleLinerPanelChange={handleLinerPanelChange}
-              handleftainscotChange={handleftainscotChange}
+              handleWainscotChange={handleWainscotChange}
               handlePartialWallChange={handlePartialWallChange}
-              handleftallSkirtChange={handleftallSkirtChange}
+              handleWallSkirtChange={handleWallSkirtChange}
               setValues={setValues}
               isDesktop={isDesktop}
             />

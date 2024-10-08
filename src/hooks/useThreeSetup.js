@@ -83,27 +83,27 @@ export const useThreeSetup = (
     (view) => {
       if (!isSetup || !cameraRef.current || !controlsRef.current) return;
 
-      const { width, length, backEaveHeight } = buildingDimensions;
-      const maxDimension = Math.max(width, length, backEaveHeight);
+      const { width, length, eaveHeight } = buildingDimensions;
+      const maxDimension = Math.max(width, length, eaveHeight);
       const distance = maxDimension * 1.35;
 
       // Enable controls for all views
       controlsRef.current.enabled = true;
 
-      let targetPosition = new THREE.Vector3(0, backEaveHeight / 2, 0);
+      let targetPosition = new THREE.Vector3(0, eaveHeight / 2, 0);
 
       switch (view) {
         case 'LEW': // Left Endwall view
-          cameraRef.current.position.set(0, backEaveHeight / 2, distance);
+          cameraRef.current.position.set(0, eaveHeight / 2, distance);
           break;
         case 'REW': // Right Endwall view
-          cameraRef.current.position.set(0, backEaveHeight / 2, -distance);
+          cameraRef.current.position.set(0, eaveHeight / 2, -distance);
           break;
         case 'FSW': // Front Sidewall view
-          cameraRef.current.position.set(distance, backEaveHeight / 2, 0);
+          cameraRef.current.position.set(distance, eaveHeight / 2, 0);
           break;
         case 'BSW': // Back Sidewall view
-          cameraRef.current.position.set(-distance, backEaveHeight / 2, 0);
+          cameraRef.current.position.set(-distance, eaveHeight / 2, 0);
           break;
         case 'TOP': // Top view
           cameraRef.current.position.set(0, distance, 0);
@@ -119,8 +119,8 @@ export const useThreeSetup = (
 
       cameraRef.current.lookAt(targetPosition);
       controlsRef.current.target.copy(targetPosition);
-      // cameraRef.current.lookAt(0, backEaveHeight / 2, 0);
-      // controlsRef.current.target.set(0, backEaveHeight / 2, 0);
+      // cameraRef.current.lookAt(0, eaveHeight / 2, 0);
+      // controlsRef.current.target.set(0, eaveHeight / 2, 0);
       controlsRef.current.update();
 
       if (rendererRef.current && sceneRef.current) {

@@ -21,9 +21,9 @@ const BuildingOptions = ({
   activeBuilding,
   handleNestedChange,
   handleLinerPanelChange,
-  handleftainscotChange,
+  handleWainscotChange,
   handlePartialWallChange,
-  handleftallSkirtChange,
+  handleWallSkirtChange,
   setValues,
   isDesktop,
 }) => {
@@ -513,7 +513,7 @@ const BuildingOptions = ({
                   labelClass="offOnTablet"
                   value={wainscot.wall}
                   onChange={(e) =>
-                    handleftainscotChange(
+                    handleWainscotChange(
                       activeBuilding,
                       wainscotIndex,
                       'wall',
@@ -543,7 +543,7 @@ const BuildingOptions = ({
                     name={`building-${activeBuilding}-wainscotStart-${wainscotIndex}`}
                     value={wainscot.start}
                     onChange={(e) =>
-                      handleftainscotChange(
+                      handleWainscotChange(
                         activeBuilding,
                         wainscotIndex,
                         'start',
@@ -573,7 +573,7 @@ const BuildingOptions = ({
                     name={`building-${activeBuilding}-wainscotEnd-${wainscotIndex}`}
                     value={wainscot.end}
                     onChange={(e) =>
-                      handleftainscotChange(
+                      handleWainscotChange(
                         activeBuilding,
                         wainscotIndex,
                         'end',
@@ -601,7 +601,7 @@ const BuildingOptions = ({
                     name={`building-${activeBuilding}-wainscotHeight-${wainscotIndex}`}
                     value={wainscot.height}
                     onChange={(e) =>
-                      handleftainscotChange(
+                      handleWainscotChange(
                         activeBuilding,
                         wainscotIndex,
                         'height',
@@ -622,7 +622,7 @@ const BuildingOptions = ({
                   labelClass="offOnTablet"
                   value={wainscot.panelOption}
                   onChange={(e) =>
-                    handleftainscotChange(
+                    handleWainscotChange(
                       activeBuilding,
                       wainscotIndex,
                       'panelOption',
@@ -670,7 +670,7 @@ const BuildingOptions = ({
                       .panelType
                   }
                   onChange={(e) =>
-                    handleftainscotChange(
+                    handleWainscotChange(
                       activeBuilding,
                       activeWainscot,
                       'panelType',
@@ -689,7 +689,7 @@ const BuildingOptions = ({
                       .panelGauge
                   }
                   onChange={(e) =>
-                    handleftainscotChange(
+                    handleWainscotChange(
                       activeBuilding,
                       activeWainscot,
                       'panelGauge',
@@ -708,7 +708,7 @@ const BuildingOptions = ({
                       .panelFinish
                   }
                   onChange={(e) =>
-                    handleftainscotChange(
+                    handleWainscotChange(
                       activeBuilding,
                       activeWainscot,
                       'panelFinish',
@@ -945,7 +945,7 @@ const BuildingOptions = ({
                   labelClass="offOnTablet"
                   value={wallSkirt.wall}
                   onChange={(e) =>
-                    handleftallSkirtChange(
+                    handleWallSkirtChange(
                       activeBuilding,
                       wallSkirtIndex,
                       'wall',
@@ -973,7 +973,7 @@ const BuildingOptions = ({
                     name={`building-${activeBuilding}-wallSkirtStartBay-${wallSkirtIndex}`}
                     value={wallSkirt.startBay}
                     onChange={(e) =>
-                      handleftallSkirtChange(
+                      handleWallSkirtChange(
                         activeBuilding,
                         wallSkirtIndex,
                         'startBay',
@@ -1001,7 +1001,7 @@ const BuildingOptions = ({
                     name={`building-${activeBuilding}-wallSkirtEndBay-${wallSkirtIndex}`}
                     value={wallSkirt.endBay}
                     onChange={(e) =>
-                      handleftallSkirtChange(
+                      handleWallSkirtChange(
                         activeBuilding,
                         wallSkirtIndex,
                         'endBay',
@@ -1029,7 +1029,7 @@ const BuildingOptions = ({
                     name={`building-${activeBuilding}-wallSkirtHeight-${wallSkirtIndex}`}
                     value={wallSkirt.height}
                     onChange={(e) =>
-                      handleftallSkirtChange(
+                      handleWallSkirtChange(
                         activeBuilding,
                         wallSkirtIndex,
                         'height',
@@ -1052,7 +1052,7 @@ const BuildingOptions = ({
                       name={`building-${activeBuilding}-wallSkirtCutColumns-${wallSkirtIndex}`}
                       checked={wallSkirt.cutColumns}
                       onChange={(e) =>
-                        handleftallSkirtChange(
+                        handleWallSkirtChange(
                           activeBuilding,
                           wallSkirtIndex,
                           'cutColumns',

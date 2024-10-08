@@ -20,6 +20,9 @@ const BuildingSketch = ({
         shape: buildingData.shape,
         width: buildingData.width,
         length: buildingData.length,
+        eaveHeight: buildingData.eaveHeight,
+        lowEaveHeight: buildingData.lowEaveHeight,
+        highEaveHeight: buildingData.highEaveHeight,
         backEaveheight: buildingData.backEaveHeight,
         frontEaveHeight: buildingData.frontEaveHeight,
       },
@@ -157,36 +160,42 @@ const BuildingSketch = ({
       />
       <div className="sketchButtonContainer">
         <button
+          type="button"
           className="sketchButton"
           onClick={() => handleViewChange('LEW')}
         >
           LEW
         </button>
         <button
+          type="button"
           className="sketchButton"
           onClick={() => handleViewChange('REW')}
         >
           REW
         </button>
         <button
+          type="button"
           className="sketchButton"
           onClick={() => handleViewChange('FSW')}
         >
           FSW
         </button>
         <button
+          type="button"
           className="sketchButton"
           onClick={() => handleViewChange('BSW')}
         >
           BSW
         </button>
         <button
+          type="button"
           className="sketchButton"
           onClick={() => handleViewChange('TOP')}
         >
           TOP
         </button>
         <button
+          type="button"
           className="sketchButton"
           onClick={() => handleViewChange('ISO')}
         >
