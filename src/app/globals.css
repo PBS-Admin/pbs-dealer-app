@@ -475,6 +475,7 @@ select {
   display: flex;
   border-bottom: 1px solid var(--dark-grey);
   min-width: max-content;
+  gap: 4px;
 }
 
 .tab {
@@ -488,7 +489,7 @@ select {
   font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
-  margin: 0px 4px -1px 0;
+  margin-bottom: -1px;
 }
 
 .activeTab {
