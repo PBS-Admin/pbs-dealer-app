@@ -7,7 +7,7 @@ const FinalizeQuote = ({ values, handleChange }) => {
         <header className="cardHeader">
           <h3>Finalize Quote</h3>
         </header>
-        <div className="cardGrid">
+        <div className="grid4">
           <div className="cardInput">
             <button type="submit" className="button success">
               Save Quote
