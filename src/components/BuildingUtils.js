@@ -17,25 +17,25 @@ export const createBuilding = (buildingData) => {
 };
 
 const createSymmetricalBuilding = (buildingData) => {
-  const { width, length, eaveHeight, roofPitch } = buildingData;
+  const { width, length, backEaveHeight, backRoofPitch } = buildingData;
 
   // Create building
-  const buildingGeometry = new THREE.BoxGeometry(width, eaveHeight, length);
+  const buildingGeometry = new THREE.BoxGeometry(width, backEaveHeight, length);
   const buildingMaterial = new THREE.MeshBasicMaterial({
     color: 0xcccccc,
     transparent: true,
     opacity: 0.7,
   });
   const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
-  building.position.y = eaveHeight / 2;
+  building.position.y = backEaveHeight / 2;
 
   // Create roof
   const roofHeight =
-    (width / 2) * Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
+    (width / 2) * Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180);
   const roofGeometry = createSymmetricRoofGeometry(
     width,
     length,
-    eaveHeight,
+    backEaveHeight,
     roofHeight
   );
   const roofMaterial = new THREE.MeshBasicMaterial({
@@ -50,7 +50,7 @@ const createSymmetricalBuilding = (buildingData) => {
   const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
   const buildingEdges = new THREE.EdgesGeometry(buildingGeometry);
   const buildingLines = new THREE.LineSegments(buildingEdges, edgesMaterial);
-  buildingLines.position.y = eaveHeight / 2;
+  buildingLines.position.y = backEaveHeight / 2;
 
   const roofEdges = new THREE.EdgesGeometry(roofGeometry);
   const roofLines = new THREE.LineSegments(roofEdges, edgesMaterial);
@@ -58,26 +58,31 @@ const createSymmetricalBuilding = (buildingData) => {
   return { building, roof, buildingLines, roofLines };
 };
 
-const createSymmetricRoofGeometry = (width, length, eaveHeight, roofHeight) => {
+const createSymmetricRoofGeometry = (
+  width,
+  length,
+  backEaveHeight,
+  roofHeight
+) => {
   const roofGeometry = new THREE.BufferGeometry();
   const vertices = new Float32Array([
     -width / 2,
-    eaveHeight,
+    backEaveHeight,
     length / 2,
     width / 2,
-    eaveHeight,
+    backEaveHeight,
     length / 2,
     0,
-    eaveHeight + roofHeight,
+    backEaveHeight + roofHeight,
     length / 2,
     -width / 2,
-    eaveHeight,
+    backEaveHeight,
     -length / 2,
     width / 2,
-    eaveHeight,
+    backEaveHeight,
     -length / 2,
     0,
-    eaveHeight + roofHeight,
+    backEaveHeight + roofHeight,
     -length / 2,
   ]);
   const indices = [0, 1, 2, 3, 4, 5, 0, 2, 5, 5, 3, 0, 1, 2, 5, 5, 4, 1];
@@ -88,7 +93,7 @@ const createSymmetricRoofGeometry = (width, length, eaveHeight, roofHeight) => {
 };
 
 const createSingleSlopeBuilding = (buildingData) => {
-  const { width, length, lowEaveHeight, highEaveHeight, roofPitch } =
+  const { width, length, backEaveHeight, frontEaveHeight, backRoofPitch } =
     buildingData;
 
   // Create building
@@ -102,10 +107,10 @@ const createSingleSlopeBuilding = (buildingData) => {
     0,
     length / 2,
     width / 2,
-    highEaveHeight,
+    frontEaveHeight,
     length / 2,
     -width / 2,
-    lowEaveHeight,
+    backEaveHeight,
     length / 2,
     // Back face
     -width / 2,
@@ -115,10 +120,10 @@ const createSingleSlopeBuilding = (buildingData) => {
     0,
     -length / 2,
     width / 2,
-    highEaveHeight,
+    frontEaveHeight,
     -length / 2,
     -width / 2,
-    lowEaveHeight,
+    backEaveHeight,
     -length / 2,
   ]);
   const indices = [
@@ -177,16 +182,16 @@ const createSingleSlopeBuilding = (buildingData) => {
   const roofGeometry = new THREE.BufferGeometry();
   const roofVertices = new Float32Array([
     -width / 2,
-    lowEaveHeight,
+    backEaveHeight,
     length / 2,
     width / 2,
-    highEaveHeight,
+    frontEaveHeight,
     length / 2,
     width / 2,
-    highEaveHeight,
+    frontEaveHeight,
     -length / 2,
     -width / 2,
-    lowEaveHeight,
+    backEaveHeight,
     -length / 2,
   ]);
   const roofIndices = [0, 1, 2, 2, 3, 0];
@@ -462,17 +467,13 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
       backPeakOffset,
       width,
       length,
-      eaveHeight,
-      lowEaveHeight,
-      highEaveHeight,
       backEaveHeight,
       frontEaveHeight,
       backRoofPitch,
       frontRoofPitch,
-      roofPitch,
     } = buildingData;
     const roofHeight =
-      (width / 2) * Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
+      (width / 2) * Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180);
 
     const backRoofHeight =
       (backPeakOffset * backRoofPitch) / 12 + backEaveHeight;
@@ -490,7 +491,7 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
           case 'rightEndwall':
             height =
               (width / 2 - Math.abs(width / 2 - position)) *
-              Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
+              Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180);
             start = new THREE.Vector3(
               wall === 'leftEndwall'
                 ? -width / 2 + position
@@ -502,7 +503,7 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
               wall === 'leftEndwall'
                 ? -width / 2 + position
                 : width / 2 - position,
-              eaveHeight + height,
+              backEaveHeight + height,
               wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
             );
             createLine(start, end);
@@ -517,7 +518,7 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
             );
             end = new THREE.Vector3(
               -width / 2 - 0.1,
-              eaveHeight,
+              backEaveHeight,
               length / 2 - position
             );
             createLine(start, end);
@@ -530,7 +531,7 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
             );
             end = new THREE.Vector3(
               width / 2 + 0.1,
-              eaveHeight,
+              backEaveHeight,
               length / 2 - position
             );
             createLine(start, end);
@@ -538,17 +539,17 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
             // Roof line
             roofStart = new THREE.Vector3(
               -width / 2,
-              eaveHeight,
+              backEaveHeight,
               length / 2 - position
             );
             roofMid = new THREE.Vector3(
               0,
-              eaveHeight + roofHeight,
+              backEaveHeight + roofHeight,
               length / 2 - position
             );
             roofEnd = new THREE.Vector3(
               width / 2,
-              eaveHeight,
+              backEaveHeight,
               length / 2 - position
             );
             createRoofLine(roofStart, roofMid, roofEnd);
@@ -562,8 +563,8 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
           case 'rightEndwall':
             height =
               wall === 'leftEndwall'
-                ? (position * roofPitch) / 12
-                : ((width - position) * roofPitch) / 12;
+                ? (position * backRoofPitch) / 12
+                : ((width - position) * backRoofPitch) / 12;
             start = new THREE.Vector3(
               wall === 'leftEndwall'
                 ? -width / 2 + position
@@ -575,7 +576,7 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
               wall === 'leftEndwall'
                 ? -width / 2 + position
                 : width / 2 - position,
-              lowEaveHeight + height,
+              backEaveHeight + height,
 
               wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
             );
@@ -591,7 +592,7 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
             );
             end = new THREE.Vector3(
               width / 2 + 0.1,
-              highEaveHeight,
+              frontEaveHeight,
               length / 2 - position
             );
             createLine(start, end);
@@ -604,7 +605,7 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
             );
             end = new THREE.Vector3(
               -width / 2 - 0.1,
-              lowEaveHeight,
+              backEaveHeight,
               length / 2 - position
             );
             createLine(start, end);
@@ -612,17 +613,17 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
             // Roof line
             roofStart = new THREE.Vector3(
               -width / 2,
-              lowEaveHeight,
+              backEaveHeight,
               length / 2 - position
             );
             // roofMid = new THREE.Vector3(
             //   0,
-            //   eaveHeight + roofHeight,
+            //   backEaveHeight + roofHeight,
             //   -length / 2 + position
             // );
             roofEnd = new THREE.Vector3(
               width / 2,
-              highEaveHeight,
+              frontEaveHeight,
 
               length / 2 - position
             );
@@ -734,14 +735,10 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
     backPeakOffset,
     width,
     length,
-    eaveHeight,
-    lowEaveHeight,
-    highEaveHeight,
     frontEaveHeight,
     backEaveHeight,
     frontRoofPitch,
     backRoofPitch,
-    roofPitch,
     roofBreakPoints,
   } = buildingData;
 
@@ -780,15 +777,16 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
     switch (shape) {
       case 'symmetrical':
         roofHeight =
-          (width / 2) * Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
+          (width / 2) *
+          Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180);
 
         startHeight =
           (width / 2 - Math.abs(width / 2 - bayStart)) *
-          Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
+          Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180);
 
         endHeight =
           (width / 2 - Math.abs(width / 2 - bayEnd)) *
-          Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
+          Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180);
 
         switch (wall) {
           case 'leftEndwall':
@@ -796,14 +794,14 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
               new THREE.Vector3(-width / 2 + bayStart, 0, length / 2 + 0.1),
               new THREE.Vector3(
                 -width / 2 + bayEnd,
-                eaveHeight + endHeight,
+                backEaveHeight + endHeight,
                 length / 2 + 0.1
               )
             );
             createBraceLine(
               new THREE.Vector3(
                 -width / 2 + bayStart,
-                eaveHeight + startHeight,
+                backEaveHeight + startHeight,
                 length / 2 + 0.1
               ),
               new THREE.Vector3(-width / 2 + bayEnd, 0, length / 2 + 0.1)
@@ -814,14 +812,14 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
               new THREE.Vector3(width / 2 - bayStart, 0, -length / 2 - 0.1),
               new THREE.Vector3(
                 width / 2 - bayEnd,
-                eaveHeight + endHeight,
+                backEaveHeight + endHeight,
                 -length / 2 - 0.1
               )
             );
             createBraceLine(
               new THREE.Vector3(
                 width / 2 - bayStart,
-                eaveHeight + startHeight,
+                backEaveHeight + startHeight,
                 -length / 2 - 0.1
               ),
               new THREE.Vector3(width / 2 - bayEnd, 0, -length / 2 - 0.1)
@@ -832,14 +830,14 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
               new THREE.Vector3(width / 2 + 0.1, 0, length / 2 - bayStart),
               new THREE.Vector3(
                 width / 2 + 0.1,
-                eaveHeight,
+                backEaveHeight,
                 length / 2 - bayEnd
               )
             );
             createBraceLine(
               new THREE.Vector3(
                 width / 2 + 0.1,
-                eaveHeight,
+                backEaveHeight,
                 length / 2 - bayStart
               ),
               new THREE.Vector3(width / 2 + 0.1, 0, length / 2 - bayEnd)
@@ -850,14 +848,14 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
               new THREE.Vector3(-width / 2 - 0.1, 0, -length / 2 + bayStart),
               new THREE.Vector3(
                 -width / 2 - 0.1,
-                eaveHeight,
+                backEaveHeight,
                 -length / 2 + bayEnd
               )
             );
             createBraceLine(
               new THREE.Vector3(
                 -width / 2 - 0.1,
-                eaveHeight,
+                backEaveHeight,
                 -length / 2 + bayStart
               ),
               new THREE.Vector3(-width / 2 - 0.1, 0, -length / 2 + bayEnd)
@@ -867,48 +865,48 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
             createBraceLine(
               new THREE.Vector3(
                 -width / 2,
-                eaveHeight + 0.1,
+                backEaveHeight + 0.1,
                 length / 2 - bayStart
               ),
               new THREE.Vector3(
                 0,
-                eaveHeight + roofHeight + 0.1,
+                backEaveHeight + roofHeight + 0.1,
                 length / 2 - bayEnd
               )
             );
             createBraceLine(
               new THREE.Vector3(
                 0,
-                eaveHeight + roofHeight + 0.1,
+                backEaveHeight + roofHeight + 0.1,
                 length / 2 - bayStart
               ),
               new THREE.Vector3(
                 -width / 2,
-                eaveHeight + 0.1,
+                backEaveHeight + 0.1,
                 length / 2 - bayEnd
               )
             );
             createBraceLine(
               new THREE.Vector3(
                 width / 2,
-                eaveHeight + 0.1,
+                backEaveHeight + 0.1,
                 length / 2 - bayStart
               ),
               new THREE.Vector3(
                 0,
-                eaveHeight + roofHeight + 0.1,
+                backEaveHeight + roofHeight + 0.1,
                 length / 2 - bayEnd
               )
             );
             createBraceLine(
               new THREE.Vector3(
                 0,
-                eaveHeight + roofHeight + 0.1,
+                backEaveHeight + roofHeight + 0.1,
                 length / 2 - bayStart
               ),
               new THREE.Vector3(
                 width / 2,
-                eaveHeight + 0.1,
+                backEaveHeight + 0.1,
                 length / 2 - bayEnd
               )
             );
@@ -918,12 +916,12 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
       case 'singleSlope':
       case 'leanTo':
         // roofHeight =
-        //   (width / 2) * Math.tan((((roofPitch * 100) / 12) * Math.PI) / 180);
+        //   (width / 2) * Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180);
 
         switch (wall) {
           case 'leftEndwall':
-            startHeight = (bayStart * roofPitch) / 12 + lowEaveHeight;
-            endHeight = (bayEnd * roofPitch) / 12 + lowEaveHeight;
+            startHeight = (bayStart * backRoofPitch) / 12 + backEaveHeight;
+            endHeight = (bayEnd * backRoofPitch) / 12 + backEaveHeight;
             createBraceLine(
               new THREE.Vector3(-width / 2 + bayStart, 0, length / 2 + 0.1),
               new THREE.Vector3(
@@ -942,8 +940,10 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
             );
             break;
           case 'rightEndwall':
-            startHeight = ((width - bayStart) * roofPitch) / 12 + lowEaveHeight;
-            endHeight = ((width - bayEnd) * roofPitch) / 12 + lowEaveHeight;
+            startHeight =
+              ((width - bayStart) * backRoofPitch) / 12 + backEaveHeight;
+            endHeight =
+              ((width - bayEnd) * backRoofPitch) / 12 + backEaveHeight;
             createBraceLine(
               new THREE.Vector3(width / 2 - bayStart, 0, -length / 2 - 0.1),
               new THREE.Vector3(
@@ -966,14 +966,14 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
               new THREE.Vector3(width / 2 + 0.1, 0, length / 2 - bayStart),
               new THREE.Vector3(
                 width / 2 + 0.1,
-                highEaveHeight,
+                frontEaveHeight,
                 length / 2 - bayEnd
               )
             );
             createBraceLine(
               new THREE.Vector3(
                 width / 2 + 0.1,
-                highEaveHeight,
+                frontEaveHeight,
                 length / 2 - bayStart
               ),
               new THREE.Vector3(width / 2 + 0.1, 0, length / 2 - bayEnd)
@@ -984,14 +984,14 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
               new THREE.Vector3(-width / 2 - 0.1, 0, -length / 2 + bayStart),
               new THREE.Vector3(
                 -width / 2 - 0.1,
-                lowEaveHeight,
+                backEaveHeight,
                 -length / 2 + bayEnd
               )
             );
             createBraceLine(
               new THREE.Vector3(
                 -width / 2 - 0.1,
-                lowEaveHeight,
+                backEaveHeight,
                 -length / 2 + bayStart
               ),
               new THREE.Vector3(-width / 2 - 0.1, 0, -length / 2 + bayEnd)
@@ -1001,24 +1001,24 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
             createBraceLine(
               new THREE.Vector3(
                 -width / 2,
-                lowEaveHeight + 0.1,
+                backEaveHeight + 0.1,
                 length / 2 - bayStart
               ),
               new THREE.Vector3(
                 width / 2,
-                highEaveHeight + 0.1,
+                frontEaveHeight + 0.1,
                 length / 2 - bayEnd
               )
             );
             createBraceLine(
               new THREE.Vector3(
                 width / 2,
-                highEaveHeight,
+                frontEaveHeight,
                 length / 2 - bayStart
               ),
               new THREE.Vector3(
                 -width / 2,
-                lowEaveHeight + 0.1,
+                backEaveHeight + 0.1,
                 length / 2 - bayEnd
               )
             );

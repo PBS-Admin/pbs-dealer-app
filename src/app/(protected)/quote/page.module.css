@@ -11,15 +11,20 @@
 .sidebar button {
     background: none;
     font-size: 1em;
+    margin: 0 1em;
     padding: 1em;
     border: none;
     cursor: pointer;
-    border-radius: 0 1em 1em 0;
+    border-radius: 0.75em;
     transition: background-color .5s ease;
 }
 
 .sidebar button:hover {
     background: var(--light-orange);
+}
+
+.sidebar .activeCard {
+    background: var(--light-grey);
 }
 
 .tabContainer{
@@ -183,6 +188,8 @@
     color: var(--background-white);
     align-self: center;
     background-color: var(--light-blue);
+    aspect-ratio: 1 /1;
+    min-width: 35px;
 }
 
 .addBuilding {
@@ -194,6 +201,8 @@
     height: 2em;
     font-size: 1.25em;
     align-self: center;
+    min-width: 41px;
+    min-height: 41px;
 }
 
 .buttonContainer {
@@ -210,6 +219,8 @@
     color: var(--background-white);
     align-self: flex-end;
     background: var(--red);
+    aspect-ratio: 1 /1;
+    min-width: 35px;
 }
 
 .activeBuilding {
@@ -220,6 +231,8 @@
     color: var(--background-white);
     align-self: flex-end;
     background: rgba(0, 0, 0, 0.5);
+    aspect-ratio: 1 /1;
+    min-width: 35px;
 }
 
 .activeBuildingSelected {
@@ -236,6 +249,6 @@
 @media screen and (min-width: 1000px) {
     .sketchBox{        
         border-radius: 0 1em 1em 0;  
-        margin-top: 5em;      
+        margin-top: 1em;      
     }
 }  

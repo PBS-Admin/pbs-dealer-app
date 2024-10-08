@@ -36,6 +36,7 @@ const FeetInchesInput = ({
   onChange,
   name,
   label,
+  labelClass,
   row,
   calc,
   onCalc,
@@ -73,7 +74,9 @@ const FeetInchesInput = ({
   return (
     <div className={`cardInput ${condition}`}>
       <div className={`${calcClass}`}>
-        <label htmlFor={name}>{label}</label>
+        <label className={labelClass} htmlFor={name}>
+          {label}
+        </label>
         {calc && (
           <button type="button" onClick={onCalc}>
             Calc

@@ -93,55 +93,51 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           commonWall: '',
           shape: 'symmetrical',
           backPeakOffset: '',
-          eaveHeight: '',
-          lowEaveHeight: '',
-          highEaveHeight: '',
           backEaveHeight: '',
           frontEaveHeight: '',
-          roofPitch: '',
           backRoofPitch: '',
           frontRoofPitch: '',
-          swBaySpacing: '',
-          lewBaySpacing: '',
-          rewBaySpacing: '',
+          roofBaySpacing: '',
+          leftBaySpacing: '',
+          rightBaySpacing: '',
           collateralLoad: values.collateralLoad,
           liveLoad: values.liveLoad,
           deadLoad: values.deadLoad,
           enclosure: '',
-          roofLoad: values.roofLoad,
+          roofSnowLoad: values.roofSnowLoad,
           thermalFactor: '',
           frameType: 'rigidFrame',
           intColSpacing: '',
           straightExtColumns: false,
           noFlangeBraces: false,
-          lewFrame: 'postAndBeam',
+          leftFrame: 'postAndBeam',
           leftEndwallInset: '',
-          lewIntColSpacing: '',
-          rewFrame: 'postAndBeam',
+          leftIntColSpacing: '',
+          rightFrame: 'postAndBeam',
           rightEndwallInset: '',
-          rewIntColSpacing: '',
-          fswBracingType: 'xbrace',
-          fswBracingHeight: '',
-          bswBracingType: 'xbrace',
-          bswBracingHeight: '',
-          lewBracingType: 'xbrace',
-          lewBracingHeight: '',
-          rewBracingType: 'xbrace',
-          rewBracingHeight: '',
-          fswBracedBays: '',
-          bswBracedBays: '',
-          lewBracedBays: '',
-          rewBracedBays: '',
+          rightIntColSpacing: '',
+          frontBracingType: 'xbrace',
+          frontBracingHeight: '',
+          backBracingType: 'xbrace',
+          backBracingHeight: '',
+          leftBracingType: 'xbrace',
+          leftBracingHeight: '',
+          rightBracingType: 'xbrace',
+          rightBracingHeight: '',
+          frontBracedBays: '',
+          backBracedBays: '',
+          leftBracedBays: '',
+          rightBracedBays: '',
           roofBracedBays: '',
           roofBreakPoints: 'left',
-          fswGirtType: 'bipass',
-          bswGirtType: 'bipass',
-          lewGirtType: 'bipass',
-          rewGirtType: 'bipass',
-          fswGirtSpacing: 'default',
-          bswGirtSpacing: 'default',
-          lewGirtSpacing: 'default',
-          rewGirtSpacing: 'default',
+          frontGirtType: 'bipass',
+          backGirtType: 'bipass',
+          leftGirtType: 'bipass',
+          rightGirtType: 'bipass',
+          frontGirtSpacing: 'default',
+          backGirtSpacing: 'default',
+          leftGirtSpacing: 'default',
+          rightGirtSpacing: 'default',
           baseCondition: 'angle',
           purlinSpacing: '',
           roofPanelType: 'pbr',
@@ -156,10 +152,10 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           wallInsulation: '',
           wallInsulationOthers: false,
           // Building - Extensions
-          fswExtensionWidth: '',
-          bswExtensionWidth: '',
-          lewExtensionWidth: '',
-          rewExtensionWidth: '',
+          frontExtensionWidth: '',
+          backExtensionWidth: '',
+          leftExtensionWidth: '',
+          rightExtensionWidth: '',
           frontExtensionBays: '',
           frontExtensionColumns: false,
           backExtensionBays: '',
@@ -174,18 +170,18 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           wainscots: [],
           partialWalls: [],
           wallSkirts: [],
-          fswPolySize: '3',
-          fswPolyColor: 'clear',
-          fswPolyQty: '',
-          bswPolySize: '3',
-          bswPolyColor: 'clear',
-          bswPolyQty: '',
-          lewPolySize: '3',
-          lewPolyColor: 'clear',
-          lewPolyQty: '',
-          rewPolySize: '3',
-          rewPolyColor: 'clear',
-          rewPolyQty: '',
+          frontPolySize: '3',
+          frontPolyColor: 'clear',
+          frontPolyQty: '',
+          backPolySize: '3',
+          backPolyColor: 'clear',
+          backPolyQty: '',
+          leftPolySize: '3',
+          leftPolyColor: 'clear',
+          leftPolyQty: '',
+          rightPolySize: '3',
+          rightPolyColor: 'clear',
+          rightPolyQty: '',
           backRoofPolySize: '10',
           backRoofPolyColor: 'clear',
           backRoofPolyQty: '',
@@ -193,10 +189,10 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           frontRoofPolyColor: 'clear',
           frontRoofPolyQty: '',
           openings: {
-            fsw: [],
-            bsw: [],
-            lew: [],
-            rew: [],
+            front: [],
+            back: [],
+            left: [],
+            right: [],
           },
         },
       ],
@@ -402,37 +398,70 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
             </button>
           </div>
           <nav className={styles.sidebar}>
-            <button onClick={() => setActiveCardDirectly('quote-info')}>
+            <button
+              className={`${activeCard == 'quote-info' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('quote-info')}
+            >
               Project Information
             </button>
-            {/* <button onClick={() => setActiveCardDirectly('design-code')}>
+            {/* <button
+              className={`${activeCard == 'design-code' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('design-code')}
+            >
               Design Codes
             </button> */}
-            <button onClick={() => setActiveCardDirectly('building-project')}>
+            <button
+              className={`${activeCard == 'building-project' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('building-project')}
+            >
               Building Project
             </button>
-            <button onClick={() => setActiveCardDirectly('bldg-layout')}>
-              Building {activeBuilding + 1} - Layout
+            <button
+              className={`${activeCard == 'bldg-layout' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('bldg-layout')}
+            >
+              Building {String.fromCharCode(activeBuilding + 65)} - Layout
             </button>
-            <button onClick={() => setActiveCardDirectly('bldg-extensions')}>
-              Building {activeBuilding + 1} - Extensions
+            <button
+              className={`${activeCard == 'bldg-extensions' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('bldg-extensions')}
+            >
+              Building {String.fromCharCode(activeBuilding + 65)} - Extensions
             </button>
-            <button onClick={() => setActiveCardDirectly('bldg-partitions')}>
-              Building {activeBuilding + 1} - Partitions
+            <button
+              className={`${activeCard == 'bldg-partitions' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('bldg-partitions')}
+            >
+              Building {String.fromCharCode(activeBuilding + 65)} - Partitions
             </button>
-            <button onClick={() => setActiveCardDirectly('bldg-options')}>
-              Building {activeBuilding + 1} - Options
+            <button
+              className={`${activeCard == 'bldg-options' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('bldg-options')}
+            >
+              Building {String.fromCharCode(activeBuilding + 65)} - Options
             </button>
-            {/* <button onClick={() => setActiveCardDirectly('bldg-cranes')}>
-              Building {activeBuilding + 1} - Cranes
+            {/* <button
+              className={`${activeCard == 'bldg-cranes' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('bldg-cranes')}
+            >
+              Building {String.fromCharCode(activeBuilding + 65)} - Cranes
             </button> */}
-            <button onClick={() => setActiveCardDirectly('bldg-openings')}>
-              Building {activeBuilding + 1} - Openings
+            <button
+              className={`${activeCard == 'bldg-openings' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('bldg-openings')}
+            >
+              Building {String.fromCharCode(activeBuilding + 65)} - Openings
             </button>
-            <button onClick={() => setActiveCardDirectly('accessories')}>
+            <button
+              className={`${activeCard == 'accessories' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('accessories')}
+            >
               Accessories
             </button>
-            <button onClick={() => setActiveCardDirectly('finalize-quote')}>
+            <button
+              className={`${activeCard == 'finalize-quote' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('finalize-quote')}
+            >
               Finalize Quote
             </button>
           </nav>
@@ -475,7 +504,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               {values.buildings.map((building, index) => (
                 <div key={index} className={styles.buildingContainer}>
                   <div className={styles.buildingTitleContainer}>
-                    <h3>Building {index + 1}</h3>
+                    <h3>Building {String.fromCharCode(index + 65)}</h3>
                     <button
                       className={styles.copyBuilding}
                       type="button"
@@ -532,51 +561,56 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       disabled={index != activeBuilding}
                     />
                   </div>
-                  <div className={styles.buildingProjectContainer}>
-                    <label htmlFor={`buildingRotation-${index}`}>
-                      Rotation:
-                    </label>
-                    <input
-                      type="number"
-                      id={`buildingRotation-${index}`}
-                      name={`buildingRotation-${index}`}
-                      value={building.rotation}
-                      onChange={(name, value) =>
-                        handleNestedChange(index, 'rotation', value)
-                      }
-                      min="0"
-                      max="360"
-                      step="15"
-                      disabled={index != activeBuilding}
-                    />
-                  </div>
-                  <div className={styles.buildingProjectContainer}>
-                    <label htmlFor={`buildingCommonWall-${index}`}>
-                      Common Wall:
-                    </label>
-                    <select
-                      id={`buildingCommonWall-${index}`}
-                      name={`buildingCommonWall-${index}`}
-                      value={building.commonWall}
-                      onChange={(name, value) =>
-                        handleNestedChange(index, 'commonWall', value)
-                      }
-                      disabled={index != activeBuilding}
-                    >
-                      <option value="">Select a building</option>
-                      {values.buildings.map(
-                        (_, buildingIndex) =>
-                          buildingIndex !== index && (
-                            <option
-                              key={buildingIndex}
-                              value={buildingIndex + 1}
-                            >
-                              Building {buildingIndex + 1}
-                            </option>
-                          )
-                      )}
-                    </select>
-                  </div>
+                  {values.buildings.length > 1 && index !== 0 && (
+                    <>
+                      <div className={styles.buildingProjectContainer}>
+                        <label htmlFor={`buildingRotation-${index}`}>
+                          Rotation:
+                        </label>
+                        <input
+                          type="number"
+                          id={`buildingRotation-${index}`}
+                          name={`buildingRotation-${index}`}
+                          value={building.rotation}
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'rotation', value)
+                          }
+                          min="0"
+                          max="270"
+                          step="90"
+                          disabled={index != activeBuilding}
+                        />
+                      </div>
+                      <div className={styles.buildingProjectContainer}>
+                        <label htmlFor={`buildingCommonWall-${index}`}>
+                          Common Wall:
+                        </label>
+                        <select
+                          id={`buildingCommonWall-${index}`}
+                          name={`buildingCommonWall-${index}`}
+                          value={building.commonWall}
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'commonWall', value)
+                          }
+                          disabled={index != activeBuilding}
+                        >
+                          <option value="">Select a building</option>
+                          {values.buildings.map(
+                            (_, buildingIndex) =>
+                              buildingIndex !== index && (
+                                <option
+                                  key={buildingIndex}
+                                  value={buildingIndex + 1}
+                                >
+                                  Building{' '}
+                                  {String.fromCharCode(buildingIndex + 65)}
+                                </option>
+                              )
+                          )}
+                        </select>
+                      </div>
+                    </>
+                  )}
                   <div className={styles.buttonContainer}>
                     {/* Active Button */}
                     <button
@@ -731,7 +765,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         onClose={closeDeleteDialog}
         onDelete={confirmRemoveBuilding}
         title="Confirm Deletion"
-        message={`Are you sure you want to delete Building ${buildingToDelete !== null ? buildingToDelete + 1 : ''}?`}
+        message={`Are you sure you want to delete Building ${buildingToDelete !== null ? String.fromCharCode(buildingToDelete + 65) : ''}?`}
       />
       <DeleteDialog
         isOpen={isQuoteDeleteDialogOpen}

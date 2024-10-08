@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalculator } from '@fortawesome/free-solid-svg-icons';
 
 const ReusableSelect = ({
   id,
   name,
   value,
+  className = '',
   onChange,
   options,
   label,
-  labelHide,
+  labelClass,
+  icon = '',
+  iconColor = '',
+  iconOnClick = null,
   defaultValue,
   disabled,
 }) => {
@@ -28,9 +34,14 @@ const ReusableSelect = ({
   };
 
   return (
-    <div className="cardInput">
-      <label className={labelHide} htmlFor={id}>
-        {label}
+    <div className={`cardInput ${className}`}>
+      <label className={labelClass} htmlFor={id}>
+        <span>{label}</span>
+        {icon && (
+          <button onClick={iconOnClick} className={`icon ${iconColor}`}>
+            <FontAwesomeIcon icon={faCalculator} />
+          </button>
+        )}
       </label>
       <select
         className="selectInput"

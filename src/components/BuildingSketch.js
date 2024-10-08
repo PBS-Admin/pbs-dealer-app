@@ -17,14 +17,9 @@ const BuildingSketch = ({
       mountRef,
       backgroundColor,
       {
-        shape: buildingData.shape,
         width: buildingData.width,
         length: buildingData.length,
-        eaveHeight: buildingData.eaveHeight,
-        lowEaveHeight: buildingData.lowEaveHeight,
-        highEaveHeight: buildingData.highEaveHeight,
-        backEaveheight: buildingData.backEaveHeight,
-        frontEaveHeight: buildingData.frontEaveHeight,
+        height: buildingData.backEaveHeight,
       },
       currentView
     );
@@ -61,54 +56,59 @@ const BuildingSketch = ({
 
     scene.add(building, roof, buildingLines, roofLines);
 
-    addBayLines(buildingData.lewBaySpacing, 'leftEndwall', scene, buildingData);
     addBayLines(
-      buildingData.rewBaySpacing,
+      buildingData.leftBaySpacing,
+      'leftEndwall',
+      scene,
+      buildingData
+    );
+    addBayLines(
+      buildingData.rightBaySpacing,
       'rightEndwall',
       scene,
       buildingData
     );
     addBayLines(
-      buildingData.sidewallBaySpacing,
+      buildingData.roofBaySpacing,
       'frontSidewall',
       scene,
       buildingData
     );
 
     addBraceLines(
-      buildingData.sidewallBaySpacing,
-      buildingData.fswBracedBays,
+      buildingData.roofBaySpacing,
+      buildingData.frontBracedBays,
       'frontSidewall',
       scene,
       buildingData
     );
 
     addBraceLines(
-      buildingData.sidewallBaySpacing,
-      buildingData.bswBracedBays,
+      buildingData.roofBaySpacing,
+      buildingData.backBracedBays,
       'backSidewall',
       scene,
       buildingData
     );
 
     addBraceLines(
-      buildingData.lewBaySpacing,
-      buildingData.lewBracedBays,
+      buildingData.leftBaySpacing,
+      buildingData.leftBracedBays,
       'leftEndwall',
       scene,
       buildingData
     );
 
     addBraceLines(
-      buildingData.rewBaySpacing,
-      buildingData.rewBracedBays,
+      buildingData.rightBaySpacing,
+      buildingData.rightBracedBays,
       'rightEndwall',
       scene,
       buildingData
     );
 
     addBraceLines(
-      buildingData.sidewallBaySpacing,
+      buildingData.roofBaySpacing,
       buildingData.roofBracedBays,
       'roof',
       scene,
@@ -154,22 +154,43 @@ const BuildingSketch = ({
         }}
       />
       <div className="sketchButtonContainer">
-        <button className="sketchButton" onClick={() => handleViewChange('L')}>
+        <button
+          type="button"
+          className="sketchButton"
+          onClick={() => handleViewChange('LEW')}
+        >
           LEW
         </button>
-        <button className="sketchButton" onClick={() => handleViewChange('R')}>
+        <button
+          type="button"
+          className="sketchButton"
+          onClick={() => handleViewChange('REW')}
+        >
           REW
         </button>
-        <button className="sketchButton" onClick={() => handleViewChange('FS')}>
+        <button
+          type="button"
+          className="sketchButton"
+          onClick={() => handleViewChange('FSW')}
+        >
           FSW
         </button>
-        <button className="sketchButton" onClick={() => handleViewChange('BS')}>
+        <button
+          type="button"
+          className="sketchButton"
+          onClick={() => handleViewChange('BSW')}
+        >
           BSW
         </button>
-        <button className="sketchButton" onClick={() => handleViewChange('T')}>
+        <button
+          type="button"
+          className="sketchButton"
+          onClick={() => handleViewChange('TOP')}
+        >
           TOP
         </button>
         <button
+          type="button"
           className="sketchButton"
           onClick={() => handleViewChange('ISO')}
         >

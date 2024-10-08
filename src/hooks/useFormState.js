@@ -52,38 +52,43 @@ function useFormState(initialState) {
     setValues((prev) => {
       const updatedBuildings = prev.buildings.map((building, index) => {
         if (index === buildingIndex) {
-          let updatedBuilding = { ...building, [field]: value };
+          let updatedBuilding;
+          if (field.includes('Gauge')) {
+            updatedBuilding = { ...building, [field]: parseInt(value) };
+          } else {
+            updatedBuilding = { ...building, [field]: value };
+          }
 
           // Handle calculations for singleSlope and leanTo shapes
           if (building.shape === 'singleSlope' || building.shape === 'leanTo') {
-            const { width, lowEaveHeight, highEaveHeight, roofPitch } =
+            const { width, backEaveHeight, frontEaveHeight, backRoofPitch } =
               updatedBuilding;
 
             switch (field) {
               case 'width':
-              case 'lowEaveHeight':
-              case 'highEaveHeight':
+              case 'backEaveHeight':
+              case 'frontEaveHeight':
                 // Calculate roof pitch if we have all necessary values
                 if (
                   width > 0 &&
-                  lowEaveHeight > 0 &&
-                  highEaveHeight > lowEaveHeight
+                  backEaveHeight > 0 &&
+                  frontEaveHeight > backEaveHeight
                 ) {
                   const calculatedPitch =
-                    ((highEaveHeight - lowEaveHeight) / width) * 12;
-                  updatedBuilding.roofPitch = Math.min(
+                    ((frontEaveHeight - backEaveHeight) / width) * 12;
+                  updatedBuilding.backRoofPitch = Math.min(
                     6,
                     Math.max(0, Number(calculatedPitch.toFixed(2)))
                   );
                 }
                 break;
 
-              case 'roofPitch':
-                // Adjust highEaveHeight based on new roof pitch
-                if (width > 0 && lowEaveHeight > 0 && roofPitch > 0) {
-                  const rise = (width * roofPitch) / 12;
-                  updatedBuilding.highEaveHeight = Number(
-                    (lowEaveHeight + rise).toFixed(2)
+              case 'backRoofPitch':
+                // Adjust frontEaveHeight based on new roof pitch
+                if (width > 0 && backEaveHeight > 0 && backRoofPitch > 0) {
+                  const rise = (width * backRoofPitch) / 12;
+                  updatedBuilding.frontEaveHeight = Number(
+                    (backEaveHeight + rise).toFixed(2)
                   );
                 }
                 break;
@@ -226,9 +231,9 @@ function useFormState(initialState) {
     });
 
     // Update lastChangedWall when relevant fields change
-    if (field === 'lewBaySpacing') setLastChangedWall('leftEndwall');
-    if (field === 'rewBaySpacing') setLastChangedWall('rightEndwall');
-    if (field === 'sidewallBaySpacing') setLastChangedWall('frontSidewall');
+    if (field === 'leftBaySpacing') setLastChangedWall('leftEndwall');
+    if (field === 'rightBaySpacing') setLastChangedWall('rightEndwall');
+    if (field === 'roofBaySpacing') setLastChangedWall('frontSidewall');
   };
 
   const handleCanopyChange = (buildingIndex, canopyIndex, field, value) => {
@@ -388,19 +393,20 @@ function useFormState(initialState) {
     setValues((prev) => {
       const building = prev.buildings[buildingIndex];
       // todo: fix this Building index causing undefined buildings
-      const { width, lowEaveHeight, highEaveHeight, roofPitch } = building;
+      const { width, backEaveHeight, frontEaveHeight, backRoofPitch } =
+        building;
 
       let calculatedValue, calcValue;
 
       switch (field) {
-        case 'lowEaveHeight':
-          calculatedValue = highEaveHeight - (width * roofPitch) / 12;
+        case 'backEaveHeight':
+          calculatedValue = frontEaveHeight - (width * backRoofPitch) / 12;
           break;
-        case 'highEaveHeight':
-          calculatedValue = lowEaveHeight + (width * roofPitch) / 12;
+        case 'frontEaveHeight':
+          calculatedValue = backEaveHeight + (width * backRoofPitch) / 12;
           break;
-        case 'roofPitch':
-          calculatedValue = ((highEaveHeight - lowEaveHeight) / width) * 12;
+        case 'backRoofPitch':
+          calculatedValue = ((frontEaveHeight - backEaveHeight) / width) * 12;
           break;
         default:
           return prev; // If the field is not recognized, return the previous state unchanged
@@ -411,7 +417,7 @@ function useFormState(initialState) {
 
       // Perform validation
       if (
-        field === 'roofPitch' &&
+        field === 'backRoofPitch' &&
         (calculatedValue < 0 || calculatedValue > 12 || isNaN(calculatedValue))
       ) {
         console.error('Calculated roof pitch is out of valid range (0-12)');
@@ -419,7 +425,7 @@ function useFormState(initialState) {
       }
 
       if (
-        (field === 'lowEaveHeight' || field === 'highEaveHeight') &&
+        (field === 'backEaveHeight' || field === 'frontEaveHeight') &&
         calculatedValue <= 0
       ) {
         console.error('Calculated eave height must be greater than 0');

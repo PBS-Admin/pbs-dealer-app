@@ -10,13 +10,16 @@
   --orange: #F94C08;
   --light-orange: #FBB99D;
   --background-white: #F5F5F5;
+  --background-disabled: #DDDDDD;
   --red: #FB4B4B;
   --light-red: #FD8787;
   --green: #4CB852;
-  --light-green: #8AD08E;  
+  --light-green: #8AD08E;
+  --dark-grey: #666666;
   --gray: #A2A2A2;
-  --light-gray: #CCCCCC; 
-  --div-gradient: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(16,52,148,1) 50%, rgba(255,255,255,0) 100%);
+  --light-gray: #CCCCCC;
+  --black-gradient: linear-gradient(to bottom, #666666, #F5F5F5, #F5F5F5) 0% 50%;
+  --blue-gradient: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(16,52,148,1) 50%, rgba(255,255,255,0) 100%);
 }
 
 * {
@@ -43,14 +46,13 @@
   background-color: var(--light-orange);
 }
 
-html{
+html {
   -moz-text-size-adjust: none;
   -webkit-text-size-adjust: none;
   text-size-adjust: none;
 }
 
-html,
-body {
+html, body {
   max-width: 100vw;
   overflow-x: hidden;
 }
@@ -64,16 +66,16 @@ main {
   background-color: var(--dark-blue);  
 }
 
-h1, h4, h5{
+h1, h4, h5 {
   color: var(--dark-blue);
   text-align: center;
 }
 
-h2, h3{
+h2, h3 {
   color: var(--background-white);
 }
 
-p{
+p {
   color: var(--black);
 }
 
@@ -146,20 +148,21 @@ p{
   padding: .75em;    
 }
 
-.card header{
+.card header {
   background-color: var(--dark-blue);
   width: 100%;
   border-radius: .5em .5em 0 0;
   padding: .25em;
   text-align: center;
   margin-bottom: .5em;
+  max-height: 31px;
 }
 
-.card h4{
+.card h4 {
   justify-self: flex-start;
-  margin-block: .5em;
+  margin-block: 1em 0em;
 }
-
+/*
 .nameGrid{
   display: grid;
   grid-template-columns: 1fr;  
@@ -259,17 +262,17 @@ p{
   grid-column: span 4;
 
 }
-
+*/
 .small{  
   font-size: .65em;  
   align-self: center;
 }
 
-.hidden{
-  display: none;
+.hidden {
+  display: none !important;
 }
 
-.radioGroup{
+.radioGroup {
   accent-color: var(--dark-blue);
   display: flex;    
   gap: 1em;    
@@ -279,43 +282,68 @@ p{
   border-radius: .5em;
   align-self: center;
   font-size: 11px;
+  width: 100%;
 }
 
-.radioGroup div{
+.radioGroup div {
   display: flex;
   flex-flow: column nowrap;
+  margin: auto;
 }
 
-.radio{
+.checkboxGroup {
+  margin: 10px 0;
+}
+
+.reliteGroup {
+  border: none;
+  background-color: rgba(0, 0, 0, 0.10);
+  padding: .5em;
+  border-radius: .5em;
+  align-self: center;
+  width: 100%;
+  margin-bottom: 1em;
+}
+
+/*
+.radio {
   align-self: center;
   justify-self: center;
-  grid-column: span 2;
   text-align: center;
 }
-
+*/
 .start{
   align-self: flex-start;
 }
 
-.center{
-  align-self: center;
-  justify-self: center;  
-  text-align: center;  
+.alignTop {
+  align-items: flex-start !important;
 }
 
-.cardInput{
+.center{
+  align-self: center !important;
+  justify-self: center !important;  
+  text-align: center !important;  
+}
+
+.cardInput {
   display: flex;
   flex-flow: column nowrap;
   justify-content: center; 
   gap: .25em;
-  padding: .25em; 
+  padding: .25em;
+  min-height: 64px;
 }
 
-.cardInput input{
-  line-height: 1.75em;
+.cardInput:has(label.offOnTablet), .cardInput:has(label.offOnDesktop) {
+  min-height: unset;
+}
+/*
+.cardInput input {
+  line-height: 1.8em;
   border-radius: .25em;
   border: none;
-  outline: 1px solid var(--black);  
+  outline: 1px solid var(--dark-grey);  
   padding-left: .25em;
   transition: all .3s ease;
 }
@@ -329,11 +357,12 @@ p{
   border: 1px solid var(--background-white);
   outline: none;
 }
-
-.cardLabel{  
-  align-items: center;
+*/
+.cardInput label, .cardLabel {  
+  align-items: flex-end;
   justify-content: space-between;
   display: flex;
+  min-height: 30px;
 }
 
 .projInput{
@@ -341,13 +370,13 @@ p{
   align-items: center;
   gap: 1em;
 }
-
+/*
 .calcInput{
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
+*/
 .cardRow{
   display: flex;
   flex-flow: row nowrap;
@@ -360,7 +389,7 @@ p{
   line-height: 1.75em;
   border-radius: .25em;
   border: none;
-  outline: 1px solid var(--black);  
+  outline: 1px solid var(--black);
   padding-left: .25em;
 }
 
@@ -368,8 +397,33 @@ p{
   outline: 1px solid var(--orange);
 }
 
-.selectInput{  
-  height: 1.95em;    
+
+input[type='text'] {
+  line-height: 1.75em;
+  border-radius: .25em;
+  border: none;
+  outline: 1px solid var(--dark-grey);  
+  padding-left: .25em;
+  transition: all .3s ease;
+}
+
+input[type='text']:focus {
+  outline: 1px solid var(--blue);  
+}
+
+input[type='text']:disabled {
+  color: var(--background-white);  
+  border: 1px solid var(--background-white);
+  outline: none;
+}
+
+select {  
+  height: 1.75em;    
+  border-radius: .25em;
+  border: none;
+  outline: 1px solid var(--dark-grey);  
+  padding-left: .25em;
+  transition: all .3s ease;
 }
 
 .checkRow{
@@ -385,13 +439,13 @@ p{
 .divider{
   margin-block: .5em;  
   height: 1px;
-  background: var(--div-gradient);
+  background: var(--blue-gradient);
 }
-
+/*
 .full{
   grid-column: span 8;
 }
-
+*/
 .column{
   flex-flow: row nowrap;
   align-items: center;
@@ -417,34 +471,46 @@ p{
 
 .tabList {
   display: flex;
-  border-bottom: 1px solid var(--background-white);
-  margin-bottom: 16px;
+  border-bottom: 1px solid var(--dark-grey);
   min-width: max-content;
-  padding-bottom: 2px;
+  gap: 4px;
 }
 
 .tab {
   padding: 8px 16px;
-  border: none;
-  background: none;
+  border: 1px solid var(--dark-grey);
+  border-radius: .25em .25em 0 0;
+  background: var(--background-disabled);
   cursor: pointer;
+  color: var(--dark-grey);  
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
+  margin-bottom: -1px;
 }
 
 .activeTab {
-  border-bottom: 2px solid var(--light-blue);
-  color: var(--light-blue);  
+  border-bottom: none;
+  background: var(--background-white);
+  color: var(--dark-blue);  
+  cursor: default;
 }
 
+.tabContent {
+  padding-top: 16px;
+  border-width: 1px;
+  border-style: solid;
+  border-image: var(--black-gradient);
+  border-top: 0;
+}
 
 /* Global Button Classes */
 .w5{
-  width: 5em;  
+  width: 5em;
+  max-height: 42px;  
 }
-
+/*
 .span12{
   grid-column: span 1;
 }
@@ -456,7 +522,7 @@ p{
 .span24{
   grid-column: span 1;
 }
-
+*/
 .iconPrim{  
   background-color: none;
   color: var(--dark-blue);  
@@ -469,7 +535,7 @@ p{
   color: var(--light-blue);  
 }
 
-.icon{
+.icon {
   border-color: transparent;  
   width: 2em;
   height: 2em;
@@ -481,6 +547,24 @@ p{
   transition: all .3s ease;
 }
 
+.icon.blue {
+  color: var(--dark-blue);    
+}
+
+.icon.blue:hover {  
+  background-color: var(--dark-blue);
+  color: var(--background-white); 
+}
+
+.icon.red {  
+  color: var(--red);    
+}
+
+.icon.red:hover {  
+  background-color: var(--red);
+  color: var(--background-white); 
+}
+
 .iconReject{  
   color: var(--light-red);
   margin-bottom: .5em;    
@@ -490,7 +574,7 @@ p{
   background-color: var(--red);
   color: var(--background-white); 
 }
-
+/*
 .iconSec{  
   color: var(--dark-blue);    
 }
@@ -499,7 +583,7 @@ p{
   background-color: var(--dark-blue);
   color: var(--background-white); 
 }
-
+*/
 .iconClear{  
   color: var(--light-red);    
 }
@@ -515,6 +599,11 @@ p{
   border-radius: .5em;
   padding: 1em;  
   text-decoration: none;
+}
+
+button.small {
+  width: 5em;
+  padding: 0.25em;
 }
 
 .prim{  
@@ -566,7 +655,6 @@ p{
 .reject:hover{
   background-color: var(--light-red);
 }
-
 
 .nuetral{  
   background-color: var(--gray);
@@ -634,10 +722,11 @@ p{
   height: auto;
 }
 
-.panelImage{
+.panelImage {
   align-self: center;
   height: auto;    
-  width: 150px;    
+  width: 90%;
+  max-width: 280px;    
   justify-self: center;
 }
 
@@ -673,7 +762,7 @@ p{
   margin-top: 10px;
 }
 
-.sketchButton{
+.sketchButton {
   aspect-ratio: 1 /1;
   padding: .35em;  
   border: none;
@@ -681,6 +770,7 @@ p{
   border-radius: .25em;
   border: var(--background-white);
   color: var(--background-white);
+  min-width: 38px;
 }
 
 /* Hides the autocomplete google logo */
@@ -691,7 +781,7 @@ p{
 
 
 /* Grid Layout */
-.grid, .grid2, .grid3, .grid4, .grid6, .grid8 {
+.grid, .grid2, .grid3, .grid4, .grid6, .grid8, .tableGrid5, .tableGrid6, .tableGrid7, .tableGrid8 {
   display: grid;
   grid-template-columns: 1fr;  
   gap: 0 .5em;
@@ -732,14 +822,20 @@ p{
   grid-row: 1 / 3;
 }
 
+.onPhone, .onTablet, .onLaptop, .onDesktop, .hideWithSidebar {
+  display: none;
+}
 
 /* END */
 
 
 /*
-.onPhone  =    0px -  767px
-.onTablet =  768px - 1199px
-.onLaptop = 1200px - 1499px
+.showWithSidebar, .hideWithSidebar = 1000px
+
+.onPhone,   .offOnPhone   =  550px
+.onTablet,  .offOnTablet  =  768px
+.onLaptop,  .offOnLaptop  = 1200px
+.onDesktop, .offOnDesktop = 1500px
 */
 @media screen and (min-width: 350px) {
   .cardInput label, .cardInput input, .cardInput select, .cardRow label, .cardRow input, .cardRow select{
@@ -760,6 +856,14 @@ p{
 
 
 @media screen and (min-width: 550px) {
+  .offOnPhone {
+    display: none !important;
+  }
+
+  .onPhone {
+    display: block;
+  }
+
   .pageHeaderLeft {
     font-size: 1.25em;      
   }
@@ -771,7 +875,7 @@ p{
   .cardInput label, .cardInput input, .cardInput select, .cardRow label, .cardRow input, .cardRow select{
     font-size: 15px;
   }
-
+/*
   .nameGrid{
     grid-template-columns: repeat(2, minmax(150px, 1fr));  
   }
@@ -799,15 +903,14 @@ p{
     justify-content: center;
     padding: .5em 2em;
   }
-
   .tabHide{
     display: none;
   }
-  
+
   .panelImage{        
     width: 200px;            
   }
-
+*/
   /* Grid Layout */
   .grid2 {
     grid-template-columns: repeat(2, 1fr);
@@ -819,6 +922,14 @@ p{
 
   .grid2:has(.panelGrid) {
     grid-template-columns: 1fr;  
+  }
+
+  .grid2 .grid2 {
+    grid-template-columns: 1fr;  
+  }
+
+  .grid2 .grid2 .span2 {
+    grid-column: span 1;
   }
 
   .grid4 {
@@ -833,7 +944,23 @@ p{
     grid-column: span 1;
   }
 
+  .grid4 .divider.span2, .grid4 .divider.span3 {
+    grid-column: span 2;
+  }
+
+  .tableGrid5 {
+    grid-template-columns: repeat(2, 1fr);  
+  }
+
+  .tableGrid5 .span2 {
+    grid-column: span 2;
+  }
+
   .grid6 {
+    grid-template-columns: repeat(2, 1fr);  
+  }
+
+  .tableGrid6 {
     grid-template-columns: repeat(2, 1fr);  
   }
 
@@ -841,7 +968,19 @@ p{
     grid-column: span 2;
   }
 
+  .tableGrid7 {
+    grid-template-columns: repeat(2, 1fr);  
+  }
+
+  .tableGrid7 .span2 {
+    grid-column: span 2;
+  }
+
   .grid8 {
+    grid-template-columns: repeat(2, 1fr);  
+  }
+
+  .tableGrid8 {
     grid-template-columns: repeat(2, 1fr);  
   }
 
@@ -852,15 +991,15 @@ p{
 
 
 @media screen and (min-width: 768px) {
-  .onPhone {
+  .offOnTablet {
     display: none !important;
   }
 
-  /* Grid Layout */
-  .grid4 .divider.onLaptop {
-    grid-column: span 2;
+  .onTablet {
+    display: block;
   }
 
+  /* Grid Layout */
   .grid3 {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -869,8 +1008,20 @@ p{
     grid-column: span 2;
   }
 
+  .grid4 .divider.onTablet {
+    grid-column: span 2;
+  }
+
   .grid4:has(.panelGrid) {
     grid-template-columns: repeat(2, 1fr); 
+  }
+
+  .tableGrid5 {
+    grid-template-columns: repeat(4, minmax(60px, 1fr)) 28px;
+  }
+
+  .tableGrid5 .span2 {
+    grid-column: span 1;
   }
 
   .grid6 {
@@ -879,6 +1030,10 @@ p{
 
   .grid6 div, .grid6 .span2 {
     grid-column: span 2;
+  }
+
+  .tableGrid6 {
+    grid-template-columns: repeat(5, minmax(60px, 1fr)) 28px;
   }
 
   .grid6 .span3 {
@@ -891,6 +1046,14 @@ p{
 
   .grid6 .span5 {
     grid-column: span 6;
+  }
+
+  .tableGrid7 {
+    grid-template-columns: repeat(6, minmax(60px, 1fr)) 28px;
+  }
+
+  .tableGrid7 .span2 {
+    grid-column: span 1;
   }
 
   .panelGrid {
@@ -956,13 +1119,21 @@ p{
 @media screen and (min-width: 1000px) {
   main{
     grid-template-columns: 350px 1fr;
-    grid-template-rows: 100px 1fr 600px;    
+    grid-template-rows: 100px 1fr 100px;    
+  }
+
+  .hideWithSidebar {
+    display: block;
+  }
+
+  .showWithSidebar {
+    display: none !important;
   }
 
   .inputForm{
     margin-right: .5em;
   }
-
+/*
   .tableGrid{    
     grid-template-columns: repeat(8, minmax(95px, 1fr));        
   }
@@ -986,11 +1157,15 @@ p{
   .w5{
     justify-self: center;
   }
-
+*/
   /* Grid Layout */
   .grid4 {
     /*grid-template-columns: repeat(4, 1fr);*/
     grid-template-columns: repeat(4, minmax(140px, 1fr));
+  }
+
+  .grid4 .grid {
+    grid-template-columns: minmax(140px, 1fr);
   }
 
   .grid4:has(.panelGrid) {
@@ -1008,13 +1183,29 @@ p{
 
 
 @media screen and (min-width: 1200px) {
-  .onTablet {
+  .offOnLaptop {
     display: none !important;
+  }
+
+  .onLaptop {
+    display: block;
   }
 
   /* Grid Layout */
   .grid2:has(.panelGrid) {
     grid-template-columns: repeat(2, 1fr); 
+  }
+
+  .grid2 .grid2 {
+    grid-template-columns: repeat(2, 1fr);  
+  }
+
+  .grid2 .grid2 .span2 {
+    grid-column: span 2;
+  }
+
+  .tableGrid5 {
+    grid-template-columns: repeat(4, minmax(80px, 1fr)) 28px;
   }
 
   .grid6 {
@@ -1024,6 +1215,10 @@ p{
 
   .grid6 div {
     grid-column: span 1;
+  }
+
+  .tableGrid6 {
+    grid-template-columns: repeat(5, minmax(80px, 1fr)) 28px;
   }
 
   .grid6 .span2 {
@@ -1042,8 +1237,16 @@ p{
     grid-column: span 5;
   }
 
+  .tableGrid7 {
+    grid-template-columns: repeat(6, minmax(80px, 1fr)) 28px;
+  }
+
   .grid8 {
     /*grid-template-columns: repeat(4, 1fr);*/
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+  }
+
+  .tableGrid8 {
     grid-template-columns: repeat(4, minmax(180px, 1fr));
   }
 
@@ -1066,10 +1269,14 @@ p{
 
 
 @media screen and (min-width: 1500px) {
-  .onLaptop {
+  .offOnDesktop {
     display: none !important;
   }
 
+  .onDesktop {
+    display: block;
+  }
+/*
   .addressGrid{
     grid-template-columns: repeat(8, minmax(150px, 1fr));  
   }
@@ -1096,7 +1303,7 @@ p{
   .radioGrid{    
     grid-template-columns: repeat(4, minmax(150px, 1fr));        
   }
-
+*/
   /* Grid Layout */
   .grid4:has(.panelGrid) {
     grid-template-columns: repeat(4, minmax(140px, 1fr));
@@ -1105,6 +1312,10 @@ p{
   .grid8 {
     /*grid-template-columns: repeat(8, 1fr);*/
     grid-template-columns: repeat(8, minmax(120px, 1fr));
+  }
+
+  .tableGrid8 {
+    grid-template-columns: repeat(7, minmax(120px, 1fr)) 28px;
   }
 
   .span2 {
@@ -1133,5 +1344,13 @@ p{
 
   .span8 {
     grid-column: span 8 !important;
+  }
+
+  .tableGrid5 .span2 {
+    grid-column: span 1 !important;
+  }
+
+  .tableGrid7 .span2 {
+    grid-column: span 1 !important;
   }
 }
