@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { query, manualCleanup } from '../../../../../lib/db';
+import { query, getPoolStatus } from '../../../../../lib/db';
 import jwt from 'jsonwebtoken';
 
 export async function GET(req, { params }) {
@@ -53,9 +53,8 @@ export async function GET(req, { params }) {
     //   DateStarted: result[0].DateStarted,
     // };
 
-    if (process.env.NODE_ENV === 'development') {
-      await manualCleanup();
-    }
+    const status = await getPoolStatus();
+    console.log('Pool status:', status);
 
     return NextResponse.json({ quote }, { status: 200 });
   } catch (error) {

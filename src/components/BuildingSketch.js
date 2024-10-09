@@ -191,6 +191,7 @@ const BuildingSketch = ({
         </button>
         <button
           type="button"
+          type="button"
           className="sketchButton"
           onClick={() => handleViewChange('ISO')}
         >
