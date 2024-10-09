@@ -110,7 +110,7 @@ export const roofPanels = [
   { id: 'insulated', label: 'Insulated Panels (See Notes)', image: blank },
   { id: 'insulatedOthers', label: 'Insulated Panels - By Others' },
   { id: 'ssOthers', label: 'Standing Seam Panels - By Others', image: blank },
-  { id: 'scrightdownOthers', label: 'Scrightdown Panels - By Others' },
+  { id: 'screwdownOthers', label: 'Screwdown Panels - By Others' },
 ];
 
 export const roofGauge = [
