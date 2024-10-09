@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { compare } from 'bcrypt';
-import { query, manualCleanup } from '../../../../lib/db';
+import { query, getPoolStatus } from '../../../../lib/db';
 import jwt from 'jsonwebtoken';
 
 export const authOptions = {
@@ -43,9 +43,8 @@ export const authOptions = {
           return null;
         }
 
-        if (process.env.NODE_ENV === 'development') {
-          await manualCleanup();
-        }
+        const status = await getPoolStatus();
+        console.log('Pool status:', status);
 
         console.log('Authorization successful');
         return {

@@ -431,12 +431,12 @@ const BuildingLayout = ({
             )}
             {values.buildings[activeBuilding].leftFrame == 'insetRF' && (
               <BaySelectionInput
-                name={`buildingLeftEndwallInset-${activeBuilding}`}
+                name={`buildingLewInset-${activeBuilding}`}
                 label="Inset # of Bays"
                 className="span2"
                 value={values.buildings[activeBuilding].leftEndwallInset}
                 onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'leftEndwallInset', value)
+                  handleNestedChange(activeBuilding, 'lewInset', value)
                 }
                 baySpacing={values.buildings[activeBuilding].roofBaySpacing}
                 multiSelect={false}
@@ -476,12 +476,12 @@ const BuildingLayout = ({
             )}
             {values.buildings[activeBuilding].rightFrame == 'insetRF' && (
               <BaySelectionInput
-                name={`buildingRightEndwallInset-${activeBuilding}`}
+                name={`buildingRewInset-${activeBuilding}`}
                 label="Inset # of Bays"
                 className="span2"
                 value={values.buildings[activeBuilding].rightEndwallInset}
                 onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'rightEndwallInset', value)
+                  handleNestedChange(activeBuilding, 'rewInset', value)
                 }
                 baySpacing={values.buildings[activeBuilding].roofBaySpacing}
                 multiSelect={false}
@@ -743,13 +743,13 @@ const BuildingLayout = ({
                   label="Front Sidewall Girt Spacing:"
                 />
                 <ReusableSelect
-                  id={`buildingBaseCondition-${activeBuilding}`}
-                  name={`buildingBaseCondition-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].baseCondition}
+                  id={`buildingFrontBaseCondition-${activeBuilding}`}
+                  name={`buildingFrontBaseCondition-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].frontBaseCondition}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
-                      'baseCondition',
+                      'frontBaseCondition',
                       e.target.value
                     )
                   }
@@ -792,13 +792,13 @@ const BuildingLayout = ({
                   label="Back Sidewall Girt Spacing:"
                 />
                 <ReusableSelect
-                  id={`buildingBaseCondition-${activeBuilding}`}
-                  name={`buildingBaseCondition-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].baseCondition}
+                  id={`buildingBackBaseCondition-${activeBuilding}`}
+                  name={`buildingBackBaseCondition-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].backBaseCondition}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
-                      'baseCondition',
+                      'backBaseCondition',
                       e.target.value
                     )
                   }
@@ -841,13 +841,13 @@ const BuildingLayout = ({
                   label="Left Endwall Girt Spacing:"
                 />
                 <ReusableSelect
-                  id={`buildingBaseCondition-${activeBuilding}`}
-                  name={`buildingBaseCondition-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].baseCondition}
+                  id={`buildingLeftBaseCondition-${activeBuilding}`}
+                  name={`buildingLeftBaseCondition-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].leftBaseCondition}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
-                      'baseCondition',
+                      'leftBaseCondition',
                       e.target.value
                     )
                   }
@@ -890,13 +890,13 @@ const BuildingLayout = ({
                   label="Right Endwall Girt Spacing:"
                 />
                 <ReusableSelect
-                  id={`buildingBaseCondition-${activeBuilding}`}
-                  name={`buildingBaseCondition-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].baseCondition}
+                  id={`buildingRightBaseCondition-${activeBuilding}`}
+                  name={`buildingRightBaseCondition-${activeBuilding}`}
+                  value={values.buildings[activeBuilding].rightBaseCondition}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
-                      'baseCondition',
+                      'rightBaseCondition',
                       e.target.value
                     )
                   }

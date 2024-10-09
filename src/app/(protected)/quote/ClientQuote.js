@@ -32,6 +32,7 @@ import CopyBuildingDialog from '../../../components/CopyBuildingDialog';
 import DeleteDialog from '../../../components/DeleteDialog';
 import BuildingSketch from '../../../components/BuildingSketch';
 import FeetInchesInput from '../../../components/Inputs/FeetInchesInput';
+import ReusableLoader from '@/components/ReusableLoader';
 
 import PageHeader from '@/components/PageHeader';
 
@@ -47,6 +48,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
   const [sourceBuildingIndex, setSourceBuildingIndex] = useState(0);
   const [isQuoteDeleteDialogOpen, setIsQuoteDeleteDialogOpen] = useState(false);
 
+  const [saveStatus, setSaveStatus] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState('');
   const initialRender = useRef(true);
@@ -138,13 +140,16 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           backGirtSpacing: 'default',
           leftGirtSpacing: 'default',
           rightGirtSpacing: 'default',
-          baseCondition: 'angle',
+          leftBaseCondition: 'angle',
+          rightBaseCondition: 'angle',
+          frontBaseCondition: 'angle',
+          backBaseCondition: 'angle',
           purlinSpacing: '',
           roofPanelType: 'pbr',
-          roofPanelGauge: '',
+          roofPanelGauge: 26,
           roofPanelFinish: '',
           wallPanelType: 'pbr',
-          wallPanelGauge: '',
+          wallPanelGauge: 26,
           wallPanelFinish: '',
           includeGutters: false,
           roofInsulation: '',
@@ -285,6 +290,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSaveStatus(true);
 
     let company = session.user.company;
 
@@ -297,6 +303,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('obj: ', data.updatedValues);
         if (isNaN(data.message)) {
           console.log(data.message);
         } else {
@@ -304,6 +311,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         }
 
         setSaveSuccess(true);
+        setSaveStatus(false);
         // Reset saveSuccess after 3 seconds
         setTimeout(() => {
           setSaveSuccess(false);
@@ -634,13 +642,15 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                   </div>
                 </div>
               ))}
-              <button
-                className={styles.addBuilding}
-                type="button"
-                onClick={addBuilding}
-              >
-                <FontAwesomeIcon icon={faPlus} />
-              </button>
+              {values.buildings.length < 9 && (
+                <button
+                  className={styles.addBuilding}
+                  type="button"
+                  onClick={addBuilding}
+                >
+                  <FontAwesomeIcon icon={faPlus} />
+                </button>
+              )}
             </div>
           </section>
         )}
@@ -773,6 +783,11 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         onDelete={handleDeleteQuote}
         title="Confirm Deletion"
         message={`Are you sure you want to delete this whole quote?`}
+      />
+      <ReusableLoader
+        isOpen={saveStatus}
+        title="Loading"
+        message="Trying to save Quote..."
       />
     </main>
   );

@@ -40,9 +40,11 @@ export default async function Dashboard() {
           />
         </Link>
         {hasPermission(5) && (
-          <Link href="/register" className="button prim">
-            Register
-          </Link>
+          <>
+            <Link href="/register" className="button prim">
+              Register
+            </Link>
+          </>
         )}
       </nav>
     </main>
