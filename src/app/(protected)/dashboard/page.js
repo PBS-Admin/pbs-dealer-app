@@ -44,9 +44,6 @@ export default async function Dashboard() {
             <Link href="/register" className="button prim">
               Register
             </Link>
-            <Link href="/export" className="button prim">
-              Export
-            </Link>
           </>
         )}
       </nav>

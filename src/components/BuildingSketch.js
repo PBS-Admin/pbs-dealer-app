@@ -69,14 +69,14 @@ const BuildingSketch = ({
       buildingData
     );
     addBayLines(
-      buildingData.sidewallBaySpacing,
+      buildingData.swBaySpacing,
       'frontSidewall',
       scene,
       buildingData
     );
 
     addBraceLines(
-      buildingData.sidewallBaySpacing,
+      buildingData.swBaySpacing,
       buildingData.fswBracedBays,
       'frontSidewall',
       scene,
@@ -84,7 +84,7 @@ const BuildingSketch = ({
     );
 
     addBraceLines(
-      buildingData.sidewallBaySpacing,
+      buildingData.swBaySpacing,
       buildingData.bswBracedBays,
       'backSidewall',
       scene,
@@ -108,7 +108,7 @@ const BuildingSketch = ({
     );
 
     addBraceLines(
-      buildingData.sidewallBaySpacing,
+      buildingData.swBaySpacing,
       buildingData.roofBracedBays,
       'roof',
       scene,

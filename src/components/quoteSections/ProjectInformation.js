@@ -605,7 +605,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
       <ReusableLoader
         isOpen={loading}
         title="Loading"
-        message="Please be patient"
+        message="Determining County..."
       />
     </>
   );

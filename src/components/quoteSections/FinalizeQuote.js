@@ -1,10 +1,12 @@
 import React from 'react';
 import { useExport } from '@/hooks/useExport';
+import ReusableLoader from '../ReusableLoader';
 
 const FinalizeQuote = ({ values, handleChange }) => {
   const { createFolderAndFiles, status, isExporting } = useExport();
 
   const handleExport = async () => {
+    console.log(values);
     const result = await createFolderAndFiles(values);
     if (result) {
       console.log('Export successful');
@@ -39,11 +41,12 @@ const FinalizeQuote = ({ values, handleChange }) => {
               onClick={handleExport}
               disabled={isExporting}
             >
-              {isExporting ? 'Exporting...' : 'Export To MBS'}
+              {isExporting ? status : 'Export To MBS'}
             </button>
           </div>
         </div>
       </section>
+      <ReusableLoader isOpen={isExporting} title="Loading" message={status} />
     </>
   );
 };

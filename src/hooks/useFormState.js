@@ -52,7 +52,12 @@ function useFormState(initialState) {
     setValues((prev) => {
       const updatedBuildings = prev.buildings.map((building, index) => {
         if (index === buildingIndex) {
-          let updatedBuilding = { ...building, [field]: value };
+          let updatedBuilding;
+          if (field.includes('Gauge')) {
+            updatedBuilding = { ...building, [field]: parseInt(value) };
+          } else {
+            updatedBuilding = { ...building, [field]: value };
+          }
 
           // Handle calculations for singleSlope and leanTo shapes
           if (building.shape === 'singleSlope' || building.shape === 'leanTo') {
@@ -228,7 +233,7 @@ function useFormState(initialState) {
     // Update lastChangedWall when relevant fields change
     if (field === 'lewBaySpacing') setLastChangedWall('leftEndwall');
     if (field === 'rewBaySpacing') setLastChangedWall('rightEndwall');
-    if (field === 'sidewallBaySpacing') setLastChangedWall('frontSidewall');
+    if (field === 'swBaySpacing') setLastChangedWall('frontSidewall');
   };
 
   const handleCanopyChange = (buildingIndex, canopyIndex, field, value) => {

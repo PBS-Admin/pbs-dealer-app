@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { query, transaction, manualCleanup } from '../../../../lib/db';
+import { query, transaction, getPoolStatus } from '../../../../lib/db';
 
 export async function POST(req) {
   try {
@@ -10,6 +10,12 @@ export async function POST(req) {
       await transaction(async (conn) => {
         quoteNum = await conn.query('SELECT NextQuoteNum From NextQuoteNumber');
         nextQuoteNum = quoteNum[0].NextQuoteNum;
+
+        values.quoteNumber = nextQuoteNum;
+
+        await conn.query(
+          'UPDATE NextQuoteNumber SET NextQuoteNum = NextQuoteNum + 1'
+        );
 
         result = await conn.query(
           'INSERT INTO Quotes (Quote, Customer, ProjectName, Company, QuoteData, Active, DateStarted) VALUES (?, ?, ?, ?, ?, 1, Now())',
@@ -29,9 +35,8 @@ export async function POST(req) {
         quoteNum: nextQuoteNum,
       };
 
-      if (process.env.NODE_ENV === 'development') {
-        await manualCleanup();
-      }
+      const status = await getPoolStatus();
+      console.log('Pool status:', status);
 
       return NextResponse.json({ message }, { status: 201 });
     } else if (currentQuote > 0) {
@@ -46,7 +51,10 @@ export async function POST(req) {
         ]
       );
 
-      return NextResponse.json({ message: `Quote updated` }, { status: 201 });
+      return NextResponse.json(
+        { message: `Quote updated`, updatedValues: values },
+        { status: 201 }
+      );
     }
   } catch (error) {
     console.error(error);

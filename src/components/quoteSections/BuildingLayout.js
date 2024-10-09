@@ -197,11 +197,11 @@ const BuildingLayout = ({
         <h4>Bay Spacing</h4>
         <div className="cardGrid">
           <BaySpacingInput
-            name={`buildingSidewallBaySpacing-${activeBuilding}`}
+            name={`buildingSWBaySpacing-${activeBuilding}`}
             label="Sidewall Bay Spacing:"
-            value={values.buildings[activeBuilding].sidewallBaySpacing}
+            value={values.buildings[activeBuilding].swBaySpacing}
             onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'sidewallBaySpacing', value)
+              handleNestedChange(activeBuilding, 'swBaySpacing', value)
             }
             compareLabel="building length"
             compareValue={values.buildings[activeBuilding].length}
@@ -416,13 +416,13 @@ const BuildingLayout = ({
             />
             {values.buildings[activeBuilding].lewFrame == 'insetRF' && (
               <BaySelectionInput
-                name={`buildingLeftEndwallInset-${activeBuilding}`}
+                name={`buildingLewInset-${activeBuilding}`}
                 label="Inset # of Bays"
-                value={values.buildings[activeBuilding].leftEndwallInset}
+                value={values.buildings[activeBuilding].lewInset}
                 onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'leftEndwallInset', value)
+                  handleNestedChange(activeBuilding, 'lewInset', value)
                 }
-                baySpacing={values.buildings[activeBuilding].sidewallBaySpacing}
+                baySpacing={values.buildings[activeBuilding].swBaySpacing}
                 multiSelect={false}
               />
             )}
@@ -451,13 +451,13 @@ const BuildingLayout = ({
             />
             {values.buildings[activeBuilding].rewFrame == 'insetRF' && (
               <BaySelectionInput
-                name={`buildingRightEndwallInset-${activeBuilding}`}
+                name={`buildingRewInset-${activeBuilding}`}
                 label="Inset # of Bays"
-                value={values.buildings[activeBuilding].rightEndwallInset}
+                value={values.buildings[activeBuilding].rewInset}
                 onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'rightEndwallInset', value)
+                  handleNestedChange(activeBuilding, 'rewInset', value)
                 }
-                baySpacing={values.buildings[activeBuilding].sidewallBaySpacing}
+                baySpacing={values.buildings[activeBuilding].swBaySpacing}
                 multiSelect={false}
               />
             )}
@@ -583,7 +583,7 @@ const BuildingLayout = ({
             onChange={(name, value) =>
               handleNestedChange(activeBuilding, 'fswBracedBays', value)
             }
-            baySpacing={values.buildings[activeBuilding].sidewallBaySpacing}
+            baySpacing={values.buildings[activeBuilding].swBaySpacing}
             multiSelect={true}
             disabled={
               values.buildings[activeBuilding].fswBracingType == 'torsional'
@@ -596,7 +596,7 @@ const BuildingLayout = ({
             onChange={(name, value) =>
               handleNestedChange(activeBuilding, 'bswBracedBays', value)
             }
-            baySpacing={values.buildings[activeBuilding].sidewallBaySpacing}
+            baySpacing={values.buildings[activeBuilding].swBaySpacing}
             multiSelect={true}
             disabled={
               values.buildings[activeBuilding].bswBracingType == 'torsional'
@@ -639,7 +639,7 @@ const BuildingLayout = ({
             onChange={(name, value) =>
               handleNestedChange(activeBuilding, 'roofBracedBays', value)
             }
-            baySpacing={values.buildings[activeBuilding].sidewallBaySpacing}
+            baySpacing={values.buildings[activeBuilding].swBaySpacing}
             multiSelect={true}
           />
           <div className="cardInput">

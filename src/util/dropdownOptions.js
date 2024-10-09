@@ -114,8 +114,8 @@ export const roofPanels = [
 ];
 
 export const roofGauge = [
-  { id: '26', label: '26' },
-  { id: '24', label: '24' },
+  { id: 26, label: '26' },
+  { id: 24, label: '24' },
 ];
 
 export const roofFinish = [
@@ -147,8 +147,8 @@ export const wallPanels = [
 ];
 
 export const wallGauge = [
-  { id: '26', label: '26' },
-  { id: '24', label: '24' },
+  { id: 26, label: '26' },
+  { id: 24, label: '24' },
 ];
 
 export const wallFinish = [

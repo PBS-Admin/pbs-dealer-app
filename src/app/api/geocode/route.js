@@ -22,24 +22,31 @@ export async function GET(req) {
 
     const data = await response.json();
     const geocodeData = data.results[0].locations[0];
+    let location = `${geocodeData.latLng.lat},${geocodeData.latLng.lng}`;
 
-    let location = geocodeData.latLng.lat + ',' + geocodeData.latLng.lng;
-    const elevationResponse = await fetch(
-      `https://api.open-elevation.com/api/v1/lookup?locations=${location}`,
-      {
-        method: 'GET',
-      }
-    );
-    if (!elevationResponse.ok) {
-      throw new Error('Elevation response was not ok');
-    }
-
-    const elevationData = await elevationResponse.json();
-
-    const combinedData = {
+    let combinedData = {
       ...geocodeData,
-      elevation: elevationData.results[0].elevation,
+      elevation: 100, // Default elevation
     };
+
+    try {
+      // Elevation API call
+      const elevationResponse = await fetch(
+        `https://api.open-elevation.com/api/v1/lookup?locations=${location}`,
+        {
+          method: 'GET',
+        }
+      );
+      if (elevationResponse.ok) {
+        const elevationData = await elevationResponse.json();
+        combinedData.elevation =
+          elevationData.results[0].elevation || combinedData.elevation;
+      } else {
+        console.warn('Elevation API request failed, using default elevation');
+      }
+    } catch (elevationError) {
+      console.error('Error fetching elevation data:', elevationError);
+    }
 
     return NextResponse.json(combinedData, { status: 200 });
   } catch (error) {

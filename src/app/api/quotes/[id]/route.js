@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import { NextResponse } from 'next/server';
-import { query, manualCleanup } from '@/lib/db';
+import { query, getPoolStatus } from '@/lib/db';
 
 export async function DELETE(req, { params }) {
   const { id } = params;
@@ -19,9 +19,8 @@ export async function DELETE(req, { params }) {
     ]);
     console.log('Query result:', result);
 
-    if (process.env.NODE_ENV === 'development') {
-      await manualCleanup();
-    }
+    const status = await getPoolStatus();
+    console.log('Pool status:', status);
 
     return NextResponse.json(
       { message: 'Quote deleted successfully' },
