@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalculator } from '@fortawesome/free-solid-svg-icons';
 
 const ReusableSelect = ({
-  id,
   name,
   value,
   className = '',
@@ -35,7 +34,7 @@ const ReusableSelect = ({
 
   return (
     <div className={`cardInput ${className}`}>
-      <label className={labelClass} htmlFor={id}>
+      <label className={labelClass} htmlFor={name}>
         <span>{label}</span>
         {icon && (
           <button onClick={iconOnClick} className={`icon ${iconColor}`}>
@@ -45,7 +44,7 @@ const ReusableSelect = ({
       </label>
       <select
         className="selectInput"
-        id={id}
+        id={name}
         name={name}
         value={internalValue}
         onChange={handleChange}

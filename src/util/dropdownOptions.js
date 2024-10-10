@@ -81,8 +81,9 @@ export const purlinSpacing = [
   { id: 'twoFoot', label: 'Purlin Spaced 2\'-0" on Center' },
 ];
 
+/* !! Panels */
 export const roofPanels = [
-  { id: 'pbr', label: 'PBR', image: pbr },
+  { id: 'pbr', label: 'PBR', image: pbr, gaugeOptions: [26, 24] },
   { id: 'pbrDrip', label: 'PBR with Drip Stop', image: pbr },
   { id: 'ssq', label: 'SSQ-275 Standing Seam', image: ssr },
   { id: 'ms200', label: 'MS-200 Standing Seam', image: ms200 },

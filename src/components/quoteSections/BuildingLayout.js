@@ -28,6 +28,7 @@ import RoofPitchInput from '../Inputs/RoofPitchInput';
 import BaySpacingInput from '../Inputs/BaySpacingInput';
 import BaySelectionInput from '../Inputs/BaySelectionInput';
 import ReusableDouble from '../Inputs/ReusableDouble';
+import ReusablePanel from '../Inputs/ReusablePanel';
 
 const BuildingLayout = ({
   values,
@@ -1048,6 +1049,19 @@ const BuildingLayout = ({
             </div>
           </div>
         </div>
+
+        <div className="divider"></div>
+        <div className="divider"></div>
+        <div className="grid2">
+          <ReusablePanel
+            name="Roof"
+            label="Roof"
+            idx={activeBuilding}
+            value={values.buildings[activeBuilding]}
+            onChange={handleNestedChange}
+          />
+        </div>
+        <div className="divider"></div>
 
         <div className="divider"></div>
 
