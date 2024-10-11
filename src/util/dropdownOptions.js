@@ -83,7 +83,7 @@ export const purlinSpacing = [
 
 /* !! Panels */
 export const roofPanels = [
-  { id: 'pbr', label: 'PBR', image: pbr, gaugeOptions: [26, 24] },
+  { id: 'pbr', label: 'PBR', image: pbr },
   { id: 'pbrDrip', label: 'PBR with Drip Stop', image: pbr },
   { id: 'ssq', label: 'SSQ-275 Standing Seam', image: ssr },
   { id: 'ms200', label: 'MS-200 Standing Seam', image: ms200 },
@@ -115,14 +115,28 @@ export const roofPanels = [
 ];
 
 export const roofGauge = [
-  { id: 26, label: '26' },
-  { id: 24, label: '24' },
+  { id: '26', label: '26', validFor: ['pbr', 'pbrDrip', 'hr34'] },
+  {
+    id: '24',
+    label: '24',
+    validFor: [
+      'pbr',
+      'pbrDrip',
+      'ssq',
+      'ms200',
+      'doubleLok',
+      'ultraDek',
+      'battenLok',
+      'superLok',
+      'hr34',
+    ],
+  },
 ];
 
 export const roofFinish = [
-  { id: 'painted', label: 'Painted' },
-  { id: 'galv', label: 'Galvalume' },
-  { id: 'kynar', label: 'Kynar' },
+  { id: 'painted', label: 'Painted', validFor: ['26'] },
+  { id: 'kynar', label: 'Kynar', validFor: ['24'] },
+  { id: 'galv', label: 'Galvalume', validFor: ['26', '24'] },
 ];
 
 export const wallPanels = [
@@ -130,7 +144,7 @@ export const wallPanels = [
   { id: 'pbrDrip', label: 'PBR with Drip Stop', image: pbr },
   { id: 'pbrRev', label: 'Reverse Rolled PBR', image: pbrRev },
   { id: 'hr34', label: 'HR-34', image: hr34 },
-  { id: 'corrugated', label: 'Classic 7/8" Corrugated', image: corrugated },
+  { id: 'corr', label: 'Classic 7/8" Corrugated', image: corrugated },
   {
     id: 'kingSeam',
     label: 'Kingspan Insulated Panels - KS Series',
@@ -148,40 +162,47 @@ export const wallPanels = [
 ];
 
 export const wallGauge = [
-  { id: 26, label: '26' },
-  { id: 24, label: '24' },
+  {
+    id: '26',
+    label: '26',
+    validFor: ['pbr', 'pbrDrip', 'pbrRev', 'hr34', 'corr'],
+  },
+  {
+    id: '24',
+    label: '24',
+    validFor: ['pbr', 'pbrDrip', 'pbrRev', 'hr34', 'corr'],
+  },
 ];
 
 export const wallFinish = [
-  { id: 'galv', label: 'Galvalume' },
-  { id: 'painted', label: 'Painted' },
-  { id: 'kynar', label: 'Kynar' },
+  { id: 'painted', label: 'Painted', validFor: ['26'] },
+  { id: 'kynar', label: 'Kynar', validFor: ['24'] },
+  { id: 'galv', label: 'Galvalume', validFor: ['26', '24'] },
 ];
 
 export const soffitPanels = [
-  { id: 'tuff', label: 'Tuff Rib', image: tuffRib },
-  { id: 'flat', label: 'Flat Soffit', image: flatSoffit },
   { id: 'pbr', label: 'PBR', image: pbr },
-  { id: 'pbrDrip', label: 'PBR with Drip Stop', image: pbr },
   { id: 'pbrRev', label: 'Reverse Rolled PBR', image: pbrRev },
+  { id: 'flat', label: 'Flat Soffit', image: flatSoffit },
+  { id: 'tuff', label: 'Tuff Rib', image: tuffRib },
   { id: 'hr34', label: 'HR-34', image: hr34 },
   { id: 'none', label: 'None', image: blank },
 ];
 
 export const soffitGauge = [
-  { id: '29', label: '29' },
-  { id: '26', label: '26' },
-  { id: '24', label: '24' },
+  { id: '29', label: '29', validFor: ['tuff'] },
+  { id: '26', label: '26', validFor: ['pbr', 'pbrRev', 'flat', 'hr34'] },
+  { id: '24', label: '24', validFor: ['pbr', 'pbrRev', 'flat', 'hr34'] },
 ];
 
 export const soffitFinish = [
-  { id: 'galv', label: 'Galvalume' },
-  { id: 'painted', label: 'Painted' },
-  { id: 'kynar', label: 'Kynar' },
+  { id: 'painted', label: 'Painted', validFor: ['26', '29'] },
+  { id: 'kynar', label: 'Kynar', validFor: ['24'] },
+  { id: 'galv', label: 'Galvalume', validFor: ['26', '24', '29'] },
 ];
 
 export const roofInsulation = [
-  { id: 'none', label: 'None' },
+  { id: 'none', label: 'None', validFor: [] },
   { id: 'vrr2', label: '2" VRR (R-7)' },
   { id: 'vrr3', label: '3" VRR (R-10)' },
   { id: 'vrr4', label: '4" VRR (R-13)' },

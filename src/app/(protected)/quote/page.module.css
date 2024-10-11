@@ -24,7 +24,7 @@
 }
 
 .sidebar .activeCard {
-    background: var(--light-grey);
+    background: var(--light-gray);
 }
 
 .tabContainer{

@@ -118,6 +118,9 @@ const BuildingOpenings = ({
 
   const renderOpeningInputs = (opening, openingIndex) => (
     <>
+      {/* <div
+        className={`tableGrid7 ${openingIndex == activeOpening ? 'activeRow' : ''}`}
+      > */}
       <div className="tableGrid7">
         <div className="cardInput">
           <label
@@ -256,7 +259,7 @@ const BuildingOpenings = ({
           onClick={() =>
             removeOpening(activeBuilding, activeWallKey, openingIndex)
           }
-          className="icon red span2"
+          className="icon red deleteRow span2"
         >
           <FontAwesomeIcon icon={faTrash} />
         </button>
@@ -311,7 +314,7 @@ const BuildingOpenings = ({
         )}
         <button
           type="button"
-          className="button success w5"
+          className="button success addRow"
           onClick={() => addOpening(activeBuilding, activeWallKey)}
         >
           Add

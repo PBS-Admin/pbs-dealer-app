@@ -15,18 +15,19 @@ import {
 
 const ReusablePanel = ({
   name,
+  valueKey = name,
   label,
-  idx = '0',
-  num = '',
+  bldg = '0',
+  idx = '',
   value,
   className = '',
   onChange,
 }) => {
-  const panelKey = `${name.toLowerCase()}PanelType`;
+  const panelKey = `${valueKey}PanelType`;
 
-  const gaugeKey = `${name.toLowerCase()}PanelGauge`;
+  const gaugeKey = `${valueKey}PanelGauge`;
 
-  const finishKey = `${name.toLowerCase()}PanelFinish`;
+  const finishKey = `${valueKey}PanelFinish`;
 
   const [internalPanelValue, setInternalPanelValue] = useState(
     value[panelKey] || ''
@@ -101,19 +102,19 @@ const ReusablePanel = ({
   const handlePanelChange = (e) => {
     const newValue = e.target.value;
     setInternalPanelValue(newValue);
-    onChange(e);
+    onChange(e, panelKey);
   };
 
   const handleGaugeChange = (e) => {
     const newValue = e.target.value;
     setInternalGaugeValue(newValue);
-    onChange(e);
+    onChange(e, gaugeKey);
   };
 
   const handleFinishChange = (e) => {
     const newValue = e.target.value;
     setInternalFinishValue(newValue);
-    onChange(e);
+    onChange(e, finishKey);
   };
 
   return (
@@ -122,7 +123,7 @@ const ReusablePanel = ({
         <>
           <ReusableSelect
             className="panelType"
-            name={`building-${idx}-${name}Panel${num}`}
+            name={`building-${bldg}-${name}Panel${idx}`}
             value={internalPanelValue}
             onChange={handlePanelChange}
             options={panelMap[name]}
@@ -130,16 +131,18 @@ const ReusablePanel = ({
           />
           <ReusableSelect
             className="panelGauge"
-            name={`building-${idx}-${name}Gauge${num}`}
+            name={`building-${bldg}-${name}Gauge${idx}`}
             value={internalGaugeValue}
+            dependantOn={internalPanelValue}
             onChange={handleGaugeChange}
             options={gaugeMap[name]}
             label="Gauge:"
           />
           <ReusableSelect
             className="panelFinish"
-            name={`building-${idx}-${name}Finish${num}`}
+            name={`building-${bldg}-${name}Finish${idx}`}
             value={internalFinishValue}
+            dependantOn={internalGaugeValue}
             onChange={handleFinishChange}
             options={finishMap[name]}
             label="Finish:"

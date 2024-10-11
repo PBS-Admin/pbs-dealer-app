@@ -8,6 +8,7 @@ const ReusableSelect = ({
   className = '',
   onChange,
   options,
+  dependantOn,
   label,
   labelClass,
   icon = '',
@@ -25,6 +26,28 @@ const ReusableSelect = ({
       setInternalValue(value);
     }
   }, [value]);
+
+  useEffect(() => {
+    let needsSet = false;
+    let firstItem = '';
+    options.map((option) => {
+      firstItem =
+        option.validFor &&
+        option.validFor.includes(dependantOn) &&
+        firstItem == ''
+          ? option.id
+          : firstItem;
+      needsSet =
+        option.validFor && !option.validFor.includes(dependantOn)
+          ? true
+          : needsSet;
+    });
+    console.log(name, needsSet, firstItem, dependantOn);
+    if (needsSet) {
+      onChange({ target: { name, value: firstItem } });
+      setInternalValue(firstItem);
+    }
+  }, [dependantOn]);
 
   const handleChange = (e) => {
     const newValue = e.target.value;
@@ -51,7 +74,15 @@ const ReusableSelect = ({
         disabled={disabled}
       >
         {options.map((option) => (
-          <option key={option.id} value={option.id}>
+          <option
+            key={option.id}
+            value={option.id}
+            disabled={
+              option.validFor && !option.validFor.includes(dependantOn)
+                ? 'disabled'
+                : ''
+            }
+          >
             {option.label}
           </option>
         ))}

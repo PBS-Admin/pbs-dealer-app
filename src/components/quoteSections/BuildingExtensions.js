@@ -1,19 +1,10 @@
 import { useState, useEffect, Fragment } from 'react';
-import Image from 'next/image';
 import ReusableSelect from '../Inputs/ReusableSelect';
+import ReusablePanel from '../Inputs/ReusablePanel';
+import FeetInchesInput from '../Inputs/FeetInchesInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import {
-  roofPanels,
-  roofGauge,
-  roofFinish,
-  soffitPanels,
-  soffitGauge,
-  soffitFinish,
-  extInsulation,
-  walls,
-} from '../../util/dropdownOptions';
-import FeetInchesInput from '../Inputs/FeetInchesInput';
+import { extInsulation, walls } from '../../util/dropdownOptions';
 
 const BuildingExtensions = ({
   values,
@@ -41,11 +32,11 @@ const BuildingExtensions = ({
                   elevation: '',
                   addColumns: false,
                   roofPanelType: 'pbr',
-                  roofPanelGauge: '',
-                  roofPanelFinish: '',
-                  soffitPanelType: 'tuff',
-                  soffitPanelGauge: '',
-                  soffitPanelFinish: '',
+                  roofPanelGauge: '26',
+                  roofPanelFinish: 'painted',
+                  soffitPanelType: 'pbr',
+                  soffitPanelGauge: '26',
+                  soffitPanelFinish: 'painted',
                 },
               ],
             }
@@ -76,22 +67,6 @@ const BuildingExtensions = ({
       return { ...prev, buildings: newBuildings };
     });
   };
-
-  const selectedSoffitPanel = soffitPanels.find(
-    (panel) => panel.id === values.buildings[activeBuilding].soffitPanelType
-  );
-
-  const selectedCanopyRoofPanel = roofPanels.find(
-    (panel) =>
-      panel.id ===
-      values.buildings[activeBuilding].canopies[activeCanopy]?.roofPanelType
-  );
-
-  const selectedCanopySoffitPanel = soffitPanels.find(
-    (panel) =>
-      panel.id ===
-      values.buildings[activeBuilding].canopies[activeCanopy]?.soffitPanelType
-  );
 
   return (
     <>
@@ -240,6 +215,19 @@ const BuildingExtensions = ({
             options={extInsulation}
             label="Insulation In Extension:"
           />
+
+          <div className="divider offOnLaptop"></div>
+          <ReusablePanel
+            name="Soffit"
+            valueKey="soffit"
+            label="Soffit"
+            bldg={activeBuilding}
+            value={values.buildings[activeBuilding]}
+            onChange={(e, keyString) =>
+              handleNestedChange(activeBuilding, keyString, e.target.value)
+            }
+          />
+          {/* 
           <div className="panelGrid">
             <ReusableSelect
               className="panelType"
@@ -299,7 +287,7 @@ const BuildingExtensions = ({
                 </div>
               </>
             )}
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -324,7 +312,9 @@ const BuildingExtensions = ({
         {values.buildings[activeBuilding].canopies.map(
           (canopy, canopyIndex) => (
             <Fragment key={`building-${activeBuilding}-canopy-${canopyIndex}`}>
-              <div className="tableGrid8">
+              <div
+                className={`tableGrid8 ${canopyIndex == activeCanopy ? 'activeRow' : ''}`}
+              >
                 <ReusableSelect
                   id={`building-${activeBuilding}-canopyWall-${canopyIndex}`}
                   name={`building-${activeBuilding}-canopyWall-${canopyIndex}`}
@@ -516,7 +506,7 @@ const BuildingExtensions = ({
                 </div>
                 <button
                   onClick={() => removeCanopy(activeBuilding, canopyIndex)}
-                  className="icon red"
+                  className="icon red deleteRow"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -527,7 +517,7 @@ const BuildingExtensions = ({
         )}
         <button
           type="button"
-          className="button success w5"
+          className="button success addRow"
           onClick={() => addCanopy(activeBuilding)}
         >
           Add
@@ -537,144 +527,39 @@ const BuildingExtensions = ({
           <>
             <div className="divider onDesktop"></div>
             <div className="grid2">
-              <div className="panelGrid">
-                <ReusableSelect
-                  className="panelType"
-                  id={`building-${activeBuilding}-canopyRoofPanels${activeCanopy}`}
-                  name={`building-${activeBuilding}-canopyRoofPanels${activeCanopy}`}
-                  value={
-                    values.buildings[activeBuilding].canopies[activeCanopy]
-                      .roofPanelType
-                  }
-                  onChange={(e) =>
-                    handleCanopyChange(
-                      activeBuilding,
-                      activeCanopy,
-                      'roofPanelType',
-                      e.target.value
-                    )
-                  }
-                  options={roofPanels}
-                  label="Roof Panels:"
-                />
-                <ReusableSelect
-                  className="panelGauge"
-                  id={`building-${activeBuilding}-canopyRoofGauge${activeCanopy}`}
-                  name={`building-${activeBuilding}-canopyRoofGauge${activeCanopy}`}
-                  value={
-                    values.buildings[activeBuilding].canopies[activeCanopy]
-                      .roofPanelGauge
-                  }
-                  onChange={(e) =>
-                    handleCanopyChange(
-                      activeBuilding,
-                      activeCanopy,
-                      'roofPanelGauge',
-                      e.target.value
-                    )
-                  }
-                  options={roofGauge}
-                  label="Gauge:"
-                />
-                <ReusableSelect
-                  className="panelFinish"
-                  id={`building-${activeBuilding}-canopyRoofFinish${activeCanopy}`}
-                  name={`building-${activeBuilding}-canopyRoofFinish${activeCanopy}`}
-                  value={
-                    values.buildings[activeBuilding].canopies[activeCanopy]
-                      .roofPanelFinish
-                  }
-                  onChange={(e) =>
-                    handleCanopyChange(
-                      activeBuilding,
-                      activeCanopy,
-                      'roofPanelFinish',
-                      e.target.value
-                    )
-                  }
-                  options={roofFinish}
-                  label="Finish:"
-                />
-                <div className="cardInput panelImage">
-                  {selectedCanopyRoofPanel && selectedCanopyRoofPanel.image && (
-                    <Image
-                      alt={`${selectedCanopyRoofPanel.label}`}
-                      src={selectedCanopyRoofPanel.image}
-                      className="panelImage"
-                    />
-                  )}
-                </div>
-              </div>
+              <ReusablePanel
+                name="CanopyRoof"
+                valueKey="roof"
+                label="Roof"
+                bldg={activeBuilding}
+                idx={activeCanopy}
+                value={values.buildings[activeBuilding].canopies[activeCanopy]}
+                onChange={(e, keyString) =>
+                  handleCanopyChange(
+                    activeBuilding,
+                    activeCanopy,
+                    keyString,
+                    e.target.value
+                  )
+                }
+              />
               <div className="divider offOnLaptop"></div>
-              <div className="panelGrid">
-                <ReusableSelect
-                  className="panelType"
-                  id={`building-${activeBuilding}-canopySoffitPanels${activeCanopy}`}
-                  name={`building-${activeBuilding}-canopySoffitPanels${activeCanopy}`}
-                  value={
-                    values.buildings[activeBuilding].canopies[activeCanopy]
-                      .soffitPanelType
-                  }
-                  onChange={(e) =>
-                    handleCanopyChange(
-                      activeBuilding,
-                      activeCanopy,
-                      'soffitPanelType',
-                      e.target.value
-                    )
-                  }
-                  options={soffitPanels}
-                  label="Soffit Panels:"
-                />
-                <ReusableSelect
-                  className="panelGauge"
-                  id={`building-${activeBuilding}-canopySoffitGauge${activeCanopy}`}
-                  name={`building-${activeBuilding}-canopySoffitGauge${activeCanopy}`}
-                  value={
-                    values.buildings[activeBuilding].canopies[activeCanopy]
-                      .soffitPanelGauge
-                  }
-                  onChange={(e) =>
-                    handleCanopyChange(
-                      activeBuilding,
-                      activeCanopy,
-                      'soffitPanelGauge',
-                      e.target.value
-                    )
-                  }
-                  options={soffitGauge}
-                  label="Gauge:"
-                />
-                <ReusableSelect
-                  className="panelFinish"
-                  id={`building-${activeBuilding}-canopySoffitFinish${activeCanopy}`}
-                  name={`building-${activeBuilding}-canopySoffitFinish${activeCanopy}`}
-                  value={
-                    values.buildings[activeBuilding].canopies[activeCanopy]
-                      .soffitPanelFinish
-                  }
-                  onChange={(e) =>
-                    handleCanopyChange(
-                      activeBuilding,
-                      activeCanopy,
-                      'soffitPanelFinish',
-                      e.target.value
-                    )
-                  }
-                  options={soffitFinish}
-                  label="Finish:"
-                />
-                <div className="cardInput panelImage">
-                  {selectedCanopySoffitPanel &&
-                    selectedCanopySoffitPanel.image && (
-                      <Image
-                        alt={`${selectedCanopySoffitPanel.label}`}
-                        src={selectedCanopySoffitPanel.image}
-                        className="panelImage"
-                      />
-                    )}
-                </div>
-              </div>
+              <ReusablePanel
+                name="CanopySoffit"
+                valueKey="soffit"
+                label="Soffit"
+                bldg={activeBuilding}
+                idx={activeCanopy}
+                value={values.buildings[activeBuilding].canopies[activeCanopy]}
+                onChange={(e, keyString) =>
+                  handleCanopyChange(
+                    activeBuilding,
+                    activeCanopy,
+                    keyString,
+                    e.target.value
+                  )
+                }
+              />
             </div>
           </>
         )}

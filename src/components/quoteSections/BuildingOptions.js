@@ -1,11 +1,10 @@
 import { React, useState, Fragment } from 'react';
-import Image from 'next/image';
 import ReusableSelect from '../Inputs/ReusableSelect';
+import ReusablePanel from '../Inputs/ReusablePanel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import {
   walls,
-  wallPanels,
-  wallGauge,
-  wallFinish,
   panelOptions,
   topOfWall,
   polycarbWallSize,
@@ -13,8 +12,6 @@ import {
   polycarbWallColor,
   polycarbRoofColor,
 } from '../../util/dropdownOptions';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const BuildingOptions = ({
   values,
@@ -46,9 +43,9 @@ const BuildingOptions = ({
                   start: '',
                   end: '',
                   height: '',
-                  panelType: 'pbr',
-                  panelGauge: '',
-                  panelFinish: '',
+                  linerPanelType: 'pbr',
+                  linerPanelGauge: '26',
+                  linerPanelFinish: 'painted',
                 },
               ],
             }
@@ -72,9 +69,9 @@ const BuildingOptions = ({
                   end: '',
                   height: '',
                   panelOption: 'break',
-                  panelType: 'pbr',
-                  panelGauge: '',
-                  panelFinish: '',
+                  wainscotPanelType: 'pbr',
+                  wainscotPanelGauge: '26',
+                  wainscotPanelFinish: 'painted',
                 },
               ],
             }
@@ -97,7 +94,7 @@ const BuildingOptions = ({
                   start: '',
                   end: '',
                   height: '',
-                  topOfWall: 'hrb',
+                  topOfWall: 'bc',
                 },
               ],
             }
@@ -229,17 +226,6 @@ const BuildingOptions = ({
     });
   };
 
-  const selectedLinerPanel = wallPanels.find(
-    (panel) =>
-      panel.id ===
-      values.buildings[activeBuilding].linerPanels[activeLinerPanel]?.panelType
-  );
-
-  const selectedWainscotPanel = wallPanels.find(
-    (panel) =>
-      panel.id ===
-      values.buildings[activeBuilding].wainscots[activeWainscot]?.panelType
-  );
   return (
     <>
       {/* Liner Panel Options */}
@@ -268,7 +254,9 @@ const BuildingOptions = ({
             <Fragment
               key={`building-${activeBuilding}-linerPanel-${linerPanelIndex}`}
             >
-              <div className="tableGrid5">
+              <div
+                className={`tableGrid5 ${linerPanelIndex == activeLinerPanel ? 'activeRow' : ''}`}
+              >
                 <ReusableSelect
                   id={`building-${activeBuilding}-linerPanelWall-${linerPanelIndex}`}
                   name={`building-${activeBuilding}-linerPanelWall-${linerPanelIndex}`}
@@ -382,7 +370,7 @@ const BuildingOptions = ({
                   onClick={() =>
                     removeLinerPanel(activeBuilding, linerPanelIndex)
                   }
-                  className="icon red span2"
+                  className="icon red deleteRow span2"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -393,7 +381,7 @@ const BuildingOptions = ({
         )}
         <button
           type="button"
-          className="button success w5"
+          className="button success addRow"
           onClick={() => addLinerPanel(activeBuilding)}
         >
           Add
@@ -404,77 +392,24 @@ const BuildingOptions = ({
             <div className="divider onDesktop"></div>
             <div className="grid2">
               <div className="onLaptop"></div>
-              <div className="panelGrid">
-                <ReusableSelect
-                  className="panelType"
-                  id={`building-${activeBuilding}-linerPanelType${activeLinerPanel}`}
-                  name={`building-${activeBuilding}-linerPanelType${activeLinerPanel}`}
-                  value={
-                    values.buildings[activeBuilding].linerPanels[
-                      activeLinerPanel
-                    ].panelType
-                  }
-                  onChange={(e) =>
-                    handleLinerPanelChange(
-                      activeBuilding,
-                      activeLinerPanel,
-                      'panelType',
-                      e.target.value
-                    )
-                  }
-                  options={wallPanels}
-                  label="Liner Panels:"
-                />
-                <ReusableSelect
-                  className="panelGauge"
-                  id={`building-${activeBuilding}-linerPanelGauge${activeLinerPanel}`}
-                  name={`building-${activeBuilding}-linerPanelGauge${activeLinerPanel}`}
-                  value={
-                    values.buildings[activeBuilding].linerPanels[
-                      activeLinerPanel
-                    ].panelGauge
-                  }
-                  onChange={(e) =>
-                    handleLinerPanelChange(
-                      activeBuilding,
-                      activeLinerPanel,
-                      'panelGauge',
-                      e.target.value
-                    )
-                  }
-                  options={wallGauge}
-                  label="Gauge:"
-                />
-                <ReusableSelect
-                  className="panelFinish"
-                  id={`building-${activeBuilding}-linerPanelFinish${activeLinerPanel}`}
-                  name={`building-${activeBuilding}-linerPanelFinish${activeLinerPanel}`}
-                  value={
-                    values.buildings[activeBuilding].linerPanels[
-                      activeLinerPanel
-                    ].panelFinish
-                  }
-                  onChange={(e) =>
-                    handleLinerPanelChange(
-                      activeBuilding,
-                      activeLinerPanel,
-                      'panelFinish',
-                      e.target.value
-                    )
-                  }
-                  options={wallFinish}
-                  label="Finish:"
-                />
-                <div className="cardInput panelImage">
-                  {selectedLinerPanel && selectedLinerPanel.image && (
-                    <Image
-                      alt={`${selectedLinerPanel.label}`}
-                      src={selectedLinerPanel.image}
-                      className="panelImage"
-                    />
-                  )}
-                </div>
-              </div>
+              <ReusablePanel
+                name="Liner"
+                valueKey="liner"
+                label="Liner"
+                bldg={activeBuilding}
+                idx={activeLinerPanel}
+                value={
+                  values.buildings[activeBuilding].linerPanels[activeLinerPanel]
+                }
+                onChange={(e, keyString) =>
+                  handleLinerPanelChange(
+                    activeBuilding,
+                    activeLinerPanel,
+                    keyString,
+                    e.target.value
+                  )
+                }
+              />
             </div>
           </>
         )}
@@ -506,7 +441,9 @@ const BuildingOptions = ({
             <Fragment
               key={`building-${activeBuilding}-wainscot-${wainscotIndex}`}
             >
-              <div className="tableGrid6">
+              <div
+                className={`tableGrid6 ${wainscotIndex == activeWainscot ? 'activeRow' : ''}`}
+              >
                 <ReusableSelect
                   id={`building-${activeBuilding}-wainscotWall-${wainscotIndex}`}
                   name={`building-${activeBuilding}-wainscotWall-${wainscotIndex}`}
@@ -639,7 +576,7 @@ const BuildingOptions = ({
                 />
                 <button
                   onClick={() => removeWainscot(activeBuilding, wainscotIndex)}
-                  className="icon red"
+                  className="icon red deleteRow"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -650,7 +587,7 @@ const BuildingOptions = ({
         )}
         <button
           type="button"
-          className="button success w5"
+          className="button success addRow"
           onClick={() => addWainscot(activeBuilding)}
         >
           Add
@@ -660,74 +597,24 @@ const BuildingOptions = ({
             <div className="divider onDesktop"></div>
             <div className="grid2">
               <div className="onLaptop"></div>
-              <div className="panelGrid">
-                <ReusableSelect
-                  className="panelType"
-                  id={`building-${activeBuilding}-wainscotType${activeWainscot}`}
-                  name={`building-${activeBuilding}-wainscotType${activeWainscot}`}
-                  value={
-                    values.buildings[activeBuilding].wainscots[activeWainscot]
-                      .panelType
-                  }
-                  onChange={(e) =>
-                    handleWainscotChange(
-                      activeBuilding,
-                      activeWainscot,
-                      'panelType',
-                      e.target.value
-                    )
-                  }
-                  options={wallPanels}
-                  label="Liner Panels:"
-                />
-                <ReusableSelect
-                  className="panelGauge"
-                  id={`building-${activeBuilding}-wainscotGauge${activeWainscot}`}
-                  name={`building-${activeBuilding}-wainscotGauge${activeWainscot}`}
-                  value={
-                    values.buildings[activeBuilding].wainscots[activeWainscot]
-                      .panelGauge
-                  }
-                  onChange={(e) =>
-                    handleWainscotChange(
-                      activeBuilding,
-                      activeWainscot,
-                      'panelGauge',
-                      e.target.value
-                    )
-                  }
-                  options={wallGauge}
-                  label="Gauge:"
-                />
-                <ReusableSelect
-                  className="panelFinish"
-                  id={`building-${activeBuilding}-wainscotFinish${activeWainscot}`}
-                  name={`building-${activeBuilding}-wainscotFinish${activeWainscot}`}
-                  value={
-                    values.buildings[activeBuilding].wainscots[activeWainscot]
-                      .panelFinish
-                  }
-                  onChange={(e) =>
-                    handleWainscotChange(
-                      activeBuilding,
-                      activeWainscot,
-                      'panelFinish',
-                      e.target.value
-                    )
-                  }
-                  options={wallFinish}
-                  label="Finish:"
-                />
-                <div className="cardInput panelImage">
-                  {selectedWainscotPanel && selectedWainscotPanel.image && (
-                    <Image
-                      alt={`${selectedWainscotPanel.label}`}
-                      src={selectedWainscotPanel.image}
-                      className="panelImage"
-                    />
-                  )}
-                </div>
-              </div>
+              <ReusablePanel
+                name="Wainscot"
+                valueKey="wainscot"
+                label="Wainscot"
+                bldg={activeBuilding}
+                idx={activeWainscot}
+                value={
+                  values.buildings[activeBuilding].wainscots[activeWainscot]
+                }
+                onChange={(e, keyString) =>
+                  handleWainscotChange(
+                    activeBuilding,
+                    activeWainscot,
+                    keyString,
+                    e.target.value
+                  )
+                }
+              />
             </div>
           </>
         )}
@@ -759,7 +646,9 @@ const BuildingOptions = ({
             <Fragment
               key={`building-${activeBuilding}-partialWall-${partialWallIndex}`}
             >
-              <div className="tableGrid6">
+              <div
+                className={`tableGrid6 ${partialWallIndex == activePartialWall ? 'activeRow' : ''}`}
+              >
                 <ReusableSelect
                   id={`building-${activeBuilding}-partialWallWall-${partialWallIndex}`}
                   name={`building-${activeBuilding}-partialWallWall-${partialWallIndex}`}
@@ -894,7 +783,7 @@ const BuildingOptions = ({
                   onClick={() =>
                     removePartialWall(activeBuilding, partialWallIndex)
                   }
-                  className="icon red"
+                  className="icon red deleteRow"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -905,7 +794,7 @@ const BuildingOptions = ({
         )}
         <button
           type="button"
-          className="button success w5"
+          className="button success addRow"
           onClick={() => addPartialWall(activeBuilding)}
         >
           Add
@@ -938,7 +827,9 @@ const BuildingOptions = ({
             <Fragment
               key={`building-${activeBuilding}-wallSkirt-${wallSkirtIndex}`}
             >
-              <div className="tableGrid6">
+              <div
+                className={`tableGrid6 ${wallSkirtIndex == activeWallSkirt ? 'activeRow' : ''}`}
+              >
                 <ReusableSelect
                   id={`building-${activeBuilding}-wallSkirtWall-${wallSkirtIndex}`}
                   name={`building-${activeBuilding}-wallSkirtWall-${wallSkirtIndex}`}
@@ -1071,7 +962,7 @@ const BuildingOptions = ({
                   onClick={() =>
                     removeWallSkirt(activeBuilding, wallSkirtIndex)
                   }
-                  className="icon red"
+                  className="icon red deleteRow"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -1081,7 +972,7 @@ const BuildingOptions = ({
         )}
         <button
           type="button"
-          className="button success w5"
+          className="button success addRow"
           onClick={() => addWallSkirt(activeBuilding)}
         >
           Add
