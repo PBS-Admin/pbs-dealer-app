@@ -348,7 +348,7 @@ const BuildingPartitions = ({
         {values.buildings[activeBuilding].partitions.length > 0 && (
           <>
             <div className="divider onDesktop"></div>
-            <div className="grid2">
+            <div className="grid2 alignTop">
               <ReusablePanel
                 name="PartitionLeft"
                 valueKey="left"

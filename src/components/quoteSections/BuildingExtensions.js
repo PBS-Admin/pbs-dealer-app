@@ -227,67 +227,6 @@ const BuildingExtensions = ({
               handleNestedChange(activeBuilding, keyString, e.target.value)
             }
           />
-          {/* 
-          <div className="panelGrid">
-            <ReusableSelect
-              className="panelType"
-              id={`buildingSoffitPanels-${activeBuilding}`}
-              name={`buildingSoffitPanels-${activeBuilding}`}
-              value={values.buildings[activeBuilding].soffitPanelType}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'soffitPanelType',
-                  e.target.value
-                )
-              }
-              options={soffitPanels}
-              label="Soffit Panels:"
-            />
-            {values.buildings[activeBuilding].soffitPanelType != 'none' && (
-              <>
-                <ReusableSelect
-                  className="panelGauge"
-                  id={`buildingSoffitGauge-${activeBuilding}`}
-                  name={`buildingSoffitGauge-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].soffitPanelGauge}
-                  onChange={(e) =>
-                    handleNestedChange(
-                      activeBuilding,
-                      'soffitPanelGauge',
-                      e.target.value
-                    )
-                  }
-                  options={soffitGauge}
-                  label="Gauge:"
-                />
-                <ReusableSelect
-                  className="panelFinish"
-                  id={`buildingSoffitFinish-${activeBuilding}`}
-                  name={`buildingSoffitFinish-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].soffitPanelFinish}
-                  onChange={(e) =>
-                    handleNestedChange(
-                      activeBuilding,
-                      'soffitPanelFinish',
-                      e.target.value
-                    )
-                  }
-                  options={soffitFinish}
-                  label="Finish:"
-                />
-                <div className="cardInput panelImage">
-                  {selectedSoffitPanel && selectedSoffitPanel.image && (
-                    <Image
-                      alt={`${selectedSoffitPanel.label}`}
-                      src={selectedSoffitPanel.image}
-                      className="panelImage"
-                    />
-                  )}
-                </div>
-              </>
-            )}
-          </div> */}
         </div>
       </section>
 
@@ -526,7 +465,7 @@ const BuildingExtensions = ({
         {values.buildings[activeBuilding].canopies.length > 0 && (
           <>
             <div className="divider onDesktop"></div>
-            <div className="grid2">
+            <div className="grid2 alignTop">
               <ReusablePanel
                 name="CanopyRoof"
                 valueKey="roof"

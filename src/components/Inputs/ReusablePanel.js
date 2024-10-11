@@ -129,33 +129,39 @@ const ReusablePanel = ({
             options={panelMap[name]}
             label={`${label} Panels:`}
           />
-          <ReusableSelect
-            className="panelGauge"
-            name={`building-${bldg}-${name}Gauge${idx}`}
-            value={internalGaugeValue}
-            dependantOn={internalPanelValue}
-            onChange={handleGaugeChange}
-            options={gaugeMap[name]}
-            label="Gauge:"
-          />
-          <ReusableSelect
-            className="panelFinish"
-            name={`building-${bldg}-${name}Finish${idx}`}
-            value={internalFinishValue}
-            dependantOn={internalGaugeValue}
-            onChange={handleFinishChange}
-            options={finishMap[name]}
-            label="Finish:"
-          />
-          <div className="cardInput panelImage">
-            {selectedPanel && selectedPanel.image && (
-              <Image
-                alt={`${selectedPanel.label}`}
-                src={selectedPanel.image}
-                className="panelImage"
+          {internalPanelValue != 'none' && internalPanelValue != 'open' ? (
+            <>
+              <ReusableSelect
+                className="panelGauge"
+                name={`building-${bldg}-${name}Gauge${idx}`}
+                value={internalGaugeValue}
+                dependantOn={internalPanelValue}
+                onChange={handleGaugeChange}
+                options={gaugeMap[name]}
+                label="Gauge:"
               />
-            )}
-          </div>
+              <ReusableSelect
+                className="panelFinish"
+                name={`building-${bldg}-${name}Finish${idx}`}
+                value={internalFinishValue}
+                dependantOn={internalGaugeValue}
+                onChange={handleFinishChange}
+                options={finishMap[name]}
+                label="Finish:"
+              />
+              <div className="cardInput panelImage">
+                {selectedPanel && selectedPanel.image && (
+                  <Image
+                    alt={`${selectedPanel.label}`}
+                    src={selectedPanel.image}
+                    className="panelImage"
+                  />
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="openWall"></div>
+          )}
         </>
       )}
     </div>

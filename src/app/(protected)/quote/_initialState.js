@@ -55,7 +55,7 @@ export const initialState = {
       length: '',
       offsetX: '',
       offsetY: '',
-      rotation: '',
+      rotation: '0',
       commonWall: '',
       // Building - Layout
       shape: 'symmetrical',

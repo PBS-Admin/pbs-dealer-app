@@ -31,7 +31,7 @@ const BuildingLayout = ({
 }) => {
   return (
     <>
-      <section className="card start">
+      {/* <section className="card start">
         <header>
           <h3>Building Shape</h3>
         </header>
@@ -213,7 +213,7 @@ const BuildingLayout = ({
             compareValue={values.buildings[activeBuilding].width}
           />
         </div>
-      </section>
+      </section> */}
 
       <section className="card start">
         <header className="cardHeader">
@@ -306,6 +306,44 @@ const BuildingLayout = ({
             options={thermalFactor}
             label="Thermal Factor:"
             defaultValue="heated"
+          />
+        </div>
+      </section>
+
+      <section className="card start">
+        <header>
+          <h3>Bay Spacing</h3>
+        </header>
+        <div className="grid3">
+          <BaySpacingInput
+            name={`buildingRoofBaySpacing-${activeBuilding}`}
+            label="Sidewall Bay Spacing:"
+            value={values.buildings[activeBuilding].roofBaySpacing}
+            onChange={(name, value) =>
+              handleNestedChange(activeBuilding, 'roofBaySpacing', value)
+            }
+            compareLabel="building length"
+            compareValue={values.buildings[activeBuilding].length}
+          />
+          <BaySpacingInput
+            name={`buildingLeftBaySpacing-${activeBuilding}`}
+            label="Left Endwall Bay Spacing:"
+            value={values.buildings[activeBuilding].leftBaySpacing}
+            onChange={(name, value) =>
+              handleNestedChange(activeBuilding, 'leftBaySpacing', value)
+            }
+            compareLabel="building width"
+            compareValue={values.buildings[activeBuilding].width}
+          />
+          <BaySpacingInput
+            name={`buildingRightBaySpacing-${activeBuilding}`}
+            label="Right Endwall Bay Spacing:"
+            value={values.buildings[activeBuilding].rightBaySpacing}
+            onChange={(name, value) =>
+              handleNestedChange(activeBuilding, 'rightBaySpacing', value)
+            }
+            compareLabel="building width"
+            compareValue={values.buildings[activeBuilding].width}
           />
         </div>
       </section>
@@ -920,7 +958,7 @@ const BuildingLayout = ({
           <h3>Sheeting & Insulation</h3>
         </header>
 
-        <div className="grid2">
+        <div className="grid2 alignTop">
           <ReusablePanel
             name="Roof"
             valueKey="roof"

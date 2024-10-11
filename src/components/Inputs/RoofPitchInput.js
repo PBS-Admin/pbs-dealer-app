@@ -13,12 +13,20 @@ const parseRoofPitch = (input) => {
   const match = input.match(/^(\d*(?:\.\d+)?)/);
   if (match) {
     const value = parseFloat(match[1]);
-    return !isNaN(value) && value >= 0 && value <= 6 ? value : null;
+    return !isNaN(value) && value >= 0 && value <= 12 ? value : null;
   }
   return null;
 };
 
-const RoofPitchInput = ({ value, onChange, name, label, calc, onCalc }) => {
+const RoofPitchInput = ({
+  value,
+  onChange,
+  name,
+  label,
+  calc,
+  onCalc,
+  disabled,
+}) => {
   const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
@@ -60,8 +68,9 @@ const RoofPitchInput = ({ value, onChange, name, label, calc, onCalc }) => {
         value={inputValue}
         onChange={handleInputChange}
         onBlur={handleBlur}
-        placeholder="0:12"
+        placeholder="x:12"
         onFocus={(e) => e.target.select()}
+        disabled={disabled}
       />
     </div>
   );
