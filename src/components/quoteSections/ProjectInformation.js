@@ -420,7 +420,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
         </header>
         <div className="grid2">
           <ReusableSelect
-            id={`buildingCode`}
             name={`buildingCode`}
             value={values.buildingCode}
             onChange={handleChange}
@@ -428,7 +427,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             label="Building Code:"
           />
           <ReusableSelect
-            id={`riskCategory`}
             name={`riskCategory`}
             value={values.riskCategory}
             onChange={handleChange}
@@ -497,7 +495,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             placeholder={'mph'}
           />
           <ReusableSelect
-            id={`windExposure`}
             name={`windExposure`}
             value={values.windExposure}
             onChange={handleChange}
@@ -506,7 +503,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             defaultValue="C"
           />
           <ReusableSelect
-            id={`enclosure`}
             name={`enclosure`}
             value={values.enclosure}
             onChange={handleChange}
@@ -547,7 +543,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             placeholder={'psf'}
           />
           <ReusableSelect
-            id={`thermalFactor`}
             name={`thermalFactor`}
             value={values.thermalFactor}
             onChange={handleChange}
@@ -559,7 +554,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
         <h4>Seismic Load</h4>
         <div className="grid6">
           <ReusableSelect
-            id={`seismicCategory`}
             name={`seismicCategory`}
             className="span2"
             value={values.seismicCategory}

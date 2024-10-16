@@ -39,8 +39,10 @@ const BaySpacingInput = ({
   value,
   name,
   label,
+  labelClass,
   className = '',
   onChange,
+  placeholder = `25'-0", 25'-0" or 4x20`,
   compareLabel,
   compareValue,
 }) => {
@@ -101,7 +103,9 @@ const BaySpacingInput = ({
 
   return (
     <div className={`cardInput ${className}`}>
-      <label htmlFor={name}>{label}</label>
+      <label className={labelClass} htmlFor={name}>
+        <span>{label}</span>
+      </label>
       <input
         type="text"
         id={name}
@@ -110,7 +114,7 @@ const BaySpacingInput = ({
         onChange={handleInputChange}
         onBlur={handleBlur}
         // onFocus={suggestDistribution}
-        placeholder="25'-0&quot;, 25'-0&quot; or 4x20"
+        placeholder={placeholder}
         onFocus={(e) => e.target.select()}
       />
       {error && <div style={{ color: 'red', fontSize: '0.8em' }}>{error}</div>}

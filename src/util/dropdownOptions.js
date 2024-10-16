@@ -81,7 +81,6 @@ export const purlinSpacing = [
   { id: 'twoFoot', label: 'Purlin Spaced 2\'-0" on Center' },
 ];
 
-/* !! Panels */
 export const roofPanels = [
   { id: 'pbr', label: 'PBR', image: pbr },
   { id: 'pbrDrip', label: 'PBR with Drip Stop', image: pbr },
@@ -271,6 +270,23 @@ export const polycarbRoofSize = [{ id: '10', label: '10\'-0"' }];
 export const polycarbRoofColor = [
   { id: 'clear', label: 'Clear' },
   { id: 'white', label: 'White' },
+];
+
+export const openingTypes = [
+  { id: 'overhead', label: 'Overhead Door' },
+  { id: 'PBSdoor', label: 'PBS provided Breakdown Door' },
+  { id: 'PBSprehung', label: 'PBS provided Pre-Hung Door' },
+  { id: 'canister', label: 'Canister Door' },
+  { id: 'sliding', label: 'Sliding Door' },
+  { id: 'bipass', label: 'Bi-Pass Sliding Door' },
+  { id: 'biparting', label: 'Bi-Parting Sliding Door' },
+  { id: 'window', label: 'Window' },
+  { id: 'entry', label: 'Opening for Entry Door' },
+  { id: 'recessed', label: 'Recessed Opening' },
+  { id: 'commercialwindow', label: 'Commercial Storefront Window' },
+  { id: 'commercialentry', label: 'Commercial Storefront Entry' },
+  { id: 'louver', label: 'Louver' },
+  { id: 'openbay', label: 'Open Bay' },
 ];
 
 export const buildingCodes = [

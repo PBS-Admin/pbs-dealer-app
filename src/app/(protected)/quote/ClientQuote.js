@@ -706,6 +706,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                             name={`buildingOffsetX-${index}`}
                             label="Left/Right:"
                             value={building.offsetX}
+                            negative={true}
+                            noBlankValue={true}
                             onChange={(name, value) =>
                               handleNestedChange(index, 'offsetX', value)
                             }
@@ -749,6 +751,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                             name={`buildingOffsetY-${index}`}
                             label="Back/Front:"
                             value={building.offsetY}
+                            negative={true}
+                            noBlankValue={true}
                             onChange={(name, value) =>
                               handleNestedChange(index, 'offsetY', value)
                             }

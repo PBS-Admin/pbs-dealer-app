@@ -95,7 +95,6 @@ const BuildingLayout = ({
         <h4>Wind Load</h4>
         <div className="grid3">
           <ReusableSelect
-            id={`enclosure`}
             name={`enclosure`}
             value={values.buildings[activeBuilding].enclosure}
             onChange={(e) =>
@@ -125,7 +124,6 @@ const BuildingLayout = ({
             decimalPlaces={2}
           />
           <ReusableSelect
-            id={`thermalFactor`}
             name={`thermalFactor`}
             value={values.buildings[activeBuilding].thermalFactor}
             onChange={(e) =>
@@ -286,7 +284,6 @@ const BuildingLayout = ({
         <div className="grid2 alignTop">
           <div className="grid2">
             <ReusableSelect
-              id={`buildingleftFrame-${activeBuilding}`}
               name={`buildingleftFrame-${activeBuilding}`}
               value={values.buildings[activeBuilding].leftFrame}
               onChange={(e) =>
@@ -327,7 +324,6 @@ const BuildingLayout = ({
           <div className="divider offOnPhone"></div>
           <div className="grid2">
             <ReusableSelect
-              id={`buildingrightFrame-${activeBuilding}`}
               name={`buildingrightFrame-${activeBuilding}`}
               value={values.buildings[activeBuilding].rightFrame}
               onChange={(e) =>
@@ -379,7 +375,6 @@ const BuildingLayout = ({
         <div className="grid4 alignTop">
           <div className="grid">
             <ReusableSelect
-              id={`buildingfrontBracing-${activeBuilding}`}
               name={`buildingfrontBracing-${activeBuilding}`}
               value={values.buildings[activeBuilding].frontBracingType}
               onChange={(e) =>
@@ -412,7 +407,6 @@ const BuildingLayout = ({
           </div>
           <div className="grid">
             <ReusableSelect
-              id={`buildingbackBracing-${activeBuilding}`}
               name={`buildingbackBracing-${activeBuilding}`}
               value={values.buildings[activeBuilding].backBracingType}
               onChange={(e) =>
@@ -445,7 +439,6 @@ const BuildingLayout = ({
           </div>
           <div className="grid">
             <ReusableSelect
-              id={`buildingleftBracing-${activeBuilding}`}
               name={`buildingleftBracing-${activeBuilding}`}
               value={
                 values.buildings[activeBuilding].leftFrame == 'postAndBeam'
@@ -467,7 +460,6 @@ const BuildingLayout = ({
             />
           </div>
           <ReusableSelect
-            id={`buildingrightBracing-${activeBuilding}`}
             name={`buildingrightBracing-${activeBuilding}`}
             value={
               values.buildings[activeBuilding].rightFrame == 'postAndBeam'
@@ -594,7 +586,6 @@ const BuildingLayout = ({
         <div className="grid4 alignTop">
           <div className="grid">
             <ReusableSelect
-              id={`buildingfrontGirtType-${activeBuilding}`}
               name={`buildingfrontGirtType-${activeBuilding}`}
               value={values.buildings[activeBuilding].frontGirtType}
               onChange={(e) =>
@@ -610,7 +601,6 @@ const BuildingLayout = ({
             {values.buildings[activeBuilding].frontGirtType != 'open' && (
               <>
                 <ReusableSelect
-                  id={`buildingfrontGirtSpacing-${activeBuilding}`}
                   name={`buildingfrontGirtSpacing-${activeBuilding}`}
                   value={values.buildings[activeBuilding].frontGirtSpacing}
                   onChange={(e) =>
@@ -624,7 +614,6 @@ const BuildingLayout = ({
                   label="Front Sidewall Girt Spacing:"
                 />
                 <ReusableSelect
-                  id={`buildingFrontBaseCondition-${activeBuilding}`}
                   name={`buildingFrontBaseCondition-${activeBuilding}`}
                   value={values.buildings[activeBuilding].frontBaseCondition}
                   onChange={(e) =>
@@ -643,7 +632,6 @@ const BuildingLayout = ({
           <div className="divider offOnPhone"></div>
           <div className="grid">
             <ReusableSelect
-              id={`buildingbackGirtType-${activeBuilding}`}
               name={`buildingbackGirtType-${activeBuilding}`}
               value={values.buildings[activeBuilding].backGirtType}
               onChange={(e) =>
@@ -659,7 +647,6 @@ const BuildingLayout = ({
             {values.buildings[activeBuilding].backGirtType != 'open' && (
               <>
                 <ReusableSelect
-                  id={`buildingbackGirtSpacing-${activeBuilding}`}
                   name={`buildingbackGirtSpacing-${activeBuilding}`}
                   value={values.buildings[activeBuilding].backGirtSpacing}
                   onChange={(e) =>
@@ -673,7 +660,6 @@ const BuildingLayout = ({
                   label="Back Sidewall Girt Spacing:"
                 />
                 <ReusableSelect
-                  id={`buildingBackBaseCondition-${activeBuilding}`}
                   name={`buildingBackBaseCondition-${activeBuilding}`}
                   value={values.buildings[activeBuilding].backBaseCondition}
                   onChange={(e) =>
@@ -692,7 +678,6 @@ const BuildingLayout = ({
           <div className="divider showWithSidebar span2"></div>
           <div className="grid">
             <ReusableSelect
-              id={`buildingleftGirtType-${activeBuilding}`}
               name={`buildingleftGirtType-${activeBuilding}`}
               value={values.buildings[activeBuilding].leftGirtType}
               onChange={(e) =>
@@ -708,7 +693,6 @@ const BuildingLayout = ({
             {values.buildings[activeBuilding].leftGirtType != 'open' && (
               <>
                 <ReusableSelect
-                  id={`buildingleftGirtSpacing-${activeBuilding}`}
                   name={`buildingleftGirtSpacing-${activeBuilding}`}
                   value={values.buildings[activeBuilding].leftGirtSpacing}
                   onChange={(e) =>
@@ -722,7 +706,6 @@ const BuildingLayout = ({
                   label="Left Endwall Girt Spacing:"
                 />
                 <ReusableSelect
-                  id={`buildingLeftBaseCondition-${activeBuilding}`}
                   name={`buildingLeftBaseCondition-${activeBuilding}`}
                   value={values.buildings[activeBuilding].leftBaseCondition}
                   onChange={(e) =>
@@ -741,7 +724,6 @@ const BuildingLayout = ({
           <div className="divider offOnPhone"></div>
           <div className="grid">
             <ReusableSelect
-              id={`buildingrightGirtType-${activeBuilding}`}
               name={`buildingrightGirtType-${activeBuilding}`}
               value={values.buildings[activeBuilding].rightGirtType}
               onChange={(e) =>
@@ -757,7 +739,6 @@ const BuildingLayout = ({
             {values.buildings[activeBuilding].rightGirtType != 'open' && (
               <>
                 <ReusableSelect
-                  id={`buildingrightGirtSpacing-${activeBuilding}`}
                   name={`buildingrightGirtSpacing-${activeBuilding}`}
                   value={values.buildings[activeBuilding].rightGirtSpacing}
                   onChange={(e) =>
@@ -771,7 +752,6 @@ const BuildingLayout = ({
                   label="Right Endwall Girt Spacing:"
                 />
                 <ReusableSelect
-                  id={`buildingRightBaseCondition-${activeBuilding}`}
                   name={`buildingRightBaseCondition-${activeBuilding}`}
                   value={values.buildings[activeBuilding].rightBaseCondition}
                   onChange={(e) =>
@@ -793,7 +773,6 @@ const BuildingLayout = ({
         <h4>Purlins</h4>
         <div className="grid4">
           <ReusableSelect
-            id={`buildingPurlinSpacing-${activeBuilding}`}
             name={`buildingPurlinSpacing-${activeBuilding}`}
             value={values.buildings[activeBuilding].purlinSpacing}
             onChange={(e) =>
@@ -867,7 +846,6 @@ const BuildingLayout = ({
         <h4>Building Insulation</h4>
         <div className="grid4">
           <ReusableSelect
-            id={`buildingRoofInsulation-${activeBuilding}`}
             name={`buildingRoofInsulation-${activeBuilding}`}
             value={values.buildings[activeBuilding].roofInsulation}
             onChange={(e) =>
@@ -901,7 +879,6 @@ const BuildingLayout = ({
             </div>
           </div>
           <ReusableSelect
-            id={`buildingWallInsulation-${activeBuilding}`}
             name={`buildingWallInsulation-${activeBuilding}`}
             value={values.buildings[activeBuilding].wallInsulation}
             onChange={(e) =>

@@ -1,15 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const parseInteger = (
-  input,
-  min,
-  max,
-  neg,
-  valid,
-  defaultValue,
-  prefix,
-  suffix
-) => {
+const parseInteger = (input, min, max, neg, valid, defaultValue) => {
   const parsedInput = parseInt(input);
   const parsedMin = parseInt(min);
   const parsedMax = parseInt(max);
@@ -24,8 +15,7 @@ const parseInteger = (
       : max && parsedInput > parsedMax //else if there is a max and value is greater than max
         ? parsedMax //set value to max
         : parsedInput; //else set value to input if in range
-  console.log(suffix);
-  return isNaN(parsedInput) ? defaultValue : prefix + allowed + suffix;
+  return isNaN(parsedInput) ? defaultValue : allowed;
 };
 
 const ReusableInteger = ({
@@ -41,7 +31,8 @@ const ReusableInteger = ({
   validValues,
   defaultValue = '',
   negative = true,
-  prefix = '',
+  noBlankValue = false,
+  allowZero = noBlankValue ? true : false,
   suffix = '',
   disabled = false,
   placeholder,
@@ -64,12 +55,9 @@ const ReusableInteger = ({
       max,
       negative,
       validValues,
-      defaultValue,
-      prefix,
-      suffix
+      defaultValue
     );
-    setInputValue(parsedValue);
-    // Only call onChange when the input loses focus
+    setInputValue(parsedValue + suffix);
     onChange({
       target: {
         name: name,

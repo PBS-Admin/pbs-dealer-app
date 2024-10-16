@@ -32,6 +32,7 @@ const RoofPitchInput = ({
   onFocus,
   calc,
   onCalc,
+  placeholder = 'x:12',
   disabled,
 }) => {
   const [inputValue, setInputValue] = useState('');
@@ -83,7 +84,7 @@ const RoofPitchInput = ({
             onFocus();
           }
         }}
-        placeholder="x:12"
+        placeholder={placeholder}
         disabled={disabled}
       />
     </div>

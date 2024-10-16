@@ -204,7 +204,6 @@ const BuildingExtensions = ({
 
         <div className="grid2 alignTop">
           <ReusableSelect
-            id={`buildingExtensionInsulation-${activeBuilding}`}
             name={`buildingExtensionInsulation-${activeBuilding}`}
             value={values.buildings[activeBuilding].extensionInsulation}
             onChange={(e) =>
@@ -257,7 +256,6 @@ const BuildingExtensions = ({
                 className={`tableGrid8 ${canopyIndex == activeCanopy ? 'activeRow' : ''}`}
               >
                 <ReusableSelect
-                  id={`building-${activeBuilding}-canopyWall-${canopyIndex}`}
                   name={`building-${activeBuilding}-canopyWall-${canopyIndex}`}
                   labelClass="offOnDesktop"
                   value={canopy.wall}
@@ -275,7 +273,7 @@ const BuildingExtensions = ({
                     }
                   }}
                   options={walls}
-                  label="Wall"
+                  label="Wall:"
                 />
                 <FeetInchesInput
                   name={`building-${activeBuilding}-canopyWidth-${canopyIndex}`}
@@ -295,7 +293,6 @@ const BuildingExtensions = ({
                       setActiveCanopy(canopyIndex);
                     }
                   }}
-                  placeholder="Feet"
                 />
                 <RoofPitchInput
                   name={`building-${activeBuilding}-canopySlope-${canopyIndex}`}
@@ -315,7 +312,6 @@ const BuildingExtensions = ({
                       setActiveCanopy(canopyIndex);
                     }
                   }}
-                  placeholder="x:12"
                 />
                 <ReusableInteger
                   name={`building-${activeBuilding}-canopyStartBay-${canopyIndex}`}
@@ -377,7 +373,6 @@ const BuildingExtensions = ({
                       setActiveCanopy(canopyIndex);
                     }
                   }}
-                  placeholder="Feet"
                 />
                 <div className="checkboxGroup">
                   <div className="checkRow">

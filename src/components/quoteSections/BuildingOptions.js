@@ -1,6 +1,8 @@
 import { React, useState, Fragment } from 'react';
 import ReusableSelect from '../Inputs/ReusableSelect';
 import ReusablePanel from '../Inputs/ReusablePanel';
+import ReusableInteger from '../Inputs/ReusableInteger';
+import FeetInchesInput from '../Inputs/FeetInchesInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -258,7 +260,6 @@ const BuildingOptions = ({
                 className={`tableGrid5 ${linerPanelIndex == activeLinerPanel ? 'activeRow' : ''}`}
               >
                 <ReusableSelect
-                  id={`building-${activeBuilding}-linerPanelWall-${linerPanelIndex}`}
                   name={`building-${activeBuilding}-linerPanelWall-${linerPanelIndex}`}
                   labelClass="offOnTablet"
                   value={linerPanel.wall}
@@ -276,96 +277,78 @@ const BuildingOptions = ({
                     }
                   }}
                   options={walls}
-                  label="Wall"
+                  label="Wall:"
                 />
-                <div className="cardInput">
-                  <label
-                    className="offOnTablet"
-                    htmlFor={`building-${activeBuilding}-linerPanelStart-${linerPanelIndex}`}
-                  >
-                    <span>
-                      Start <small>(Left to Right)</small>
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-linerPanelStart-${linerPanelIndex}`}
-                    name={`building-${activeBuilding}-linerPanelStart-${linerPanelIndex}`}
-                    value={linerPanel.start}
-                    onChange={(e) =>
-                      handleLinerPanelChange(
-                        activeBuilding,
-                        linerPanelIndex,
-                        'start',
-                        e.target.value
-                      )
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-linerPanelStart-${linerPanelIndex}`}
+                  label={
+                    <>
+                      <span>
+                        Start: <small>(Left to Right)</small>
+                      </span>
+                    </>
+                  }
+                  labelClass="offOnTablet"
+                  value={linerPanel.start}
+                  onChange={(name, value) =>
+                    handleLinerPanelChange(
+                      activeBuilding,
+                      linerPanelIndex,
+                      'start',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeLinerPanel !== linerPanelIndex) {
+                      setActiveLinerPanel(linerPanelIndex);
                     }
-                    onFocus={() => {
-                      if (activeLinerPanel !== linerPanelIndex) {
-                        setActiveLinerPanel(linerPanelIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnTablet"
-                    htmlFor={`building-${activeBuilding}-linerPanelEnd-${linerPanelIndex}`}
-                  >
-                    <span>
-                      End <small>(Left to Right)</small>
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-linerPanelEnd-${linerPanelIndex}`}
-                    name={`building-${activeBuilding}-linerPanelEnd-${linerPanelIndex}`}
-                    value={linerPanel.end}
-                    onChange={(e) =>
-                      handleLinerPanelChange(
-                        activeBuilding,
-                        linerPanelIndex,
-                        'end',
-                        e.target.value
-                      )
+                  }}
+                />
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-linerPanelEnd-${linerPanelIndex}`}
+                  label={
+                    <>
+                      <span>
+                        End: <small>(Left to Right)</small>
+                      </span>
+                    </>
+                  }
+                  labelClass="offOnTablet"
+                  value={linerPanel.end}
+                  onChange={(name, value) =>
+                    handleLinerPanelChange(
+                      activeBuilding,
+                      linerPanelIndex,
+                      'end',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeLinerPanel !== linerPanelIndex) {
+                      setActiveLinerPanel(linerPanelIndex);
                     }
-                    onFocus={() => {
-                      if (activeLinerPanel !== linerPanelIndex) {
-                        setActiveLinerPanel(linerPanelIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnTablet"
-                    htmlFor={`building-${activeBuilding}-linerPanelHeight-${linerPanelIndex}`}
-                  >
-                    Height
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-linerPanelHeight-${linerPanelIndex}`}
-                    name={`building-${activeBuilding}-linerPanelHeight-${linerPanelIndex}`}
-                    value={linerPanel.height}
-                    onChange={(e) =>
-                      handleLinerPanelChange(
-                        activeBuilding,
-                        linerPanelIndex,
-                        'height',
-                        e.target.value
-                      )
+                  }}
+                />
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-linerPanelHeight-${linerPanelIndex}`}
+                  label="Height:"
+                  labelClass="offOnTablet"
+                  value={linerPanel.height}
+                  onChange={(name, value) =>
+                    handleLinerPanelChange(
+                      activeBuilding,
+                      linerPanelIndex,
+                      'height',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeLinerPanel !== linerPanelIndex) {
+                      setActiveLinerPanel(linerPanelIndex);
                     }
-                    onFocus={() => {
-                      if (activeLinerPanel !== linerPanelIndex) {
-                        setActiveLinerPanel(linerPanelIndex);
-                      }
-                    }}
-                    placeholder="Leave Blank for Full Ht"
-                  />
-                </div>
+                  }}
+                  placeholder="Leave Blank for Full Ht"
+                />
                 <button
                   onClick={() =>
                     removeLinerPanel(activeBuilding, linerPanelIndex)
@@ -445,7 +428,6 @@ const BuildingOptions = ({
                 className={`tableGrid6 ${wainscotIndex == activeWainscot ? 'activeRow' : ''}`}
               >
                 <ReusableSelect
-                  id={`building-${activeBuilding}-wainscotWall-${wainscotIndex}`}
                   name={`building-${activeBuilding}-wainscotWall-${wainscotIndex}`}
                   labelClass="offOnTablet"
                   value={wainscot.wall}
@@ -463,98 +445,78 @@ const BuildingOptions = ({
                     }
                   }}
                   options={walls}
-                  label="Wall"
+                  label="Wall:"
                 />
-                <div className="cardInput">
-                  <label
-                    className="offOnTablet"
-                    htmlFor={`building-${activeBuilding}-wainscotStart-${wainscotIndex}`}
-                  >
-                    <span>
-                      Start <small>(Left to Right)</small>
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-wainscotStart-${wainscotIndex}`}
-                    name={`building-${activeBuilding}-wainscotStart-${wainscotIndex}`}
-                    value={wainscot.start}
-                    onChange={(e) =>
-                      handleWainscotChange(
-                        activeBuilding,
-                        wainscotIndex,
-                        'start',
-                        e.target.value
-                      )
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-wainscotStart-${wainscotIndex}`}
+                  label={
+                    <>
+                      <span>
+                        Start: <small>(Left to Right)</small>
+                      </span>
+                    </>
+                  }
+                  labelClass="offOnTablet"
+                  value={wainscot.start}
+                  onChange={(name, value) =>
+                    handleWainscotChange(
+                      activeBuilding,
+                      wainscotIndex,
+                      'start',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeWainscot !== wainscotIndex) {
+                      setActiveWainscot(wainscotIndex);
                     }
-                    onFocus={() => {
-                      if (activeWainscot !== wainscotIndex) {
-                        setActiveWainscot(wainscotIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnTablet"
-                    htmlFor={`building-${activeBuilding}-wainscotEnd-${wainscotIndex}`}
-                  >
-                    <span>
-                      End <small>(Left to Right)</small>
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-wainscotEnd-${wainscotIndex}`}
-                    name={`building-${activeBuilding}-wainscotEnd-${wainscotIndex}`}
-                    value={wainscot.end}
-                    onChange={(e) =>
-                      handleWainscotChange(
-                        activeBuilding,
-                        wainscotIndex,
-                        'end',
-                        e.target.value
-                      )
+                  }}
+                />
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-wainscotEnd-${wainscotIndex}`}
+                  label={
+                    <>
+                      <span>
+                        End: <small>(Left to Right)</small>
+                      </span>
+                    </>
+                  }
+                  labelClass="offOnTablet"
+                  value={wainscot.end}
+                  onChange={(name, value) =>
+                    handleWainscotChange(
+                      activeBuilding,
+                      wainscotIndex,
+                      'end',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeWainscot !== wainscotIndex) {
+                      setActiveWainscot(wainscotIndex);
                     }
-                    onFocus={() => {
-                      if (activeWainscot !== wainscotIndex) {
-                        setActiveWainscot(wainscotIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnTablet"
-                    htmlFor={`building-${activeBuilding}-wainscotHeight-${wainscotIndex}`}
-                  >
-                    Height
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-wainscotHeight-${wainscotIndex}`}
-                    name={`building-${activeBuilding}-wainscotHeight-${wainscotIndex}`}
-                    value={wainscot.height}
-                    onChange={(e) =>
-                      handleWainscotChange(
-                        activeBuilding,
-                        wainscotIndex,
-                        'height',
-                        e.target.value
-                      )
+                  }}
+                />
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-wainscotHeight-${wainscotIndex}`}
+                  label="Height:"
+                  labelClass="offOnTablet"
+                  value={wainscot.height}
+                  onChange={(name, value) =>
+                    handleWainscotChange(
+                      activeBuilding,
+                      wainscotIndex,
+                      'height',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeWainscot !== wainscotIndex) {
+                      setActiveWainscot(wainscotIndex);
                     }
-                    onFocus={() => {
-                      if (activeWainscot !== wainscotIndex) {
-                        setActiveWainscot(wainscotIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
+                  }}
+                />
                 <ReusableSelect
-                  id={`building-${activeBuilding}-wainscotPanelOption-${wainscotIndex}`}
                   name={`building-${activeBuilding}-wainscotPanelOption-${wainscotIndex}`}
                   labelClass="offOnTablet"
                   value={wainscot.panelOption}
@@ -572,7 +534,7 @@ const BuildingOptions = ({
                     }
                   }}
                   options={panelOptions}
-                  label="Panel Option"
+                  label="Panel Option:"
                 />
                 <button
                   onClick={() => removeWainscot(activeBuilding, wainscotIndex)}
@@ -650,7 +612,6 @@ const BuildingOptions = ({
                 className={`tableGrid6 ${partialWallIndex == activePartialWall ? 'activeRow' : ''}`}
               >
                 <ReusableSelect
-                  id={`building-${activeBuilding}-partialWallWall-${partialWallIndex}`}
                   name={`building-${activeBuilding}-partialWallWall-${partialWallIndex}`}
                   labelClass="offOnTablet"
                   value={partialWall.wall}
@@ -668,98 +629,78 @@ const BuildingOptions = ({
                     }
                   }}
                   options={walls}
-                  label="Wall"
+                  label="Wall:"
                 />
-                <div className="cardInput">
-                  <label
-                    className="offOnTablet"
-                    htmlFor={`building-${activeBuilding}-partialWallStart-${partialWallIndex}`}
-                  >
-                    <span>
-                      Start <small>(Left to Right)</small>
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-partialWallStart-${partialWallIndex}`}
-                    name={`building-${activeBuilding}-partialWallStart-${partialWallIndex}`}
-                    value={partialWall.start}
-                    onChange={(e) =>
-                      handlePartialWallChange(
-                        activeBuilding,
-                        partialWallIndex,
-                        'start',
-                        e.target.value
-                      )
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-partialWallStart-${partialWallIndex}`}
+                  label={
+                    <>
+                      <span>
+                        Start: <small>(Left to Right)</small>
+                      </span>
+                    </>
+                  }
+                  labelClass="offOnTablet"
+                  value={partialWall.start}
+                  onChange={(name, value) =>
+                    handlePartialWallChange(
+                      activeBuilding,
+                      partialWallIndex,
+                      'start',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activePartialWall !== partialWallIndex) {
+                      setActivePartialWall(partialWallIndex);
                     }
-                    onFocus={() => {
-                      if (activePartialWall !== partialWallIndex) {
-                        setActivePartialWall(partialWallIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnTablet"
-                    htmlFor={`building-${activeBuilding}-partialWallEnd-${partialWallIndex}`}
-                  >
-                    <span>
-                      End <small>(Left to Right)</small>
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-partialWallEnd-${partialWallIndex}`}
-                    name={`building-${activeBuilding}-partialWallEnd-${partialWallIndex}`}
-                    value={partialWall.end}
-                    onChange={(e) =>
-                      handlePartialWallChange(
-                        activeBuilding,
-                        partialWallIndex,
-                        'end',
-                        e.target.value
-                      )
+                  }}
+                />
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-partialWallEnd-${partialWallIndex}`}
+                  label={
+                    <>
+                      <span>
+                        End: <small>(Left to Right)</small>
+                      </span>
+                    </>
+                  }
+                  labelClass="offOnTablet"
+                  value={partialWall.end}
+                  onChange={(name, value) =>
+                    handlePartialWallChange(
+                      activeBuilding,
+                      partialWallIndex,
+                      'end',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activePartialWall !== partialWallIndex) {
+                      setActivePartialWall(partialWallIndex);
                     }
-                    onFocus={() => {
-                      if (activePartialWall !== partialWallIndex) {
-                        setActivePartialWall(partialWallIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnTablet"
-                    htmlFor={`building-${activeBuilding}-partialWallHeight-${partialWallIndex}`}
-                  >
-                    Height
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-partialWallHeight-${partialWallIndex}`}
-                    name={`building-${activeBuilding}-partialWallHeight-${partialWallIndex}`}
-                    value={partialWall.height}
-                    onChange={(e) =>
-                      handlePartialWallChange(
-                        activeBuilding,
-                        partialWallIndex,
-                        'height',
-                        e.target.value
-                      )
+                  }}
+                />
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-partialWallHeight-${partialWallIndex}`}
+                  label="Height:"
+                  labelClass="offOnTablet"
+                  value={partialWall.height}
+                  onChange={(name, value) =>
+                    handlePartialWallChange(
+                      activeBuilding,
+                      partialWallIndex,
+                      'height',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activePartialWall !== partialWallIndex) {
+                      setActivePartialWall(partialWallIndex);
                     }
-                    onFocus={() => {
-                      if (activePartialWall !== partialWallIndex) {
-                        setActivePartialWall(partialWallIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
+                  }}
+                />
                 <ReusableSelect
-                  id={`building-${activeBuilding}-partialWallTopWall-${partialWallIndex}`}
                   name={`building-${activeBuilding}-partialWallTopWall-${partialWallIndex}`}
                   labelClass="offOnTablet"
                   value={partialWall.topOfWall}
@@ -777,7 +718,7 @@ const BuildingOptions = ({
                     }
                   }}
                   options={topOfWall}
-                  label="Top of Wall"
+                  label="Top of Wall:"
                 />
                 <button
                   onClick={() =>
@@ -831,7 +772,6 @@ const BuildingOptions = ({
                 className={`tableGrid6 ${wallSkirtIndex == activeWallSkirt ? 'activeRow' : ''}`}
               >
                 <ReusableSelect
-                  id={`building-${activeBuilding}-wallSkirtWall-${wallSkirtIndex}`}
                   name={`building-${activeBuilding}-wallSkirtWall-${wallSkirtIndex}`}
                   labelClass="offOnTablet"
                   value={wallSkirt.wall}
@@ -849,92 +789,65 @@ const BuildingOptions = ({
                     }
                   }}
                   options={walls}
-                  label="Wall"
+                  label="Wall:"
                 />
-                <div className="cardInput">
-                  <label
-                    className="offOnTablet"
-                    htmlFor={`building-${activeBuilding}-wallSkirtStartBay-${wallSkirtIndex}`}
-                  >
-                    Start Bay
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-wallSkirtStartBay-${wallSkirtIndex}`}
-                    name={`building-${activeBuilding}-wallSkirtStartBay-${wallSkirtIndex}`}
-                    value={wallSkirt.startBay}
-                    onChange={(e) =>
-                      handleWallSkirtChange(
-                        activeBuilding,
-                        wallSkirtIndex,
-                        'startBay',
-                        e.target.value
-                      )
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-wallSkirtStartBay-${wallSkirtIndex}`}
+                  label="Start Bay:"
+                  labelClass="offOnTablet"
+                  value={wallSkirt.startBay}
+                  onChange={(name, value) =>
+                    handleWallSkirtChange(
+                      activeBuilding,
+                      wallSkirtIndex,
+                      'startBay',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeWallSkirt !== wallSkirtIndex) {
+                      setActiveWallSkirt(wallSkirtIndex);
                     }
-                    onFocus={() => {
-                      if (activeWallSkirt !== wallSkirtIndex) {
-                        setActiveWallSkirt(wallSkirtIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnTablet"
-                    htmlFor={`building-${activeBuilding}-wallSkirtEndBay-${wallSkirtIndex}`}
-                  >
-                    End Bay
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-wallSkirtEndBay-${wallSkirtIndex}`}
-                    name={`building-${activeBuilding}-wallSkirtEndBay-${wallSkirtIndex}`}
-                    value={wallSkirt.endBay}
-                    onChange={(e) =>
-                      handleWallSkirtChange(
-                        activeBuilding,
-                        wallSkirtIndex,
-                        'endBay',
-                        e.target.value
-                      )
+                  }}
+                />
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-wallSkirtEndBay-${wallSkirtIndex}`}
+                  label="End Bay:"
+                  labelClass="offOnTablet"
+                  value={wallSkirt.endBay}
+                  onChange={(name, value) =>
+                    handleWallSkirtChange(
+                      activeBuilding,
+                      wallSkirtIndex,
+                      'endBay',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeWallSkirt !== wallSkirtIndex) {
+                      setActiveWallSkirt(wallSkirtIndex);
                     }
-                    onFocus={() => {
-                      if (activeWallSkirt !== wallSkirtIndex) {
-                        setActiveWallSkirt(wallSkirtIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnTablet"
-                    htmlFor={`building-${activeBuilding}-wallSkirtHeight-${wallSkirtIndex}`}
-                  >
-                    Height
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-wallSkirtHeight-${wallSkirtIndex}`}
-                    name={`building-${activeBuilding}-wallSkirtHeight-${wallSkirtIndex}`}
-                    value={wallSkirt.height}
-                    onChange={(e) =>
-                      handleWallSkirtChange(
-                        activeBuilding,
-                        wallSkirtIndex,
-                        'height',
-                        e.target.value
-                      )
+                  }}
+                />
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-wallSkirtHeight-${wallSkirtIndex}`}
+                  label="Height:"
+                  labelClass="offOnTablet"
+                  value={wallSkirt.height}
+                  onChange={(name, value) =>
+                    handleWallSkirtChange(
+                      activeBuilding,
+                      wallSkirtIndex,
+                      'height',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeWallSkirt !== wallSkirtIndex) {
+                      setActiveWallSkirt(wallSkirtIndex);
                     }
-                    onFocus={() => {
-                      if (activeWallSkirt !== wallSkirtIndex) {
-                        setActiveWallSkirt(wallSkirtIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
+                  }}
+                />
                 <div className="checkboxGroup">
                   <div className="checkRow">
                     <input
@@ -994,7 +907,6 @@ const BuildingOptions = ({
               {values.buildings[activeBuilding].frontGirtType != 'open' ? (
                 <>
                   <ReusableSelect
-                    id={`buildingfrontPolySize-${activeBuilding}`}
                     name={`buildingfrontPolySize-${activeBuilding}`}
                     value={values.buildings[activeBuilding].frontPolySize}
                     onChange={(e) =>
@@ -1008,7 +920,6 @@ const BuildingOptions = ({
                     label="Front Sidewall Relite Size:"
                   />
                   <ReusableSelect
-                    id={`buildingfrontPolyColor-${activeBuilding}`}
                     name={`buildingfrontPolyColor-${activeBuilding}`}
                     value={values.buildings[activeBuilding].frontPolyColor}
                     onChange={(e) =>
@@ -1021,19 +932,18 @@ const BuildingOptions = ({
                     options={polycarbWallColor}
                     label="Front Sidewall Relite Color:"
                   />
-                  <div className="cardInput">
-                    <label htmlFor="frontPolyQty">
-                      Front Sidewall Relite Qty:
-                    </label>
-                    <input
-                      type="text"
-                      id="frontPolyQty"
-                      name="frontPolyQty"
-                      value={values.buildings[activeBuilding].frontPolyQty}
-                      // onChange={(e) => handleNestedChange(e, 'project')}
-                      placeholder="Qty"
-                    />
-                  </div>
+                  <ReusableInteger
+                    name="frontPolyQty"
+                    value={values.buildings[activeBuilding].frontPolyQty}
+                    label="Front Sidewall Relite Qty:"
+                    negative={false}
+                    allowZero={false}
+                    max={Math.ceil(values.buildings[activeBuilding].length / 3)}
+                    onChange={(name, value) =>
+                      handleNestedChange(activeBuilding, 'frontPolyQty', value)
+                    }
+                    placeholder="Qty"
+                  />
                 </>
               ) : (
                 <h5>
@@ -1049,7 +959,6 @@ const BuildingOptions = ({
               {values.buildings[activeBuilding].backGirtType != 'open' ? (
                 <>
                   <ReusableSelect
-                    id={`buildingbackPolySize-${activeBuilding}`}
                     name={`buildingbackPolySize-${activeBuilding}`}
                     value={values.buildings[activeBuilding].backPolySize}
                     onChange={(e) =>
@@ -1063,7 +972,6 @@ const BuildingOptions = ({
                     label="Back Sidewall Relite Size:"
                   />
                   <ReusableSelect
-                    id={`buildingbackPolyColor-${activeBuilding}`}
                     name={`buildingbackPolyColor-${activeBuilding}`}
                     value={values.buildings[activeBuilding].backPolyColor}
                     onChange={(e) =>
@@ -1076,19 +984,18 @@ const BuildingOptions = ({
                     options={polycarbWallColor}
                     label="Back Sidewall Relite Color:"
                   />
-                  <div className="cardInput">
-                    <label htmlFor="backPolyQty">
-                      Back Sidewall Relite Qty:
-                    </label>
-                    <input
-                      type="text"
-                      id="backPolyQty"
-                      name="backPolyQty"
-                      value={values.buildings[activeBuilding].backPolyQty}
-                      // onChange={(e) => handleNestedChange(e, 'project')}
-                      placeholder="Qty"
-                    />
-                  </div>
+                  <ReusableInteger
+                    name="backPolyQty"
+                    value={values.buildings[activeBuilding].backPolyQty}
+                    label="Back Sidewall Relite Qty:"
+                    negative={false}
+                    allowZero={false}
+                    max={Math.ceil(values.buildings[activeBuilding].length / 3)}
+                    onChange={(name, value) =>
+                      handleNestedChange(activeBuilding, 'backPolyQty', value)
+                    }
+                    placeholder="Qty"
+                  />
                 </>
               ) : (
                 <h5>
@@ -1104,7 +1011,6 @@ const BuildingOptions = ({
               {values.buildings[activeBuilding].leftGirtType != 'open' ? (
                 <>
                   <ReusableSelect
-                    id={`buildingleftPolySize-${activeBuilding}`}
                     name={`buildingleftPolySize-${activeBuilding}`}
                     value={values.buildings[activeBuilding].leftPolySize}
                     onChange={(e) =>
@@ -1118,7 +1024,6 @@ const BuildingOptions = ({
                     label="Left Endwall Relite Size:"
                   />
                   <ReusableSelect
-                    id={`buildingleftPolyColor-${activeBuilding}`}
                     name={`buildingleftPolyColor-${activeBuilding}`}
                     value={values.buildings[activeBuilding].leftPolyColor}
                     onChange={(e) =>
@@ -1131,19 +1036,18 @@ const BuildingOptions = ({
                     options={polycarbWallColor}
                     label="Left Endwall Relite Color:"
                   />
-                  <div className="cardInput">
-                    <label htmlFor="leftPolyQty">
-                      Left Endwall Relite Qty:
-                    </label>
-                    <input
-                      type="text"
-                      id="leftPolyQty"
-                      name="leftPolyQty"
-                      value={values.buildings[activeBuilding].leftPolyQty}
-                      // onChange={(e) => handleNestedChange(e, 'project')}
-                      placeholder="Qty"
-                    />
-                  </div>
+                  <ReusableInteger
+                    name="leftPolyQty"
+                    value={values.buildings[activeBuilding].leftPolyQty}
+                    label="Left Endwall Relite Qty:"
+                    negative={false}
+                    allowZero={false}
+                    max={Math.ceil(values.buildings[activeBuilding].width / 3)}
+                    onChange={(name, value) =>
+                      handleNestedChange(activeBuilding, 'leftPolyQty', value)
+                    }
+                    placeholder="Qty"
+                  />
                 </>
               ) : (
                 <h5>
@@ -1159,7 +1063,6 @@ const BuildingOptions = ({
               {values.buildings[activeBuilding].rightGirtType != 'open' ? (
                 <>
                   <ReusableSelect
-                    id={`buildingrightPolySize-${activeBuilding}`}
                     name={`buildingrightPolySize-${activeBuilding}`}
                     value={values.buildings[activeBuilding].rightPolySize}
                     onChange={(e) =>
@@ -1173,7 +1076,6 @@ const BuildingOptions = ({
                     label="Right Endwall Relite Size:"
                   />
                   <ReusableSelect
-                    id={`buildingrightPolyColor-${activeBuilding}`}
                     name={`buildingrightPolyColor-${activeBuilding}`}
                     value={values.buildings[activeBuilding].rightPolyColor}
                     onChange={(e) =>
@@ -1186,19 +1088,18 @@ const BuildingOptions = ({
                     options={polycarbWallColor}
                     label="Right Endwall Relite Color:"
                   />
-                  <div className="cardInput">
-                    <label htmlFor="rightPolyQty">
-                      Right Endwall Relite Qty:
-                    </label>
-                    <input
-                      type="text"
-                      id="rightPolyQty"
-                      name="rightPolyQty"
-                      value={values.buildings[activeBuilding].rightPolyQty}
-                      // onChange={(e) => handleNestedChange(e, 'project')}
-                      placeholder="Qty"
-                    />
-                  </div>
+                  <ReusableInteger
+                    name="rightPolyQty"
+                    value={values.buildings[activeBuilding].rightPolyQty}
+                    label="Right Endwall Relite Qty:"
+                    negative={false}
+                    allowZero={false}
+                    max={Math.ceil(values.buildings[activeBuilding].width / 3)}
+                    onChange={(name, value) =>
+                      handleNestedChange(activeBuilding, 'rightPolyQty', value)
+                    }
+                    placeholder="Qty"
+                  />
                 </>
               ) : (
                 <h5>
@@ -1225,7 +1126,6 @@ const BuildingOptions = ({
             <>
               <div className="grid">
                 <ReusableSelect
-                  id={`buildingbackRoofPolySize-${activeBuilding}`}
                   name={`buildingbackRoofPolySize-${activeBuilding}`}
                   value={values.buildings[activeBuilding].backRoofPolySize}
                   onChange={(e) =>
@@ -1239,7 +1139,6 @@ const BuildingOptions = ({
                   label="Roof Relite Size:"
                 />
                 <ReusableSelect
-                  id={`buildingbackRoofPolyColor-${activeBuilding}`}
                   name={`buildingbackRoofPolyColor-${activeBuilding}`}
                   value={values.buildings[activeBuilding].backRoofPolyColor}
                   onChange={(e) =>
@@ -1252,17 +1151,20 @@ const BuildingOptions = ({
                   options={polycarbRoofColor}
                   label="Roof Relite Color:"
                 />
-                <div className="cardInput">
-                  <label htmlFor="backRoofPolyQty">Roof Relite Qty:</label>
-                  <input
-                    type="text"
-                    id="backRoofPolyQty"
-                    name="backRoofPolyQty"
-                    value={values.buildings[activeBuilding].backRoofPolyQty}
-                    // onChange={(e) => handleNestedChange(e, 'project')}
-                    placeholder="Qty"
-                  />
-                </div>
+                <ReusableInteger
+                  name="backRoofPolyQty"
+                  value={values.buildings[activeBuilding].backRoofPolyQty}
+                  label="Roof Relite Qty:"
+                  negative={false}
+                  allowZero={false}
+                  max={Math.floor(
+                    Math.floor(values.buildings[activeBuilding].length / 3) / 2
+                  )}
+                  onChange={(name, value) =>
+                    handleNestedChange(activeBuilding, 'backRoofPolyQty', value)
+                  }
+                  placeholder="Qty"
+                />
               </div>
               <div className="grid hideWithSidebar"></div>
               <div className="divider offOnPhone span2"></div>
@@ -1271,7 +1173,6 @@ const BuildingOptions = ({
             <>
               <div className="grid">
                 <ReusableSelect
-                  id={`buildingbackRoofPolySize-${activeBuilding}`}
                   name={`buildingbackRoofPolySize-${activeBuilding}`}
                   value={values.buildings[activeBuilding].backRoofPolySize}
                   onChange={(e) =>
@@ -1285,7 +1186,6 @@ const BuildingOptions = ({
                   label="Back Roof Relite Size:"
                 />
                 <ReusableSelect
-                  id={`buildingbackRoofPolyColor-${activeBuilding}`}
                   name={`buildingbackRoofPolyColor-${activeBuilding}`}
                   value={values.buildings[activeBuilding].backRoofPolyColor}
                   onChange={(e) =>
@@ -1298,23 +1198,25 @@ const BuildingOptions = ({
                   options={polycarbRoofColor}
                   label="Back Roof Relite Color:"
                 />
-                <div className="cardInput">
-                  <label htmlFor="backRoofPolyQty">Back Roof Relite Qty:</label>
-                  <input
-                    type="text"
-                    id="backRoofPolyQty"
-                    name="backRoofPolyQty"
-                    value={values.buildings[activeBuilding].backRoofPolyQty}
-                    // onChange={(e) => handleNestedChange(e, 'project')}
-                    placeholder="Qty"
-                  />
-                </div>
+                <ReusableInteger
+                  name="backRoofPolyQty"
+                  value={values.buildings[activeBuilding].backRoofPolyQty}
+                  label="Back Roof Relite Qty:"
+                  negative={false}
+                  allowZero={false}
+                  max={Math.floor(
+                    Math.floor(values.buildings[activeBuilding].length / 3) / 2
+                  )}
+                  onChange={(name, value) =>
+                    handleNestedChange(activeBuilding, 'backRoofPolyQty', value)
+                  }
+                  placeholder="Qty"
+                />
               </div>
 
               <div className="divider offOnPhone"></div>
               <div className="grid">
                 <ReusableSelect
-                  id={`buildingfrontRoofPolySize-${activeBuilding}`}
                   name={`buildingfrontRoofPolySize-${activeBuilding}`}
                   value={values.buildings[activeBuilding].frontRoofPolySize}
                   onChange={(e) =>
@@ -1328,7 +1230,6 @@ const BuildingOptions = ({
                   label="Front Roof Relite Size:"
                 />
                 <ReusableSelect
-                  id={`buildingfrontRoofPolyColor-${activeBuilding}`}
                   name={`buildingfrontRoofPolyColor-${activeBuilding}`}
                   value={values.buildings[activeBuilding].frontRoofPolyColor}
                   onChange={(e) =>
@@ -1341,19 +1242,24 @@ const BuildingOptions = ({
                   options={polycarbRoofColor}
                   label="Front Roof Relite Color:"
                 />
-                <div className="cardInput">
-                  <label htmlFor="frontRoofPolyQty">
-                    Front Roof Relite Qty:
-                  </label>
-                  <input
-                    type="text"
-                    id="frontRoofPolyQty"
-                    name="frontRoofPolyQty"
-                    value={values.buildings[activeBuilding].frontRoofPolyQty}
-                    // onChange={(e) => handleNestedChange(e, 'project')}
-                    placeholder="Qty"
-                  />
-                </div>
+                <ReusableInteger
+                  name="frontRoofPolyQty"
+                  value={values.buildings[activeBuilding].frontRoofPolyQty}
+                  label="Front Roof Relite Qty:"
+                  negative={false}
+                  allowZero={false}
+                  max={Math.floor(
+                    Math.floor(values.buildings[activeBuilding].length / 3) / 2
+                  )}
+                  onChange={(name, value) =>
+                    handleNestedChange(
+                      activeBuilding,
+                      'frontRoofPolyQty',
+                      value
+                    )
+                  }
+                  placeholder="Qty"
+                />
               </div>
               <div className="divider showWithSidebar span2"></div>
             </>
