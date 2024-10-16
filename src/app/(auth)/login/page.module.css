@@ -31,7 +31,7 @@
 
 .loginInputs input{
     border: none;
-    outline: 1px solid var(--drak-grey);
+    outline: 1px solid var(--dark-gray);
     line-height: 1.5em;
     border-radius: .25em;    
     padding-left: .25em;

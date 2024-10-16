@@ -4,9 +4,12 @@ import { faCalculator } from '@fortawesome/free-solid-svg-icons';
 
 const formatDouble = (value, decimalPlaces) => {
   const number = parseFloat(value);
+  /*
   return isNaN(number)
     ? `0.${'0'.repeat(decimalPlaces)}`
     : number.toFixed(decimalPlaces);
+*/
+  return isNaN(number) ? '' : number.toFixed(decimalPlaces);
 };
 
 const parseDouble = (input) => {
@@ -16,10 +19,10 @@ const parseDouble = (input) => {
 
 const ReusableDouble = ({
   value,
-  onChange,
   name,
   className = '',
   label,
+  onChange,
   icon = '',
   iconColor = '',
   iconOnClick = null,
@@ -32,14 +35,14 @@ const ReusableDouble = ({
   useEffect(() => {
     setInputValue(formatDouble(value, decimalPlaces));
   }, [value, decimalPlaces]);
-
+  /*
   useEffect(() => {
     // Update placeholder when decimalPlaces changes
     if (!placeholder) {
       setInputValue((prev) => formatDouble(parseDouble(prev), decimalPlaces));
     }
   }, [decimalPlaces, placeholder]);
-
+*/
   const handleInputChange = (e) => {
     const newInputValue = e.target.value;
     // Allow only numbers and a single decimal point
@@ -49,9 +52,13 @@ const ReusableDouble = ({
   };
 
   const handleBlur = () => {
+    /*
     const parsedValue = parseDouble(inputValue);
     const formattedValue = formatDouble(parsedValue, decimalPlaces);
     setInputValue(formattedValue);
+*/
+    const parsedValue = formatDouble(inputValue, decimalPlaces);
+    setInputValue(parsedValue);
     // Only call onChange when the input loses focus
     onChange({
       target: {
@@ -78,7 +85,7 @@ const ReusableDouble = ({
         value={inputValue}
         onChange={handleInputChange}
         onBlur={handleBlur}
-        placeholder={placeholder || `0.${'0'.repeat(decimalPlaces)}`}
+        placeholder={placeholder /* || `0.${'0'.repeat(decimalPlaces)}`*/}
         onFocus={(e) => e.target.select()}
         disabled={disabled}
       />

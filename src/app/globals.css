@@ -11,14 +11,16 @@
   --light-orange: #FBB99D;
   --background-white: #F5F5F5;
   --background-disabled: #DDDDDD;
+  --blue-disabled: #889AC4;
   --red: #FB4B4B;
   --light-red: #FD8787;
   --green: #4CB852;
   --light-green: #8AD08E;
-  --dark-grey: #666666;
+  --dark-gray: #666666;
   --gray: #A2A2A2;
   --light-gray: #CCCCCC;
   --black-gradient: linear-gradient(to bottom, #666666, #F5F5F5, #F5F5F5) 0% 50%;
+  --white-gradient: linear-gradient(90deg, rgba(16,52,148,1) 0%, rgba(245,245,245,1) 50%, rgba(16,52,148,1) 100%);
   --blue-gradient: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(16,52,148,1) 50%, rgba(255,255,255,0) 100%);
 }
 
@@ -162,107 +164,7 @@ p {
   justify-self: flex-start;
   margin-block: 1em 0em;
 }
-/*
-.nameGrid{
-  display: grid;
-  grid-template-columns: 1fr;  
-  gap: .5em;
-  align-items: flex-end;
-  justify-content: center;  
-}
 
-.addressGrid{
-  display: grid;
-  grid-template-columns: 1fr;  
-  gap: .5em;
-  align-items: flex-end;
-  justify-content: center;  
-}
-
-.cardGrid{
-  display: grid;
-  grid-template-columns: 1fr;  
-  gap: .5em;
-  align-items: flex-end;
-  justify-content: center;  
-}
-
-.radioGrid{
-  display: grid;
-  grid-template-columns: 1fr;   
-  align-items: flex-end;
-  justify-content: center;  
-  padding: .5em 2em;
-  gap: .5em;
-}
-
-.frameGrid{
-  display: grid;
-  grid-template-columns: 1fr;  
-  gap: .5em;
-  align-items: flex-end;
-  justify-content: center;
-  padding: .5em 2em;
-}
-
-.extendGrid{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: .5em;  
-  padding: .5em 2em;  
-}
-
-.extGrid{
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: .25em;
-}
-
-.tableGrid{
-  display: grid;
-  grid-template-columns: repeat(2, minmax(50px, 1fr));
-  gap: .25em;
-  align-items: center; 
-  margin: .5em; 
-}
-
-.linerGrid{
-  display: grid;
-  grid-template-columns: repeat(2, minmax(50px, 1fr));  
-  gap: .25em;
-  align-items: center;   
-  margin: .5em;   
-}
-
-.wainscotGrid{
-  display: grid;
-  grid-template-columns: repeat(2, minmax(50px, 1fr));  
-  gap: .25em;
-  align-items: center; 
-  margin: .5em; 
-}
-
-.polycarbGrid{
-  display: grid;
-  grid-template-columns: repeat(4, minmax(50px, 1fr));  
-  gap: .25em;
-  align-items: center;   
-  margin: .5em;  
-}
-
-.openingGrid{
-  display: grid;
-  grid-template-columns: repeat(4, minmax(50px, 1fr));  
-  gap: .25em;
-  align-items: center;   
-  margin: .5em;  
-}
-
-.fullWidth{
-  grid-column: span 4;
-
-}
-*/
 .small{  
   font-size: .65em;  
   align-self: center;
@@ -305,19 +207,16 @@ p {
   margin-bottom: 1em;
 }
 
-/*
-.radio {
-  align-self: center;
-  justify-self: center;
-  text-align: center;
-}
-*/
 .start{
   align-self: flex-start;
 }
 
 .alignTop {
   align-items: flex-start !important;
+}
+
+.alignBottom {
+  align-items: flex-end !important;
 }
 
 .center{
@@ -336,28 +235,9 @@ p {
 }
 
 .cardInput:has(label.offOnTablet), .cardInput:has(label.offOnDesktop) {
-  min-height: unset;
-}
-/*
-.cardInput input {
-  line-height: 1.8em;
-  border-radius: .25em;
-  border: none;
-  outline: 1px solid var(--dark-grey);  
-  padding-left: .25em;
-  transition: all .3s ease;
+  min-height: 36px;
 }
 
-.cardInput input:focus{
-  outline: 1px solid var(--orange);  
-}
-
-.cardInput input:disabled{
-  color: var(--background-white);  
-  border: 1px solid var(--background-white);
-  outline: none;
-}
-*/
 .cardInput label, .cardLabel {  
   align-items: flex-end;
   justify-content: space-between;
@@ -370,13 +250,7 @@ p {
   align-items: center;
   gap: 1em;
 }
-/*
-.calcInput{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-*/
+
 .cardRow{
   display: flex;
   flex-flow: row nowrap;
@@ -402,7 +276,7 @@ input[type='text'] {
   line-height: 1.75em;
   border-radius: .25em;
   border: none;
-  outline: 1px solid var(--dark-grey);  
+  outline: 1px solid var(--dark-gray);  
   padding-left: .25em;
   transition: all .3s ease;
 }
@@ -412,18 +286,27 @@ input[type='text']:focus {
 }
 
 input[type='text']:disabled {
-  color: var(--background-white);  
-  border: 1px solid var(--background-white);
-  outline: none;
+  color: var(--dark-gray);
+  background-color: var(--light-gray);
 }
 
 select {  
   height: 1.75em;    
   border-radius: .25em;
   border: none;
-  outline: 1px solid var(--dark-grey);  
+  outline: 1px solid var(--dark-gray);  
   padding-left: .25em;
   transition: all .3s ease;
+}
+
+select:disabled {
+  color: var(--dark-gray);
+  background-color: var(--light-gray);
+}
+
+select option:disabled {
+  color: var(--dark-gray);
+  background-color: var(--light-gray); ;
 }
 
 .checkRow{
@@ -434,18 +317,21 @@ select {
   gap: 1em;  
   align-self: center;  
   accent-color: var(--dark-blue);
+  margin-left: 0.25em;
 }
 
-.divider{
+.divider {
   margin-block: .5em;  
   height: 1px;
   background: var(--blue-gradient);
 }
-/*
-.full{
-  grid-column: span 8;
+
+.divider.white {
+  margin-block: .5em;  
+  height: 1px;
+  background: var(--white-gradient);
 }
-*/
+
 .column{
   flex-flow: row nowrap;
   align-items: center;
@@ -471,18 +357,18 @@ select {
 
 .tabList {
   display: flex;
-  border-bottom: 1px solid var(--dark-grey);
+  border-bottom: 1px solid var(--dark-gray);
   min-width: max-content;
   gap: 4px;
 }
 
 .tab {
   padding: 8px 16px;
-  border: 1px solid var(--dark-grey);
+  border: 1px solid var(--dark-gray);
   border-radius: .25em .25em 0 0;
   background: var(--background-disabled);
   cursor: pointer;
-  color: var(--dark-grey);  
+  color: var(--dark-gray);  
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
@@ -505,24 +391,25 @@ select {
   border-top: 0;
 }
 
+.activeRow {
+  background-color: var(--background-disabled);
+  border: 1px solid var(--light-gray);
+  border-radius: 4px;
+}
+
 /* Global Button Classes */
-.w5{
+button.addRow {
   width: 5em;
-  max-height: 42px;  
-}
-/*
-.span12{
-  grid-column: span 1;
-}
-
-.span2{
-  grid-column: span 2;
+  min-height: 30px;
+  max-height: 42px;
+  margin: 0.25em;
+  padding: 0.5em;
 }
 
-.span24{
-  grid-column: span 1;
+button.deleteRow {
+  margin: 2px;
 }
-*/
+
 .iconPrim{  
   background-color: none;
   color: var(--dark-blue);  
@@ -574,16 +461,7 @@ select {
   background-color: var(--red);
   color: var(--background-white); 
 }
-/*
-.iconSec{  
-  color: var(--dark-blue);    
-}
 
-.iconSec:hover{  
-  background-color: var(--dark-blue);
-  color: var(--background-white); 
-}
-*/
 .iconClear{  
   color: var(--light-red);    
 }
@@ -636,13 +514,13 @@ button.small {
   background-color: var(--light-orange);
 }
 
-.success{  
+button.success {  
   background-color: var(--green);
   color: var(--background-white);
   transition: all .3s ease;
 }
 
-.success:hover{
+button.success:hover{
   background-color: var(--light-green);
 }
 
@@ -749,7 +627,7 @@ button.small {
   justify-self: center;
   align-self: center;  
   flex-grow: 0;
-  width: 25em;
+  /* width: 25em; */
   border-radius: 1em;
   padding: .75em;    
 }
@@ -778,7 +656,6 @@ button.small {
   background-image: none !important;
   height: 0px;
 }
-
 
 /* Grid Layout */
 .grid, .grid2, .grid3, .grid4, .grid6, .grid8, .tableGrid5, .tableGrid6, .tableGrid7, .tableGrid8 {
@@ -820,6 +697,10 @@ button.small {
 .panelGrid .panelImage {
   grid-column: 1;
   grid-row: 1 / 3;
+}
+
+.panelGrid:has(div.openWall) {
+  grid-template-rows: 1fr;  
 }
 
 .onPhone, .onTablet, .onLaptop, .onDesktop, .hideWithSidebar {
@@ -875,42 +756,7 @@ button.small {
   .cardInput label, .cardInput input, .cardInput select, .cardRow label, .cardRow input, .cardRow select{
     font-size: 15px;
   }
-/*
-  .nameGrid{
-    grid-template-columns: repeat(2, minmax(150px, 1fr));  
-  }
 
-  .addressGrid{
-    grid-template-columns: repeat(2, minmax(150px, 1fr));  
-  }
-
-  .span24{
-    grid-column: span 2;
-  }
-
-  .cardGrid{
-    grid-template-columns: repeat(2, minmax(150px, 1fr));  
-  }
-
-  .radioGrid{    
-    grid-template-columns: repeat(3, minmax(150px, 1fr));  
-    gap: .5em;  
-  }
-
-  .frameGrid{    
-    grid-template-columns: repeat(2, minmax(150px, 1fr));  
-    align-items: flex-end;
-    justify-content: center;
-    padding: .5em 2em;
-  }
-  .tabHide{
-    display: none;
-  }
-
-  .panelImage{        
-    width: 200px;            
-  }
-*/
   /* Grid Layout */
   .grid2 {
     grid-template-columns: repeat(2, 1fr);
@@ -1017,7 +863,7 @@ button.small {
   }
 
   .tableGrid5 {
-    grid-template-columns: repeat(4, minmax(60px, 1fr)) 28px;
+    grid-template-columns: repeat(4, minmax(60px, 1fr)) 30px;
   }
 
   .tableGrid5 .span2 {
@@ -1033,7 +879,7 @@ button.small {
   }
 
   .tableGrid6 {
-    grid-template-columns: repeat(5, minmax(60px, 1fr)) 28px;
+    grid-template-columns: repeat(5, minmax(60px, 1fr)) 30px;
   }
 
   .grid6 .span3 {
@@ -1049,7 +895,7 @@ button.small {
   }
 
   .tableGrid7 {
-    grid-template-columns: repeat(6, minmax(60px, 1fr)) 28px;
+    grid-template-columns: repeat(6, minmax(60px, 1fr)) 30px;
   }
 
   .tableGrid7 .span2 {
@@ -1133,31 +979,7 @@ button.small {
   .inputForm{
     margin-right: .5em;
   }
-/*
-  .tableGrid{    
-    grid-template-columns: repeat(8, minmax(95px, 1fr));        
-  }
 
-  .linerGrid{    
-    grid-template-columns: repeat(4, minmax(50px, 1fr)) 2em;        
-  }
-
-  .wainscotGrid{    
-    grid-template-columns: repeat(5, minmax(50px, 1fr)) 2em;        
-  }
-
-  .polycarbGrid{    
-    grid-template-columns: repeat(7, minmax(50px, 1fr));        
-  }
-
-  .openingGrid{    
-    grid-template-columns: repeat(7, minmax(50px, 1fr));        
-  }
-
-  .w5{
-    justify-self: center;
-  }
-*/
   /* Grid Layout */
   .grid4 {
     /*grid-template-columns: repeat(4, 1fr);*/
@@ -1205,7 +1027,7 @@ button.small {
   }
 
   .tableGrid5 {
-    grid-template-columns: repeat(4, minmax(80px, 1fr)) 28px;
+    grid-template-columns: repeat(4, minmax(80px, 1fr)) 30px;
   }
 
   .grid6 {
@@ -1218,7 +1040,7 @@ button.small {
   }
 
   .tableGrid6 {
-    grid-template-columns: repeat(5, minmax(80px, 1fr)) 28px;
+    grid-template-columns: repeat(5, minmax(80px, 1fr)) 30px;
   }
 
   .grid6 .span2 {
@@ -1238,7 +1060,7 @@ button.small {
   }
 
   .tableGrid7 {
-    grid-template-columns: repeat(6, minmax(80px, 1fr)) 28px;
+    grid-template-columns: repeat(6, minmax(80px, 1fr)) 30px;
   }
 
   .grid8 {
@@ -1276,34 +1098,7 @@ button.small {
   .onDesktop {
     display: block;
   }
-/*
-  .addressGrid{
-    grid-template-columns: repeat(8, minmax(150px, 1fr));  
-  }
-  
-  .span12{
-    grid-column: span 2;
-  }
 
-  .span24{
-    grid-column: span 4;
-  }
-
-  .cardGrid{
-    grid-template-columns: repeat(4, minmax(150px, 1fr));  
-  }
-  
-  .frameGrid{    
-    grid-template-columns: repeat(4, minmax(150px, 1fr));  
-    align-items: flex-end;
-    justify-content: center;
-    padding: .5em 2em;
-  }
-  
-  .radioGrid{    
-    grid-template-columns: repeat(4, minmax(150px, 1fr));        
-  }
-*/
   /* Grid Layout */
   .grid4:has(.panelGrid) {
     grid-template-columns: repeat(4, minmax(140px, 1fr));
@@ -1315,7 +1110,7 @@ button.small {
   }
 
   .tableGrid8 {
-    grid-template-columns: repeat(7, minmax(120px, 1fr)) 28px;
+    grid-template-columns: repeat(7, minmax(120px, 1fr)) 30px;
   }
 
   .span2 {

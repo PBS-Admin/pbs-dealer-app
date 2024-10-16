@@ -1,15 +1,11 @@
 import { useState, useEffect, Fragment } from 'react';
-import Image from 'next/image';
 import ReusableSelect from '../Inputs/ReusableSelect';
+import ReusablePanel from '../Inputs/ReusablePanel';
+import BaySpacingInput from '../Inputs/BaySpacingInput';
+import FeetInchesInput from '../Inputs/FeetInchesInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import {
-  wallPanels,
-  wallGauge,
-  wallFinish,
-  wallInsulation,
-  orientations,
-} from '../../util/dropdownOptions';
+import { wallInsulation, orientations } from '../../util/dropdownOptions';
 
 const BuildingPartitions = ({
   values,
@@ -34,13 +30,13 @@ const BuildingPartitions = ({
           offset: '',
           height: '',
           baySpacing: '',
-          insulation: 'vrr4',
+          insulation: 'none',
           leftPanelType: 'pbr',
-          leftPanelGauge: '',
-          leftPanelFinish: '',
+          leftPanelGauge: '26',
+          leftPanelFinish: 'painted',
           rightPanelType: 'pbr',
-          rightPanelGauge: '',
-          rightPanelFinish: '',
+          rightPanelGauge: '26',
+          rightPanelFinish: 'painted',
         },
       ];
 
@@ -103,20 +99,6 @@ const BuildingPartitions = ({
     });
   };
 
-  const selectedPartitionLeftPanel = wallPanels.find(
-    (panel) =>
-      panel.id ===
-      values.buildings[activeBuilding].partitions[activePartition]
-        ?.leftPanelType
-  );
-
-  const selectedPartitionRightPanel = wallPanels.find(
-    (panel) =>
-      panel.id ===
-      values.buildings[activeBuilding].partitions[activePartition]
-        ?.rightPanelType
-  );
-
   return (
     <>
       <section className="card start">
@@ -148,9 +130,10 @@ const BuildingPartitions = ({
             <Fragment
               key={`building-${activeBuilding}-partition-${partitionIndex}`}
             >
-              <div className="tableGrid8">
+              <div
+                className={`tableGrid8 ${partitionIndex == activePartition ? 'activeRow' : ''}`}
+              >
                 <ReusableSelect
-                  id={`building-${activeBuilding}-partitionWall-${partitionIndex}`}
                   name={`building-${activeBuilding}-partitionWall-${partitionIndex}`}
                   labelClass="offOnDesktop"
                   value={partition.orientation}
@@ -168,156 +151,117 @@ const BuildingPartitions = ({
                     }
                   }}
                   options={orientations}
-                  label="Orientation"
+                  label="Orientation:"
                 />
-                <div className="cardInput">
-                  <label
-                    className="offOnDesktop"
-                    htmlFor={`building-${activeBuilding}-partitionStart-${partitionIndex}`}
-                  >
-                    <span>
-                      Start <small>(Left to Right)</small>
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-partitionStart-${partitionIndex}`}
-                    name={`building-${activeBuilding}-partitionStart-${partitionIndex}`}
-                    value={partition.start}
-                    onChange={(e) =>
-                      handlePartitionChange(
-                        activeBuilding,
-                        partitionIndex,
-                        'start',
-                        e.target.value
-                      )
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-partitionStart-${partitionIndex}`}
+                  label={
+                    <>
+                      Start: <small>(Left to Right)</small>
+                    </>
+                  }
+                  labelClass="offOnDesktop"
+                  value={partition.start}
+                  onChange={(name, value) =>
+                    handlePartitionChange(
+                      activeBuilding,
+                      partitionIndex,
+                      'start',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activePartition !== partitionIndex) {
+                      setActivePartition(partitionIndex);
                     }
-                    onFocus={() => {
-                      if (activePartition !== partitionIndex) {
-                        setActivePartition(partitionIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnDesktop"
-                    htmlFor={`building-${activeBuilding}-partitionEnd-${partitionIndex}`}
-                  >
-                    <span>
-                      End <small>(Left to Right)</small>
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-partitionEnd-${partitionIndex}`}
-                    name={`building-${activeBuilding}-partitionEnd-${partitionIndex}`}
-                    value={partition.end}
-                    onChange={(e) =>
-                      handlePartitionChange(
-                        activeBuilding,
-                        partitionIndex,
-                        'end',
-                        e.target.value
-                      )
+                  }}
+                />
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-partitionEnd-${partitionIndex}`}
+                  label={
+                    <>
+                      End: <small>(Left to Right)</small>
+                    </>
+                  }
+                  labelClass="offOnDesktop"
+                  value={partition.end}
+                  onChange={(name, value) =>
+                    handlePartitionChange(
+                      activeBuilding,
+                      partitionIndex,
+                      'end',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activePartition !== partitionIndex) {
+                      setActivePartition(partitionIndex);
                     }
-                    onFocus={() => {
-                      if (activePartition !== partitionIndex) {
-                        setActivePartition(partitionIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnDesktop"
-                    htmlFor={`building-${activeBuilding}-partitionOffset-${partitionIndex}`}
-                  >
-                    <span>
-                      Offset <small>(Back to Front)</small>
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-partitionOffset-${partitionIndex}`}
-                    name={`building-${activeBuilding}-partitionOffset-${partitionIndex}`}
-                    value={partition.offset}
-                    onChange={(e) =>
-                      handlePartitionChange(
-                        activeBuilding,
-                        partitionIndex,
-                        'offset',
-                        e.target.value
-                      )
+                  }}
+                />
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-partitionOffset-${partitionIndex}`}
+                  label={
+                    <>
+                      Offset: <small>(Back to Front)</small>
+                    </>
+                  }
+                  labelClass="offOnDesktop"
+                  value={partition.offset}
+                  onChange={(name, value) =>
+                    handlePartitionChange(
+                      activeBuilding,
+                      partitionIndex,
+                      'offset',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activePartition !== partitionIndex) {
+                      setActivePartition(partitionIndex);
                     }
-                    onFocus={() => {
-                      if (activePartition !== partitionIndex) {
-                        setActivePartition(partitionIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnDesktop"
-                    htmlFor={`building-${activeBuilding}-partitionHeight-${partitionIndex}`}
-                  >
-                    Height
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-partitionHeight-${partitionIndex}`}
-                    name={`building-${activeBuilding}-partitionHeight-${partitionIndex}`}
-                    value={partition.height}
-                    onChange={(e) =>
-                      handlePartitionChange(
-                        activeBuilding,
-                        partitionIndex,
-                        'height',
-                        e.target.value
-                      )
+                  }}
+                />
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-partitionHeight-${partitionIndex}`}
+                  label="Height:"
+                  labelClass="offOnDesktop"
+                  value={partition.height}
+                  onChange={(name, value) =>
+                    handlePartitionChange(
+                      activeBuilding,
+                      partitionIndex,
+                      'height',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activePartition !== partitionIndex) {
+                      setActivePartition(partitionIndex);
                     }
-                    onFocus={() => {
-                      if (activePartition !== partitionIndex) {
-                        setActivePartition(partitionIndex);
-                      }
-                    }}
-                    placeholder="Leave Blank for Full Ht"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnDesktop"
-                    htmlFor={`building-${activeBuilding}-partitionBaySpacing-${partitionIndex}`}
-                  >
-                    Bay Spacing
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-partitionBaySpacing-${partitionIndex}`}
-                    name={`building-${activeBuilding}-partitionBaySpacing-${partitionIndex}`}
-                    value={partition.baySpacing}
-                    onChange={(e) =>
-                      handlePartitionChange(
-                        activeBuilding,
-                        partitionIndex,
-                        'baySpacing',
-                        e.target.value
-                      )
+                  }}
+                  placeholder="Leave Blank for Full Ht"
+                />
+                <BaySpacingInput
+                  name={`building-${activeBuilding}-partitionBaySpacing-${partitionIndex}`}
+                  label="Bay Spacing:"
+                  value={partition.baySpacing}
+                  labelClass="offOnDesktop"
+                  onChange={(name, value) =>
+                    handlePartitionChange(
+                      activeBuilding,
+                      partitionIndex,
+                      'baySpacing',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activePartition !== partitionIndex) {
+                      setActivePartition(partitionIndex);
                     }
-                    onFocus={() => {
-                      if (activePartition !== partitionIndex) {
-                        setActivePartition(partitionIndex);
-                      }
-                    }}
-                    placeholder="Separate Bays with Space"
-                  />
-                </div>
+                  }}
+                />
                 <ReusableSelect
-                  id={`building-${activeBuilding}-partitionInsulation-${partitionIndex}`}
                   name={`building-${activeBuilding}-partitionInsulation-${partitionIndex}`}
                   value={partition.insulation}
                   labelClass="offOnDesktop"
@@ -335,13 +279,13 @@ const BuildingPartitions = ({
                     }
                   }}
                   options={wallInsulation}
-                  label="Insuation"
+                  label="Insuation:"
                 />
                 <button
                   onClick={() =>
                     removePartition(activeBuilding, partitionIndex)
                   }
-                  className="icon red"
+                  className="icon red deleteRow"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -351,13 +295,13 @@ const BuildingPartitions = ({
           )
         )}
         {values.buildings[activeBuilding].partitions.length > 5 ? (
-          <button type="button" className="button w5 disabled">
+          <button type="button" className="button addRow disabled">
             6 Max
           </button>
         ) : (
           <button
             type="button"
-            className="button success w5"
+            className="button success addRow"
             onClick={() => addPartition(activeBuilding)}
           >
             Add
@@ -366,146 +310,44 @@ const BuildingPartitions = ({
         {values.buildings[activeBuilding].partitions.length > 0 && (
           <>
             <div className="divider onDesktop"></div>
-            <div className="grid2">
-              <div className="panelGrid">
-                <ReusableSelect
-                  className="panelType"
-                  id={`building-${activeBuilding}-partitionLeftPanels${activePartition}`}
-                  name={`building-${activeBuilding}-partitionLeftPanels${activePartition}`}
-                  value={
-                    values.buildings[activeBuilding].partitions[activePartition]
-                      .leftPanelType
-                  }
-                  onChange={(e) =>
-                    handlePartitionChange(
-                      activeBuilding,
-                      activePartition,
-                      'leftPanelType',
-                      e.target.value
-                    )
-                  }
-                  options={wallPanels}
-                  label="Left Panels:"
-                />
-                <ReusableSelect
-                  className="panelGauge"
-                  id={`building-${activeBuilding}-partitionLeftGauge${activePartition}`}
-                  name={`building-${activeBuilding}-partitionLeftGauge${activePartition}`}
-                  value={
-                    values.buildings[activeBuilding].partitions[activePartition]
-                      .leftPanelGauge
-                  }
-                  onChange={(e) =>
-                    handlePartitionChange(
-                      activeBuilding,
-                      activePartition,
-                      'leftPanelGauge',
-                      e.target.value
-                    )
-                  }
-                  options={wallGauge}
-                  label="Gauge:"
-                />
-                <ReusableSelect
-                  className="panelFinish"
-                  id={`building-${activeBuilding}-partitionLeftFinish${activePartition}`}
-                  name={`building-${activeBuilding}-partitionLeftFinish${activePartition}`}
-                  value={
-                    values.buildings[activeBuilding].partitions[activePartition]
-                      .leftPanelFinish
-                  }
-                  onChange={(e) =>
-                    handlePartitionChange(
-                      activeBuilding,
-                      activePartition,
-                      'leftPanelFinish',
-                      e.target.value
-                    )
-                  }
-                  options={wallFinish}
-                  label="Finish:"
-                />
-                <div className="cardInput panelImage">
-                  {selectedPartitionLeftPanel &&
-                    selectedPartitionLeftPanel.image && (
-                      <Image
-                        alt={`${selectedPartitionLeftPanel.label}`}
-                        src={selectedPartitionLeftPanel.image}
-                        className="panelImage"
-                      />
-                    )}
-                </div>
-              </div>
+            <div className="grid2 alignTop">
+              <ReusablePanel
+                name="PartitionLeft"
+                valueKey="left"
+                label="Left"
+                bldg={activeBuilding}
+                idx={activePartition}
+                value={
+                  values.buildings[activeBuilding].partitions[activePartition]
+                }
+                onChange={(e, keyString) =>
+                  handlePartitionChange(
+                    activeBuilding,
+                    activePartition,
+                    keyString,
+                    e.target.value
+                  )
+                }
+              />
               <div className="divider offOnLaptop"></div>
-              <div className="panelGrid">
-                <ReusableSelect
-                  className="panelType"
-                  id={`building-${activeBuilding}-partitionRightPanels${activePartition}`}
-                  name={`building-${activeBuilding}-partitionRightPanels${activePartition}`}
-                  value={
-                    values.buildings[activeBuilding].partitions[activePartition]
-                      .rightPanelType
-                  }
-                  onChange={(e) =>
-                    handlePartitionChange(
-                      activeBuilding,
-                      activePartition,
-                      'rightPanelType',
-                      e.target.value
-                    )
-                  }
-                  options={wallPanels}
-                  label="Right Panels:"
-                />
-                <ReusableSelect
-                  className="panelGauge"
-                  id={`building-${activeBuilding}-partitionRightGauge${activePartition}`}
-                  name={`building-${activeBuilding}-partitionRightGauge${activePartition}`}
-                  value={
-                    values.buildings[activeBuilding].partitions[activePartition]
-                      .rightPanelGauge
-                  }
-                  onChange={(e) =>
-                    handlePartitionChange(
-                      activeBuilding,
-                      activePartition,
-                      'rightPanelGauge',
-                      e.target.value
-                    )
-                  }
-                  options={wallGauge}
-                  label="Gauge:"
-                />
-                <ReusableSelect
-                  className="panelFinish"
-                  id={`building-${activeBuilding}-partitionRightFinish${activePartition}`}
-                  name={`building-${activeBuilding}-partitionRightFinish${activePartition}`}
-                  value={
-                    values.buildings[activeBuilding].partitions[activePartition]
-                      .rightPanelFinish
-                  }
-                  onChange={(e) =>
-                    handlePartitionChange(
-                      activeBuilding,
-                      activePartition,
-                      'rightPanelFinish',
-                      e.target.value
-                    )
-                  }
-                  options={wallFinish}
-                  label="Finish:"
-                />
-                <div className="cardInput panelImage">
-                  {selectedPartitionRightPanel &&
-                    selectedPartitionRightPanel.image && (
-                      <Image
-                        alt={`${selectedPartitionRightPanel.label}`}
-                        src={selectedPartitionRightPanel.image}
-                        className="panelImage"
-                      />
-                    )}
-                </div>
-              </div>
+              <ReusablePanel
+                name="PartitionRight"
+                valueKey="right"
+                label="Right"
+                bldg={activeBuilding}
+                idx={activePartition}
+                value={
+                  values.buildings[activeBuilding].partitions[activePartition]
+                }
+                onChange={(e, keyString) =>
+                  handlePartitionChange(
+                    activeBuilding,
+                    activePartition,
+                    keyString,
+                    e.target.value
+                  )
+                }
+              />
             </div>
           </>
         )}

@@ -49,7 +49,7 @@
 .quoteTable th, .quoteTable td {
   border: 1px solid var(--background-white);  
   text-align: center;
-  padding: .5em;  
+  padding: 0;  
   min-width: 100px;  
 }
 
@@ -61,25 +61,26 @@
   transition: all ease .3s;
 }
 
-.quoteTable td a{
+.quoteTable td a {
   text-decoration: none;
   color: var(--background-white);  
   display: block;  
-  padding: .5em;    
+  padding: 1em;    
   transition: all ease .3s;
 }
 
-.quoteTable tr:hover{  
-  background-color: var(--light-blue);
+.quoteTable tr:hover {  
+  background-color: var(--blue);
 }
 
-.quoteTable tbody td:last-child{  
+.quoteTable tbody td:last-child div {  
   display: flex;
-  justify-content: center;
   gap: .75em;
+  justify-content: center;
+  padding: .5em;
 }
 
-.actionButton{
+.actionButton {
   font-size: 1em;
   padding: .5em;
   border: none;

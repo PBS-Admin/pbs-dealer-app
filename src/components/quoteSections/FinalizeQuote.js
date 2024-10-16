@@ -30,7 +30,7 @@ const FinalizeQuote = ({ values, handleChange }) => {
               type="button"
               className="button accent"
               onClick={() => {
-                alert('This is not built yet');
+                console.log(values);
               }}
             >
               Submit Quote
