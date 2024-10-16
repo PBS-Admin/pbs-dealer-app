@@ -7,6 +7,7 @@ const ReusableSelect = ({
   value,
   className = '',
   onChange,
+  onFocus,
   options,
   dependantOn,
   label,
@@ -42,7 +43,7 @@ const ReusableSelect = ({
           ? true
           : needsSet;
     });
-    console.log(name, needsSet, firstItem, dependantOn);
+    // console.log(name, needsSet, firstItem, dependantOn);
     if (needsSet) {
       onChange({ target: { name, value: firstItem } });
       setInternalValue(firstItem);
@@ -71,6 +72,11 @@ const ReusableSelect = ({
         name={name}
         value={internalValue}
         onChange={handleChange}
+        onFocus={(e) => {
+          if (onFocus) {
+            onFocus();
+          }
+        }}
         disabled={disabled}
       >
         {options.map((option) => (

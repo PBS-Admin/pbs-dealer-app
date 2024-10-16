@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 const formatRoofPitch = (value) => {
-  return `${value}:12`;
+  console.log(value);
+  return value == '' ? '' : value || value == 0 ? `${value}:12` : '';
 };
 
 const parseRoofPitch = (input) => {
@@ -13,16 +14,22 @@ const parseRoofPitch = (input) => {
   const match = input.match(/^(\d*(?:\.\d+)?)/);
   if (match) {
     const value = parseFloat(match[1]);
-    return !isNaN(value) && value >= 0 && value <= 12 ? value : null;
+    return !isNaN(value) && value >= 0 && value <= 12
+      ? value
+      : input == ''
+        ? ''
+        : null;
   }
-  return null;
+  return input == '' ? '' : null;
 };
 
 const RoofPitchInput = ({
   value,
-  onChange,
   name,
   label,
+  labelClass,
+  onChange,
+  onFocus,
   calc,
   onCalc,
   disabled,
@@ -53,8 +60,10 @@ const RoofPitchInput = ({
 
   return (
     <div className="cardInput">
-      <div className={`${calcClass}`}>
-        <label htmlFor={name}>{label}</label>
+      <div className={`${calcClass} ${labelClass}`}>
+        <label className={labelClass} htmlFor={name}>
+          {label}
+        </label>
         {calc && (
           <button type="button" onClick={onCalc}>
             Calc
@@ -68,8 +77,13 @@ const RoofPitchInput = ({
         value={inputValue}
         onChange={handleInputChange}
         onBlur={handleBlur}
+        onFocus={(e) => {
+          e.target.select();
+          if (onFocus) {
+            onFocus();
+          }
+        }}
         placeholder="x:12"
-        onFocus={(e) => e.target.select()}
         disabled={disabled}
       />
     </div>

@@ -38,6 +38,7 @@ import BuildingSketch from '../../../components/BuildingSketch';
 import FeetInchesInput from '../../../components/Inputs/FeetInchesInput';
 import RoofPitchInput from '../../../components/Inputs/RoofPitchInput';
 import ReusableLoader from '@/components/ReusableLoader';
+import ReusableInteger from '../../../components/Inputs/ReusableInteger';
 
 import PageHeader from '@/components/PageHeader';
 
@@ -96,9 +97,9 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         {
           width: '',
           length: '',
-          offsetX: '',
-          offsetY: '',
-          rotation: '',
+          offsetX: '0',
+          offsetY: '0',
+          rotation: '0',
           commonWall: '',
           shape: 'symmetrical',
           backPeakOffset: '',
@@ -107,14 +108,16 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           backRoofPitch: '',
           frontRoofPitch: '',
           roofBaySpacing: '',
+          frontBaySpacing: '',
+          backBaySpacing: '',
           leftBaySpacing: '',
           rightBaySpacing: '',
           collateralLoad: values.collateralLoad,
           liveLoad: values.liveLoad,
           deadLoad: values.deadLoad,
-          enclosure: '',
+          enclosure: values.enclosure,
           roofSnowLoad: values.roofSnowLoad,
-          thermalFactor: '',
+          thermalFactor: values.thermalFactor,
           frameType: 'rigidFrame',
           intColSpacing: '',
           straightExtColumns: false,
@@ -538,7 +541,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           <input
                             type="radio"
                             id={`${id}-${index}`}
-                            name="shape"
+                            name={`shape-${index}`}
                             value={id}
                             checked={building.shape === id}
                             onChange={(e) =>
@@ -777,7 +780,11 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                                 handleNestedChange(
                                   index,
                                   'rotation',
-                                  building.rotation + 90
+                                  building.rotation
+                                    ? parseInt(building.rotation) > 0
+                                      ? parseInt(building.rotation) - 90 + '°'
+                                      : '270°'
+                                    : '270°'
                                 )
                               }
                               disabled={index != activeBuilding}
@@ -785,27 +792,18 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                               <FontAwesomeIcon icon={faArrowRotateRight} />
                             </button>
                           </div>
-
-                          <div className="cardInput">
-                            <div>
-                              <label htmlFor={`buildingRotation-${index}`}>
-                                Rotation:
-                              </label>
-                            </div>
-                            <input
-                              type="number"
-                              id={`buildingRotation-${index}`}
-                              name={`buildingRotation-${index}`}
-                              value={building.rotation}
-                              onChange={(name, value) =>
-                                handleNestedChange(index, 'rotation', value)
-                              }
-                              min="-90"
-                              max="270"
-                              step="90"
-                              disabled={index != activeBuilding}
-                            />
-                          </div>
+                          <ReusableInteger
+                            name={`buildingRotation-${index}`}
+                            value={building.rotation}
+                            validValues={[0, 90, 180, 270]}
+                            defaultValue="0"
+                            suffix="°"
+                            label="Rotation:"
+                            onChange={(name, value) =>
+                              handleNestedChange(index, 'rotation', value)
+                            }
+                            disabled={index != activeBuilding}
+                          />
                           <div className={styles.buttonContainer}>
                             <button
                               className={styles.sliderRightButton}
@@ -814,7 +812,11 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                                 handleNestedChange(
                                   index,
                                   'rotation',
-                                  building.rotation - 90
+                                  building.rotation
+                                    ? parseInt(building.rotation) < 270
+                                      ? parseInt(building.rotation) + 90 + '°'
+                                      : '0°'
+                                    : '90°'
                                 )
                               }
                               disabled={index != activeBuilding}
@@ -854,77 +856,6 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           </select>
                         </div>
                       </div>
-
-                      {/* <div className={styles.buildingProjectContainer}>
-                        <FeetInchesInput
-                          name={`buildingOffsetX-${index}`}
-                          label="Left/Right:"
-                          value={building.offsetX}
-                          onChange={(name, value) =>
-                            handleNestedChange(index, 'offsetX', value)
-                          }
-                          row={true}
-                          disabled={index != activeBuilding}
-                        />
-                      </div>
-                      <div className={styles.buildingProjectContainer}>
-                        <FeetInchesInput
-                          name={`buildingOffsetY-${index}`}
-                          label="Back/Front:"
-                          value={building.offsetY}
-                          onChange={(name, value) =>
-                            handleNestedChange(index, 'offsetY', value)
-                          }
-                          row={true}
-                          disabled={index != activeBuilding}
-                        />
-                      </div>
-                      <div className={styles.buildingProjectContainer}>
-                        <label htmlFor={`buildingRotation-${index}`}>
-                          Rotation:
-                        </label>
-                        <input
-                          type="number"
-                          id={`buildingRotation-${index}`}
-                          name={`buildingRotation-${index}`}
-                          value={building.rotation}
-                          onChange={(name, value) =>
-                            handleNestedChange(index, 'rotation', value)
-                          }
-                          min="0"
-                          max="270"
-                          step="90"
-                          disabled={index != activeBuilding}
-                        />
-                      </div>
-                      <div className={styles.buildingProjectContainer}>
-                        <label htmlFor={`buildingCommonWall-${index}`}>
-                          Common Wall:
-                        </label>
-                        <select
-                          id={`buildingCommonWall-${index}`}
-                          name={`buildingCommonWall-${index}`}
-                          value={building.commonWall}
-                          onChange={(name, value) =>
-                            handleNestedChange(index, 'commonWall', value)
-                          }
-                          disabled={index != activeBuilding}
-                        >
-                          <option value="">Select a building</option>
-                          {values.buildings.map(
-                            (_, buildingIndex) =>
-                              buildingIndex !== index && (
-                                <option
-                                  key={buildingIndex}
-                                  value={buildingIndex + 1}
-                                >
-                                  Building{' '}
-                                  {String.fromCharCode(buildingIndex + 65)}
-                                </option>
-                              )
-                          )}
-                        </select>
-                      </div> */}
                     </>
                   )}
                   <div className={styles.buttonContainer}>

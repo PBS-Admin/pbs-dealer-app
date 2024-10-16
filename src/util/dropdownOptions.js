@@ -288,9 +288,9 @@ export const riskCategories = [
 ];
 
 export const exposure = [
-  { id: 'b', label: 'B' },
-  { id: 'c', label: 'C' },
-  { id: 'd', label: 'D' },
+  { id: 'B', label: 'B' },
+  { id: 'C', label: 'C' },
+  { id: 'D', label: 'D' },
 ];
 
 export const enclosure = [
@@ -308,10 +308,10 @@ export const thermalFactor = [
 ];
 
 export const seismicCategory = [
-  { id: 'a', label: 'A' },
-  { id: 'b', label: 'B' },
-  { id: 'c', label: 'C' },
-  { id: 'd', label: 'D' },
-  { id: 'e', label: 'E' },
-  { id: 'f', label: 'F' },
+  { id: 'A', label: 'A' },
+  { id: 'B', label: 'B' },
+  { id: 'C', label: 'C' },
+  { id: 'D', label: 'D' },
+  { id: 'E', label: 'E' },
+  { id: 'F', label: 'F' },
 ];

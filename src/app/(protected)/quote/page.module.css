@@ -24,7 +24,7 @@
 }
 
 .sidebar .activeCard {
-    background: var(--light-gray);
+    background: var(--background-disabled);
 }
 
 .tabContainer{
@@ -172,7 +172,7 @@
 }
 
 .whiteGroup {
-    accent-color: var(--blue);
+    accent-color: var(--background-white);
     background-color: rgba(245, 245, 245, 0.40);
 }
   
@@ -183,6 +183,7 @@
 .whiteGroup input, .whiteGroup input:focus {
     /* accent-color: var(--blue); */
     outline: none;
+    align-self: center;
 }
 
 .buildingContainer input:disabled, .buildingContainer select:disabled {
@@ -191,24 +192,6 @@
     background-color: var(--blue-disabled);
     outline: none;
   }
-  
-.buildingProjectContainer {
-    display: flex;
-    color: var(--background-white);
-    font-size: .75em;
-    font-weight: 600;
-    align-items: center;
-    gap: 1em;
-    justify-content: flex-end;    
-}
-
-.buildingProjectContainer label {
-    white-space: nowrap;
-}
-
-/* .buildingProjectContainer input[type=number] {
-    color: black;
-} */
 
 .copyBuilding {
     font-size: 1em;
@@ -231,8 +214,6 @@
     height: 2em;
     font-size: 1.25em;
     align-self: center;
-    min-width: 41px;
-    min-height: 41px;
 }
 
 .buttonContainer {
@@ -298,10 +279,12 @@
     display: grid;
     grid-template-columns: 32px minmax(60px, 1fr) 32px;  
     gap: 0;
+    padding: .25em;
+    align-items: flex-end;
 }
 
 .sliderGrid div {
-    padding: .25em 0;
+    padding: 4px 0 0 0;
 }
 
 .sliderGrid label {
@@ -317,16 +300,6 @@
 
 .sliderGrid button:disabled {
     border: 1px solid var(--background-white);
-}
-
-.sliderGrid input::-webkit-outer-spin-button, .sliderGrid input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.sliderGrid input[type=number] {
-    -moz-appearance: textfield;
-    /* appearance: textfield; */
 }
 
 @media screen and (min-width: 350px) {

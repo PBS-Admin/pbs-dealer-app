@@ -1,7 +1,9 @@
 import { useState, useEffect, Fragment } from 'react';
 import ReusableSelect from '../Inputs/ReusableSelect';
+import ReusableInteger from '../Inputs/ReusableInteger';
 import ReusablePanel from '../Inputs/ReusablePanel';
 import FeetInchesInput from '../Inputs/FeetInchesInput';
+import RoofPitchInput from '../Inputs/RoofPitchInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { extInsulation, walls } from '../../util/dropdownOptions';
@@ -275,146 +277,108 @@ const BuildingExtensions = ({
                   options={walls}
                   label="Wall"
                 />
-                <div className="cardInput">
-                  <label
-                    className="offOnDesktop"
-                    htmlFor={`building-${activeBuilding}-canopyWidth-${canopyIndex}`}
-                  >
-                    Width
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-canopyWidth-${canopyIndex}`}
-                    name={`building-${activeBuilding}-canopyWidth-${canopyIndex}`}
-                    value={canopy.width}
-                    onChange={(e) =>
-                      handleCanopyChange(
-                        activeBuilding,
-                        canopyIndex,
-                        'width',
-                        e.target.value
-                      )
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-canopyWidth-${canopyIndex}`}
+                  label="Width:"
+                  labelClass="offOnDesktop"
+                  value={canopy.width}
+                  onChange={(name, value) =>
+                    handleCanopyChange(
+                      activeBuilding,
+                      canopyIndex,
+                      'width',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeCanopy !== canopyIndex) {
+                      setActiveCanopy(canopyIndex);
                     }
-                    onFocus={() => {
-                      if (activeCanopy !== canopyIndex) {
-                        setActiveCanopy(canopyIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnDesktop"
-                    htmlFor={`building-${activeBuilding}-canopySlope-${canopyIndex}`}
-                  >
-                    Slope
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-canopySlope-${canopyIndex}`}
-                    name={`building-${activeBuilding}-canopySlope-${canopyIndex}`}
-                    value={canopy.slope}
-                    onChange={(e) =>
-                      handleCanopyChange(
-                        activeBuilding,
-                        canopyIndex,
-                        'slope',
-                        e.target.value
-                      )
+                  }}
+                  placeholder="Feet"
+                />
+                <RoofPitchInput
+                  name={`building-${activeBuilding}-canopySlope-${canopyIndex}`}
+                  label="Slope:"
+                  labelClass="offOnDesktop"
+                  value={canopy.slope}
+                  onChange={(name, value) =>
+                    handleCanopyChange(
+                      activeBuilding,
+                      canopyIndex,
+                      'slope',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeCanopy !== canopyIndex) {
+                      setActiveCanopy(canopyIndex);
                     }
-                    onFocus={() => {
-                      if (activeCanopy !== canopyIndex) {
-                        setActiveCanopy(canopyIndex);
-                      }
-                    }}
-                    placeholder="x:12"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnDesktop"
-                    htmlFor={`building-${activeBuilding}-canopyStartBay-${canopyIndex}`}
-                  >
-                    Start Bay
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-canopyStartBay-${canopyIndex}`}
-                    name={`building-${activeBuilding}-canopyStartBay-${canopyIndex}`}
-                    value={canopy.startBay}
-                    onChange={(e) =>
-                      handleCanopyChange(
-                        activeBuilding,
-                        canopyIndex,
-                        'startBay',
-                        e.target.value
-                      )
+                  }}
+                  placeholder="x:12"
+                />
+                <ReusableInteger
+                  name={`building-${activeBuilding}-canopyStartBay-${canopyIndex}`}
+                  value={canopy.startBay}
+                  negative={false}
+                  label="Start Bay:"
+                  labelClass="offOnDesktop"
+                  onChange={(e) =>
+                    handleCanopyChange(
+                      activeBuilding,
+                      canopyIndex,
+                      'startBay',
+                      e.target.value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeCanopy !== canopyIndex) {
+                      setActiveCanopy(canopyIndex);
                     }
-                    onFocus={() => {
-                      if (activeCanopy !== canopyIndex) {
-                        setActiveCanopy(canopyIndex);
-                      }
-                    }}
-                    placeholder="Bay #"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnDesktop"
-                    htmlFor={`building-${activeBuilding}-canopyEndBay-${canopyIndex}`}
-                  >
-                    End Bay
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-canopyEndBay-${canopyIndex}`}
-                    name={`building-${activeBuilding}-canopyEndBay-${canopyIndex}`}
-                    value={canopy.endBay}
-                    onChange={(e) =>
-                      handleCanopyChange(
-                        activeBuilding,
-                        canopyIndex,
-                        'endBay',
-                        e.target.value
-                      )
+                  }}
+                  placeholder="Bay#"
+                />
+                <ReusableInteger
+                  name={`building-${activeBuilding}-canopyEndBay-${canopyIndex}`}
+                  value={canopy.endBay}
+                  negative={false}
+                  label="End Bay:"
+                  labelClass="offOnDesktop"
+                  onChange={(e) =>
+                    handleCanopyChange(
+                      activeBuilding,
+                      canopyIndex,
+                      'endBay',
+                      e.target.value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeCanopy !== canopyIndex) {
+                      setActiveCanopy(canopyIndex);
                     }
-                    onFocus={() => {
-                      if (activeCanopy !== canopyIndex) {
-                        setActiveCanopy(canopyIndex);
-                      }
-                    }}
-                    placeholder="Bay#"
-                  />
-                </div>
-                <div className="cardInput">
-                  <label
-                    className="offOnDesktop"
-                    htmlFor={`building-${activeBuilding}-canopyElevation-${canopyIndex}`}
-                  >
-                    Elevation
-                  </label>
-                  <input
-                    type="text"
-                    id={`building-${activeBuilding}-canopyElevation-${canopyIndex}`}
-                    name={`building-${activeBuilding}-canopyElevation-${canopyIndex}`}
-                    value={canopy.elevation}
-                    onChange={(e) =>
-                      handleCanopyChange(
-                        activeBuilding,
-                        canopyIndex,
-                        'elevation',
-                        e.target.value
-                      )
+                  }}
+                  placeholder="Bay#"
+                />
+                <FeetInchesInput
+                  name={`building-${activeBuilding}-canopyElevation-${canopyIndex}`}
+                  label="Elevation:"
+                  labelClass="offOnDesktop"
+                  value={canopy.elevation}
+                  onChange={(name, value) =>
+                    handleCanopyChange(
+                      activeBuilding,
+                      canopyIndex,
+                      'elevation',
+                      value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeCanopy !== canopyIndex) {
+                      setActiveCanopy(canopyIndex);
                     }
-                    onFocus={() => {
-                      if (activeCanopy !== canopyIndex) {
-                        setActiveCanopy(canopyIndex);
-                      }
-                    }}
-                    placeholder="Feet"
-                  />
-                </div>
+                  }}
+                  placeholder="Feet"
+                />
                 <div className="checkboxGroup">
                   <div className="checkRow">
                     <input

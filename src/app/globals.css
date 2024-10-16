@@ -215,6 +215,10 @@ p {
   align-items: flex-start !important;
 }
 
+.alignBottom {
+  align-items: flex-end !important;
+}
+
 .center{
   align-self: center !important;
   justify-self: center !important;  

@@ -31,190 +31,6 @@ const BuildingLayout = ({
 }) => {
   return (
     <>
-      {/* <section className="card start">
-        <header>
-          <h3>Building Shape</h3>
-        </header>
-
-        <div className="grid4">
-          <fieldset className="radioGroup span2 center">
-            {shapes.map(({ id, label }) => (
-              <div key={id}>
-                <input
-                  type="radio"
-                  id={id}
-                  name="shape"
-                  value={id}
-                  checked={values.buildings[activeBuilding].shape === id}
-                  onChange={(e) =>
-                    handleNestedChange(activeBuilding, 'shape', e.target.value)
-                  }
-                />
-                <label htmlFor={id}>{label}</label>
-              </div>
-            ))}
-          </fieldset>
-          {values.buildings[activeBuilding].shape == 'nonSymmetrical' && (
-            <FeetInchesInput
-              name={`buildingPeakOffset-${activeBuilding}`}
-              label="Back Peak Offset:"
-              value={values.buildings[activeBuilding].backPeakOffset}
-              onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'backPeakOffset', value)
-              }
-            />
-          )}
-        </div>
-        <h4>Building Size</h4>
-        <div className="grid4">
-          <FeetInchesInput
-            name={`buildingWidth-${activeBuilding}`}
-            label="Width:"
-            value={values.buildings[activeBuilding].width}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'width', value)
-            }
-          />
-          <FeetInchesInput
-            name={`buildingLength-${activeBuilding}`}
-            label="Length:"
-            value={values.buildings[activeBuilding].length}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'length', value)
-            }
-          />
-          {values.buildings[activeBuilding].shape == 'symmetrical' && (
-            <>
-              <FeetInchesInput
-                name={`buildingBackEaveHeight-${activeBuilding}`}
-                label="Eave Height:"
-                value={values.buildings[activeBuilding].backEaveHeight}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'backEaveHeight', value)
-                }
-              />
-              <div className="onDesktop"></div>
-              <RoofPitchInput
-                name={`buildingBackRoofPitch-${activeBuilding}`}
-                label="Roof Pitch:"
-                value={values.buildings[activeBuilding].backRoofPitch}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'backRoofPitch', value)
-                }
-              />
-            </>
-          )}
-          {(values.buildings[activeBuilding].shape == 'singleSlope' ||
-            values.buildings[activeBuilding].shape == 'leanTo') && (
-            <>
-              <FeetInchesInput
-                name={`buildingBackEaveHeight-${activeBuilding}`}
-                label="Low Eave Height:"
-                value={values.buildings[activeBuilding].backEaveHeight}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'backEaveHeight', value)
-                }
-                calc={true}
-                onCalc={() =>
-                  handleCalcChange(activeBuilding, 'backEaveHeight')
-                }
-              />
-              <FeetInchesInput
-                name={`buildingFrontEaveHeight-${activeBuilding}`}
-                label="High Eave Height:"
-                value={values.buildings[activeBuilding].frontEaveHeight}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'frontEaveHeight', value)
-                }
-                calc={true}
-                onCalc={() =>
-                  handleCalcChange(activeBuilding, 'frontEaveHeight')
-                }
-              />
-              <RoofPitchInput
-                name={`buildingBackRoofPitch-${activeBuilding}`}
-                label="Roof Pitch:"
-                value={values.buildings[activeBuilding].backRoofPitch}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'backRoofPitch', value)
-                }
-                calc={true}
-                onCalc={() => handleCalcChange(activeBuilding, 'backRoofPitch')}
-              />
-            </>
-          )}
-          {values.buildings[activeBuilding].shape == 'nonSymmetrical' && (
-            <>
-              <FeetInchesInput
-                name={`buildingBackEaveHeight-${activeBuilding}`}
-                label="Back Eave Height:"
-                value={values.buildings[activeBuilding].backEaveHeight}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'backEaveHeight', value)
-                }
-              />
-              <FeetInchesInput
-                name={`buildingFrontEaveHeight-${activeBuilding}`}
-                label="Front Eave Height:"
-                value={values.buildings[activeBuilding].frontEaveHeight}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'frontEaveHeight', value)
-                }
-              />
-              <RoofPitchInput
-                name={`buildingBackRoofPitch-${activeBuilding}`}
-                label="Back Roof Pitch:"
-                value={values.buildings[activeBuilding].backRoofPitch}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'backRoofPitch', value)
-                }
-              />
-              <RoofPitchInput
-                name={`buildingFrontRoofPitch-${activeBuilding}`}
-                label="Front Roof Pitch:"
-                value={values.buildings[activeBuilding].frontRoofPitch}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'frontRoofPitch', value)
-                }
-              />
-            </>
-          )}
-        </div>
-        <h4>Bay Spacing</h4>
-        <div className="grid3">
-          <BaySpacingInput
-            name={`buildingRoofBaySpacing-${activeBuilding}`}
-            label="Sidewall Bay Spacing:"
-            value={values.buildings[activeBuilding].roofBaySpacing}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'roofBaySpacing', value)
-            }
-            compareLabel="building length"
-            compareValue={values.buildings[activeBuilding].length}
-          />
-          <BaySpacingInput
-            name={`buildingLeftBaySpacing-${activeBuilding}`}
-            label="Left Endwall Bay Spacing:"
-            value={values.buildings[activeBuilding].leftBaySpacing}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'leftBaySpacing', value)
-            }
-            compareLabel="building width"
-            compareValue={values.buildings[activeBuilding].width}
-          />
-          <BaySpacingInput
-            name={`buildingRightBaySpacing-${activeBuilding}`}
-            label="Right Endwall Bay Spacing:"
-            value={values.buildings[activeBuilding].rightBaySpacing}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'rightBaySpacing', value)
-            }
-            compareLabel="building width"
-            compareValue={values.buildings[activeBuilding].width}
-          />
-        </div>
-      </section> */}
-
       <section className="card start">
         <header className="cardHeader">
           <h3>
@@ -234,9 +50,13 @@ const BuildingLayout = ({
               )
             }
             name={'collateralLoad'}
-            label={'Collateral Load (psf):'}
+            label={
+              <>
+                Collateral Load: <small>(psf)</small>
+              </>
+            }
             disabled={false}
-            placeholder={'0'}
+            placeholder={'psf'}
             decimalPlaces={2}
           />
           <ReusableDouble
@@ -246,9 +66,13 @@ const BuildingLayout = ({
               handleNestedChange(activeBuilding, 'liveLoad', e.target.value)
             }
             name={'liveLoad'}
-            label={'Live Load (psf):'}
+            label={
+              <>
+                Live Load: <small>(psf)</small>
+              </>
+            }
             disabled={false}
-            placeholder={'0'}
+            placeholder={'psf'}
             decimalPlaces={2}
           />
           <ReusableDouble
@@ -258,9 +82,13 @@ const BuildingLayout = ({
               handleNestedChange(activeBuilding, 'deadLoad', e.target.value)
             }
             name={'deadLoad'}
-            label={'Dead Load (psf):'}
+            label={
+              <>
+                Dead Load: <small>(psf)</small>
+              </>
+            }
             disabled={false}
-            placeholder={'0'}
+            placeholder={'psf'}
             decimalPlaces={2}
           />
         </div>
@@ -287,9 +115,13 @@ const BuildingLayout = ({
               handleNestedChange(activeBuilding, 'roofSnowLoad', e.target.value)
             }
             name={'roofSnowLoad'}
-            label={'Roof Load (psf):'}
+            label={
+              <>
+                Roof Load: <small>(psf)</small>
+              </>
+            }
             disabled={false}
-            placeholder={'0'}
+            placeholder={'psf'}
             decimalPlaces={2}
           />
           <ReusableSelect
@@ -319,9 +151,11 @@ const BuildingLayout = ({
             name={`buildingRoofBaySpacing-${activeBuilding}`}
             label="Sidewall Bay Spacing:"
             value={values.buildings[activeBuilding].roofBaySpacing}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'roofBaySpacing', value)
-            }
+            onChange={(name, value) => {
+              handleNestedChange(activeBuilding, 'roofBaySpacing', value);
+              handleNestedChange(activeBuilding, 'frontBaySpacing', value);
+              handleNestedChange(activeBuilding, 'backBaySpacing', value);
+            }}
             compareLabel="building length"
             compareValue={values.buildings[activeBuilding].length}
           />
@@ -344,6 +178,28 @@ const BuildingLayout = ({
             }
             compareLabel="building width"
             compareValue={values.buildings[activeBuilding].width}
+          />
+          <BaySpacingInput
+            className="hidden"
+            name={`buildingFrontBaySpacing-${activeBuilding}`}
+            label="Front Sidewall Bay Spacing:"
+            value={values.buildings[activeBuilding].frontBaySpacing}
+            onChange={(name, value) =>
+              handleNestedChange(activeBuilding, 'frontBaySpacing', value)
+            }
+            compareLabel="building length"
+            compareValue={values.buildings[activeBuilding].length}
+          />
+          <BaySpacingInput
+            className="hidden"
+            name={`buildingBackBaySpacing-${activeBuilding}`}
+            label="Back Sidewall Bay Spacing:"
+            value={values.buildings[activeBuilding].backBaySpacing}
+            onChange={(name, value) =>
+              handleNestedChange(activeBuilding, 'backBaySpacing', value)
+            }
+            compareLabel="building length"
+            compareValue={values.buildings[activeBuilding].length}
           />
         </div>
       </section>
@@ -643,7 +499,7 @@ const BuildingLayout = ({
             onChange={(name, value) =>
               handleNestedChange(activeBuilding, 'frontBracedBays', value)
             }
-            baySpacing={values.buildings[activeBuilding].roofBaySpacing}
+            baySpacing={values.buildings[activeBuilding].frontBaySpacing}
             multiSelect={true}
             disabled={
               values.buildings[activeBuilding].frontBracingType == 'torsional'
@@ -656,7 +512,7 @@ const BuildingLayout = ({
             onChange={(name, value) =>
               handleNestedChange(activeBuilding, 'backBracedBays', value)
             }
-            baySpacing={values.buildings[activeBuilding].roofBaySpacing}
+            baySpacing={values.buildings[activeBuilding].backBaySpacing}
             multiSelect={true}
             disabled={
               values.buildings[activeBuilding].backBracingType == 'torsional'

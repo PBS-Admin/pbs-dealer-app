@@ -2,10 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 const BaySelectionInput = ({
   value,
-  onChange,
   name,
   label,
   className = '',
+  onChange,
   baySpacing,
   multiSelect = false,
   disabled = false,

@@ -37,9 +37,10 @@ const parseFeetInput = (input) => {
 
 const BaySpacingInput = ({
   value,
-  onChange,
   name,
   label,
+  className = '',
+  onChange,
   compareLabel,
   compareValue,
 }) => {
@@ -99,7 +100,7 @@ const BaySpacingInput = ({
   };
 
   return (
-    <div className="cardInput">
+    <div className={`cardInput ${className}`}>
       <label htmlFor={name}>{label}</label>
       <input
         type="text"

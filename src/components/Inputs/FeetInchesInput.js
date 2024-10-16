@@ -33,10 +33,12 @@ const parseFeetInches = (input) => {
 
 const FeetInchesInput = ({
   value,
-  onChange,
   name,
   label,
   labelClass,
+  onChange,
+  onFocus,
+  negative = false,
   row,
   calc,
   onCalc,
@@ -73,7 +75,7 @@ const FeetInchesInput = ({
 
   return (
     <div className={`cardInput ${condition}`}>
-      <div className={`${calcClass}`}>
+      <div className={`${calcClass} ${labelClass}`}>
         <label className={labelClass} htmlFor={name}>
           {label}
         </label>
@@ -91,8 +93,13 @@ const FeetInchesInput = ({
         value={inputValue}
         onChange={handleInputChange}
         onBlur={handleBlur}
+        onFocus={(e) => {
+          e.target.select();
+          if (onFocus) {
+            onFocus();
+          }
+        }}
         placeholder="0'-0&quot;"
-        onFocus={(e) => e.target.select()}
         disabled={disabled}
       />
     </div>

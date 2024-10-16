@@ -194,20 +194,22 @@ export default function QuoteTable({ initialQuotes, onCopyQuote }) {
                     </Link>
                   </td>
                   <td>
-                    <button
-                      className={`${styles.removeQuote} ${styles.actionButton}`}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => openDeleteDialog(quote.ID)}
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                    <button
-                      className={`${styles.copyQuote} ${styles.actionButton}`}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => openCopyDialog(quote.ID)}
-                    >
-                      <FontAwesomeIcon icon={faCopy} />
-                    </button>
+                    <div>
+                      <button
+                        className={`${styles.removeQuote} ${styles.actionButton}`}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => openDeleteDialog(quote.ID)}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                      <button
+                        className={`${styles.copyQuote} ${styles.actionButton}`}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => openCopyDialog(quote.ID)}
+                      >
+                        <FontAwesomeIcon icon={faCopy} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
