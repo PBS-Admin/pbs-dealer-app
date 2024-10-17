@@ -33,6 +33,14 @@ const ReusableSelect = ({
     onChange(e);
   };
 
+  // {
+  //   options.map((option) => {
+  //     if (option.id == value) {
+  //       console.log('test');
+  //     }
+  //   });
+  // }
+
   return (
     <div className={`cardInput ${className}`}>
       <label className={labelClass} htmlFor={id}>

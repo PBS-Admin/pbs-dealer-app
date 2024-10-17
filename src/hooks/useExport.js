@@ -6,6 +6,7 @@ import { useState, useCallback } from 'react';
 export function useExport() {
   const [status, setStatus] = useState('');
   const [isExporting, setIsExporting] = useState(false);
+  const bldgAlpha = ' BCDEFGHI';
 
   const countFiles = async (dirHandle) => {
     let count = 0;
@@ -27,25 +28,31 @@ export function useExport() {
     setStatus('Starting export...');
 
     try {
-      // Request permission to access the C: drive
-      setStatus('Please select your C: drive...');
-      const cDriveHandle = await window.showDirectoryPicker({
+      const bldgAlpha = ' BCDEFGHI';
+      // Request permission to access the MBS Folder
+      setStatus('Please select your MBS Folder...');
+      const mbsFolderHandle = await window.showDirectoryPicker({
         id: 'CDriveSelection',
         mode: 'readwrite',
         title: 'Select your folder containing MBS and Jobs folders',
       });
 
+      // Request permission to access the C: drive
+      setStatus('Please select your Jobs Folder...');
+      const jobsFolderHandle = await window.showDirectoryPicker({
+        id: 'DocSelection',
+        mode: 'readwrite',
+        title: 'Select your folder containing Jobs folders',
+        startIn: 'documents',
+      });
+
       // Get and set handlers for MBS subfolders and Jobs folder
-      let mbsFolderHandle,
-        siz2FolderHandle,
+      // let mbsFolderHandle,
+      let siz2FolderHandle,
         doc2FolderHandle,
         intProjectFolderHandle,
-        intDoc2FolderHandle,
-        jobsFolderHandle;
+        intDoc2FolderHandle;
       try {
-        mbsFolderHandle = await cDriveHandle.getDirectoryHandle('MBS', {
-          create: false,
-        });
         siz2FolderHandle = await mbsFolderHandle.getDirectoryHandle('SIZ2', {
           create: false,
         });
@@ -64,9 +71,6 @@ export function useExport() {
             create: false,
           }
         );
-        jobsFolderHandle = await cDriveHandle.getDirectoryHandle('Jobs', {
-          create: false,
-        });
       } catch (error) {
         setStatus('MBS and Jobs subfolder not found on the selected drive.');
         return false;
@@ -90,8 +94,6 @@ export function useExport() {
       // Create Folder Structure
       setStatus('Creating Folders...');
       values.buildings.map(async (building, index) => {
-        const bldgAlpha = ' BCDEFGHI';
-
         newBuildingHandle ? (shouldCreate = false) : (shouldCreate = true);
 
         newBuildingHandle = await rootHandle.getDirectoryHandle(
@@ -102,190 +104,143 @@ export function useExport() {
         );
       });
 
-      // // Copy .siz files from MBS/SIZ2 to the new folder
-      // await copySizFiles(
-      //   setStatus,
-      //   countFiles,
-      //   siz2FolderHandle,
-      //   newProjectHandle,
-      //   values,
-      //   newBuildingHandle,
-      //   rootHandle
-      // );
+      // Copy .siz files from MBS/SIZ2 to the new folder
+      await copySizFiles(
+        setStatus,
+        countFiles,
+        siz2FolderHandle,
+        newProjectHandle,
+        values,
+        newBuildingHandle,
+        rootHandle
+      );
 
-      // if (newProjectHandle) {
-      //   setStatus('Copying PDWGCtrl.in file');
-      //   for await (const entry of intDoc2FolderHandle.values()) {
-      //     if (
-      //       entry.kind === 'file' &&
-      //       entry.name.toLowerCase() == 'pdwgctrl.in'
-      //     ) {
-      //       const file = await entry.getFile();
+      if (newProjectHandle) {
+        setStatus('Copying PDWGCtrl.in file');
+        for await (const entry of intDoc2FolderHandle.values()) {
+          if (
+            entry.kind === 'file' &&
+            entry.name.toLowerCase() == 'pdwgctrl.in'
+          ) {
+            const file = await entry.getFile();
 
-      //       const newPDWGFileHandle = await newProjectHandle.getFileHandle(
-      //         entry.name,
-      //         { create: true }
-      //       );
-      //       const newPDWGWritable = await newPDWGFileHandle.createWritable();
-      //       await newPDWGWritable.write(file);
-      //       await newPDWGWritable.close();
-      //     }
-      //   }
-      // }
+            const newPDWGFileHandle = await newProjectHandle.getFileHandle(
+              entry.name,
+              { create: true }
+            );
+            const newPDWGWritable = await newPDWGFileHandle.createWritable();
+            await newPDWGWritable.write(file);
+            await newPDWGWritable.close();
+          }
+        }
+      }
 
-      // setStatus('Copying config files');
-      // for await (const entry of doc2FolderHandle.values()) {
-      //   if (
-      //     entry.kind === 'file' &&
-      //     (entry.name.toLowerCase() == 'mbs.cfg' ||
-      //       entry.name.toLowerCase() == 'mbs.frm' ||
-      //       entry.name.toLowerCase() == 'desctrl.in' ||
-      //       entry.name.toLowerCase() == 'dwgctrl.in' ||
-      //       entry.name.toLowerCase() == 'pdwgctrl.in')
-      //   ) {
-      //     setStatus(`Copying ${copiedFiles}/${totalFiles} .doc2 files...`);
-      //     const file = await entry.getFile();
+      let copiedFiles = 0;
+      let totalFiles = 0;
+      for await (const entry of doc2FolderHandle.values()) {
+        totalFiles++;
+      }
 
-      //     if (newProjectHandle && entry.name.toLowerCase() == 'pdwgctrl.in') {
-      //       const newPDWGFileHandle = await newProjectHandle.getFileHandle(
-      //         entry.name,
-      //         { create: true }
-      //       );
-      //       const newPDWGWritable = await newPDWGFileHandle.createWritable();
-      //       await newPDWGWritable.write(file);
-      //       await newPDWGWritable.close();
-      //     }
+      for await (const entry of doc2FolderHandle.values()) {
+        copiedFiles++;
+        if (
+          entry.kind === 'file' &&
+          (entry.name.toLowerCase() == 'mbs.cfg' ||
+            entry.name.toLowerCase() == 'mbs.frm' ||
+            entry.name.toLowerCase() == 'desctrl.in' ||
+            entry.name.toLowerCase() == 'dwgctrl.in' ||
+            entry.name.toLowerCase() == 'pdwgctrl.in')
+        ) {
+          setStatus(`Copying ${copiedFiles}/${totalFiles} .doc2 files...`);
+          const file = await entry.getFile();
 
-      //     if (
-      //       newProjectHandle &&
-      //       (entry.name.toLowerCase() == 'desctrl.in' ||
-      //         entry.name.toLowerCase() == 'dwgctrl.in')
-      //     ) {
-      //       const newCommonHandle = await newProjectHandle.getDirectoryHandle(
-      //         'Common',
-      //         { create: false }
-      //       );
-      //       const newCommonFileHandle = await newCommonHandle.getFileHandle(
-      //         entry.name,
-      //         { create: true }
-      //       );
-      //       const newCommonWritable =
-      //         await newCommonFileHandle.createWritable();
-      //       await newCommonWritable.write(file);
-      //       await newCommonWritable.close();
-      //     }
+          if (newProjectHandle && entry.name.toLowerCase() == 'pdwgctrl.in') {
+            const newPDWGFileHandle = await newProjectHandle.getFileHandle(
+              entry.name,
+              { create: true }
+            );
+            const newPDWGWritable = await newPDWGFileHandle.createWritable();
+            await newPDWGWritable.write(file);
+            await newPDWGWritable.close();
+          }
 
-      //     values.buildings.map(async (building, index) => {
-      //       const bldgAlpha = ' BCDEFGHI';
+          if (
+            newProjectHandle &&
+            (entry.name.toLowerCase() == 'desctrl.in' ||
+              entry.name.toLowerCase() == 'dwgctrl.in')
+          ) {
+            const newCommonHandle = await newProjectHandle.getDirectoryHandle(
+              'Common',
+              { create: false }
+            );
+            const newCommonFileHandle = await newCommonHandle.getFileHandle(
+              entry.name,
+              { create: true }
+            );
+            const newCommonWritable =
+              await newCommonFileHandle.createWritable();
+            await newCommonWritable.write(file);
+            await newCommonWritable.close();
+          }
 
-      //       newBuildingHandle ? (shouldCreate = false) : (shouldCreate = true);
+          values.buildings.map(async (building, index) => {
+            newBuildingHandle ? (shouldCreate = false) : (shouldCreate = true);
 
-      //       newBuildingHandle = await rootHandle.getDirectoryHandle(
-      //         values.quoteNumber + bldgAlpha[index].trim(),
-      //         {
-      //           create: shouldCreate,
-      //         }
-      //       );
-      //       const newFileHandle = await newBuildingHandle.getFileHandle(
-      //         entry.name,
-      //         {
-      //           create: true,
-      //         }
-      //       );
-      //       const newWritable = await newFileHandle.createWritable();
-      //       await newWritable.write(file);
-      //       await newWritable.close();
-      //     });
-      //   }
-      // }
+            newBuildingHandle = await rootHandle.getDirectoryHandle(
+              values.quoteNumber + bldgAlpha[index].trim(),
+              {
+                create: shouldCreate,
+              }
+            );
+            const newFileHandle = await newBuildingHandle.getFileHandle(
+              entry.name,
+              {
+                create: true,
+              }
+            );
+            const newWritable = await newFileHandle.createWritable();
+            await newWritable.write(file);
+            await newWritable.close();
+          });
+        }
+      }
 
-      // // Create and write to Project.in file in the root folder
-      // setStatus('Creating Project.in file...');
-      // if (newProjectHandle) {
-      //   const projectInHandle = await newProjectHandle.getFileHandle(
-      //     'Project.in',
-      //     {
-      //       create: true,
-      //     }
-      //   );
-      //   await newProjectHandle.removeEntry('Project.in');
-      //   const writable = await projectInHandle.createWritable();
+      // Create and write to Project.in file in the root folder
+      setStatus('Creating Project.in file...');
+      if (newProjectHandle) {
+        const projectInHandle = await newProjectHandle.getFileHandle(
+          'Project.in',
+          {
+            create: true,
+          }
+        );
+        await newProjectHandle.removeEntry('Project.in');
+        const writable = await projectInHandle.createWritable();
 
-      //   await writable.write('[PROJECT]\n');
-      //   await writable.write(`Id=${values.quoteNumber + 'P'}\n`);
-      //   await writable.write(`#Building=${values.buildings.length}\n`);
-      //   await writable.write('Units=\n');
-      //   await writable.write('Status=\n');
-      //   await writable.write('Title=\n');
-      //   await writable.write('Comments=\n');
-      //   await writable.write(`NextIdKey=${values.buildings.length + 1}\n`);
+        await writable.write('[PROJECT]\n');
+        await writable.write(`Id=${values.quoteNumber + 'P'}\n`);
+        await writable.write(`#Building=${values.buildings.length}\n`);
+        await writable.write('Units=\n');
+        await writable.write('Status=\n');
+        await writable.write('Title=\n');
+        await writable.write('Comments=\n');
+        await writable.write(`NextIdKey=${values.buildings.length + 1}\n`);
 
-      //   const bldgAlpha = ' BCDEFGHI';
-      //   for (let index = 0; index < values.buildings.length; index++) {
-      //     await writable.write(`[BUILDING:${index + 1}]\n`);
-      //     await writable.write(
-      //       `Id=${values.quoteNumber + bldgAlpha[index].trim()}\n`
-      //     );
-      //     await writable.write(`IdKey=${index + 1}\n`);
-      //     await writable.write('Active=Y\n');
-      //   }
+        for (let index = 0; index < values.buildings.length; index++) {
+          await writable.write(`[BUILDING:${index + 1}]\n`);
+          await writable.write(
+            `Id=${values.quoteNumber + bldgAlpha[index].trim()}\n`
+          );
+          await writable.write(`IdKey=${index + 1}\n`);
+          await writable.write('Active=Y\n');
+        }
 
-      //   await writable.close();
-      // }
+        await writable.close();
+      }
 
       // Create and write to MBS.in file in the new folder
-      // setStatus('Creating MBS.in file...');
+      setStatus('Creating MBS.in file...');
 
-      // Copy the MBS.in file to multiple locations
-      // const bldgAlpha = ' BCDEFGHI';
-      // for (let index = 1; index < values.buildings.length; index++) {
-      //   newBuildingHandle = await rootHandle.getDirectoryHandle(
-      //     values.quoteNumber + bldgAlpha[index].trim(),
-      //     {
-      //       create: false,
-      //     }
-      //   );
-      //   // // Create Building MBS.in
-      //   // const mbsFile = await createMBS(rootHandle, values, index);
-      //   // const newMbsInHandle = await newBuildingHandle.getFileHandle('MBS.in', {
-      //   //   create: true,
-      //   // });
-      //   // const writable = await newMbsInHandle.createWritable();
-      //   // await writable.write(mbsFile);
-      //   // await writable.close();
-
-      //   setStatus(
-      //     `Creating Building${bldgAlpha[index].trim()} DesLoad.ini file...`
-      //   );
-      //   // Create Building DesLoad.ini
-      //   const desLoadFile = await createDesLoad(rootHandle, values, index);
-      //   const newDesLoadHandle = await newBuildingHandle.getFileHandle(
-      //     'DESLOAD.INI',
-      //     {
-      //       create: true,
-      //     }
-      //   );
-      //   const desLoadwritable = await newDesLoadHandle.createWritable();
-      //   await desLoadwritable.write(desLoadFile);
-      //   await desLoadwritable.close();
-
-      //   setStatus(
-      //     `Creating Building${bldgAlpha[index].trim()} DesCtrl.ini file...`
-      //   );
-      //   // // Create Building DesCtrl.ini
-      //   const desCtrlFile = await createDesCtrl(rootHandle, values, index);
-      //   const newDesCtrlHandle = await newBuildingHandle.getFileHandle(
-      //     'DESCTRL.INI',
-      //     {
-      //       create: true,
-      //     }
-      //   );
-      //   const desCtrlwritable = await newDesCtrlHandle.createWritable();
-      //   await desCtrlwritable.write(desCtrlFile);
-      //   await desCtrlwritable.close();
-      // }
-
-      const bldgAlpha = ' BCDEFGHI';
       for (let index = 0; index < values.buildings.length; index++) {
         newBuildingHandle = await rootHandle.getDirectoryHandle(
           values.quoteNumber + bldgAlpha[index].trim(),
@@ -296,44 +251,36 @@ export function useExport() {
         setStatus(
           `Creating Building${bldgAlpha[index].trim()} DesCtrl.ini file...`
         );
-        // // Create Building DesCtrl.ini
-        // const desCtrlFile = await createDesCtrl(rootHandle, values, index);
+        // Loop through buildings and create these files
         await createDesCtrl(rootHandle, values, index);
-        // const newDesCtrlHandle = await newBuildingHandle.getFileHandle(
-        //   'DESCTRL.INI',
-        //   {
-        //     create: true,
-        //   }
-        // );
-        // const desCtrlwritable = await newDesCtrlHandle.createWritable();
-        // await desCtrlwritable.write(desCtrlFile);
-        // await desCtrlwritable.close();
+        await createDesLoad(rootHandle, values, index);
+        await createMBS(rootHandle, values, index);
       }
 
-      // if (newProjectHandle) {
-      //   // Create the Root MBS.in file
-      //   const newMbsInHandle = await newProjectHandle.getFileHandle('MBS.in', {
-      //     create: true,
-      //   });
-      //   const mbsFile = await createMBS(rootHandle, values);
-      //   const writable = await newMbsInHandle.createWritable();
-      //   await writable.write(mbsFile);
-      //   await writable.close();
+      if (newProjectHandle) {
+        // Create the Root MBS.in file
+        const newMbsInHandle = await newProjectHandle.getFileHandle('MBS.in', {
+          create: true,
+        });
+        const mbsFile = await createMBS(rootHandle, values);
+        const writable = await newMbsInHandle.createWritable();
+        await writable.write(mbsFile);
+        await writable.close();
 
-      //   // Create the Common MBS.in file
-      //   const newCommonHandle = await rootHandle.getDirectoryHandle('Common', {
-      //     create: false,
-      //   });
-      //   const newCommonFileHandle = await newCommonHandle.getFileHandle(
-      //     'MBS.in',
-      //     {
-      //       create: true,
-      //     }
-      //   );
-      //   const commonWritable = await newCommonFileHandle.createWritable();
-      //   await commonWritable.write(mbsFile);
-      //   await commonWritable.close();
-      // }
+        // Create the Common MBS.in file
+        const newCommonHandle = await rootHandle.getDirectoryHandle('Common', {
+          create: false,
+        });
+        const newCommonFileHandle = await newCommonHandle.getFileHandle(
+          'MBS.in',
+          {
+            create: true,
+          }
+        );
+        const commonWritable = await newCommonFileHandle.createWritable();
+        await commonWritable.write(mbsFile);
+        await commonWritable.close();
+      }
 
       setStatus('Export and file copying completed successfully!');
       return true;
@@ -378,8 +325,6 @@ export function useExport() {
         }
 
         values.buildings.map(async (building, index) => {
-          const bldgAlpha = ' BCDEFGHI';
-
           newBuildingHandle = await rootHandle.getDirectoryHandle(
             values.quoteNumber + bldgAlpha[index].trim(),
             {
@@ -403,7 +348,7 @@ export function useExport() {
 
   async function createMBS(rootHandle, values, index = 0) {
     const newBuildingHandle = await rootHandle.getDirectoryHandle(
-      values.quoteNumber,
+      values.quoteNumber + bldgAlpha[index].trim(),
       {
         create: false,
       }
@@ -412,6 +357,7 @@ export function useExport() {
     const mbsInHandle = await newBuildingHandle.getFileHandle('MBS.in', {
       create: true,
     });
+
     const writable = await mbsInHandle.createWritable();
     await writable.write(`Pacific Building Systems\n`);
     await writable.write(`2100 N Pacific Hwy\n`);
@@ -545,6 +491,7 @@ export function useExport() {
     await writable.write(`2\n`);
     await writable.write(`12\n`);
     await writable.close();
+
     const mbsFile = await mbsInHandle.getFile();
     return mbsFile;
   }
@@ -569,7 +516,7 @@ export function useExport() {
     };
 
     const newBuildingHandle = await rootHandle.getDirectoryHandle(
-      values.quoteNumber,
+      values.quoteNumber + bldgAlpha[index].trim(),
       {
         create: false,
       }
@@ -641,12 +588,11 @@ export function useExport() {
   }
 
   async function createDesCtrl(rootHandle, values, index = 0) {
-    const bldgAlpha = ' BCDEFGHI';
     const walls = {
-      1: 'lew',
-      2: 'fsw',
-      3: 'rew',
-      4: 'bsw',
+      1: 'left',
+      2: 'front',
+      3: 'right',
+      4: 'back',
     };
 
     const codes = {
@@ -949,7 +895,6 @@ export function useExport() {
 
     // Wall and Base Options
     await writable.write(`[WALL_OPTIONS1]\n`);
-    console.log('index', index);
     await writable.write(`${getGirtTypes(values.buildings[index], 'lew')}\n`);
     await writable.write(`\n`);
     await writable.write(`[WALL_OPTIONS2]\n`);
@@ -1079,27 +1024,27 @@ export function useExport() {
     // Bay Spacing
     await writable.write(`[BAY_SPACING_WALL1]\n`);
     await writable.write(
-      `${formatBaySpacing(values.buildings[index].lewBaySpacing)}\n`
+      `${formatBaySpacing(values.buildings[index].leftBaySpacing)}\n`
     );
 
     await writable.write(`[BAY_SPACING_WALL2]\n`);
     await writable.write(
-      `${formatBaySpacing(values.buildings[index].swBaySpacing)}\n`
+      `${formatBaySpacing(values.buildings[index].roofBaySpacing)}\n`
     );
 
     await writable.write(`[BAY_SPACING_WALL3]\n`);
     await writable.write(
-      `${formatBaySpacing(values.buildings[index].rewBaySpacing)}\n`
+      `${formatBaySpacing(values.buildings[index].rightBaySpacing)}\n`
     );
 
     await writable.write(`[BAY_SPACING_WALL4]\n`);
     await writable.write(
-      `${formatBaySpacing(values.buildings[index].swBaySpacing)}\n`
+      `${formatBaySpacing(values.buildings[index].roofBaySpacing)}\n`
     );
 
     await writable.write(`[BAY_SPACING_WALL5]\n`);
     await writable.write(
-      `${formatBaySpacing(values.buildings[index].swBaySpacing)}\n`
+      `${formatBaySpacing(values.buildings[index].roofBaySpacing)}\n`
     );
 
     if (values.buildings[index].lewFrame == 'inset') {
@@ -1134,6 +1079,7 @@ export function useExport() {
     await writable.write(
       `Corner_Col_Rotate2=${getCornerColRotating(values.buildings[index], 'frontLeft')}\n`
     );
+
     await writable.write(`Corner_Col_Depth=0.0000\n`);
     await writable.write(`Int_Col_Type=RW\n`);
     await writable.write(`Int_Col_Depth=0.0000\n`);
@@ -1383,7 +1329,6 @@ export function useExport() {
       );
     }
 
-    // todo: left off here
     await writable.write(`[WIND_BRACING_ROOF]\n`);
     await writable.write(
       `${getXBracingBays(values.buildings[index], 'roof')}\n`
@@ -1394,7 +1339,7 @@ export function useExport() {
       await writable.write(`[WIND_BENT_WALL${i}]\n`);
       if (i == 2 || i == 4) {
         await writable.write(
-          `${await getPortalBays(values.buildings[index], walls[i])}\n`
+          `${getPortalBays(values.buildings[index], walls[i])}\n`
         );
       } else {
         await writable.write(`No_Bays=0\n`);
@@ -1411,32 +1356,28 @@ export function useExport() {
     // Eave Extensions
     await writable.write(`[EAVE_EXTENSION_WALL2]\n`);
     await writable.write(
-      `${await getEaveExtension(values.buildings[index], 'Front')}\n`
+      `${getEaveExtension(values.buildings[index], 'front')}\n`
     );
     await writable.write(`[EAVE_EXTENSION_WALL4]\n`);
     await writable.write(
-      `${await getEaveExtension(values.buildings[index], 'Back')}\n`
+      `${getEaveExtension(values.buildings[index], 'back')}\n`
     );
 
     // Gutters
     await writable.write(`[GUTTER_DOWNSPOUTS]\n`);
-    await writable.write(`${await getDownspouts(values.buildings[index])}\n`);
+    await writable.write(`${getDownspouts(values.buildings[index])}\n`);
     await writable.write(`[GUTTERS]\n`);
-    await writable.write(`${await getGutters(values.buildings[index])}\n`);
+    await writable.write(`${getGutters(values.buildings[index])}\n`);
 
     // Relites
     await writable.write(`[WALL_LIGHT_PANELS]\n`);
-    await writable.write(
-      `${await getRelites(values.buildings[index], 'Wall')}\n`
-    );
+    await writable.write(`${getRelites(values.buildings[index], 'Wall')}\n`);
     await writable.write(`[ROOF_LIGHT_PANELS]\n`);
-    await writable.write(
-      `${await getRelites(values.buildings[index], 'Roof')}\n`
-    );
+    await writable.write(`${getRelites(values.buildings[index], 'Roof')}\n`);
 
     // Doors
     await writable.write(`[DOORS]\n`);
-    await writable.write(`${await getManDoors(values.buildings[index])}\n`);
+    await writable.write(`${getMandoors(values)}\n`);
     await writable.write(`\n`);
 
     // Accessories
@@ -1445,10 +1386,10 @@ export function useExport() {
     await writable.write(`\n`);
 
     await writable.write(`[ACCESSORY_ITEMS]\n`);
-    await writable.write(`${await getAccessories(values.buildings[index])}\n`);
+    await writable.write(`${getAccessories(values.buildings[index])}\n`);
     await writable.write(`\n`);
 
-    await writable.write(`${await setLinerPanels(values.buildings[index])}\n`);
+    await writable.write(`${setLinerPanels(values.buildings[index])}\n`);
 
     // Properties Walls
     await writable.write(`[NO_PROPERTIES_WALL]\n`);
@@ -1458,7 +1399,7 @@ export function useExport() {
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[PROPERTIES_WALL${i}]\n`);
       await writable.write(
-        `${await getWallLoads(values.buildings[index], walls[i])}\n`
+        `${getWallLoads(values.buildings[index], walls[i])}\n`
       );
     }
 
@@ -1469,22 +1410,20 @@ export function useExport() {
 
     // Est Items
     await writable.write(`[ESTIMATE_ITEMS]\n`);
-    await writable.write(
-      `${await getCoverAccessories(values.buildings[index])}\n`
-    );
+    await writable.write(`${getCoverAccessories(values)}\n`);
 
     // Canopies
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[CANOPY_WALL${i}]\n`);
       await writable.write(
-        `${await setCanopies(values.buildings[index], walls[i])}\n`
+        `${setCanopies(values.buildings[index], walls[i])}\n`
       );
     }
 
     // Additional Loads
     await writable.write(`[ADDITIONAL_LOADS]\n`);
     await writable.write(
-      `${await getAdditionalLoads(values.buildings[index])}\n`
+      `${getAdditionalLoads(values, values.buildings[index], index)}\n`
     );
     await writable.write(`\n`);
 
@@ -1520,7 +1459,7 @@ export function useExport() {
     await writable.write(`\n`);
 
     await writable.write(`[NO_PARTITION_WALL]\n`);
-    await writable.write(`${await getPartitions(values.buildings[index])}\n`);
+    await writable.write(`${getPartitions(values.buildings[index])}\n`);
 
     await writable.write(`[NO_PARTITION_INTERSECT]\n`);
     await writable.write(`No_Partition_Intersect=0\n`);
@@ -1568,13 +1507,11 @@ export function useExport() {
 
     // Wide Openings
     await writable.write(`[NO_WIDE_OPENING]\n`);
-    await writable.write(`${await getWideOpenings(values.buildings[index])}\n`);
+    await writable.write(`${getWideOpenings(values.buildings[index])}\n`);
     await writable.write(`\n`);
 
     await writable.write(`[NO_WIDE_EW_OPENING]\n`);
-    await writable.write(
-      `${await getWideEWOpenings(values.buildings[index])}\n`
-    );
+    await writable.write(`${getWideEWOpenings(values.buildings[index])}\n`);
     await writable.write(`\n`);
 
     // User Purlins
@@ -1594,7 +1531,7 @@ export function useExport() {
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[PARTIAL_WALLS_WALL${i}]\n`);
       await writable.write(
-        `${await setPartialWalls(values.buildings[index], walls[i])}\n`
+        `${setPartialWalls(values.buildings[index], walls[i])}\n`
       );
     }
 
@@ -1602,7 +1539,7 @@ export function useExport() {
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[WAINSCOT_WALL${i}]\n`);
       await writable.write(
-        `${await setWainscot(values.buildings[index], walls[i])}\n`
+        `${setWainscot(values.buildings[index], walls[i])}\n`
       );
     }
 
@@ -1613,7 +1550,7 @@ export function useExport() {
 
     // Floor Layout
     await writable.write(`[FLOOR_LAYOUT]\n`);
-    await writable.write(`${await getMezzanines(values.buildings[index])}\n`);
+    await writable.write(`${getMezzanines(values.buildings[index])}\n`);
 
     // Close and Save File
     await writable.close();
@@ -1861,18 +1798,18 @@ export function useExport() {
       backRoofPitch,
       frontRoofPitch,
       leftBaseCondition, // todo: add all base conditions
-      roofLoad,
-      fswPolyQty,
-      bswPolyQty,
-      lewPolyQty,
-      rewPolyQty,
-      fswPolySize,
-      bswPolySize,
-      lewPolySize,
-      rewPolySize,
+      roofSnowLoad,
+      frontPolyQty,
+      backPolyQty,
+      leftPolyQty,
+      rightPolyQty,
+      frontPolySize,
+      backPolySize,
+      leftPolySize,
+      rightPolySize,
     } = building;
 
-    let girtType = wall == 'lew' || wall == 'rew' ? 'S' : 'P';
+    let girtType = wall == 'left' || wall == 'right' ? 'S' : 'P';
     girtType =
       building[girtSpacingKey] == 'twoFoot' ||
       building[girtSpacingKey] == 'fourFoot' ||
@@ -1886,10 +1823,10 @@ export function useExport() {
     let highestBldgPt = 0;
     let reliteHt = [0, 0, 0, 0];
 
-    if (wall == 'bsw') {
+    if (wall == 'back') {
       highestPt = backEaveHeight;
     }
-    if (wall == 'fsw') {
+    if (wall == 'front') {
       shape == 'symmetrical'
         ? (highestPt = backEaveHeight)
         : (highestPt = frontEaveHeight);
@@ -1903,7 +1840,7 @@ export function useExport() {
       highestBldgPt = frontEaveHeight;
     }
 
-    if (wall == 'lew' || wall == 'rew') {
+    if (wall == 'left' || wall == 'right') {
       highestPt = highestBldgPt;
     }
 
@@ -1911,7 +1848,7 @@ export function useExport() {
     highestBldgPt = Math.floor(highestBldgPt);
 
     // Keep girts out of the purlin and rafter space
-    highestPt -= wall == 'lew' || wall == 'rew' ? 1.5 : 0.8333;
+    highestPt -= wall == 'left' || wall == 'right' ? 1.5 : 0.8333;
     highestBldgPt -= 1.5;
 
     // todo: add all base conditions
@@ -1930,7 +1867,7 @@ export function useExport() {
       if (building[girtSpacingKey] == 'eightPly') {
         numGirts++;
         returnValue += `Loc${numGirts}=3.8958\n`;
-      } else if (groundLoad >= 50 || roofLoad >= 35) {
+      } else if (groundLoad >= 50 || roofSnowLoad >= 35) {
         numGirts++;
         returnValue += `Loc${numGirts}=4.0000\n`;
       }
@@ -1938,12 +1875,12 @@ export function useExport() {
       returnValue += `Loc${numGirts}=7.5000\n`;
 
       // Add relite girt
-      if (wall == 'fsw' && fswPolyQty) {
+      if (wall == 'front' && frontPolyQty) {
         numGirts++;
-        returnValue += `Loc${numGirts}=${frontEaveHeight - fswPolySize + 0.1667}\n`;
-      } else if (wall == 'bsw' && bswPolyQty) {
+        returnValue += `Loc${numGirts}=${frontEaveHeight - frontPolySize + 0.1667}\n`;
+      } else if (wall == 'back' && backPolyQty) {
         numGirts++;
-        returnValue += `Loc${numGirts}=${backEaveHeight - bswPolySize + 0.1667}\n`;
+        returnValue += `Loc${numGirts}=${backEaveHeight - backPolySize + 0.1667}\n`;
       }
     }
 
@@ -1956,15 +1893,25 @@ export function useExport() {
         i = 7.8958;
       }
 
-      if (fswPolyQty || bswPolyQty || lewPolyQty || rewPolyQty) {
-        reliteHt[0] = bswPolyQty ? backEaveHeight - bswPolySize + 0.1667 : 0;
-        reliteHt[1] = fswPolyQty ? frontEaveHeight - fswPolySize + 0.1667 : 0;
+      if (frontPolyQty || backPolyQty || leftPolyQty || rightPolyQty) {
+        reliteHt[0] = backPolyQty ? backEaveHeight - backPolySize + 0.1667 : 0;
+        reliteHt[1] = frontPolyQty
+          ? frontEaveHeight - frontPolySize + 0.1667
+          : 0;
         if (backEaveHeight < frontEaveHeight) {
-          reliteHt[2] = lewPolyQty ? backEaveHeight - lewPolySize + 0.1667 : 0;
-          reliteHt[3] = rewPolyQty ? backEaveHeight - rewPolySize + 0.1667 : 0;
+          reliteHt[2] = leftPolyQty
+            ? backEaveHeight - leftPolySize + 0.1667
+            : 0;
+          reliteHt[3] = rightPolyQty
+            ? backEaveHeight - rightPolySize + 0.1667
+            : 0;
         } else {
-          reliteHt[2] = lewPolyQty ? frontEaveHeight - lewPolySize + 0.1667 : 0;
-          reliteHt[3] = rewPolyQty ? frontEaveHeight - rewPolySize + 0.1667 : 0;
+          reliteHt[2] = leftPolyQty
+            ? frontEaveHeight - leftPolySize + 0.1667
+            : 0;
+          reliteHt[3] = rightPolyQty
+            ? frontEaveHeight - rightPolySize + 0.1667
+            : 0;
         }
         reliteHt.sort();
       }
@@ -2137,7 +2084,12 @@ export function useExport() {
     let locTypeKey = `${loc}PanelType`;
     let locGaugeKey = `${loc}PanelGauge`;
     if (loc.includes('partition')) {
-      // panel = building.partition
+      let locId = loc.split('-')[1];
+      let locSide = loc.split('-')[2].toLowerCase();
+      let partTypeKey = `${locSide}PanelType`;
+      let partGaugeKey = `${locSide}PanelGauge`;
+      panel = building.partitions[locId][partTypeKey];
+      gauge = building.partitions[locId][partGaugeKey];
     } else {
       panel = building[locTypeKey];
       gauge = building[locGaugeKey];
@@ -2151,7 +2103,12 @@ export function useExport() {
     let locTypeKey = `${loc}PanelType`;
     let locGaugeKey = `${loc}PanelGauge`;
     if (loc.includes('partition')) {
-      // panel = building.partition[]
+      let locId = loc.split('-')[1];
+      let locSide = loc.split('-')[2].toLowerCase();
+      let partTypeKey = `${locSide}PanelType`;
+      let partGaugeKey = `${locSide}PanelGauge`;
+      panel = building.partitions[locId][partTypeKey];
+      gauge = building.partitions[locId][partGaugeKey];
     } else {
       panel = building[locTypeKey];
       gauge = building[locGaugeKey];
@@ -2165,7 +2122,12 @@ export function useExport() {
     let locTypeKey = `${loc}PanelType`;
     let locGaugeKey = `${loc}PanelGauge`;
     if (loc.includes('partition')) {
-      // panel = building.partition[]
+      let locId = loc.split('-')[1];
+      let locSide = loc.split('-')[2].toLowerCase();
+      let partTypeKey = `${locSide}PanelType`;
+      let partGaugeKey = `${locSide}PanelGauge`;
+      panel = building.partitions[locId][partTypeKey];
+      gauge = building.partitions[locId][partGaugeKey];
     } else {
       panel = building[locTypeKey];
       gauge = building[locGaugeKey];
@@ -2177,7 +2139,11 @@ export function useExport() {
     let returnValue = '';
     const panelColorKey = `${loc}PanelFinish`;
     if (loc.includes('partition')) {
-      // returnValue = '';
+      let locId = loc.split('-')[1];
+      let locSide = loc.split('-')[2].toLowerCase();
+      let partFinishKey = `${locSide}PanelFinish`;
+      returnValue =
+        building.partitions[locId][partFinishKey] == 'galvalume' ? 'GV' : 'NC'; //todo: look at whether partition finish is galvalume or GV
     } else {
       returnValue = building[panelColorKey] == 'galvalume' ? 'GV' : 'NC';
     }
@@ -2188,10 +2154,19 @@ export function useExport() {
     let returnValue = 'M';
     let insKey = `${loc}Insulation`;
 
-    returnValue =
-      building[insKey] == 'vrr4' || building[insKey] == 'vrr6'
-        ? 'L'
-        : returnValue;
+    if (loc.includes('partition')) {
+      let locId = loc.split('-')[1];
+      returnValue =
+        building.partitions[locId].insulation == 'vrr4' ||
+        building.partitions[locId].insulation == 'vrr4'
+          ? 'L'
+          : returnValue;
+    } else {
+      returnValue =
+        building[insKey] == 'vrr4' || building[insKey] == 'vrr6'
+          ? 'L'
+          : returnValue;
+    }
 
     returnValue =
       loc == 'roof' && building[insKey].includes('banded') ? 'L' : returnValue;
@@ -2454,23 +2429,23 @@ export function useExport() {
       shape,
       width,
       frameType,
-      swBaySpacing,
-      lewBaySpacing,
-      rewBaySpacing,
-      lewIntColSpacing,
-      rewIntColSpacing,
+      roofBaySpacing,
+      leftBaySpacing,
+      rightBaySpacing,
+      leftIntColSpacing,
+      rightIntColSpacing,
       intColSpacing,
       straightExtColumns,
-      lewInset,
-      rewInset,
+      leftEndwallInset,
+      rightEndwallInset,
     } = building;
 
     let numFrames = 0;
     let tribIds = '';
     let numTribs = new Array();
-    let numBays = swBaySpacing.length;
-    let leftEndFrame = getEndFrameType(building, 'lew');
-    let rightEndFrame = getEndFrameType(building, 'rew');
+    let numBays = roofBaySpacing.length;
+    let leftEndFrame = getEndFrameType(building, 'left');
+    let rightEndFrame = getEndFrameType(building, 'right');
 
     const frameTypeChar = shape == 'leanTo' ? 'BC-' : 'RF-';
     const sym = shape == 'symmetrical' ? 'Y' : 'N';
@@ -2495,8 +2470,8 @@ export function useExport() {
     }
 
     // LEW M-Frame <= 30'-0"
-    if ((leftEndFrame == 'Y' || leftEndFrame == 'F') && lewIntColSpacing) {
-      if (Math.max(...lewIntColSpacing) <= 30) {
+    if ((leftEndFrame == 'Y' || leftEndFrame == 'F') && leftIntColSpacing) {
+      if (Math.max(...leftIntColSpacing) <= 30) {
         leftShape = 'R';
       }
     }
@@ -2509,8 +2484,8 @@ export function useExport() {
     }
 
     // REW M-Frame <= 30'-0"
-    if ((rightEndFrame == 'Y' || rightEndFrame == 'F') && rewIntColSpacing) {
-      if (Math.max(...rewIntColSpacing) <= 30) {
+    if ((rightEndFrame == 'Y' || rightEndFrame == 'F') && rightIntColSpacing) {
+      if (Math.max(...rightIntColSpacing) <= 30) {
         rightShape = 'R';
       }
     }
@@ -2566,7 +2541,7 @@ export function useExport() {
             `Rotate=Y\n` +
             `Shape=C\n` +
             `Elev=0.0000\n` +
-            `${formatIntCols(lewIntColSpacing)}\n`;
+            `${formatIntCols(leftIntColSpacing)}\n`;
         } else {
           returnValue +=
             `[RIGID_FRAME${numFrames}]\n` +
@@ -2588,18 +2563,18 @@ export function useExport() {
             `Rotate=Y\n` +
             `Shape=C\n` +
             `Elev=0.0000\n` +
-            `${formatIntCols(lewIntColSpacing)}\n`;
+            `${formatIntCols(leftIntColSpacing)}\n`;
         }
       }
     }
 
     // Left Inset Frame
     if (leftEndFrame != 'N' && leftEndFrame != 'Y' && leftEndFrame != 'F') {
-      if (lewInset > 1) {
+      if (leftEndwallInset > 1) {
         numFrames++;
         numTribs.length = 0;
         tribIds = '';
-        for (let i = 1; i < lewInset; i++) {
+        for (let i = 1; i < leftEndwallInset; i++) {
           numTribs.push(i + 1);
           tribIds += `Id${i}=${i + 1}\n`;
         }
@@ -2629,13 +2604,13 @@ export function useExport() {
       returnValue +=
         `[RIGID_FRAME${numFrames}]\n` +
         `Type=${frameTypeChar}\n` +
-        `Width=${getTribs(building, lewInset + 1)}\n` +
+        `Width=${getTribs(building, leftEndwallInset + 1)}\n` +
         `Column_Shape=${leftShape}\n` +
         `Connect_Left=P\n` +
         `Connect_Right=P\n` +
         `Rafter_Shape=${leftShape}\n` +
         `Symmetry=${sym}\n` +
-        `Id1=${lewInset + 1}\n\n`;
+        `Id1=${leftEndwallInset + 1}\n\n`;
 
       returnIntValue +=
         `[INT_COLUMN_FRAME${numFrames}]\n` +
@@ -2645,17 +2620,16 @@ export function useExport() {
         `Rotate=Y\n` +
         `Shape=C\n` +
         `Elev=0.0000\n` +
-        `${formatIntCols(lewIntColSpacing)}\n`;
+        `${formatIntCols(leftIntColSpacing)}\n`;
     }
-
     // Interior Frames
     let startInt =
       leftEndFrame != 'N' && leftEndFrame != 'Y' && leftEndFrame != 'F'
-        ? lewInset + 2
+        ? leftEndwallInset + 2
         : 2;
     let endInt =
       rightEndFrame != 'N' && rightEndFrame != 'Y' && rightEndFrame != 'F'
-        ? numBays - rewInset
+        ? numBays - rightEndwallInset
         : numBays;
 
     if (startInt <= endInt) {
@@ -2666,6 +2640,7 @@ export function useExport() {
         numTribs.push(startInt + i);
         tribIds += `Id${i + 1}=${startInt + i}\n`;
       }
+
       returnValue +=
         `[RIGID_FRAME${numFrames}]\n` +
         `Type=${frameType}\n` +
@@ -2700,21 +2675,20 @@ export function useExport() {
           `Number=0\n\n`;
       }
     }
-
     // Right Inset Frame
     if (rightEndFrame != 'N' && rightEndFrame != 'Y' && rightEndFrame != 'F') {
       numFrames++;
       returnValue +=
         `[RIGID_FRAME${numFrames}]\n` +
         `Type=${frameTypeChar}\n` +
-        `Width=${getTribs(building, numBays - (rewInset + 1))}\n` +
+        `Width=${getTribs(building, numBays - (rightEndwallInset + 1))}\n` +
         `Column_Shape=${rightShape}\n` +
         `Connect_Left=P\n` +
         `Connect_Right=P\n` +
         `Rafter_Shape=${rightShape}\n` +
         `Symmetry=${sym}\n` +
         `Number=1\n` +
-        `Id1=${numBays - (rewInset + 1)}\n\n`;
+        `Id1=${numBays - (rightEndwallInset + 1)}\n\n`;
 
       returnIntValue +=
         `[INT_COLUMN_FRAME${numFrames}]\n` +
@@ -2724,15 +2698,15 @@ export function useExport() {
         `Rotate=Y\n` +
         `Shape=C\n` +
         `Elev=0.0000\n` +
-        `${formatIntCols(rewIntColSpacing)}\n`;
+        `${formatIntCols(rightIntColSpacing)}\n`;
 
-      if (rewInset > 1) {
+      if (rightEndwallInset > 1) {
         numFrames++;
         numTribs.length = 0;
         tribIds = '';
-        for (let i = 1; i < rewInset; i++) {
-          numTribs.push(numBays - rewInset + i + 1);
-          tribIds += `Id${i}=${numBays - rewInset + i + 1}\n`;
+        for (let i = 1; i < rightEndwallInset; i++) {
+          numTribs.push(numBays - rightEndwallInset + i + 1);
+          tribIds += `Id${i}=${numBays - rightEndwallInset + i + 1}\n`;
         }
         returnValue +=
           `[RIGID_FRAME${numFrames}]\n` +
@@ -2810,7 +2784,7 @@ export function useExport() {
             `Rotate=Y\n` +
             `Shape=C\n` +
             `Elev=0.0000\n` +
-            `${formatIntCols(rewIntColSpacing)}\n`;
+            `${formatIntCols(rightIntColSpacing)}\n`;
         } else {
           returnValue +=
             `[RIGID_FRAME${numFrames}]\n` +
@@ -2832,7 +2806,7 @@ export function useExport() {
             `Rotate=Y\n` +
             `Shape=C\n` +
             `Elev=0.0000\n` +
-            `${formatIntCols(rewIntColSpacing)}\n`;
+            `${formatIntCols(rightIntColSpacing)}\n`;
         }
       }
     }
@@ -2844,52 +2818,54 @@ export function useExport() {
 
   function getTribs(building, num) {
     const {
-      swBaySpacing,
-      lewFrame,
-      lewExtensionWidth,
-      rewFrame,
-      rewExtensionWidth,
+      roofBaySpacing,
+      leftFrame,
+      leftExtensionWidth,
+      rightFrame,
+      rightExtensionWidth,
     } = building;
     let returnValue = '';
     let leftSide = '';
     let rightSide = '';
-    let bays = swBaySpacing;
+    let bays = roofBaySpacing;
 
     if (num == 1) {
-      leftSide = getEndFrameOffset(building, 'lew') / 12 + lewExtensionWidth;
+      leftSide = getEndFrameOffset(building, 'left') / 12 + leftExtensionWidth;
       if (bays.length > 1) {
-        rightSide = (bays[0] - getEndFrameOffset(building, 'lew') / 12) / 2;
+        rightSide = (bays[0] - getEndFrameOffset(building, 'left') / 12) / 2;
       } else {
-        if (rewFrame != 'postAndBeam') {
+        if (rightFrame != 'postAndBeam') {
           rightSide =
             (bays[0] -
-              getEndFrameOffset(building, 'lew') / 12 -
-              getEndFrameOffset(building, 'rew') / 12) /
+              getEndFrameOffset(building, 'left') / 12 -
+              getEndFrameOffset(building, 'right') / 12) /
             2;
         } else {
-          rightSide = (bays[0] - getEndFrameOffset(building, 'lew') / 12) / 2;
+          rightSide = (bays[0] - getEndFrameOffset(building, 'left') / 12) / 2;
         }
       }
     } else if (num == bays.length + 1) {
-      rightSide = getEndFrameOffset(building, 'rew') / 12 + rewExtensionWidth;
+      rightSide =
+        getEndFrameOffset(building, 'right') / 12 + rightExtensionWidth;
       if (bays.length > 1) {
         leftSide =
-          (bays[bays.length - 1] - getEndFrameOffset(building, 'rew') / 12) / 2;
+          (bays[bays.length - 1] - getEndFrameOffset(building, 'right') / 12) /
+          2;
       } else {
-        if (lewFrame != 'postAndBeam') {
+        if (leftFrame != 'postAndBeam') {
           leftSide =
             (bays[0] -
-              getEndFrameOffset(building, 'rew') / 12 -
-              getEndFrameOffset(building, 'lew') / 12) /
+              getEndFrameOffset(building, 'right') / 12 -
+              getEndFrameOffset(building, 'left') / 12) /
             2;
         } else {
-          leftSide = (bays[0] - getEndFrameOffset(building, 'rew') / 12) / 2;
+          leftSide = (bays[0] - getEndFrameOffset(building, 'right') / 12) / 2;
         }
       }
     } else {
       if (num == 2 && bays.length > 1) {
-        if (lewFrame != 'postAndBeam') {
-          leftSide = (bays[0] - getEndFrameOffset(building, 'lew') / 12) / 2;
+        if (leftFrame != 'postAndBeam') {
+          leftSide = (bays[0] - getEndFrameOffset(building, 'left') / 12) / 2;
         } else {
           leftSide = bays[0] / 2;
         }
@@ -2898,9 +2874,9 @@ export function useExport() {
       }
 
       if (num == bays.length && bays.length > 1) {
-        if (rewFrame != 'postAndBeam') {
+        if (rightFrame != 'postAndBeam') {
           rightSide =
-            (bays[num - 1] - getEndFrameOffset(building, 'rew') / 12) / 2;
+            (bays[num - 1] - getEndFrameOffset(building, 'right') / 12) / 2;
         } else {
           rightSide = bays[num - 1] / 2;
         }
@@ -2959,7 +2935,7 @@ export function useExport() {
       return returnValue;
     }
 
-    if (loc == 'lew' || loc == 'rew') {
+    if (loc == 'left' || loc == 'right') {
       if (building[braceKey] == 'none') {
         returnValue = `Bracing=N\n` + `Wind_Bent=N`;
       } else if (building[braceKey] == 'xBrace') {
@@ -2970,7 +2946,9 @@ export function useExport() {
       return returnValue;
     }
 
-    if (loc == 'fsw' || loc == 'bsw' || loc == 'interior') {
+    // todo: interior doesn't have a variable in state
+    // if (loc == 'front' || loc == 'back' || loc == 'interior') {
+    if (loc == 'front' || loc == 'back') {
       if (building[braceKey] == 'xBrace') {
         returnValue =
           `Bracing=R\n` +
@@ -3028,7 +3006,7 @@ export function useExport() {
       return returnValue;
     }
 
-    if (loc == 'lew' || loc == 'rew') {
+    if (loc == 'left' || loc == 'right') {
       if (building[braceTypeKey] != 'none') {
         returnValue = `No_Bays=${bays.length}\n`;
         for (let i = 0; i < bays.length; i++) {
@@ -3040,7 +3018,9 @@ export function useExport() {
       return returnValue;
     }
 
-    if (loc == 'fsw' || loc == 'bsw' || loc == 'interior') {
+    // todo: interior has not variable in state object
+    // if (loc == 'front' || loc == 'back' || loc == 'interior') {
+    if (loc == 'front' || loc == 'back') {
       if (
         building[braceTypeKey] != 'none' &&
         building[braceTypeKey] != 'torsional' &&
@@ -3055,105 +3035,1763 @@ export function useExport() {
       }
       return returnValue;
     }
-
     return '';
   }
 
-  async function getPortalBays(building, wall) {
-    // console.log(building);
-    // console.log(wall);
-    return '';
+  function getPortalBays(building, loc) {
+    let returnValue = '';
+    let braceTypeKey = `${loc}BracingType`;
+    let bracedKey = `${loc}BracedBays`;
+    let bays = building[bracedKey];
+
+    if (
+      building[braceTypeKey] == 'portal' ||
+      building[braceTypeKey] == 'tier'
+    ) {
+      returnValue = `No_Bays=${bays.length}\n`;
+      for (let i = 0; i < bays.length; i++) {
+        returnValue += `Bay${i + 1}=${bays[i]}\n`;
+      }
+    } else {
+      returnValue = 'No_Bays=0\n';
+    }
+    return returnValue;
   }
 
-  async function getEaveExtension(building, wall) {
-    // console.log(building);
-    // console.log(wall);
-    return '';
+  function getEaveExtension(building, loc) {
+    let returnValue = '';
+    const {
+      shape,
+      deadLoad,
+      liveLoad,
+      roofSnowLoad,
+      backRoofPitch,
+      frontRoofPitch,
+      roofBaySpacing,
+      leftExtensionWidth,
+      rightExtensionWidth,
+      frontExtensionColumns,
+      backExtensionColumns,
+      soffitPanelType,
+      includeGutters,
+    } = building;
+    let extKey = `${loc}ExtensionWidth`;
+    let extWidth = building[extKey];
+
+    if (extWidth == 0) {
+      return 'No_Extend=0\n';
+    }
+
+    let extData = getExtData(building, loc);
+    const numOfExt = extData[0];
+    let numBays = roofBaySpacing.length;
+    const extStarts = extData[1].split(',');
+    const extEnds = extData[2].split(',');
+    const hasMultExt = extData[4] > 0 ? true : false;
+    let extSlope = building.backRoofPitch;
+    const frontPitch = building.frontRoofPitch;
+
+    extSlope =
+      loc == 'front' && (shape == 'singleSlope' || shape == 'leanTo')
+        ? extSlope * -1
+        : extSlope;
+    extSlope =
+      loc == 'front' && shape == 'nonSymmetrical' ? frontRoofPitch : extSlope;
+
+    let leftDir = loc == 'front' ? leftExtensionWidth : rightExtensionWidth;
+    let rightDir = loc == 'front' ? rightExtensionWidth : leftExtensionWidth;
+    let numDownspouts = calcNoDownspouts(building, loc);
+    let extCols = loc == 'front' ? frontExtensionColumns : backExtensionColumns;
+
+    returnValue += `No_Extend=${numOfExt}\n`;
+    for (let i = 0; i < numOfExt; i++) {
+      returnValue += `Bay_Start${i + 1}=${extStarts[i]}\n`;
+      returnValue += `Bay_End${i + 1}=${extEnds[i]}\n`;
+      returnValue += `Bay_Width${i + 1}=${extSlope}\n`;
+      returnValue += `Slope${i + 1}=${extSlope}\n`;
+
+      if (i == 0 && extStarts[0] == 1) {
+        returnValue += `Extend_Start${i + 1}=${leftDir}\n`;
+      } else {
+        if (extCols) {
+          returnValue += `Extend_Start${i + 1}=0.3333\n`;
+        } else {
+          returnValue += `Extend_Start${i + 1}=0.0000\n`;
+        }
+      }
+      if (i == numOfExt - 1 && extEnds[i] == numBays) {
+        returnValue += `Extend_End${i + 1}=${rightDir}\n`;
+      } else {
+        if (extCols) {
+          returnValue += `Extend_End${i + 1}=0.3333\n`;
+        } else {
+          returnValue += `Extend_End${i + 1}=0.0000\n`;
+        }
+      }
+
+      if (extCols) {
+        returnValue += `Purlin_Type${i + 1}=ZBEO\n`;
+        returnValue += `Member_Type${i + 1}=R\n`;
+        returnValue += `Purlin_Peak_Space${i + 1}=0.0000\n`;
+        returnValue += `Purlin_Set_Space${i + 1}=0.0000\n`;
+        returnValue += `Member_Space${i + 1}=C\n`;
+      } else if (extWidth > 6) {
+        returnValue += `Purlin_Type${i + 1}=ZBEO\n`;
+        returnValue += `Member_Type${i + 1}=S\n`;
+        returnValue += `Purlin_Peak_Space${i + 1}=0.0000\n`;
+        returnValue += `Purlin_Set_Space${i + 1}=0.0000\n`;
+        returnValue += `Member_Space${i + 1}=T\n`;
+      } else if (extWidth > 4) {
+        returnValue += `Purlin_Type${i + 1}=ZBEO\n`;
+        returnValue += `Member_Type${i + 1}=S\n`;
+        returnValue += `Purlin_Peak_Space${i + 1}=0.0000\n`;
+        returnValue += `Purlin_Set_Space${i + 1}=0.0000\n`;
+        returnValue += `Member_Space${i + 1}=C\n`;
+      } else {
+        returnValue += `Purlin_Type${i + 1}=ZFCF\n`;
+        returnValue += `Member_Type${i + 1}=R\n`;
+        returnValue += `Purlin_Peak_Space${i + 1}=0.0000\n`;
+        returnValue += `Purlin_Set_Space${i + 1}=0.0000\n`;
+        returnValue += `Member_Space${i + 1}=C\n`;
+      }
+
+      if (soffitPanelType == 'none') {
+        returnValue += `Soffit_Part${i + 1}=--------\n`;
+        returnValue += `Soffit_Type${i + 1}=--\n`;
+        returnValue += `Soffit_Color${i + 1}=--\n`;
+        returnValue += `Soffit_Style${i + 1}=--\n`;
+      } else {
+        returnValue += `Soffit_Part${i + 1}=${getPanelPart(building, 'Soffit')}\n`;
+        returnValue += `Soffit_Type${i + 1}=${getPanelType(building, 'Soffit')}\n`;
+        returnValue += `Soffit_Color${i + 1}=${getPanelColor(building, 'Soffit')}\n`;
+        returnValue += `Soffit_Style${i + 1}=--\n`;
+      }
+
+      returnValue += `End_Option_Left${i + 1}=\n`;
+      returnValue += `End_Option_Right${i + 1}=\n`;
+
+      if (includeGutters) {
+        returnValue += `Gutter_Use${i + 1}=1\n`;
+        if (loc == 'front') {
+          returnValue += `Gutter_Location_Id${i + 1}=1\n`;
+        } else {
+          returnValue += `Gutter_Location_Id${i + 1}=2\n`;
+        }
+
+        returnValue += `Gutter_Location_Use${i + 1}=EXTEND\n`;
+        returnValue += `Gutter_Color${i + 1}=NC\n`;
+        returnValue += `Gutter_Style${i + 1}=--\n`;
+        returnValue += `Downspout_Color${i + 1}=NC\n`;
+        returnValue += `Downspout_Style${i + 1}=--\n`;
+        if (hasMultExt) {
+          returnValue += `No_Downspout${i + 1}=0\n`;
+        } else {
+          returnValue += `No_Downspout${i + 1}=${numDownspouts}\n`;
+          for (let j = 0; j < numDownspouts; j++) {
+            returnValue += `Downspout${i + 1}_Loc${j}=0.0000\n`;
+          }
+        }
+      } else {
+        returnValue += `Gutter_Use${i + 1}=N\n`;
+        if (loc == 'front') {
+          returnValue += `Gutter_Location_Id${i + 1}=1\n`;
+        } else {
+          returnValue += `Gutter_Location_Id${i + 1}=2\n`;
+        }
+
+        returnValue += `Gutter_Location_Use${i + 1}=EXTEND\n`;
+        returnValue += `Gutter_Color${i + 1}=--\n`;
+        returnValue += `Gutter_Style${i + 1}=--\n`;
+        returnValue += `Downspout_Color${i + 1}=--\n`;
+        returnValue += `Downspout_Style${i + 1}=--\n`;
+        returnValue += `No_Downspout${i + 1}=0\n`;
+      }
+
+      // New Extension Loads
+      returnValue += `Dead${i + 1}=${deadLoad}\n`;
+      returnValue += `Collateral${i + 1}=0.0000\n`;
+      returnValue += `Live${i + 1}=${liveLoad}\n`;
+      returnValue += `Snow${i + 1}=${roofSnowLoad * 2}\n`;
+
+      // New Extension with Columns
+      if (extCols) {
+        returnValue += `Extension_Option${i + 1}=F\n`;
+        returnValue += `Support_Type${i + 1}=R\n`;
+        returnValue += `Support_Shape${i + 1}=-\n`;
+        returnValue += `Support_Offset${i + 1}=0.0000\n`;
+        returnValue += `Support_Elevation${i + 1}=0.0000\n`;
+        returnValue += `Support_Splice${i + 1}=S\n`;
+        returnValue += `Concrete_Elevation${i + 1}=0.0000\n`;
+        if (extStarts[i] == 1) {
+          returnValue += `Concrete_Extend_Left${i + 1}=0.0000\n`;
+        } else {
+          returnValue += `Concrete_Extend_Left${i + 1}=4.0000\n`;
+        }
+
+        if (extEnds[i] == numBays) {
+          returnValue += `Concrete_Extend_Right${i + 1}=0.0000\n`;
+        } else {
+          returnValue += `Concrete_Extend_Right${i + 1}=4.0000\n`;
+        }
+        returnValue += `Concrete_Extend_Front${i + 1}=0.0000\n`;
+        returnValue += `Support_Depth${i + 1}=8.0000\n`;
+      } else {
+        returnValue += `Extension_Option${i + 1}=-\n`;
+      }
+    }
+
+    return returnValue;
   }
 
-  async function getDownspouts(building) {
-    // console.log(building);
-    return '';
+  function getExtData(building, loc) {
+    let spacingKey = `roofBaySpacing`;
+    let bayKey = `${loc}ExtensionBays`;
+    let numBays = building[spacingKey].length;
+    let bays = building[bayKey];
+
+    let qty = 0;
+    let starts = '';
+    let ends = '';
+    let ons = 0;
+    let offs = 0;
+    let current = false;
+    let i = 0;
+
+    for (i; i < numBays; i++) {
+      if (bays.includes(i + 1) != current) {
+        current = bays.includes(i + 1);
+        if (current) {
+          qty += 1;
+          starts += i + 1 + ',';
+          ons += 1;
+        } else {
+          ends += i + ',';
+          offs += 1;
+        }
+      }
+      if (i == 0 && current == false) {
+        offs += 1;
+      }
+    }
+    if (current) {
+      ends += i + ',';
+    }
+
+    starts = starts.slice(0, -1);
+    ends = ends.slice(0, -1);
+    return [qty, starts, ends, ons, offs];
   }
 
-  async function getGutters(building) {
-    // console.log(building);
-    return '';
+  function calcNoDownspouts(building, loc) {
+    let returnValue = '';
+    const {
+      shape,
+      width,
+      length,
+      backPeakOffset,
+      leftExtensionWidth,
+      rightExtensionWidth,
+      frontExtensionWidth,
+      backExtensionWidth,
+    } = building;
+    let fiveYear = 0;
+    const rain = fiveYear == 0 ? 6 : fiveYear;
+    let roofWidth = 0;
+    let roofLength = leftExtensionWidth + length + rightExtensionWidth;
+
+    if (loc == 'back') {
+      if (shape == 'symmetrical') {
+        roofWidth = backExtensionWidth + width / 2;
+      } else if (shape == 'nonSymmetrical') {
+        roofWidth = backExtensionWidth + backPeakOffset;
+      } else {
+        roofWidth = backExtensionWidth + width + frontExtensionWidth;
+      }
+    } else {
+      if (shape == 'symmetrical') {
+        roofWidth = width / 2 + frontExtensionWidth;
+      } else if (shape == 'nonSymmetrical') {
+        roofWidth = width - backPeakOffset + frontExtensionWidth;
+      } else {
+        roofWidth = 0;
+      }
+    }
+
+    const gutterWidth = 5.6667;
+    const gutterDepth = 6;
+    const downspoutArea = 11.25;
+
+    if (rain == 0 || roofWidth == 0 || roofLength == 0) {
+      return 0;
+    }
+
+    let gutterCapacity = Math.pow(
+      (Math.pow(gutterWidth / 12, 3 / 7) *
+        Math.pow(gutterDepth / 12, 4 / 7) *
+        Math.pow(43200 / (rain * roofWidth), 5 / 14)) /
+        0.481,
+      28 / 13
+    );
+
+    let downspoutCapacity = (1200 * downspoutArea) / (rain * roofWidth);
+
+    returnValue =
+      gutterCapacity < downspoutCapacity
+        ? Math.ceil(roofLength / gutterCapacity) + 1
+        : Math.ceil(roofLength / downspoutCapacity) + 1;
+
+    return returnValue;
   }
 
-  async function getRelites(building, wall) {
-    // console.log(building);
-    // console.log(wall);
-    return '';
+  function getDownspouts(building) {
+    let returnValue = '';
+    const {
+      shape,
+      length,
+      leftExtensionWidth,
+      rightExtensionWidth,
+      frontExtensionWidth,
+      backExtensionWidth,
+      includeGutters,
+    } = building;
+    let numBackDownspouts = calcNoDownspouts(building, 'back');
+    let numFrontDownspouts = calcNoDownspouts(building, 'front');
+    let roofLength = leftExtensionWidth + length + rightExtensionWidth;
+
+    let extBackData = getExtData(building, 'back');
+    let extFrontData = getExtData(building, 'front');
+    let hasMultExtBack = extBackData[4] > 0 ? true : false;
+    let hasMultExtFront = extFrontData[4] > 0 ? true : false;
+    numBackDownspouts = hasMultExtBack
+      ? numBackDownspouts + extBackData[3] + extBackData[4] - 1
+      : numBackDownspouts;
+    numFrontDownspouts = hasMultExtFront
+      ? numFrontDownspouts + extFrontData[3] + extFrontData[4] - 1
+      : numFrontDownspouts;
+
+    if (includeGutters) {
+      if (
+        ((shape == 'symmetrical' || shape == 'nonSymmetrical') &&
+          frontExtensionWidth == 0) ||
+        hasMultExtFront
+      ) {
+        returnValue += `Length_Front=${roofLength.toFixed(4)}\n`;
+        returnValue += `Gutter_Location_Id_Front=2\n`;
+        returnValue += `Gutter_Location_Use_Front=WALL\n`;
+        returnValue += `Gutter_Color_Front=NC\n`;
+        returnValue += `Gutter_Style_Front=--\n`;
+        returnValue += `Gutter_Type_Front=E\n`;
+        returnValue += `Downspout_Color_Front=NC\n`;
+        returnValue += `Downspout_Style_Front=--\n`;
+        returnValue += `No_Downspout_Front=${numFrontDownspouts}\n`;
+        for (let j = 0; j < numFrontDownspouts; j++) {
+          returnValue += `Downspout_Front_Loc${j}=0.0000\n`;
+        }
+      } else {
+        returnValue += `Length_Front=0.0000\n`;
+        returnValue += `Gutter_Location_Id_Front=2\n`;
+        returnValue += `Gutter_Location_Use_Front=WALL\n`;
+        returnValue += `Gutter_Color_Front=NC\n`;
+        returnValue += `Gutter_Style_Front=--\n`;
+        returnValue += `Gutter_Type_Front=N\n`;
+        returnValue += `Downspout_Color_Front=NC\n`;
+        returnValue += `Downspout_Style_Front=--\n`;
+        returnValue += `No_Downspout_Front=0\n`;
+      }
+
+      if (backExtensionWidth == 0 || hasMultExtBack) {
+        returnValue += `Length_Back=${roofLength.toFixed(4)}\n`;
+        returnValue += `Gutter_Location_Id_Back=4\n`;
+        returnValue += `Gutter_Location_Use_Back=WALL\n`;
+        returnValue += `Gutter_Color_Back=NC\n`;
+        returnValue += `Gutter_Style_Back=--\n`;
+        returnValue += `Gutter_Type_Back=E\n`;
+        returnValue += `Downspout_Color_Back=NC\n`;
+        returnValue += `Downspout_Style_Back=--\n`;
+        returnValue += `No_Downspout_Back=${numBackDownspouts}\n`;
+        for (let j = 0; j < numBackDownspouts; j++) {
+          returnValue += `Downspout_Back_Loc${j}=0.0000\n`;
+        }
+      } else {
+        returnValue += `Length_Back=0.0000\n`;
+        returnValue += `Gutter_Location_Id_Back=4\n`;
+        returnValue += `Gutter_Location_Use_Back=WALL\n`;
+        returnValue += `Gutter_Color_Back=NC\n`;
+        returnValue += `Gutter_Style_Back=--\n`;
+        returnValue += `Gutter_Type_Back=N\n`;
+        returnValue += `Downspout_Color_Back=NC\n`;
+        returnValue += `Downspout_Style_Back=--\n`;
+        returnValue += `No_Downspout_Back=0\n`;
+      }
+    } else {
+      returnValue += `Length_Front=0.0000\n`;
+      returnValue += `Gutter_Location_Id_Front=2\n`;
+      returnValue += `Gutter_Location_Use_Front=WALL\n`;
+      returnValue += `Gutter_Color_Front=NC\n`;
+      returnValue += `Gutter_Style_Front=--\n`;
+      returnValue += `Gutter_Type_Front=N\n`;
+      returnValue += `Downspout_Color_Front=NC\n`;
+      returnValue += `Downspout_Style_Front=--\n`;
+      returnValue += `No_Downspout_Front=0\n`;
+      returnValue += `Length_Back=0.0000\n`;
+      returnValue += `Gutter_Location_Id_Back=4\n`;
+      returnValue += `Gutter_Location_Use_Back=WALL\n`;
+      returnValue += `Gutter_Color_Back=NC\n`;
+      returnValue += `Gutter_Style_Back=--\n`;
+      returnValue += `Gutter_Type_Back=N\n`;
+      returnValue += `Downspout_Color_Back=NC\n`;
+      returnValue += `Downspout_Style_Back=--\n`;
+      returnValue += `No_Downspout_Back=0\n`;
+    }
+
+    return returnValue;
   }
 
-  async function getManDoors(building) {
-    // console.log(building);
-    return '';
+  function getGutters(building) {
+    let returnValue = '';
+    const {
+      shape,
+      length,
+      leftExtensionWidth,
+      rightExtensionWidth,
+      includeGutters,
+    } = building;
+    let numBackDownspouts = calcNoDownspouts(building, 'back');
+    let numFrontDownspouts = calcNoDownspouts(building, 'front');
+    let roofLength = leftExtensionWidth + length + rightExtensionWidth;
+
+    if (includeGutters) {
+      if (shape == 'singleSlope' || shape == 'leanTo') {
+        returnValue += `Length_Front=0.0000\n`;
+      } else {
+        returnValue += `Length_Front=${roofLength.toFixed(4)}\n`;
+      }
+      returnValue += `Length_Back=${roofLength.toFixed(4)}\n`;
+      returnValue += `No_Downspout_Front=${numFrontDownspouts}\n`;
+      returnValue += `No_Downspout_Back=${numBackDownspouts}\n`;
+      returnValue += `Gutter_Color=NC\n`;
+      returnValue += `Gutter_Style=--\n`;
+      returnValue += `Gutter_Type=E\n`;
+      returnValue += `Downspout_Color=NC\n`;
+      returnValue += `Downspout_Style=--\n`;
+    } else {
+      returnValue += `Length_Front=0.0000\n`;
+      returnValue += `Length_Back=0.0000\n`;
+      returnValue += `No_Downspout_Front=0\n`;
+      returnValue += `No_Downspout_Back=0\n`;
+      returnValue += `Gutter_Color=--\n`;
+      returnValue += `Gutter_Style=--\n`;
+      returnValue += `Gutter_Type=N\n`;
+      returnValue += `Downspout_Color=--\n`;
+      returnValue += `Downspout_Style=--\n`;
+    }
+
+    return returnValue;
   }
 
-  async function getAccessories(building) {
-    // console.log(building);
-    return '';
+  function getRelites(building, loc) {
+    let returnValue = '';
+    const { shape, width, length, backPeakOffset } = building;
+    let itemNum = 0;
+    let surf =
+      loc == 'wall'
+        ? ['left', 'front', 'right', 'back']
+        : ['backRoof', 'frontRoof'];
+    let surfLength = 0;
+    let surfOffset = loc == 'wall' ? 1 : 2;
+    let surfName = loc == 'wall' ? 'wall' : 'surf';
+    let panelType = loc == 'wall' ? 'W' : 'R';
+    let panelOffset = 0;
+    let insKey = `${loc}Insulation`;
+
+    for (let i = 0; i < surf.length; i++) {
+      let reliteQtyKey = `${surf[i]}PolyQty`;
+      let reliteSizeKey = `${surf[i]}PolySize`;
+      let reliteColorKey = `${surf[i]}PolyColor`;
+      if (building[reliteQtyKey] != '') {
+        itemNum++;
+        surfLength = surf[i] == 'left' || surf[i] == 'right' ? width : length;
+        returnValue += `${surfName}_Id${itemNum}=${i + surfOffset}\n`;
+        returnValue += `Number${itemNum}=${building[reliteQtyKey]}\n`;
+        if (
+          continuousRelites(building, surf[i]) == false &&
+          building[insKey] != 'none'
+        ) {
+          returnValue += `Type${itemNum}=${panelType}I\n`;
+        } else {
+          returnValue += `Type${itemNum}=${panelType}\n`;
+        }
+        if (building[reliteColorKey] == 'white') {
+          returnValue += `Color${itemNum}=WH\n`;
+        } else {
+          returnValue += `Color${itemNum}=CL\n`;
+        }
+        returnValue += `Style${itemNum}=\n`;
+        returnValue += `Length${itemNum}=${building[reliteSizeKey]}\n`;
+        if (loc == 'roof') {
+          if (surf[i] == 'backRoof') {
+            if (shape == 'symmetrical') {
+              panelOffset = Math.round(width / 4 - 5);
+            } else if (shape == 'nonSymmetrical') {
+              panelOffset = Math.round(backPeakOffset / 2 - 5);
+            } else {
+              panelOffset = Math.round(width / 2 - 5);
+            }
+          } else {
+            if (shape == 'symmetrical') {
+              panelOffset = Math.round(width / 4 - 5);
+            } else if (shape == 'nonSymmetrical') {
+              panelOffset = Math.round((width - backPeakOffset) / 2 - 5);
+            } else {
+              panelOffset = Math.round(width / 2 - 5);
+            }
+          }
+        }
+        returnValue += `Offset${itemNum}=${panelOffset}\n`;
+        if (loc == 'left' || loc == 'right') {
+          returnValue += `Panel${itemNum}=N\n`;
+        } else {
+          returnValue += `Panel${itemNum}=Y\n`;
+        }
+        returnValue += `Option${itemNum}=-\n`;
+
+        if (building[reliteQtyKey] == Math.ceil(surfLength / 3)) {
+          returnValue += `NLocate${itemNum}=1\n`;
+          returnValue += `Locate${itemNum}_1=1.5\n`;
+        } else if (
+          building[reliteQtyKey] == parseInt(parseInt(surfLength / 3) / 2)
+        ) {
+          returnValue += `NLocate${itemNum}=${building[reliteQtyKey]}\n`;
+          for (let j = 1; j <= building[reliteQtyKey]; j++) {
+            returnValue += `Locate${itemNum}_${j}=${j * 6 - 1.5}\n`;
+          }
+        } else if (
+          building[reliteQtyKey] == parseInt(parseInt(surfLength / 3) / 3)
+        ) {
+          returnValue += `NLocate${itemNum}=${building[reliteQtyKey]}\n`;
+          if (surfLength % 9 < 2) {
+            for (let j = 1; j <= building[reliteQtyKey]; j++) {
+              returnValue += `Locate${itemNum}_${j}=${j * 9 - 1.5}\n`;
+            }
+          } else {
+            for (let j = 1; j <= building[reliteQtyKey]; j++) {
+              returnValue += `Locate${itemNum}_${j}=${j * 9 - 4.5}\n`;
+            }
+          }
+        } else {
+          returnValue += `NLocate${itemNum}=0\n`;
+        }
+      }
+    }
+
+    return `No_Panels=${itemNum}\n${returnValue}`;
   }
 
-  async function setLinerPanels(building) {
-    // console.log(building);
-    return '';
+  function continuousRelites(building, loc) {
+    const { width, length } = building;
+    let surfLength = loc == 'left' || loc == 'right' ? width : length;
+
+    let reliteQtyKey = `${loc}PolyQty`;
+    let returnValue =
+      building[reliteQtyKey] > parseInt(parseInt(surfLength / 3) / 2)
+        ? true
+        : false;
+
+    return returnValue;
   }
 
-  async function getWallLoads(building, wall) {
-    // console.log(building);
-    // console.log(wall);
-    return '';
+  function getMandoors(values) {
+    const { mandoors } = values;
+    let itemTotal = mandoors.length;
+    let returnValue = `No_Doors=${itemTotal}\n`;
+    let glass = '';
+
+    if (values > 0) {
+      return returnValue;
+    }
+
+    for (let i = 0; i < itemTotal; i++) {
+      if (mandoors[i].glass == 'half') {
+        glass = 'G';
+      } else if (mandoors[i].glass == 'narrow') {
+        glass = 'N';
+      } else {
+        if (
+          mandoors[i].size == '3070' ||
+          mandoors[i].size == '4070' ||
+          mandoors[i].size == '6070'
+        ) {
+          glass = 'M';
+        } else {
+          glass = '';
+        }
+      }
+      returnValue += `Size${i + 1}=${mandoors[i].size}${glass}\n`;
+      returnValue += `WallId${i + 1}=0\n`;
+      returnValue += `Number${i + 1}=${mandoors[i].qty}\n`;
+      returnValue += `Color${i + 1}=WH\n`;
+      returnValue += `Style${i + 1}=--\n`;
+      returnValue += `Weather_Strip${i + 1}=N\n`;
+      if (mandoors[i].hasPanic) {
+        returnValue += `Panic${i + 1}=HW\n`;
+      } else {
+        returnValue += `Panic${i + 1}=N\n`;
+      }
+      if (mandoors[i].hasMullion) {
+        returnValue += `Mullion${i + 1}=LL\n`;
+      } else {
+        returnValue += `Mullion${i + 1}=N\n`;
+      }
+      returnValue += `Type${i + 1}=DR\n`;
+      if (mandoors[i].hasDeadbolt) {
+        returnValue += `Lock_Type${i + 1}=DB\n`;
+      } else {
+        returnValue += `Lock_Type${i + 1}=N\n`;
+      }
+      if (mandoors[i].hasKickplate) {
+        returnValue += `Access_Type${i + 1}=KP\n`;
+      } else {
+        returnValue += `Access_Type${i + 1}=N\n`;
+      }
+      if (mandoors[i].hasCloser) {
+        returnValue += `Closer_Type${i + 1}=CY\n`;
+      } else {
+        returnValue += `Closer_Type${i + 1}=N\n`;
+      }
+    }
+
+    return returnValue;
   }
 
-  async function getCoverAccessories(building) {
-    // console.log(building);
-    return '';
+  // todo: Pick Accessories to add and copy from exportMBS.js in Sales
+  function getAccessories(building) {
+    let returnValue = '';
+    let itemNum = 0;
+
+    return 'No_Acc=' + itemNum + '\n' + returnValue;
   }
 
-  async function setCanopies(building, wall) {
-    // console.log(building);
-    // console.log(wall);
-    return '';
+  function setLinerPanels(building) {
+    let returnValue = '';
+    const { width, length, linerPanels } = building;
+    let itemTotal = linerPanels.length;
+    let itemNum = 0;
+    let liners = { left: '', front: '', right: '', back: '', roof: '' };
+    let wallId = { left: 1, front: 2, right: 3, back: 4, roof: 0 };
+    let useId = { left: 'W', front: 'W', right: 'W', back: 'W', roof: 'R' };
+    let liner = '';
+    let wallNum = ['left', 'front', 'right', 'back'];
+
+    if (hasBandedLiner(building, 'wall')) {
+      for (let i = 0; i < 4; i++) {
+        liners[wallNum[i]] += `Use=Y\n`;
+        liners[wallNum[i]] += `Loc_Start=0.0000\n`;
+        if (i % 2 == 0) {
+          liners[wallNum[i]] += `Loc_End=${width}\n`;
+        } else {
+          liners[wallNum[i]] += `Loc_End=${length}\n`;
+        }
+        liners[wallNum[i]] += `Height=0.0000\n`;
+        liners[wallNum[i]] += `Part=B-LINER\n`;
+        liners[wallNum[i]] += `Type=BLS\n`;
+        liners[wallNum[i]] += `Gage=29.0000\n`;
+        liners[wallNum[i]] += `Yield=80.0000\n`;
+        liners[wallNum[i]] += `Color=--\n`;
+        liners[wallNum[i]] += `Style=--\n`;
+        liners[wallNum[i]] += `Trim=Y\n`;
+        liners[wallNum[i]] += `Trim_Color=--\n`;
+        liners[wallNum[i]] += `Trim_Style=--\n`;
+
+        itemNum++;
+        liner += `Use${itemNum}=W\n`;
+        liner += `Loc_Id${itemNum}=${wallId[wallNum[i]]}\n`;
+        liner += `Loc_Start${itemNum}=0.0000\n`;
+        if (i % 2 == 0) {
+          liner += `Loc_End${itemNum}=${width}\n`;
+        } else {
+          liner += `Loc_End${itemNum}=${length}`;
+        }
+        liner += `Height${itemNum}=0.0000\n`;
+        liner += `Part${itemNum}=B-LINER\n`;
+        liner += `Type${itemNum}=BLS\n`;
+        liner += `Gage${itemNum}=29.0000\n`;
+        liner += `Yield${itemNum}=80.0000\n`;
+        liner += `Color${itemNum}=--\n`;
+        liner += `Style${itemNum}=--\n`;
+        liner += `Trim${itemNum}=Y\n`;
+        liner += `Trim_Color${itemNum}=--\n`;
+        liner += `Trim_Style${itemNum}=--\n`;
+      }
+    }
+
+    if (hasBandedLiner(building, 'roof')) {
+      liners['roof'] += `Use=Y\n`;
+      liners['roof'] += `Loc_Start=0.0000\n`;
+      liners['roof'] += `Loc_End=${length}\n`;
+      liners['roof'] += `Height=0.0000\n`;
+      liners['roof'] += `Part=B-LINER\n`;
+      liners['roof'] += `Type=BLS\n`;
+      liners['roof'] += `Gage=29.0000\n`;
+      liners['roof'] += `Yield=80.0000\n`;
+      liners['roof'] += `Color=--\n`;
+      liners['roof'] += `Style=--\n`;
+      liners['roof'] += `Trim=Y\n`;
+      liners['roof'] += `Trim_Color=--\n`;
+      liners['roof'] += `Trim_Style=--\n`;
+
+      itemNum++;
+      liner += `Use${itemNum}=R\n`;
+      liner += `Loc_Id${itemNum}=0\n`;
+      liner += `Loc_Start${itemNum}=0.0000\n`;
+      liner += `Loc_End${itemNum}=${length}\n`;
+      liner += `Height${itemNum}=0.0000\n`;
+      liner += `Part${itemNum}=B-LINER\n`;
+      liner += `Type${itemNum}=BLS\n`;
+      liner += `Gage${itemNum}=29.0000\n`;
+      liner += `Yield${itemNum}=80.0000\n`;
+      liner += `Color${itemNum}=--\n`;
+      liner += `Style${itemNum}=--\n`;
+      liner += `Trim${itemNum}=Y\n`;
+      liner += `Trim_Color${itemNum}=--\n`;
+      liner += `Trim_Style${itemNum}=--\n`;
+    }
+
+    for (let i = 0; i < itemTotal; i++) {
+      itemNum++;
+
+      liner += `Use${itemNum}=${useId[linerPanels[i].wall]}\n`;
+      liner += `Loc_Id${itemNum}=${wallId[linerPanels[i].wall]}\n`;
+      liner += `Loc_Start${itemNum}=${linerPanels[i].start}\n`;
+      liner += `Loc_End${itemNum}=${linerPanels[i].end}\n`;
+      liner += `Height${itemNum}=${linerPanels[i].height}\n`;
+      liner += `Part${itemNum}=${getPanelPart(building, 'liner')}\n`;
+      liner += `Type${itemNum}=${getPanelType(building, 'liner')}\n`;
+      liner += `Gage${itemNum}=${getPanelGauge(building, 'liner')}\n`;
+      liner += `Yield${itemNum}=${getPanelYield(building, 'liner')}\n`;
+      liner += `Color${itemNum}=${getPanelColor(building, 'liner')}\n`;
+      liner += `Style${itemNum}=--\n`;
+      liner += `Trim${itemNum}=Y\n`;
+      liner += `Trim_Color${itemNum}=${getPanelColor(building, 'liner')}\n`;
+      liner += `Trim_Style${itemNum}=--\n`;
+
+      if (linerPanels[i].wall == '') {
+        liners[linerPanels[i].wall] += `Use=Y\n`;
+        liners[linerPanels[i].wall] += `Loc_Start=${linerPanels[i].start}\n`;
+        liners[linerPanels[i].wall] += `Loc_End=${linerPanels[i].end}\n`;
+        liners[linerPanels[i].wall] += `Height=${linerPanels[i].height}\n`;
+        liners[linerPanels[i].wall] +=
+          `Part=${getPanelPart(building, 'liner')}\n`;
+        liners[linerPanels[i].wall] +=
+          `Type=${getPanelType(building, 'liner')}\n`;
+        liners[linerPanels[i].wall] +=
+          `Gage=${getPanelGauge(building, 'liner')}\n`;
+        liners[linerPanels[i].wall] +=
+          `Yield=${getPanelYield(building, 'liner')}\n`;
+        liners[linerPanels[i].wall] +=
+          `Color=${getPanelColor(building, 'liner')}\n`;
+        liners[linerPanels[i].wall] += `Style=--\n`;
+        liners[linerPanels[i].wall] += `Trim=Y\n`;
+        liners[linerPanels[i].wall] +=
+          `Trim_Color=${getPanelColor(building, 'liner')}\n`;
+        liners[linerPanels[i].wall] += `Trim_Style=--\n`;
+      }
+    }
+
+    returnValue +=
+      liners['left'] == ''
+        ? `[LINER_PANELS_WALL1]\n` + `Use=N\n\n`
+        : `[LINER_PANELS_WALL1]\n` + `${liners['left']}\n`;
+    returnValue +=
+      liners['front'] == ''
+        ? `[LINER_PANELS_WALL2]\n` + `Use=N\n\n`
+        : `[LINER_PANELS_WALL2]\n` + `${liners['front']}\n`;
+    returnValue +=
+      liners['right'] == ''
+        ? `[LINER_PANELS_WALL3]\n` + `Use=N\n\n`
+        : `[LINER_PANELS_WALL3]\n` + `${liners['right']}\n`;
+    returnValue +=
+      liners['back'] == ''
+        ? `[LINER_PANELS_WALL4]\n` + `Use=N\n\n`
+        : `[LINER_PANELS_WALL4]\n` + `${liners['back']}\n`;
+    returnValue +=
+      liners['roof'] == ''
+        ? `[LINER_PANELS_ROOF]\n` + `Use=N\n\n`
+        : `[LINER_PANELS_ROOF]\n` + `${liners['roof']}\n`;
+
+    returnValue += `[LINER_PANELS]\n`;
+    returnValue += `No_Liners${itemNum}\n` + liner;
+
+    return returnValue;
   }
 
-  async function getAdditionalLoads(building) {
-    // console.log(building);
-    return '';
+  function hasBandedLiner(building, loc) {
+    const { wallInsultation, roofInsulation } = building;
+    const insOptions = [
+      'banded25',
+      'banded30',
+      'banded32',
+      'banded36',
+      'banded38',
+      'banded40',
+      'banded49',
+    ];
+    if (loc == 'roof') {
+      return insOptions.includes(roofInsulation) ? true : false;
+    }
+    if (loc == 'wall') {
+      return insOptions.includes(wallInsultation) ? true : false;
+    }
   }
 
-  async function getPartitions(building) {
-    // console.log(building);
-    return '';
+  function getWallLoads(building, loc) {
+    const { shape, frontEaveHeight, backEaveHeight, partitions, partialWalls } =
+      building;
+    let itemTotal = partitions.length;
+    let returnValue = '';
+    let wallHeight = 0;
+    let wallWeight = 0;
+    let deadLoad = 0;
+    let girtLoad = 'N';
+    let averageHeight = getAverageHeight(building);
+
+    if (loc == 'back') {
+      averageHeight = backEaveHeight;
+    } else if (loc == 'front') {
+      if (shape == 'symmetrical') {
+        averageHeight = backEaveHeight;
+      } else {
+        averageHeight = frontEaveHeight;
+      }
+    }
+
+    for (let i = 0; i < itemTotal; i++) {
+      if (partialWalls[i].wall == loc) {
+        wallHeight =
+          partialWalls[i].height > wallHeight &&
+          partialWalls[i].topOfWall != 'ba' &&
+          partialWalls[i].topOfWall != 'bc'
+            ? partialWalls[i].height
+            : wallHeight;
+      }
+    }
+
+    let wallType = 'CMU';
+    let wallThick = 8;
+
+    if (wallHeight > 0) {
+      if (wallType == 'CMU') {
+        wallWeight = (120 * wallThick) / 12;
+      } else if (wallType == 'Light Concrete') {
+        wallWeight = (150 * wallThick) / 12;
+      } else if (wallType == 'Heavy Concrete') {
+        wallWeight = (180 * wallThick) / 12;
+      }
+      deadLoad = Math.ceil(
+        (wallWeight * Math.pow(wallHeight, 2)) / Math.pow(averageHeight, 2)
+      );
+      girtLoad = 'Y';
+    }
+
+    //Weight of Stack or Sliding Hangar door
+    let hangarDoorDeadLoad = 0;
+    // todo: correct hangar count when Hangar Openings are added
+    itemTotal = 0;
+
+    returnValue += `Option=-\n`;
+    returnValue += `Notch=0.0000\n`;
+    returnValue += `Grout=0.0000\n`;
+    returnValue += `Dead=${deadLoad}\n`;
+    returnValue += `Force=Y\n`;
+    returnValue += `Girt=${girtLoad}\n`;
+    return returnValue;
   }
 
-  async function getWideOpenings(building) {
-    // console.log(building);
-    return '';
+  function getAverageHeight(building) {
+    const { shape, width, backEaveHeight, frontEaveHeight, backRoofPitch } =
+      building;
+
+    let backEave = backEaveHeight;
+    let frontEave = shape == 'symmetrical' ? backEaveHeight : frontEaveHeight;
+
+    let peakOffset =
+      (-12 * backEave + width * backRoofPitch + 12 * frontEave) /
+      (2 * backRoofPitch);
+    return (
+      ((((peakOffset / 2) * backRoofPitch) / 12 + backEave) * peakOffset) /
+        width +
+      ((((peakOffset * backRoofPitch) / 12 + backEave - frontEave) / 2 +
+        frontEave) *
+        (width - peakOffset)) /
+        width
+    );
   }
 
-  async function getWideEWOpenings(building) {
-    // console.log(building);
-    return '';
+  function getCoverAccessories(values) {
+    let returnValue = '';
+    const { mandoors, buildings } = values;
+    let itemNum = 0;
+
+    let mandoor3070 = 0;
+    let mandoor4070 = 0;
+    let mandoor6070 = 0;
+    let mandoor3070P = 0;
+    let mandoor4070P = 0;
+    let mandoor6070P = 0;
+
+    // Add Man Doors
+    let itemTotal = mandoors.length;
+    for (let i = 0; i < itemTotal; i++) {
+      if (mandoors[i].size == '3070') {
+        mandoor3070 += parseInt(mandoors[i].qty);
+      } else if (mandoors[i].size == '4070') {
+        mandoor4070 += parseInt(mandoors[i].qty);
+      } else if (mandoors[i].size == '6070') {
+        mandoor6070 += parseInt(mandoors[i].qty);
+      } else if (mandoors[i].size == '3070P') {
+        mandoor3070P += parseInt(mandoors[i].qty);
+      } else if (mandoors[i].size == '4070P') {
+        mandoor4070P += parseInt(mandoors[i].qty);
+      } else if (mandoors[i].size == '6070P') {
+        mandoor6070P += parseInt(mandoors[i].qty);
+      }
+    }
+
+    if (mandoor3070 > 0) {
+      itemNum++;
+      returnValue += `Id${itemNum}=@001\n`;
+      returnValue += `Number${itemNum}=${mandoor3070}\n`;
+      returnValue += `Length${itemNum}=0.0000\n`;
+      returnValue += `Width${itemNum}=0.0000\n`;
+    }
+    if (mandoor4070 > 0) {
+      itemNum++;
+      returnValue += `Id${itemNum}=@002\n`;
+      returnValue += `Number${itemNum}=${mandoor4070}\n`;
+      returnValue += `Length${itemNum}=0.0000\n`;
+      returnValue += `Width${itemNum}=0.0000\n`;
+    }
+    if (mandoor6070 > 0) {
+      itemNum++;
+      returnValue += `Id${itemNum}=@003\n`;
+      returnValue += `Number${itemNum}=${mandoor6070}\n`;
+      returnValue += `Length${itemNum}=0.0000\n`;
+      returnValue += `Width${itemNum}=0.0000\n`;
+    }
+    if (mandoor3070P > 0) {
+      itemNum++;
+      returnValue += `Id${itemNum}=@004\n`;
+      returnValue += `Number${itemNum}=${mandoor3070P}\n`;
+      returnValue += `Length${itemNum}=0.0000\n`;
+      returnValue += `Width${itemNum}=0.0000\n`;
+    }
+    if (mandoor4070P > 0) {
+      itemNum++;
+      returnValue += `Id${itemNum}=@005\n`;
+      returnValue += `Number${itemNum}=${mandoor4070P}\n`;
+      returnValue += `Length${itemNum}=0.0000\n`;
+      returnValue += `Width${itemNum}=0.0000\n`;
+    }
+    if (mandoor6070P > 0) {
+      itemNum++;
+      returnValue += `Id${itemNum}=@006\n`;
+      returnValue += `Number${itemNum}=${mandoor6070P}\n`;
+      returnValue += `Length${itemNum}=0.0000\n`;
+      returnValue += `Width${itemNum}=0.0000\n`;
+    }
+
+    // Add Relites
+    let relite3 = 0;
+    let relite4 = 0;
+    let relite5 = 0;
+    let relite10 = 0;
+
+    for (let i = 0; i < buildings.length; i++) {
+      relite3 +=
+        buildings[i].frontPolySize == '3'
+          ? parseInt(buildings[i].frontPolyQty)
+          : relite3;
+      relite3 +=
+        buildings[i].backPolySize == '3'
+          ? parseInt(buildings[i].backPolyQty)
+          : relite3;
+      relite3 +=
+        buildings[i].leftPolySize == '3'
+          ? parseInt(buildings[i].leftPolyQty)
+          : relite3;
+      relite3 +=
+        buildings[i].rightPolySize == '3'
+          ? parseInt(buildings[i].rightPolyQty)
+          : relite3;
+
+      relite4 +=
+        buildings[i].frontPolySize == '4'
+          ? parseInt(buildings[i].frontPolyQty)
+          : relite4;
+      relite4 +=
+        buildings[i].backPolySize == '4'
+          ? parseInt(buildings[i].backPolyQty)
+          : relite4;
+      relite4 +=
+        buildings[i].leftPolySize == '4'
+          ? parseInt(buildings[i].leftPolyQty)
+          : relite4;
+      relite4 +=
+        buildings[i].rightPolySize == '4'
+          ? parseInt(buildings[i].rightPolyQty)
+          : relite4;
+
+      relite5 +=
+        buildings[i].frontPolySize == '5'
+          ? parseInt(buildings[i].frontPolyQty)
+          : relite5;
+      relite5 +=
+        buildings[i].backPolySize == '5'
+          ? parseInt(buildings[i].backPolyQty)
+          : relite5;
+      relite5 +=
+        buildings[i].leftPolySize == '5'
+          ? parseInt(buildings[i].leftPolyQty)
+          : relite5;
+      relite5 +=
+        buildings[i].rightPolySize == '5'
+          ? parseInt(buildings[i].rightPolyQty)
+          : relite5;
+
+      relite10 +=
+        buildings[i].backRoofPolySize == '12'
+          ? parseInt(buildings[i].backRoofPolyQty)
+          : relite10;
+      relite10 +=
+        buildings[i].frontRoofPolySize == '12'
+          ? parseInt(buildings[i].frontRoofPolyQty)
+          : relite10;
+    }
+
+    if (relite3 > 0) {
+      itemNum++;
+      returnValue += `Id${itemNum}=@007\n`;
+      returnValue += `Number${itemNum}=${relite3}\n`;
+      returnValue += `Length${itemNum}=0.0000\n`;
+      returnValue += `Width${itemNum}=0.0000\n`;
+    }
+    if (relite4 > 0) {
+      itemNum++;
+      returnValue += `Id${itemNum}=@008\n`;
+      returnValue += `Number${itemNum}=${relite4}\n`;
+      returnValue += `Length${itemNum}=0.0000\n`;
+      returnValue += `Width${itemNum}=0.0000\n`;
+    }
+    if (relite5 > 0) {
+      itemNum++;
+      returnValue += `Id${itemNum}=@009\n`;
+      returnValue += `Number${itemNum}=${relite5}\n`;
+      returnValue += `Length${itemNum}=0.0000\n`;
+      returnValue += `Width${itemNum}=0.0000\n`;
+    }
+    if (relite10 > 0) {
+      itemNum++;
+      returnValue += `Id${itemNum}=@010\n`;
+      returnValue += `Number${itemNum}=${relite10}\n`;
+      returnValue += `Length${itemNum}=0.0000\n`;
+      returnValue += `Width${itemNum}=0.0000\n`;
+    }
+
+    // todo: add other accessories sections when added to UI
+    // Add Ridge Vents
+    // Add Skylights
+    // Add Canopy 2x6
+    // Add Canopy 2X9
+
+    return `No_Est=${itemNum}\n` + returnValue;
   }
 
-  async function setPartialWalls(building, wall) {
-    // console.log(building);
-    // console.log(wall);
-    return '';
+  function setCanopies(building, loc) {
+    let returnValue = ``;
+    const { liveLoad, deadLoad, roofSnowLoad, soffitPanelType, canopies } =
+      building;
+    let itemTotal = canopies.length;
+    let itemNum = 0;
+
+    let wallLoc = loc == 'front' || loc == 'back' ? 'roof' : loc;
+    let spacingKey = `${loc}BaySpacing`;
+    let numBays = building[spacingKey];
+    let gutterId = getCanopyGutterId(building, loc);
+
+    for (let i = 0; i < itemTotal; i++) {
+      if (canopies[i].wall == loc) {
+        itemNum++;
+        gutterId++;
+        returnValue += `Bay_Start${itemNum}=${canopies[i].startBay}\n`;
+        returnValue += `Bay_End${itemNum}=${canopies[i].endBay}\n`;
+        returnValue += `Bay_Width${itemNum}=${canopies[i].width}\n`;
+        returnValue += `Height${itemNum}=${canopies[i].elevation}\n`;
+        returnValue += `Slope${itemNum}=${canopies[i].slope}\n`;
+
+        if (canopies[i].addColumns) {
+          if (canopies[i].startBay == 1) {
+            returnValue += `Extend_Start${itemNum}=0.0000\n`;
+          } else {
+            returnValue += `Extend_Start${itemNum}=0.3333\n`;
+          }
+          if (canopies[i].endBay == numBays) {
+            returnValue += `Extend_End${itemNum}=0.0000\n`;
+          } else {
+            returnValue += `Extend_End${itemNum}=0.3333\n`;
+          }
+        } else {
+          returnValue += `Extend_Start${itemNum}=0.0000\n`;
+          returnValue += `Extend_End${itemNum}=0.0000\n`;
+        }
+        if (canopies[i].slope > 4) {
+          returnValue += `Purlin_Type${itemNum}=ZBZO\n`;
+        } else {
+          returnValue += `Purlin_Type${itemNum}=ZBEO\n`;
+        }
+        returnValue += `Purlin_Peak_Space${itemNum}=1.0000\n`;
+        returnValue += `Purlin_Set_Space${itemNum}=0.0000\n`;
+        if (canopies[i].addColumns) {
+          returnValue += `Member_Type${itemNum}=R\n`;
+          returnValue += `Member_Shape${itemNum}=C\n`;
+        } else if (canopies[i].width > 4) {
+          returnValue += `Member_Type${itemNum}=S\n`;
+          returnValue += `Member_Shape${itemNum}=T\n`;
+        } else {
+          returnValue += `Member_Type${itemNum}=S\n`;
+          returnValue += `Member_Shape${itemNum}=C\n`;
+        }
+
+        // todo: canopySoffit and canopyRoof need to be defined in state
+        // Soffit
+        if (soffitPanelType == 'none') {
+          returnValue += `Soffit_Part${itemNum}=--------\n`;
+          returnValue += `Soffit_Type${itemNum}=--\n`;
+          returnValue += `Soffit_Color${itemNum}=--\n`;
+          returnValue += `Soffit_Stype${itemNum}=--\n`;
+        } else {
+          returnValue += `Soffit_Part${itemNum}=${getPanelPart(building, 'canopySoffit')}\n`;
+          returnValue += `Soffit_Type${itemNum}=${getPanelType(building, 'canopySoffit')}\n`;
+          returnValue += `Soffit_Color${itemNum}=${getPanelColor(building, 'canopySoffit')}\n`;
+          returnValue += `Soffit_Style${itemNum}=--\n`;
+        }
+
+        // Roofing
+        returnValue += `Roof_Part${itemNum}=${getPanelPart(building, 'canopyRoof')}\n`;
+        returnValue += `Roof_Type${itemNum}=${getPanelType(building, 'canopyRoof')}\n`;
+        returnValue += `Roof_Color${itemNum}=${getPanelColor(building, 'canopyRoof')}\n`;
+        returnValue += `Roof_Style${itemNum}=--\n`;
+
+        returnValue += `End_Option_Left${itemNum}=\n`;
+        returnValue += `End_Option_Right${itemNum}=\n`;
+        returnValue += `Screw_Type${itemNum}=M\n`;
+        returnValue += `Screw_Finish${itemNum}=--\n`;
+        returnValue += `${getStandingSeamClips(building, 'canopyRoof', itemNum)}\n`;
+
+        // Gutters
+        if (building.includeGutters) {
+          returnValue += `Gutter_Use${itemNum}=Y\n`;
+          returnValue += `Gutter_Location_Id${itemNum}=${gutterId}\n`;
+          returnValue += `Gutter_Location_Use${itemNum}=EXTEND\n`;
+          returnValue += `Gutter_Color${itemNum}=NC\n`;
+          returnValue += `Gutter_Style${itemNum}=--\n`;
+          returnValue += `Downspout_Color${itemNum}=NC\n`;
+          returnValue += `Downspout_Style${itemNum}=--\n`;
+          returnValue += `No_Downspout${itemNum}=2\n`;
+          returnValue += `Downspout${itemNum}_Loc1=0.0000\n`;
+          returnValue += `Downspout${itemNum}_Loc2=0.0000\n`;
+        } else {
+          returnValue += `Gutter_Use${itemNum}=N\n`;
+          returnValue += `Gutter_Location_Id${itemNum}=${gutterId}\n`;
+          returnValue += `Gutter_Location_Use${itemNum}=EXTEND\n`;
+          returnValue += `Gutter_Color${itemNum}=--\n`;
+          returnValue += `Gutter_Style${itemNum}=--\n`;
+          returnValue += `Downspout_Color${itemNum}=--\n`;
+          returnValue += `Downspout_Style${itemNum}=--\n`;
+          returnValue += `No_Downspout${itemNum}=0\n`;
+        }
+
+        // New Extension Loads
+        returnValue += `Dead${itemNum}=${deadLoad}\n`;
+        returnValue += `Collateral${itemNum}=0.0000\n`;
+        returnValue += `Live${itemNum}=${liveLoad}\n`;
+        returnValue += `Snow${itemNum}=${roofSnowLoad * 2}\n`;
+
+        // New Extension with Columns
+        if (canopies[i].addColumns) {
+          returnValue += `Extension_Option${itemNum}=F\n`;
+          returnValue += `Support_Type${itemNum}=R\n`;
+          returnValue += `Support_Shape${itemNum}=-\n`;
+          returnValue += `Support_Offset${itemNum}=0.0000\n`;
+          returnValue += `Support_Elevation${itemNum}=0.0000\n`;
+          returnValue += `Support_Splice${itemNum}=S\n`;
+          returnValue += `Concrete_Elevation${itemNum}=0.0000\n`;
+          if (canopies[i].startBay == 1) {
+            returnValue += `Concrete_Extend_Left${itemNum}=0.0000\n`;
+          } else {
+            returnValue += `Concrete_Extend_Left${itemNum}=4.0000\n`;
+          }
+          if (canopies[i].endBay == numBays) {
+            returnValue += `Concrete_Extend_Right${itemNum}=0.0000\n`;
+          } else {
+            returnValue += `Concrete_Extend_Right${itemNum}=4.0000\n`;
+          }
+          returnValue += `Concrete_Extend_Front${itemNum}=0.0000\n`;
+          returnValue += `Support_Depth${itemNum}=8.0000\n`;
+        } else {
+          returnValue += `Extension_Option${itemNum}=-\n`;
+        }
+      }
+    }
+
+    return `No_Extend=${itemNum}\n` + returnValue;
   }
 
-  async function setWainscot(building, wall) {
-    // console.log(building);
-    // console.log(wall);
-    return '';
+  function getCanopyGutterId(building, loc) {
+    const { canopies } = building;
+    let currentId = 0;
+    currentId += getExtData(building, 'front')[0];
+    currentId += getExtData(building, 'back')[0];
+
+    if (loc == 'left') {
+      return currentId;
+    }
+
+    let itemTotal = canopies.length;
+    for (let i = 0; i < itemTotal; i++) {
+      if (
+        canopies[i].wall == 'left' ||
+        (canopies[i].wall == 'front' && (loc == 'right' || loc == 'back')) ||
+        (canopies[i].wall == 'right' && loc == 'back')
+      ) {
+        currentId++;
+      }
+    }
+    return currentId;
   }
 
-  async function getMezzanines(building) {
-    // console.log(building);
-    return '';
+  function getAdditionalLoads(values, building, bIndex) {
+    let returnValue = '';
+    const {
+      shape,
+      width,
+      length,
+      leftExtensionWidth,
+      rightExtensionWidth,
+      roofSnowLoad,
+      leftGirtType,
+      rightGirtType,
+      frontGirtType,
+      backGirtType,
+      frontEaveHeight,
+      backEaveHeight,
+    } = building;
+    let itemNum = 0;
+
+    if (
+      bIndex > 0 &&
+      shape == 'leanTo' &&
+      backGirtType == 'open' &&
+      leftGirtType == 'open' &&
+      rightGirtType == 'open'
+    ) {
+      //Add Snow Load to Open Lean-to with the same height as Main Building and if lean-to is connected to a sidewall
+      //Could be connected to other buildings besides Main Building
+      if (
+        frontEaveHeight == values.buildings[0].backEaveHeight ||
+        frontEaveHeight == values.builidngs[0].frontEaveHeight
+      ) {
+        itemNum++;
+        returnValue += `Frame_Type${itemNum}=BUILD\n`;
+        returnValue += `Surf/Col${itemNum}=2\n`;
+        returnValue += `Basic_Type${itemNum}=SNOW\n`;
+        returnValue += `Description${itemNum}=\n`;
+        returnValue += `Load_Type${itemNum}=D\n`;
+        returnValue += `Force_X${itemNum}=-${roofSnowLoad}\n`;
+        returnValue += `Force_Y${itemNum}=-${roofSnowLoad}\n`;
+        returnValue += `Moment${itemNum}=0.0000\n`;
+
+        if (width > 5) {
+          returnValue += `DX${itemNum}=${width - 5}\n`;
+        } else {
+          returnValue += `DX${itemNum}=0.0000\n`;
+        }
+        returnValue += `DY${itemNum}=${width}\n`;
+        returnValue += `Orient${itemNum}=T\n`;
+        returnValue += `Start${itemNum}=0.0000\n`;
+        returnValue += `End${itemNum}=${length + leftExtensionWidth + rightExtensionWidth}\n`;
+      }
+    }
+    return `No_Load_Add=${itemNum}\n` + returnValue;
+  }
+
+  function getPartitions(building) {
+    let returnValue = '';
+    const { roofBaySpacing, partitions } = building;
+    let itemTotal = partitions.length;
+    let itemNum = 0;
+    let partBays, offsetBays, bays;
+
+    returnValue += `No_Partition_Wall=${itemTotal}\n`;
+
+    for (let i = 0; i < itemTotal; i++) {
+      itemNum++;
+      partBays = partitions[i].baySpacing;
+      offsetBays = partitions[i].offset;
+      bays = roofBaySpacing;
+      returnValue += `\n[PARTITION_LOCATION${itemNum}]\n`;
+      returnValue += `Orient=${partitions[i].orientation}\n`; //todo: check that the orientation is the variable needed
+      returnValue += `Direct=CR\n`;
+      returnValue += `Offset1=${partitions[i].start}`;
+      returnValue += `Adj_Wall_Id1=0\n`;
+      returnValue += `Tie_In_Option1=3\n`;
+      returnValue += `Offset2=${partitions[i].end}`;
+      returnValue += `Adj_Wall_Id2=0\n`;
+      returnValue += `Tie_In_Option2=3\n`;
+      returnValue += `Number=${offsetBays.length}\n`;
+      for (let j = 0; j < offsetBays.length; j++) {
+        returnValue += `Loc${j + 1}=${offsetBays[j]}\n`;
+      }
+
+      returnValue += `\n[PARTITION_BAY_SPACING_WALL${itemNum}]\n`;
+      returnValue += `${formatBaySpacing(partitions[i].baySpacing)}`;
+
+      returnValue += `\n[PARTITION_FRAMED_OPENINGS_WALL${itemNum}]\n`;
+      returnValue += `${getFramedOpenings(building, 'partition', i + 1)}`;
+
+      returnValue += `\n[PARTITION_FRAMING_WALL${itemNum}]\n`;
+      if (partitions[i].wall == 'T' && bays.includes(offsetBays[0])) {
+        returnValue += `Col_Depth=0.0000\n`;
+        returnValue += `Start_Col_Type=R\n`;
+        returnValue += `Int_Col_Type=R\n`;
+        returnValue += `End_Col_Type=R\n`;
+        returnValue += `Col_Elev=0.0000\n`;
+        returnValue += `Rafter_Depth=0.0000\n`;
+        returnValue += `Rafter_Type=-\n`;
+        returnValue += `Rafter_Rotate=D\n`;
+        returnValue += `Rafter_Option=3\n`;
+      } else {
+        returnValue += `Col_Depth=0.0000\n`;
+        returnValue += `Start_Col_Type=C\n`;
+        returnValue += `Int_Col_Type=R\n`;
+        returnValue += `End_Col_Type=C\n`;
+        returnValue += `Col_Elev=0.0000\n`;
+        returnValue += `Rafter_Depth=0.0000\n`;
+        returnValue += `Rafter_Type=C\n`;
+        returnValue += `Rafter_Rotate=D\n`;
+        returnValue += `Rafter_Option=2\n`;
+      }
+
+      returnValue += `\n[PARTITION_PARTIAL_WALLS_WALL${itemNum}]\n`;
+      returnValue += `${setPartitionPartialWalls(building, 'partition', i + 1, partBays)}`;
+
+      returnValue += `\n[PARTITION_GIRTS_WALL${itemNum}]\n`;
+      returnValue += `Type=ZF\n`;
+      returnValue += `Flg_Brace_Use=Y\n`;
+      returnValue += `Flg_Brace_Supply=Y\n`;
+      returnValue += `Set_Depth=8.0000\n`;
+      returnValue += `Type_Top=CF\n`;
+
+      returnValue += `\n[PARTITION_GIRT_LOC_WALL${itemNum}]\n`;
+      returnValue += `Set_Loc=I\n`;
+      returnValue += `No_Rows=1\n`;
+      returnValue += `Loc1=4.0000\n`;
+
+      returnValue += `\n[PARTITION_PANEL_LEFT_WALL${itemNum}]\n`;
+      returnValue += `${setPartitionSheeting(building, `partition-${i}-Left`, partitions[i].height)}`;
+
+      returnValue += `\n[PARTITION_PANEL_RIGHT_WALL${itemNum}]\n`;
+      returnValue += `${setPartitionSheeting(building, `partition-${i}-Right`, partitions[i].height)}`;
+
+      returnValue += `\n[PARTITION_INSULATION_WALL${itemNum}]\n`;
+      if (partitions[i].insulation == 'none') {
+        returnValue += `Use=N\n`;
+        returnValue += `Type=N\n`;
+        returnValue += `Thick=0.0000\n`;
+        returnValue += `Wire=N\n`;
+      } else {
+        returnValue += `Use=Y\n`;
+        if (partitions[i].insulation == 'vrr2') {
+          returnValue += `Type=PS\n`;
+          returnValue += `Thick=2.0000\n`;
+        } else if (partitions[i].insulation == 'vrr3') {
+          returnValue += `Type=PS\n`;
+          returnValue += `Thick=3.0000\n`;
+        } else if (partitions[i].insulation == 'vrr4') {
+          returnValue += `Type=PS\n`;
+          returnValue += `Thick=4.0000\n`;
+        } else if (partitions[i].insulation == 'vrr6') {
+          returnValue += `Type=PS\n`;
+          returnValue += `Thick=6.0000\n`;
+        } else if (partitions[i].insulation == 'banded25') {
+          returnValue += `Type=WB\n`;
+          returnValue += `Thick=8.0000\n`;
+        } else if (partitions[i].insulation == 'banded30') {
+          returnValue += `Type=WB\n`;
+          returnValue += `Thick=9.0000\n`;
+        }
+        returnValue += `Wire=N\n`;
+      }
+
+      returnValue += `\n[PARTITION_BASE_OPTIONS_WALL${itemNum}]\n`;
+      returnValue += `Angle=N\n`;
+      returnValue += `Channel=Y\n`;
+      returnValue += `Seal=N\n`;
+      returnValue += `Angle_Seal=N\n`;
+    }
+    return returnValue;
+  }
+
+  function setPartitionPartialWalls(building, loc, partNum, bays) {
+    let returnValue = '';
+    const { partialWalls } = building;
+    let itemTotal = partialWalls.length;
+    let itemNum = 0;
+    let bayInfo;
+
+    for (let i = 0; i < itemTotal; i++) {
+      //todo: original had index included in wall var
+      if (loc == 'partition' && partialWalls[i].wall == 'partition') {
+        itemNum++;
+        bayInfo = getPartitionStartEnd(
+          bays,
+          partialWalls[i].start,
+          partialWalls[i].end
+        );
+        returnValue += `Base_Type${itemNum}=${partialWalls[i].topOfWall}\n`;
+        if (
+          partialWalls[i].topOfWall == 'ba' ||
+          partialWalls[i].topOfWall == 'bc'
+        ) {
+          returnValue += `Load${itemNum}=N\n`;
+          returnValue += `Load_Col${itemNum}=Y\n`;
+        } else {
+          returnValue += `Load${itemNum}=Y\n`;
+          returnValue += `Load_Col${itemNum}=Y\n`;
+        }
+        returnValue += `Bay_Start${itemNum}=${bayInfo[0]}\n`;
+        returnValue += `Bay_End${itemNum}=${bayInfo[1]}\n`;
+        returnValue += `Height${itemNum}=${partialWalls[i].height}\n`;
+        returnValue += `Option${itemNum}=-\n`;
+      }
+    }
+    return `No_Sets=${itemNum}\n` + returnValue;
+  }
+
+  function getPartitionStartEnd(bays, start, end) {
+    let startBay = 0;
+    let endBay = 0;
+    let startOffset = 0;
+    let endOffset = 0;
+
+    for (let i = 0; i < bays.length; i++) {
+      if (i == 0) {
+        if (start < bays[i]) {
+          startBay = 1;
+          startOffset = start;
+        }
+        if (end <= bays[i]) {
+          endBay = 1;
+          endOffset = bays[i] - end;
+        }
+      } else {
+        if (start < bays[i] && start >= bays[i - 1]) {
+          startBay = i + 1;
+          startOffset = start - bays[i - 1];
+        }
+        if (end <= bays[i] && end > bays[(i = 1)]) {
+          endBay = i + 1;
+          endOffset = bays[i] - end;
+        }
+      }
+    }
+    return [startBay, endBay, startOffset, endOffset];
+  }
+
+  function setPartitionSheeting(building, loc, height) {
+    let returnValue = '';
+    const { partitions } = building;
+    let locSide = loc.split('-')[2];
+    let locI = loc.split('-')[1];
+    let partTypeKey = `${locSide}PanelType`;
+    let partGaugeKey = `${locSide}PanelGauge`;
+
+    if (partitions[locI][partTypeKey] != 'none') {
+      returnValue += `Height=${height}\n`;
+      returnValue += `Top=T\n`;
+      returnValue += `Part=${getPanelPart(building, `partition-${locI}-${locSide}`)}\n`;
+      returnValue += `Type=${getPanelType(building, `partition-${locI}-${locSide}`)}\n`;
+      returnValue += `Gage=${getPanelGauge(building, `partition-${locI}-${locSide}`)}\n`;
+      returnValue += `Yield=${getPanelYield(building, `partition-${locI}-${locSide}`)}\n`;
+      returnValue += `Panel_Color=${getPanelColor(building, `partition-${locI}-${locSide}`)}\n`;
+      returnValue += `Panel_Style=\n`;
+      returnValue += `Screw_Type=${getScrewLength(building, `partition-${locI}-${locSide}`)}\n`;
+      returnValue += `Screw_Finish=\n`;
+      returnValue += `Corner_Color=${getPanelColor(building, `partition-${locI}-${locSide}`)}\n`;
+      returnValue += `Corner_Style=\n`;
+      returnValue += `Jamb_Color=${getPanelColor(building, `partition-${locI}-${locSide}`)}\n`;
+      returnValue += `Jamb_Style=\n`;
+      returnValue += `Top_Color=${getPanelColor(building, `partition-${locI}-${locSide}`)}\n`;
+      returnValue += `Top_Style=\n`;
+      returnValue += `Base_Color=${getPanelColor(building, `partition-${locI}-${locSide}`)}\n`;
+      returnValue += `Base_Style=\n`;
+    } else {
+      returnValue += `Height=0.0000\n`;
+      returnValue += `Top=\n`;
+      returnValue += `Part=--------\n`;
+      returnValue += `Type=N\n`;
+      returnValue += `Gage=0.0000\n`;
+      returnValue += `Yield=0.0000\n`;
+      returnValue += `Panel_Color=\n`;
+      returnValue += `Panel_Style=\n`;
+      returnValue += `Screw_Type=\n`;
+      returnValue += `Screw_Finish=\n`;
+      returnValue += `Corner_Color=\n`;
+      returnValue += `Corner_Style=\n`;
+      returnValue += `Jamb_Color=\n`;
+      returnValue += `Jamb_Style=\n`;
+      returnValue += `Top_Color=\n`;
+      returnValue += `Top_Style=\n`;
+      returnValue += `Base_Color=\n`;
+      returnValue += `Base_Style=\n`;
+    }
+
+    return returnValue;
+  }
+
+  // todo: finish implementation
+  function getWideOpenings(building) {
+    let returnValue = '';
+    let itemNum = 0;
+
+    return `No_Sets=${itemNum}\n` + returnValue;
+  }
+
+  // todo: finish implementation
+  function getWideEWOpenings(building) {
+    let returnValue = '';
+    let itemNum = 0;
+
+    return `No_Sets=${itemNum}\n` + returnValue;
+  }
+
+  function setPartialWalls(building, loc) {
+    let returnValue = '';
+    const { partialWalls, wallSkirts } = building;
+    let partialTotal = partialWalls.length;
+    let skirtTotal = wallSkirts.length;
+    let itemNum = 0;
+    let bayInfo;
+
+    for (let i = 0; i < partialTotal; i++) {
+      if (partialWalls[i].wall == loc.toLowerCase()) {
+        itemNum++;
+        bayInfo = getWallStartEnd(
+          building,
+          loc,
+          partialWalls[i].start,
+          partialWalls[i].end
+        );
+        returnValue += `Bay_Start${itemNum}=${bayInfo[0]}\n`;
+        returnValue += `Bay_End${itemNum}=${bayInfo[1]}\n`;
+        returnValue += `Offset_Start${itemNum}=${bayInfo[2]}\n`;
+        returnValue += `Offset_End${itemNum}=${bayInfo[3]}\n`;
+        returnValue += `Height_Bottom${itemNum}=0.0000\n`;
+        returnValue += `Height_Top${itemNum}=${partialWalls[i].height}\n`;
+        returnValue += `Height${itemNum}=${partialWalls[i].height}\n`;
+        returnValue += `Top_Type${itemNum}=-\n`;
+        returnValue += `Top_Option${itemNum}=3\n`;
+        returnValue += `Top_Base_Type${itemNum}=${partialWalls[i].topOfWall}\n`;
+        if (bayInfo[2] == 0 && bayInfo[3] == 0) {
+          returnValue += `Jamb_Type${itemNum}=-\n`;
+        } else {
+          returnValue += `Jamb_Type${itemNum}=C\n`;
+        }
+        returnValue += `Jamb_Option${itemNum}=-\n`;
+        returnValue += `Use_Panel_Notch${itemNum}=N\n`;
+        returnValue += `Cut_Liner_Panel${itemNum}=Y\n`;
+        if (
+          partialWalls[i].topOfWall == 'ba' ||
+          partialWalls[i].topOfWall == 'bc'
+        ) {
+          returnValue += `Load_Girt${itemNum}=N\n`;
+          returnValue += `Load_Col${itemNum}=Y\n`;
+          returnValue += `Load_Defl_Girt${itemNum}=90.0000\n`;
+        } else {
+          returnValue += `Load_Girt${itemNum}=Y\n`;
+          returnValue += `Load_Col${itemNum}=Y\n`;
+          returnValue += `Load_Defl_Girt${itemNum}=240.0000\n`;
+        }
+      }
+    }
+
+    for (let i = 0; i < skirtTotal; i++) {
+      if (
+        wallSkirts[i].wall == loc.toLowerCase() &&
+        wallSkirts[i].cutColumns == false
+      ) {
+        itemNum++;
+        returnValue += `Bay_Start${itemNum}=${wallSkirts[i].startBay}\n`;
+        returnValue += `Bay_End${itemNum}=${wallSkirts[i].endBay}\n`;
+        returnValue += `Offset_Start${itemNum}=0.0000\n`;
+        returnValue += `Offset_End${itemNum}=0.0000\n`;
+        returnValue += `Height_Bottom${itemNum}=0.0000\n`;
+        returnValue += `Height_Top${itemNum}=${wallSkirts[i].height}\n`;
+        returnValue += `Height${itemNum}=${wallSkirts[i].height}\n`;
+        returnValue += `Top_Type${itemNum}=-\n`;
+        returnValue += `Top_Option${itemNum}=3\n`;
+        returnValue += `Top_Base_Type${itemNum}=C\n`;
+        returnValue += `Jamb_Type${itemNum}=-\n`;
+        returnValue += `Jamb_Option${itemNum}=-\n`;
+        returnValue += `Use_Panel_Notch${itemNum}=N\n`;
+        returnValue += `Cut_Liner_Panel${itemNum}=Y\n`;
+        returnValue += `Load_Girt${itemNum}=N\n`;
+        returnValue += `Load_Col${itemNum}=Y\n`;
+        returnValue += `Load_Defl_Girt${itemNum}=90.0000\n`;
+      }
+    }
+
+    return `No_Sets${itemNum}\n` + returnValue;
+  }
+
+  function getWallStartEnd(building, loc, start, end) {
+    let startBay = 0;
+    let endBay = 0;
+    let startOffset = 0;
+    let endOffset = 0;
+
+    let wallLoc = loc == 'front' || loc == 'back' ? 'roof' : loc;
+    let wallKey = `${loc}BaySpacing`;
+    let bays = building[wallKey];
+    bays = loc == 'back' ? reverseBays(bays) : bays;
+
+    for (let i = 0; i < bays.length; i++) {
+      if (i == 0) {
+        if (start < bays[i]) {
+          startBay = 1;
+          startOffset = start;
+        }
+        if (end <= bays[i]) {
+          endBay = 1;
+          endOffset = bays[i] - end;
+        }
+      } else {
+        if (start < bays[i] && start >= bays[i - 1]) {
+          startBay = i + 1;
+          startOffset = start - bays[i - 1];
+        }
+        if (end <= bays[i] && end > bays[i - 1]) {
+          endBay = i + 1;
+          endOffset = bays[i] - end;
+        }
+      }
+    }
+
+    return [startBay, endBay, startOffset, endOffset];
+  }
+
+  function reverseBays(bays) {
+    var newBay = new Array();
+    newBay.push(bays[bays.length - 1]);
+    for (var i = 0; i < bays.length - 1; i++) {
+      newBay.push(newBay[0] - bays[i]);
+    }
+    return newBay.reverse();
+  }
+
+  function setWainscot(building, loc) {
+    let returnValue = '';
+    const { wainscots } = building;
+    let itemTotal = wainscots.length;
+    let itemNum = 0;
+    let bayInfo;
+    let baseKey = `${loc}BaseCondition`;
+
+    for (let i = 0; i < itemTotal; i++) {
+      if (wainscots[i].wall == loc.toLowerCase()) {
+        itemNum++;
+        bayInfo = getWallStartEnd(
+          building,
+          loc,
+          wainscots[i].start,
+          wainscots[i].end
+        );
+        returnValue += `Bay_Start${itemNum}=${bayInfo[0]}\n`;
+        returnValue += `Bay_End${itemNum}=${bayInfo[1]}\n`;
+        returnValue += `Offset_Start${itemNum}=${bayInfo[2]}\n`;
+        returnValue += `Offset_End${itemNum}=${bayInfo[3]}\n`;
+        returnValue += `Height_Bottom${itemNum}=0.0000\n`;
+        returnValue += `Height_Top${itemNum}=${wainscots[i].height}\n`;
+        returnValue += `Bottom_Member_Type${itemNum}=-\n`;
+        returnValue += `Bottom_Member_Option${itemNum}=3\n`;
+        if (building[baseKey] == 'angle') {
+          returnValue += `Bottom_Base_Type${itemNum}=A\n`;
+        } else if (building[baseKey] == 'cee') {
+          returnValue += `Bottom_Base_Type${itemNum}=B\n`;
+        } else {
+          returnValue += `Bottom_Base_Type${itemNum}=-\n`;
+        }
+        returnValue += `Bottom_Seal${itemNum}=-\n`;
+        returnValue += `Top_Type${itemNum}=Z\n`;
+        returnValue += `Top_Option${itemNum}=1\n`;
+        returnValue += `Top_Base_Type${itemNum}=-\n`;
+        returnValue += `Top_Seal${itemNum}=-\n`;
+        if (bayInfo[2] == 0 && bayInfo[3] == 0) {
+          returnValue += `Jamb_Type${itemNum}=-\n`;
+        } else {
+          returnValue += `Jamb_Type${itemNum}=C\n`;
+        }
+        returnValue += `Jamb_Option${itemNum}=-\n`;
+        returnValue += `Load_Defl_Girt${itemNum}=90.0000\n`;
+        returnValue += `Load_Defl_Panel${itemNum}=90.0000\n`;
+        if (wainscots[i].panelType == 'none') {
+          returnValue += `Part${itemNum}=--------\n`;
+          returnValue += `Panel_Type${itemNum}=--\n`;
+          returnValue += `Gage${itemNum}=0.0000\n`;
+          returnValue += `Yield${itemNum}=0.0000\n`;
+          returnValue += `Panel_Color${itemNum}=--\n`;
+          returnValue += `Panel_Style${itemNum}=--\n`;
+          returnValue += `Panel_Option${itemNum}=B\n`;
+          returnValue += `Base_Color${itemNum}=--\n`;
+          returnValue += `Base_Style${itemNum}=--\n`;
+          returnValue += `Left_Color${itemNum}=--\n`;
+          returnValue += `Left_Style${itemNum}=--\n`;
+          returnValue += `Right_Color${itemNum}=--\n`;
+          returnValue += `Right_Style${itemNum}=--\n`;
+          returnValue += `Jamb_Color${itemNum}=--\n`;
+          returnValue += `Jamb_Style${itemNum}=--\n`;
+          returnValue += `Top_Color${itemNum}=--\n`;
+          returnValue += `Top_Style${itemNum}=--\n`;
+          returnValue += `Screw_Type${itemNum}=--\n`;
+          returnValue += `Screw_Finish${itemNum}=--\n`;
+        } else {
+          returnValue += `Part${itemNum}=${getPanelPart(building, 'wainscot')}\n`;
+          returnValue += `Panel_Type${itemNum}=${getPanelType(building, 'wainscot')}\n`;
+          returnValue += `Gage${itemNum}=${getPanelGauge(building, 'wainscot')}\n`;
+          returnValue += `Yield${itemNum}=${getPanelYield(building, 'wainscot')}\n`;
+          returnValue += `Panel_Color${itemNum}=${getPanelColor(building, 'wainscot')}\n`;
+          returnValue += `Panel_Style${itemNum}=--\n`;
+          returnValue += `Panel_Option${itemNum}=${wainscots[i].panelOption}\n`;
+          returnValue += `Base_Color${itemNum}=${getPanelColor(building, 'wainscot')}\n`;
+          returnValue += `Base_Style${itemNum}=--\n`;
+          returnValue += `Left_Color${itemNum}=${getPanelColor(building, 'wainscot')}\n`;
+          returnValue += `Left_Style${itemNum}=--\n`;
+          returnValue += `Right_Color${itemNum}=${getPanelColor(building, 'wainscot')}\n`;
+          returnValue += `Right_Style${itemNum}=--\n`;
+          returnValue += `Jamb_Color${itemNum}=${getPanelColor(building, 'wainscot')}\n`;
+          returnValue += `Jamb_Style${itemNum}=--\n`;
+          returnValue += `Top_Color${itemNum}=${getPanelColor(building, 'wainscot')}\n`;
+          returnValue += `Top_Style${itemNum}=--\n`;
+          returnValue += `Screw_Type${itemNum}=${getScrewLength(building, 'wall')}\n`;
+          returnValue += `Screw_Finish${itemNum}=--\n`;
+        }
+      }
+    }
+
+    return `No_Sets=${itemNum}\n` + returnValue;
+  }
+
+  function getMezzanines(building) {
+    let returnValue = '';
+    return returnValue;
   }
 
   return {

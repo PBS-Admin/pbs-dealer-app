@@ -18,10 +18,10 @@ export const authOptions = {
           return null;
         }
 
-        const user = await query('SELECT * FROM Users WHERE Username = ?', [
-          credentials.email,
-        ]);
-        console.log('User found:', user);
+        const user = await query(
+          'SELECT * FROM Dealer_Users WHERE Username = ?',
+          [credentials.email]
+        );
 
         if (user.length === 0) {
           console.log('No user found with this email');

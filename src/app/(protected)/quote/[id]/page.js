@@ -17,7 +17,7 @@ export default async function Quote({ params }) {
   if (quoteId != 0 && quoteId != null) {
     try {
       const results = await query(
-        'SELECT * FROM Quotes WHERE id = ? AND Company = ?',
+        'SELECT * FROM Dealer_Quotes WHERE id = ? AND Company = ?',
         [quoteId, session.user.company]
       );
 

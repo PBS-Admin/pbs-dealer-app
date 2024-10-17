@@ -53,7 +53,7 @@ function useFormState(initialState) {
       const updatedBuildings = prev.buildings.map((building, index) => {
         if (index === buildingIndex) {
           let updatedBuilding;
-          if (field.includes('Gauge')) {
+          if (field.includes('Gauge') || field.includes('Qty')) {
             updatedBuilding = { ...building, [field]: parseInt(value) };
           } else {
             updatedBuilding = { ...building, [field]: value };
@@ -389,6 +389,15 @@ function useFormState(initialState) {
     }));
   };
 
+  const handleMandoorChange = (mandoorIndex, field, value) => {
+    setValues((prev) => ({
+      ...prev,
+      mandoors: prev.mandoors.map((mandoor, mdIndex) =>
+        mdIndex === mandoorIndex ? { ...mandoor, [field]: value } : mandoor
+      ),
+    }));
+  };
+
   const handleCalcChange = (buildingIndex, field) => {
     setValues((prev) => {
       const building = prev.buildings[buildingIndex];
@@ -455,6 +464,7 @@ function useFormState(initialState) {
     handleWainscotChange,
     handlePartialWallChange,
     handleWallSkirtChange,
+    handleMandoorChange,
     handleOpeningChange,
     handleCalcChange,
     setValues,

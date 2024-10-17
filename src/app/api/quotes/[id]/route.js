@@ -14,9 +14,10 @@ export async function DELETE(req, { params }) {
   console.log('Received delete request for quote ID:', id);
 
   try {
-    const result = await query('UPDATE Quotes SET Active = 0 WHERE ID = ?', [
-      id,
-    ]);
+    const result = await query(
+      'UPDATE Dealer_Quotes SET Active = 0 WHERE ID = ?',
+      [id]
+    );
     console.log('Query result:', result);
 
     const status = await getPoolStatus();

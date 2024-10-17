@@ -42,7 +42,7 @@ const BuildingOptions = ({
               linerPanels: [
                 ...building.linerPanels,
                 {
-                  wall: 'frontSidewall',
+                  wall: 'front',
                   start: '',
                   end: '',
                   height: '',
@@ -67,7 +67,7 @@ const BuildingOptions = ({
               wainscots: [
                 ...building.wainscots,
                 {
-                  wall: 'frontSidewall',
+                  wall: 'front',
                   start: '',
                   end: '',
                   height: '',
@@ -93,7 +93,7 @@ const BuildingOptions = ({
               partialWalls: [
                 ...building.partialWalls,
                 {
-                  wall: 'frontSidewall',
+                  wall: 'front',
                   start: '',
                   end: '',
                   height: '',
@@ -116,7 +116,7 @@ const BuildingOptions = ({
               wallSkirts: [
                 ...building.wallSkirts,
                 {
-                  wall: 'frontSidewall',
+                  wall: 'front',
                   startBay: '',
                   endBay: '',
                   height: '',
@@ -1139,7 +1139,13 @@ const BuildingOptions = ({
                       id="frontPolyQty"
                       name="frontPolyQty"
                       value={values.buildings[activeBuilding].frontPolyQty}
-                      // onChange={(e) => handleNestedChange(e, 'project')}
+                      onChange={(e) =>
+                        handleNestedChange(
+                          activeBuilding,
+                          'frontPolyQty',
+                          e.target.value
+                        )
+                      }
                       placeholder="Qty"
                     />
                   </div>
@@ -1194,7 +1200,13 @@ const BuildingOptions = ({
                       id="backPolyQty"
                       name="backPolyQty"
                       value={values.buildings[activeBuilding].backPolyQty}
-                      // onChange={(e) => handleNestedChange(e, 'project')}
+                      onChange={(e) =>
+                        handleNestedChange(
+                          activeBuilding,
+                          'backPolyQty',
+                          e.target.value
+                        )
+                      }
                       placeholder="Qty"
                     />
                   </div>
@@ -1249,7 +1261,13 @@ const BuildingOptions = ({
                       id="leftPolyQty"
                       name="leftPolyQty"
                       value={values.buildings[activeBuilding].leftPolyQty}
-                      // onChange={(e) => handleNestedChange(e, 'project')}
+                      onChange={(e) =>
+                        handleNestedChange(
+                          activeBuilding,
+                          'leftPolyQty',
+                          e.target.value
+                        )
+                      }
                       placeholder="Qty"
                     />
                   </div>
@@ -1304,7 +1322,13 @@ const BuildingOptions = ({
                       id="rightPolyQty"
                       name="rightPolyQty"
                       value={values.buildings[activeBuilding].rightPolyQty}
-                      // onChange={(e) => handleNestedChange(e, 'project')}
+                      onChange={(e) =>
+                        handleNestedChange(
+                          activeBuilding,
+                          'rightPolyQty',
+                          e.target.value
+                        )
+                      }
                       placeholder="Qty"
                     />
                   </div>
@@ -1368,7 +1392,13 @@ const BuildingOptions = ({
                     id="backRoofPolyQty"
                     name="backRoofPolyQty"
                     value={values.buildings[activeBuilding].backRoofPolyQty}
-                    // onChange={(e) => handleNestedChange(e, 'project')}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'backRoofPolyQty',
+                        e.target.value
+                      )
+                    }
                     placeholder="Qty"
                   />
                 </div>
@@ -1414,7 +1444,13 @@ const BuildingOptions = ({
                     id="backRoofPolyQty"
                     name="backRoofPolyQty"
                     value={values.buildings[activeBuilding].backRoofPolyQty}
-                    // onChange={(e) => handleNestedChange(e, 'project')}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'backRoofPolyQty',
+                        e.target.value
+                      )
+                    }
                     placeholder="Qty"
                   />
                 </div>
@@ -1459,7 +1495,13 @@ const BuildingOptions = ({
                     id="frontRoofPolyQty"
                     name="frontRoofPolyQty"
                     value={values.buildings[activeBuilding].frontRoofPolyQty}
-                    // onChange={(e) => handleNestedChange(e, 'project')}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'frontRoofPolyQty',
+                        e.target.value
+                      )
+                    }
                     placeholder="Qty"
                   />
                 </div>

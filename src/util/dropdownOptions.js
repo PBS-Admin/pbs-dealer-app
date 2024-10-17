@@ -293,3 +293,19 @@ export const seismicCategory = [
   { id: 'e', label: 'E' },
   { id: 'f', label: 'F' },
 ];
+
+// todo: correct values to match current program
+export const mandoors = [
+  { id: '3070', label: 'Breakdown 3070' },
+  { id: '4070', label: 'Breakdown 4070' },
+  { id: '6070', label: 'Breakdown 6070' },
+  { id: '3070P', label: 'Pre-Hung 3070' },
+  { id: '4070P', label: 'Pre-Hung 4070' },
+  { id: '6070P', label: 'Pre-Hung 6070' },
+];
+
+export const mandoorGlass = [
+  { id: 'none', label: 'None' },
+  { id: 'half', label: 'With Half Glass' },
+  { id: 'narrow', label: 'With Narrow Lite' },
+];

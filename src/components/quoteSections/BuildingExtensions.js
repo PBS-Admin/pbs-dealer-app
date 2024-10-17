@@ -33,7 +33,7 @@ const BuildingExtensions = ({
               canopies: [
                 ...building.canopies,
                 {
-                  wall: 'frontSidewall',
+                  wall: 'front',
                   width: '',
                   slope: '',
                   startBay: '',

@@ -70,7 +70,6 @@ export default function QuoteTable({ initialQuotes, onCopyQuote }) {
     if (!quoteToCopy) return;
 
     try {
-      console.log('testing handle copy in Table');
       const quote = await onCopyQuote(quoteToCopy);
 
       const currentQuote = 0;

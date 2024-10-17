@@ -16,6 +16,7 @@ export async function GET(req) {
     let decodedToken;
     try {
       decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET);
+      // console.log('decode: ', decodedToken);
     } catch (error) {
       console.error('Token verification failed:', error);
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
@@ -32,14 +33,14 @@ export async function GET(req) {
       );
     }
 
-    if (decodedToken.company !== company) {
+    if (decodedToken.company !== parseInt(company)) {
       console.log('Company mismatch, returning 403');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     // Only select the columns we need
     const result = await query(
-      'SELECT ID, Submitted, Quote, Rev, Customer, ProjectName, DateStarted FROM Quotes WHERE Company = ? AND Active = 1',
+      'SELECT ID, Submitted, Quote, Rev, Customer, ProjectName, DateStarted FROM Dealer_Quotes WHERE Company = ? AND Active = 1',
       [company]
     );
 
