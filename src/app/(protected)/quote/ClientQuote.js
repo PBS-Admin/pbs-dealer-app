@@ -41,6 +41,9 @@ import ReusableLoader from '@/components/ReusableLoader';
 import ReusableInteger from '../../../components/Inputs/ReusableInteger';
 
 import PageHeader from '@/components/PageHeader';
+import Accessories from '@/components/quoteSections/Accessories';
+
+import { updateStateStructure } from '@/components/StateUpdater';
 
 import { shapes } from '../../../util/dropdownOptions';
 
@@ -74,6 +77,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
     handleWainscotChange,
     handlePartialWallChange,
     handleWallSkirtChange,
+    handleMandoorChange,
     handleOpeningChange,
     handleCalcChange,
     setValues,
@@ -128,13 +132,13 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           rightFrame: 'postAndBeam',
           rightEndwallInset: '',
           rightIntColSpacing: '',
-          frontBracingType: 'xbrace',
+          frontBracingType: 'xBrace',
           frontBracingHeight: '',
-          backBracingType: 'xbrace',
+          backBracingType: 'xBrace',
           backBracingHeight: '',
-          leftBracingType: 'xbrace',
+          leftBracingType: 'xBrace',
           leftBracingHeight: '',
-          rightBracingType: 'xbrace',
+          rightBracingType: 'xBrace',
           rightBracingHeight: '',
           frontBracedBays: '',
           backBracedBays: '',
@@ -302,22 +306,22 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
     setError('');
     setSaveStatus(true);
 
-    let company = session.user.company;
+    let user = session.user;
 
     try {
       const response = await fetch('/api/auth/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currentQuote, company, values }),
+        body: JSON.stringify({ currentQuote, user, values }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log('obj: ', data.updatedValues);
-        if (isNaN(data.message)) {
+        if (isNaN(data.message.quoteId)) {
           console.log(data.message);
         } else {
-          setCurrentQuote(data.message);
+          setCurrentQuote(data.message.quoteId);
+          setValues({ ...values, quoteNumber: data.message.quoteNum });
         }
 
         setSaveSuccess(true);
@@ -374,7 +378,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
     if (initialRender.current) {
       if (initialQuoteData) {
         setCurrentQuote(quoteId);
-        setValues(initialQuoteData);
+        const updatedQuoteData = updateStateStructure(initialQuoteData);
+        setValues(updatedQuoteData);
       }
       initialRender.current = false;
     }
@@ -959,7 +964,14 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
             />
           </>
         )}
-        {activeCard == 'accessories' && <section></section>}
+        {activeCard == 'accessories' && (
+          <Accessories
+            values={values}
+            handleChange={handleChange}
+            handleMandoorChange={handleMandoorChange}
+            setValues={setValues}
+          />
+        )}
         {activeCard == 'finalize-quote' && (
           <FinalizeQuote values={values} handleChange={handleChange} />
         )}

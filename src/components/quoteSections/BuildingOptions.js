@@ -41,7 +41,7 @@ const BuildingOptions = ({
               linerPanels: [
                 ...building.linerPanels,
                 {
-                  wall: 'frontSidewall',
+                  wall: 'front',
                   start: '',
                   end: '',
                   height: '',
@@ -66,7 +66,7 @@ const BuildingOptions = ({
               wainscots: [
                 ...building.wainscots,
                 {
-                  wall: 'frontSidewall',
+                  wall: 'front',
                   start: '',
                   end: '',
                   height: '',
@@ -92,7 +92,7 @@ const BuildingOptions = ({
               partialWalls: [
                 ...building.partialWalls,
                 {
-                  wall: 'frontSidewall',
+                  wall: 'front',
                   start: '',
                   end: '',
                   height: '',
@@ -115,7 +115,7 @@ const BuildingOptions = ({
               wallSkirts: [
                 ...building.wallSkirts,
                 {
-                  wall: 'frontSidewall',
+                  wall: 'front',
                   startBay: '',
                   endBay: '',
                   height: '',

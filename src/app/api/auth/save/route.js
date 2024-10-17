@@ -4,27 +4,32 @@ import { query, transaction, getPoolStatus } from '../../../../lib/db';
 export async function POST(req) {
   try {
     let result, quoteNum, nextQuoteNum;
-    const { currentQuote, company, values } = await req.json();
-
+    const { currentQuote, user, values } = await req.json();
     if (currentQuote == 0) {
       await transaction(async (conn) => {
-        quoteNum = await conn.query('SELECT NextQuoteNum From NextQuoteNumber');
-        nextQuoteNum = quoteNum[0].NextQuoteNum;
-
-        values.quoteNumber = nextQuoteNum;
-
-        await conn.query(
-          'UPDATE NextQuoteNumber SET NextQuoteNum = NextQuoteNum + 1'
+        quoteNum = await conn.query(
+          'SELECT NextQuoteNum From Dealer_Company WHERE ID = ?',
+          [user.company]
         );
 
+        nextQuoteNum = quoteNum[0].NextQuoteNum;
+
+        await conn.query(
+          'UPDATE Dealer_Company SET NextQuoteNum = NextQuoteNum + 1 WHERE ID = ?',
+          [user.company]
+        );
+
+        const updatedValues = { ...values, quoteNumber: nextQuoteNum };
+
         result = await conn.query(
-          'INSERT INTO Quotes (Quote, Customer, ProjectName, Company, QuoteData, Active, DateStarted) VALUES (?, ?, ?, ?, ?, 1, Now())',
+          'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, Active, DateStarted, LastSaved, SavedBy) VALUES (?, ?, ?, ?, ?, 1, Now(), Now(), ?)',
           [
             nextQuoteNum,
             values.customerName,
             values.projectName,
-            company,
-            JSON.stringify(values),
+            user.company,
+            JSON.stringify(updatedValues),
+            user.id,
           ]
         );
       });
@@ -42,11 +47,12 @@ export async function POST(req) {
     } else if (currentQuote > 0) {
       // Store the new user in the database
       result = await query(
-        'UPDATE Quotes SET QuoteData = ?, Customer = ?, ProjectName = ? WHERE id = ?',
+        'UPDATE Dealer_Quotes SET QuoteData = ?, Customer = ?, ProjectName = ?, LastSaved = Now(), SavedBy = ? WHERE id = ?',
         [
           JSON.stringify(values),
           values.customerName,
           values.projectName,
+          user.id,
           currentQuote,
         ]
       );

@@ -47,8 +47,11 @@ export const initialState = {
   seismicFv: '',
   seismicSds: '',
   seismicSd1: '',
+  // Accessories
+  mandoors: [],
   // Building Project Page
   steelFinish: '',
+  boltFinish: '',
   buildings: [
     {
       width: '',
@@ -85,13 +88,13 @@ export const initialState = {
       rightFrame: 'postAndBeam',
       rightEndwallInset: '',
       rightIntColSpacing: '',
-      frontBracingType: 'xbrace',
+      frontBracingType: 'xBrace',
       frontBracingHeight: '',
-      backBracingType: 'xbrace',
+      backBracingType: 'xBrace',
       backBracingHeight: '',
-      leftBracingType: 'xbrace',
+      leftBracingType: 'xBrace',
       leftBracingHeight: '',
-      rightBracingType: 'xbrace',
+      rightBracingType: 'xBrace',
       rightBracingHeight: '',
       frontBracedBays: '',
       backBracedBays: '',

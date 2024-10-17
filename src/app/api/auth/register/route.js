@@ -7,9 +7,10 @@ export async function POST(req) {
     const { email, password } = await req.json();
 
     // Check if user already exists
-    const existingUser = await query('SELECT * FROM Users WHERE Username = ?', [
-      email,
-    ]);
+    const existingUser = await query(
+      'SELECT * FROM Dealer_Users WHERE Username = ?',
+      [email]
+    );
     if (existingUser.length > 0) {
       return NextResponse.json(
         { message: 'User already exists' },
@@ -21,7 +22,7 @@ export async function POST(req) {
     const hashedPassword = await hash(password, 12);
 
     // Store the new user in the database
-    await query('INSERT INTO Users (Username, Password) VALUES (?, ?)', [
+    await query('INSERT INTO Dealer_Users (Username, Password) VALUES (?, ?)', [
       email,
       hashedPassword,
     ]);
