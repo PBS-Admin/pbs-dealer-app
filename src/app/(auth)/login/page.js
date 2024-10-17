@@ -53,6 +53,7 @@ export default function Login() {
               type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autofocus="autofocus"
               required
             />
           </div>

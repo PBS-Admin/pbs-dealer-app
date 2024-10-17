@@ -3,12 +3,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalculator } from '@fortawesome/free-solid-svg-icons';
 
 const ReusableSelect = ({
-  id,
   name,
   value,
   className = '',
   onChange,
+  onFocus,
   options,
+  dependantOn,
   label,
   labelClass,
   icon = '',
@@ -27,6 +28,28 @@ const ReusableSelect = ({
     }
   }, [value]);
 
+  useEffect(() => {
+    let needsSet = false;
+    let firstItem = '';
+    options.map((option) => {
+      firstItem =
+        option.validFor &&
+        option.validFor.includes(dependantOn) &&
+        firstItem == ''
+          ? option.id
+          : firstItem;
+      needsSet =
+        option.validFor && !option.validFor.includes(dependantOn)
+          ? true
+          : needsSet;
+    });
+    // console.log(name, needsSet, firstItem, dependantOn);
+    if (needsSet) {
+      onChange({ target: { name, value: firstItem } });
+      setInternalValue(firstItem);
+    }
+  }, [dependantOn]);
+
   const handleChange = (e) => {
     const newValue = e.target.value;
     setInternalValue(newValue);
@@ -43,7 +66,7 @@ const ReusableSelect = ({
 
   return (
     <div className={`cardInput ${className}`}>
-      <label className={labelClass} htmlFor={id}>
+      <label className={labelClass} htmlFor={name}>
         <span>{label}</span>
         {icon && (
           <button onClick={iconOnClick} className={`icon ${iconColor}`}>
@@ -53,14 +76,27 @@ const ReusableSelect = ({
       </label>
       <select
         className="selectInput"
-        id={id}
+        id={name}
         name={name}
         value={internalValue}
         onChange={handleChange}
+        onFocus={(e) => {
+          if (onFocus) {
+            onFocus();
+          }
+        }}
         disabled={disabled}
       >
         {options.map((option) => (
-          <option key={option.id} value={option.id}>
+          <option
+            key={option.id}
+            value={option.id}
+            disabled={
+              option.validFor && !option.validFor.includes(dependantOn)
+                ? 'disabled'
+                : ''
+            }
+          >
             {option.label}
           </option>
         ))}

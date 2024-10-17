@@ -1,6 +1,10 @@
 import { useState, useMemo, useRef, useEffect, Fragment } from 'react';
+import ReusableSelect from '../Inputs/ReusableSelect';
+import ReusableInteger from '../Inputs/ReusableInteger';
+import FeetInchesInput from '../Inputs/FeetInchesInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { openingTypes } from '../../util/dropdownOptions';
 
 const BuildingOpenings = ({
   values,
@@ -118,145 +122,138 @@ const BuildingOpenings = ({
 
   const renderOpeningInputs = (opening, openingIndex) => (
     <>
-      <div className="tableGrid7">
-        <div className="cardInput">
-          <label
-            className="offOnTablet"
-            htmlFor={`building-${activeBuilding}-openingBay-${openingIndex}`}
-          >
-            Bay
-          </label>
-          <input
-            type="text"
-            id={`building-${activeBuilding}-openingBay-${openingIndex}`}
-            value={opening.bay}
-            onChange={(e) =>
-              handleOpeningChange(
-                activeBuilding,
-                activeWallKey,
-                openingIndex,
-                'bay',
-                e.target.value
-              )
+      <div
+        className={`tableGrid7 ${openingIndex == activeOpening ? 'activeRow' : ''}`}
+      >
+        <ReusableInteger
+          name={`building-${activeBuilding}-openingBay-${openingIndex}`}
+          value={opening.bay}
+          label="Bay:"
+          labelClass="offOnTablet"
+          // min="1"
+          // max={`${values.buildings[`${activeBuilding}`][`${activeWallKey}BaySpacing`].length}`}
+          onChange={(name, value) =>
+            handleOpeningChange(
+              activeBuilding,
+              activeWallKey,
+              openingIndex,
+              'bay',
+              value
+            )
+          }
+          onFocus={() => {
+            if (activeOpening !== openingIndex) {
+              setActiveOpening(openingIndex);
             }
-          />
-        </div>
-        <div className="cardInput">
-          <label
-            className="offOnTablet"
-            htmlFor={`building-${activeBuilding}-openingType-${openingIndex}`}
-          >
-            Type
-          </label>
-          <input
-            type="text"
-            id={`building-${activeBuilding}-openingType-${openingIndex}`}
-            value={opening.openType}
-            onChange={(e) =>
-              handleOpeningChange(
-                activeBuilding,
-                activeWallKey,
-                openingIndex,
-                'openType',
-                e.target.value
-              )
+          }}
+        />
+        <ReusableSelect
+          name={`building-${activeBuilding}-openingType-${openingIndex}`}
+          value={opening.openType}
+          label="Type:"
+          labelClass="offOnTablet"
+          onChange={(e) =>
+            handleOpeningChange(
+              activeWallKey,
+              openingIndex,
+              'openType',
+              e.target.value
+            )
+          }
+          onFocus={() => {
+            if (activeOpening !== openingIndex) {
+              setActiveOpening(openingIndex);
             }
-          />
-        </div>
-        <div className="cardInput">
-          <label
-            className="offOnTablet"
-            htmlFor={`building-${activeBuilding}-openingWidth-${openingIndex}`}
-          >
-            Width
-          </label>
-          <input
-            type="text"
-            id={`building-${activeBuilding}-openingWidth-${openingIndex}`}
-            value={opening.width}
-            onChange={(e) =>
-              handleOpeningChange(
-                activeBuilding,
-                activeWallKey,
-                openingIndex,
-                'width',
-                e.target.value
-              )
+          }}
+          options={openingTypes}
+        />
+        <FeetInchesInput
+          name={`building-${activeBuilding}-openingWidth-${openingIndex}`}
+          label="Width:"
+          labelClass="offOnTablet"
+          value={opening.width}
+          onChange={(name, value) =>
+            handleOpeningChange(
+              activeBuilding,
+              activeWallKey,
+              openingIndex,
+              'width',
+              value
+            )
+          }
+          onFocus={() => {
+            if (activeOpening !== openingIndex) {
+              setActiveOpening(openingIndex);
             }
-          />
-        </div>
-
-        <div className="cardInput">
-          <label
-            className="offOnTablet"
-            htmlFor={`building-${activeBuilding}-openingHeight-${openingIndex}`}
-          >
-            Height
-          </label>
-          <input
-            type="text"
-            id={`building-${activeBuilding}-openingHeight-${openingIndex}`}
-            value={opening.height}
-            onChange={(e) =>
-              handleOpeningChange(
-                activeBuilding,
-                activeWallKey,
-                openingIndex,
-                'height',
-                e.target.value
-              )
+          }}
+        />
+        <FeetInchesInput
+          name={`building-${activeBuilding}-openingHeight-${openingIndex}`}
+          label="Height:"
+          labelClass="offOnTablet"
+          value={opening.height}
+          onChange={(name, value) =>
+            handleOpeningChange(
+              activeBuilding,
+              activeWallKey,
+              openingIndex,
+              'height',
+              value
+            )
+          }
+          onFocus={() => {
+            if (activeOpening !== openingIndex) {
+              setActiveOpening(openingIndex);
             }
-          />
-        </div>
-        <div className="cardInput">
-          <label
-            className="offOnTablet"
-            htmlFor={`building-${activeBuilding}-openingSill-${openingIndex}`}
-          >
-            Sill
-          </label>
-          <input
-            type="text"
-            id={`building-${activeBuilding}-openingSill-${openingIndex}`}
-            value={opening.sill}
-            onChange={(e) =>
-              handleOpeningChange(
-                activeBuilding,
-                activeWallKey,
-                openingIndex,
-                'sill',
-                e.target.value
-              )
+          }}
+        />
+        <FeetInchesInput
+          name={`building-${activeBuilding}-openingSill-${openingIndex}`}
+          label="Sill:"
+          labelClass="offOnTablet"
+          value={opening.sill}
+          allowZero={true}
+          onChange={(name, value) =>
+            handleOpeningChange(
+              activeBuilding,
+              activeWallKey,
+              openingIndex,
+              'sill',
+              value
+            )
+          }
+          onFocus={() => {
+            if (activeOpening !== openingIndex) {
+              setActiveOpening(openingIndex);
             }
-          />
-        </div>
-        <div className="cardInput">
-          <label
-            className="offOnTablet"
-            htmlFor={`building-${activeBuilding}-openingOffset-${openingIndex}`}
-          >
-            Offset
-          </label>
-          <input
-            type="text"
-            id={`building-${activeBuilding}-openingOffset-${openingIndex}`}
-            value={opening.offset}
-            onChange={(e) =>
-              handleOpeningChange(
-                activeBuilding,
-                activeWallKey,
-                openingIndex,
-                'offset',
-                e.target.value
-              )
+          }}
+        />
+        <FeetInchesInput
+          name={`building-${activeBuilding}-openingOffset-${openingIndex}`}
+          label="Offset:"
+          labelClass="offOnTablet"
+          value={opening.offset}
+          allowZero={true}
+          onChange={(name, value) =>
+            handleOpeningChange(
+              activeBuilding,
+              activeWallKey,
+              openingIndex,
+              'offset',
+              value
+            )
+          }
+          onFocus={() => {
+            if (activeOpening !== openingIndex) {
+              setActiveOpening(openingIndex);
             }
-          />
-        </div>
+          }}
+        />
         <button
           onClick={() =>
             removeOpening(activeBuilding, activeWallKey, openingIndex)
           }
-          className="icon red span2"
+          className="icon red deleteRow span2"
         >
           <FontAwesomeIcon icon={faTrash} />
         </button>
@@ -311,7 +308,7 @@ const BuildingOpenings = ({
         )}
         <button
           type="button"
-          className="button success w5"
+          className="button success addRow"
           onClick={() => addOpening(activeBuilding, activeWallKey)}
         >
           Add

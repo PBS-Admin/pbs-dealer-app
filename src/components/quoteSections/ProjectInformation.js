@@ -420,7 +420,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
         </header>
         <div className="grid2">
           <ReusableSelect
-            id={`buildingCode`}
             name={`buildingCode`}
             value={values.buildingCode}
             onChange={handleChange}
@@ -428,7 +427,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             label="Building Code:"
           />
           <ReusableSelect
-            id={`riskCategory`}
             name={`riskCategory`}
             value={values.riskCategory}
             onChange={handleChange}
@@ -443,27 +441,39 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             value={values.collateralLoad}
             onChange={handleChange}
             name={'collateralLoad'}
-            label={'Collateral Load (psf):'}
+            label={
+              <>
+                Collateral Load: <small>(psf)</small>
+              </>
+            }
             disabled={false}
-            placeholder={'0'}
+            placeholder={'psf'}
           />
           <ReusableDouble
             id={'liveLoad'}
             value={values.liveLoad}
             onChange={handleChange}
             name={'liveLoad'}
-            label={'Live Load (psf):'}
+            label={
+              <>
+                Live Load: <small>(psf)</small>
+              </>
+            }
             disabled={false}
-            placeholder={'0'}
+            placeholder={'psf'}
           />
           <ReusableDouble
             id={'deadLoad'}
             value={values.deadLoad}
             onChange={handleChange}
             name={'deadLoad'}
-            label={'Dead Load (psf):'}
+            label={
+              <>
+                Dead Load: <small>(psf)</small>
+              </>
+            }
             disabled={false}
-            placeholder={'0'}
+            placeholder={'psf'}
           />
         </div>
         <h4>Wind Load</h4>
@@ -473,24 +483,26 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             value={values.windLoad}
             onChange={handleChange}
             name={'windLoad'}
-            label={'Wind Load (mph):'}
+            label={
+              <>
+                Wind Load: <small>(mph)</small>
+              </>
+            }
             icon={'faCalculator'}
             iconColor={'blue'}
             iconOnClick={getWindLoad}
             disabled={false}
-            placeholder={'0'}
+            placeholder={'mph'}
           />
           <ReusableSelect
-            id={`windExposure`}
             name={`windExposure`}
             value={values.windExposure}
             onChange={handleChange}
             options={exposure}
             label="Exposure:"
-            defaultValue="c"
+            defaultValue="C"
           />
           <ReusableSelect
-            id={`enclosure`}
             name={`enclosure`}
             value={values.enclosure}
             onChange={handleChange}
@@ -506,24 +518,31 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             value={values.groundSnowLoad}
             onChange={handleChange}
             name={'groundSnowLoad'}
-            label={'Ground Load (psf):'}
+            label={
+              <>
+                Ground Load: <small>(psf)</small>
+              </>
+            }
             icon={'faCalculator'}
             iconColor={'blue'}
             iconOnClick={getSnowLoad}
             disabled={false}
-            placeholder={'0'}
+            placeholder={'psf'}
           />
           <ReusableDouble
             id={'roofSnowLoad'}
             value={values.roofSnowLoad}
             onChange={handleChange}
             name={'roofSnowLoad'}
-            label={'Roof Load (psf):'}
+            label={
+              <>
+                Roof Load: <small>(psf)</small>
+              </>
+            }
             disabled={false}
-            placeholder={'0'}
+            placeholder={'psf'}
           />
           <ReusableSelect
-            id={`thermalFactor`}
             name={`thermalFactor`}
             value={values.thermalFactor}
             onChange={handleChange}
@@ -535,7 +554,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
         <h4>Seismic Load</h4>
         <div className="grid6">
           <ReusableSelect
-            id={`seismicCategory`}
             name={`seismicCategory`}
             className="span2"
             value={values.seismicCategory}
@@ -545,7 +563,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             icon={'faCalculator'}
             iconColor={'blue'}
             iconOnClick={getSeismicLoad}
-            defaultValue="d"
+            defaultValue="D"
           />
           <ReusableDouble
             id={'seismicSs'}
@@ -554,7 +572,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             name={'seismicSs'}
             label={'Ss:'}
             disabled={false}
-            placeholder={'0'}
             decimalPlaces={3}
           />
           <ReusableDouble
@@ -568,7 +585,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               </>
             }
             disabled={false}
-            placeholder={'0'}
             decimalPlaces={3}
           />
           <ReusableDouble
@@ -578,7 +594,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             name={'seismicSms'}
             label={'Sms:'}
             disabled={false}
-            placeholder={'0'}
             decimalPlaces={3}
           />
           <ReusableDouble
@@ -592,7 +607,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               </>
             }
             disabled={false}
-            placeholder={'0'}
             decimalPlaces={3}
           />
         </div>

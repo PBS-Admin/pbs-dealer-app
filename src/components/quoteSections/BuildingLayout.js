@@ -1,6 +1,11 @@
 import React from 'react';
-import Image from 'next/image';
 import ReusableSelect from '../Inputs/ReusableSelect';
+import ReusableDouble from '../Inputs/ReusableDouble';
+import ReusablePanel from '../Inputs/ReusablePanel';
+import FeetInchesInput from '../Inputs/FeetInchesInput';
+import RoofPitchInput from '../Inputs/RoofPitchInput';
+import BaySpacingInput from '../Inputs/BaySpacingInput';
+import BaySelectionInput from '../Inputs/BaySelectionInput';
 import {
   shapes,
   frames,
@@ -12,22 +17,11 @@ import {
   girtSpacing,
   baseCondition,
   purlinSpacing,
-  roofPanels,
-  roofGauge,
-  roofFinish,
-  wallPanels,
-  wallGauge,
-  wallFinish,
   roofInsulation,
   wallInsulation,
   enclosure,
   thermalFactor,
 } from '../../util/dropdownOptions';
-import FeetInchesInput from '../Inputs/FeetInchesInput';
-import RoofPitchInput from '../Inputs/RoofPitchInput';
-import BaySpacingInput from '../Inputs/BaySpacingInput';
-import BaySelectionInput from '../Inputs/BaySelectionInput';
-import ReusableDouble from '../Inputs/ReusableDouble';
 
 const BuildingLayout = ({
   values,
@@ -35,173 +29,131 @@ const BuildingLayout = ({
   handleNestedChange,
   handleCalcChange,
 }) => {
-  const selectedRoofPanel = roofPanels.find(
-    (panel) => panel.id === values.buildings[activeBuilding].roofPanelType
-  );
-
-  const selectedWallPanel = wallPanels.find(
-    (panel) => panel.id === values.buildings[activeBuilding].wallPanelType
-  );
   return (
     <>
       <section className="card start">
-        <header>
-          <h3>Building Shape</h3>
+        <header className="cardHeader">
+          <h3>
+            Design Codes <small>- Individual Building Override</small>
+          </h3>
         </header>
+        <h4>Roof Load</h4>
+        <div className="grid3">
+          <ReusableDouble
+            id={'collateralLoad'}
+            value={values.buildings[activeBuilding].collateralLoad}
+            onChange={(e) =>
+              handleNestedChange(
+                activeBuilding,
+                'collateralLoad',
+                e.target.value
+              )
+            }
+            name={'collateralLoad'}
+            label={
+              <>
+                Collateral Load: <small>(psf)</small>
+              </>
+            }
+            disabled={false}
+            placeholder={'psf'}
+            decimalPlaces={2}
+          />
+          <ReusableDouble
+            id={'liveLoad'}
+            value={values.buildings[activeBuilding].liveLoad}
+            onChange={(e) =>
+              handleNestedChange(activeBuilding, 'liveLoad', e.target.value)
+            }
+            name={'liveLoad'}
+            label={
+              <>
+                Live Load: <small>(psf)</small>
+              </>
+            }
+            disabled={false}
+            placeholder={'psf'}
+            decimalPlaces={2}
+          />
+          <ReusableDouble
+            id={'deadLoad'}
+            value={values.buildings[activeBuilding].deadLoad}
+            onChange={(e) =>
+              handleNestedChange(activeBuilding, 'deadLoad', e.target.value)
+            }
+            name={'deadLoad'}
+            label={
+              <>
+                Dead Load: <small>(psf)</small>
+              </>
+            }
+            disabled={false}
+            placeholder={'psf'}
+            decimalPlaces={2}
+          />
+        </div>
+        <h4>Wind Load</h4>
+        <div className="grid3">
+          <ReusableSelect
+            name={`enclosure`}
+            value={values.buildings[activeBuilding].enclosure}
+            onChange={(e) =>
+              handleNestedChange(activeBuilding, 'enclosure', e.target.value)
+            }
+            options={enclosure}
+            label="Enclosure:"
+            defaultValue="closed"
+          />
+        </div>
+        <h4>Snow Load</h4>
+        <div className="grid3">
+          <ReusableDouble
+            id={'roofSnowLoad'}
+            value={values.buildings[activeBuilding].roofSnowLoad}
+            onChange={(e) =>
+              handleNestedChange(activeBuilding, 'roofSnowLoad', e.target.value)
+            }
+            name={'roofSnowLoad'}
+            label={
+              <>
+                Roof Load: <small>(psf)</small>
+              </>
+            }
+            disabled={false}
+            placeholder={'psf'}
+            decimalPlaces={2}
+          />
+          <ReusableSelect
+            name={`thermalFactor`}
+            value={values.buildings[activeBuilding].thermalFactor}
+            onChange={(e) =>
+              handleNestedChange(
+                activeBuilding,
+                'thermalFactor',
+                e.target.value
+              )
+            }
+            options={thermalFactor}
+            label="Thermal Factor:"
+            defaultValue="heated"
+          />
+        </div>
+      </section>
 
-        <div className="grid4">
-          <fieldset className="radioGroup span2 center">
-            {shapes.map(({ id, label }) => (
-              <div key={id}>
-                <input
-                  type="radio"
-                  id={id}
-                  name="shape"
-                  value={id}
-                  checked={values.buildings[activeBuilding].shape === id}
-                  onChange={(e) =>
-                    handleNestedChange(activeBuilding, 'shape', e.target.value)
-                  }
-                />
-                <label htmlFor={id}>{label}</label>
-              </div>
-            ))}
-          </fieldset>
-          {values.buildings[activeBuilding].shape == 'nonSymmetrical' && (
-            <FeetInchesInput
-              name={`buildingPeakOffset-${activeBuilding}`}
-              label="Back Peak Offset:"
-              value={values.buildings[activeBuilding].backPeakOffset}
-              onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'backPeakOffset', value)
-              }
-            />
-          )}
-        </div>
-        <h4>Building Size</h4>
-        <div className="grid4">
-          <FeetInchesInput
-            name={`buildingWidth-${activeBuilding}`}
-            label="Width:"
-            value={values.buildings[activeBuilding].width}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'width', value)
-            }
-          />
-          <FeetInchesInput
-            name={`buildingLength-${activeBuilding}`}
-            label="Length:"
-            value={values.buildings[activeBuilding].length}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'length', value)
-            }
-          />
-          {values.buildings[activeBuilding].shape == 'symmetrical' && (
-            <>
-              <FeetInchesInput
-                name={`buildingBackEaveHeight-${activeBuilding}`}
-                label="Eave Height:"
-                value={values.buildings[activeBuilding].backEaveHeight}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'backEaveHeight', value)
-                }
-              />
-              <div className="onDesktop"></div>
-              <RoofPitchInput
-                name={`buildingBackRoofPitch-${activeBuilding}`}
-                label="Roof Pitch:"
-                value={values.buildings[activeBuilding].backRoofPitch}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'backRoofPitch', value)
-                }
-              />
-            </>
-          )}
-          {(values.buildings[activeBuilding].shape == 'singleSlope' ||
-            values.buildings[activeBuilding].shape == 'leanTo') && (
-            <>
-              <FeetInchesInput
-                name={`buildingBackEaveHeight-${activeBuilding}`}
-                label="Low Eave Height:"
-                value={values.buildings[activeBuilding].backEaveHeight}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'backEaveHeight', value)
-                }
-                calc={true}
-                onCalc={() =>
-                  handleCalcChange(activeBuilding, 'backEaveHeight')
-                }
-              />
-              <FeetInchesInput
-                name={`buildingFrontEaveHeight-${activeBuilding}`}
-                label="High Eave Height:"
-                value={values.buildings[activeBuilding].frontEaveHeight}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'frontEaveHeight', value)
-                }
-                calc={true}
-                onCalc={() =>
-                  handleCalcChange(activeBuilding, 'frontEaveHeight')
-                }
-              />
-              <RoofPitchInput
-                name={`buildingBackRoofPitch-${activeBuilding}`}
-                label="Roof Pitch:"
-                value={values.buildings[activeBuilding].backRoofPitch}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'backRoofPitch', value)
-                }
-                calc={true}
-                onCalc={() => handleCalcChange(activeBuilding, 'backRoofPitch')}
-              />
-            </>
-          )}
-          {values.buildings[activeBuilding].shape == 'nonSymmetrical' && (
-            <>
-              <FeetInchesInput
-                name={`buildingBackEaveHeight-${activeBuilding}`}
-                label="Back Eave Height:"
-                value={values.buildings[activeBuilding].backEaveHeight}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'backEaveHeight', value)
-                }
-              />
-              <FeetInchesInput
-                name={`buildingFrontEaveHeight-${activeBuilding}`}
-                label="Front Eave Height:"
-                value={values.buildings[activeBuilding].frontEaveHeight}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'frontEaveHeight', value)
-                }
-              />
-              <RoofPitchInput
-                name={`buildingBackRoofPitch-${activeBuilding}`}
-                label="Back Roof Pitch:"
-                value={values.buildings[activeBuilding].backRoofPitch}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'backRoofPitch', value)
-                }
-              />
-              <RoofPitchInput
-                name={`buildingFrontRoofPitch-${activeBuilding}`}
-                label="Front Roof Pitch:"
-                value={values.buildings[activeBuilding].frontRoofPitch}
-                onChange={(name, value) =>
-                  handleNestedChange(activeBuilding, 'frontRoofPitch', value)
-                }
-              />
-            </>
-          )}
-        </div>
-        <h4>Bay Spacing</h4>
+      <section className="card start">
+        <header>
+          <h3>Bay Spacing</h3>
+        </header>
         <div className="grid3">
           <BaySpacingInput
             name={`buildingRoofBaySpacing-${activeBuilding}`}
             label="Sidewall Bay Spacing:"
             value={values.buildings[activeBuilding].roofBaySpacing}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'roofBaySpacing', value)
-            }
+            onChange={(name, value) => {
+              handleNestedChange(activeBuilding, 'roofBaySpacing', value);
+              handleNestedChange(activeBuilding, 'frontBaySpacing', value);
+              handleNestedChange(activeBuilding, 'backBaySpacing', value);
+            }}
             compareLabel="building length"
             compareValue={values.buildings[activeBuilding].length}
           />
@@ -225,100 +177,27 @@ const BuildingLayout = ({
             compareLabel="building width"
             compareValue={values.buildings[activeBuilding].width}
           />
-        </div>
-      </section>
-
-      <section className="card start">
-        <header className="cardHeader">
-          <h3>
-            Design Codes <small>- Individual Building Override</small>
-          </h3>
-        </header>
-        <h4>Roof Load</h4>
-        <div className="grid3">
-          <ReusableDouble
-            id={'collateralLoad'}
-            value={values.buildings[activeBuilding].collateralLoad}
-            onChange={(e) =>
-              handleNestedChange(
-                activeBuilding,
-                'collateralLoad',
-                e.target.value
-              )
+          <BaySpacingInput
+            className="hidden"
+            name={`buildingFrontBaySpacing-${activeBuilding}`}
+            label="Front Sidewall Bay Spacing:"
+            value={values.buildings[activeBuilding].frontBaySpacing}
+            onChange={(name, value) =>
+              handleNestedChange(activeBuilding, 'frontBaySpacing', value)
             }
-            name={'collateralLoad'}
-            label={'Collateral Load (psf):'}
-            disabled={false}
-            placeholder={'0'}
-            decimalPlaces={2}
+            compareLabel="building length"
+            compareValue={values.buildings[activeBuilding].length}
           />
-          <ReusableDouble
-            id={'liveLoad'}
-            value={values.buildings[activeBuilding].liveLoad}
-            onChange={(e) =>
-              handleNestedChange(activeBuilding, 'liveLoad', e.target.value)
+          <BaySpacingInput
+            className="hidden"
+            name={`buildingBackBaySpacing-${activeBuilding}`}
+            label="Back Sidewall Bay Spacing:"
+            value={values.buildings[activeBuilding].backBaySpacing}
+            onChange={(name, value) =>
+              handleNestedChange(activeBuilding, 'backBaySpacing', value)
             }
-            name={'liveLoad'}
-            label={'Live Load (psf):'}
-            disabled={false}
-            placeholder={'0'}
-            decimalPlaces={2}
-          />
-          <ReusableDouble
-            id={'deadLoad'}
-            value={values.buildings[activeBuilding].deadLoad}
-            onChange={(e) =>
-              handleNestedChange(activeBuilding, 'deadLoad', e.target.value)
-            }
-            name={'deadLoad'}
-            label={'Dead Load (psf):'}
-            disabled={false}
-            placeholder={'0'}
-            decimalPlaces={2}
-          />
-        </div>
-        <h4>Wind Load</h4>
-        <div className="grid3">
-          <ReusableSelect
-            id={`enclosure`}
-            name={`enclosure`}
-            value={values.buildings[activeBuilding].enclosure}
-            onChange={(e) =>
-              handleNestedChange(activeBuilding, 'enclosure', e.target.value)
-            }
-            options={enclosure}
-            label="Enclosure:"
-            defaultValue="closed"
-          />
-        </div>
-        <h4>Snow Load</h4>
-        <div className="grid3">
-          <ReusableDouble
-            id={'roofSnowLoad'}
-            value={values.buildings[activeBuilding].roofSnowLoad}
-            onChange={(e) =>
-              handleNestedChange(activeBuilding, 'roofSnowLoad', e.target.value)
-            }
-            name={'roofSnowLoad'}
-            label={'Roof Load (psf):'}
-            disabled={false}
-            placeholder={'0'}
-            decimalPlaces={2}
-          />
-          <ReusableSelect
-            id={`thermalFactor`}
-            name={`thermalFactor`}
-            value={values.buildings[activeBuilding].thermalFactor}
-            onChange={(e) =>
-              handleNestedChange(
-                activeBuilding,
-                'thermalFactor',
-                e.target.value
-              )
-            }
-            options={thermalFactor}
-            label="Thermal Factor:"
-            defaultValue="heated"
+            compareLabel="building length"
+            compareValue={values.buildings[activeBuilding].length}
           />
         </div>
       </section>
@@ -405,7 +284,6 @@ const BuildingLayout = ({
         <div className="grid2 alignTop">
           <div className="grid2">
             <ReusableSelect
-              id={`buildingleftFrame-${activeBuilding}`}
               name={`buildingleftFrame-${activeBuilding}`}
               value={values.buildings[activeBuilding].leftFrame}
               onChange={(e) =>
@@ -446,7 +324,6 @@ const BuildingLayout = ({
           <div className="divider offOnPhone"></div>
           <div className="grid2">
             <ReusableSelect
-              id={`buildingrightFrame-${activeBuilding}`}
               name={`buildingrightFrame-${activeBuilding}`}
               value={values.buildings[activeBuilding].rightFrame}
               onChange={(e) =>
@@ -498,7 +375,6 @@ const BuildingLayout = ({
         <div className="grid4 alignTop">
           <div className="grid">
             <ReusableSelect
-              id={`buildingfrontBracing-${activeBuilding}`}
               name={`buildingfrontBracing-${activeBuilding}`}
               value={values.buildings[activeBuilding].frontBracingType}
               onChange={(e) =>
@@ -531,7 +407,6 @@ const BuildingLayout = ({
           </div>
           <div className="grid">
             <ReusableSelect
-              id={`buildingbackBracing-${activeBuilding}`}
               name={`buildingbackBracing-${activeBuilding}`}
               value={values.buildings[activeBuilding].backBracingType}
               onChange={(e) =>
@@ -564,7 +439,6 @@ const BuildingLayout = ({
           </div>
           <div className="grid">
             <ReusableSelect
-              id={`buildingleftBracing-${activeBuilding}`}
               name={`buildingleftBracing-${activeBuilding}`}
               value={
                 values.buildings[activeBuilding].leftFrame == 'postAndBeam'
@@ -586,7 +460,6 @@ const BuildingLayout = ({
             />
           </div>
           <ReusableSelect
-            id={`buildingrightBracing-${activeBuilding}`}
             name={`buildingrightBracing-${activeBuilding}`}
             value={
               values.buildings[activeBuilding].rightFrame == 'postAndBeam'
@@ -618,7 +491,7 @@ const BuildingLayout = ({
             onChange={(name, value) =>
               handleNestedChange(activeBuilding, 'frontBracedBays', value)
             }
-            baySpacing={values.buildings[activeBuilding].roofBaySpacing}
+            baySpacing={values.buildings[activeBuilding].frontBaySpacing}
             multiSelect={true}
             disabled={
               values.buildings[activeBuilding].frontBracingType == 'torsional'
@@ -631,7 +504,7 @@ const BuildingLayout = ({
             onChange={(name, value) =>
               handleNestedChange(activeBuilding, 'backBracedBays', value)
             }
-            baySpacing={values.buildings[activeBuilding].roofBaySpacing}
+            baySpacing={values.buildings[activeBuilding].backBaySpacing}
             multiSelect={true}
             disabled={
               values.buildings[activeBuilding].backBracingType == 'torsional'
@@ -713,7 +586,6 @@ const BuildingLayout = ({
         <div className="grid4 alignTop">
           <div className="grid">
             <ReusableSelect
-              id={`buildingfrontGirtType-${activeBuilding}`}
               name={`buildingfrontGirtType-${activeBuilding}`}
               value={values.buildings[activeBuilding].frontGirtType}
               onChange={(e) =>
@@ -729,7 +601,6 @@ const BuildingLayout = ({
             {values.buildings[activeBuilding].frontGirtType != 'open' && (
               <>
                 <ReusableSelect
-                  id={`buildingfrontGirtSpacing-${activeBuilding}`}
                   name={`buildingfrontGirtSpacing-${activeBuilding}`}
                   value={values.buildings[activeBuilding].frontGirtSpacing}
                   onChange={(e) =>
@@ -743,7 +614,6 @@ const BuildingLayout = ({
                   label="Front Sidewall Girt Spacing:"
                 />
                 <ReusableSelect
-                  id={`buildingFrontBaseCondition-${activeBuilding}`}
                   name={`buildingFrontBaseCondition-${activeBuilding}`}
                   value={values.buildings[activeBuilding].frontBaseCondition}
                   onChange={(e) =>
@@ -762,7 +632,6 @@ const BuildingLayout = ({
           <div className="divider offOnPhone"></div>
           <div className="grid">
             <ReusableSelect
-              id={`buildingbackGirtType-${activeBuilding}`}
               name={`buildingbackGirtType-${activeBuilding}`}
               value={values.buildings[activeBuilding].backGirtType}
               onChange={(e) =>
@@ -778,7 +647,6 @@ const BuildingLayout = ({
             {values.buildings[activeBuilding].backGirtType != 'open' && (
               <>
                 <ReusableSelect
-                  id={`buildingbackGirtSpacing-${activeBuilding}`}
                   name={`buildingbackGirtSpacing-${activeBuilding}`}
                   value={values.buildings[activeBuilding].backGirtSpacing}
                   onChange={(e) =>
@@ -792,7 +660,6 @@ const BuildingLayout = ({
                   label="Back Sidewall Girt Spacing:"
                 />
                 <ReusableSelect
-                  id={`buildingBackBaseCondition-${activeBuilding}`}
                   name={`buildingBackBaseCondition-${activeBuilding}`}
                   value={values.buildings[activeBuilding].backBaseCondition}
                   onChange={(e) =>
@@ -811,7 +678,6 @@ const BuildingLayout = ({
           <div className="divider showWithSidebar span2"></div>
           <div className="grid">
             <ReusableSelect
-              id={`buildingleftGirtType-${activeBuilding}`}
               name={`buildingleftGirtType-${activeBuilding}`}
               value={values.buildings[activeBuilding].leftGirtType}
               onChange={(e) =>
@@ -827,7 +693,6 @@ const BuildingLayout = ({
             {values.buildings[activeBuilding].leftGirtType != 'open' && (
               <>
                 <ReusableSelect
-                  id={`buildingleftGirtSpacing-${activeBuilding}`}
                   name={`buildingleftGirtSpacing-${activeBuilding}`}
                   value={values.buildings[activeBuilding].leftGirtSpacing}
                   onChange={(e) =>
@@ -841,7 +706,6 @@ const BuildingLayout = ({
                   label="Left Endwall Girt Spacing:"
                 />
                 <ReusableSelect
-                  id={`buildingLeftBaseCondition-${activeBuilding}`}
                   name={`buildingLeftBaseCondition-${activeBuilding}`}
                   value={values.buildings[activeBuilding].leftBaseCondition}
                   onChange={(e) =>
@@ -860,7 +724,6 @@ const BuildingLayout = ({
           <div className="divider offOnPhone"></div>
           <div className="grid">
             <ReusableSelect
-              id={`buildingrightGirtType-${activeBuilding}`}
               name={`buildingrightGirtType-${activeBuilding}`}
               value={values.buildings[activeBuilding].rightGirtType}
               onChange={(e) =>
@@ -876,7 +739,6 @@ const BuildingLayout = ({
             {values.buildings[activeBuilding].rightGirtType != 'open' && (
               <>
                 <ReusableSelect
-                  id={`buildingrightGirtSpacing-${activeBuilding}`}
                   name={`buildingrightGirtSpacing-${activeBuilding}`}
                   value={values.buildings[activeBuilding].rightGirtSpacing}
                   onChange={(e) =>
@@ -890,7 +752,6 @@ const BuildingLayout = ({
                   label="Right Endwall Girt Spacing:"
                 />
                 <ReusableSelect
-                  id={`buildingRightBaseCondition-${activeBuilding}`}
                   name={`buildingRightBaseCondition-${activeBuilding}`}
                   value={values.buildings[activeBuilding].rightBaseCondition}
                   onChange={(e) =>
@@ -912,7 +773,6 @@ const BuildingLayout = ({
         <h4>Purlins</h4>
         <div className="grid4">
           <ReusableSelect
-            id={`buildingPurlinSpacing-${activeBuilding}`}
             name={`buildingPurlinSpacing-${activeBuilding}`}
             value={values.buildings[activeBuilding].purlinSpacing}
             onChange={(e) =>
@@ -933,120 +793,28 @@ const BuildingLayout = ({
           <h3>Sheeting & Insulation</h3>
         </header>
 
-        <div className="grid2">
-          <div className="panelGrid">
-            <ReusableSelect
-              className="panelType"
-              id={`buildingRoofPanels-${activeBuilding}`}
-              name={`buildingRoofPanels-${activeBuilding}`}
-              value={values.buildings[activeBuilding].roofPanelType}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'roofPanelType',
-                  e.target.value
-                )
-              }
-              options={roofPanels}
-              label="Roof Panels:"
-            />
-            <ReusableSelect
-              className="panelGauge"
-              id={`buildingRoofGauge-${activeBuilding}`}
-              name={`buildingRoofGauge-${activeBuilding}`}
-              value={values.buildings[activeBuilding].roofPanelGauge}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'roofPanelGauge',
-                  e.target.value
-                )
-              }
-              options={roofGauge}
-              label="Gauge:"
-            />
-            <ReusableSelect
-              className="panelFinish"
-              id={`buildingRoofFinish-${activeBuilding}`}
-              name={`buildingRoofFinish-${activeBuilding}`}
-              value={values.buildings[activeBuilding].roofPanelFinish}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'roofPanelFinish',
-                  e.target.value
-                )
-              }
-              options={roofFinish}
-              label="Finish:"
-            />
-            <div className="cardInput panelImage">
-              {selectedRoofPanel && selectedRoofPanel.image && (
-                <Image
-                  alt={`${selectedRoofPanel.label}`}
-                  src={selectedRoofPanel.image}
-                  className="panelImage"
-                />
-              )}
-            </div>
-          </div>
+        <div className="grid2 alignTop">
+          <ReusablePanel
+            name="Roof"
+            valueKey="roof"
+            label="Roof"
+            bldg={activeBuilding}
+            value={values.buildings[activeBuilding]}
+            onChange={(e, keyString) =>
+              handleNestedChange(activeBuilding, keyString, e.target.value)
+            }
+          />
           <div className="divider offOnLaptop"></div>
-          <div className="panelGrid">
-            <ReusableSelect
-              className="panelType"
-              id={`buildingWallPanels-${activeBuilding}`}
-              name={`buildingWallPanels-${activeBuilding}`}
-              value={values.buildings[activeBuilding].wallPanelType}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'wallPanelType',
-                  e.target.value
-                )
-              }
-              options={wallPanels}
-              label="Wall Panels:"
-            />
-            <ReusableSelect
-              className="panelGauge"
-              id={`buildingWallGauge-${activeBuilding}`}
-              name={`buildingWallGauge-${activeBuilding}`}
-              value={values.buildings[activeBuilding].wallPanelGauge}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'wallPanelGauge',
-                  e.target.value
-                )
-              }
-              options={wallGauge}
-              label="Gauge:"
-            />
-            <ReusableSelect
-              className="panelFinish"
-              id={`buildingWallFinish-${activeBuilding}`}
-              name={`buildingWallFinish-${activeBuilding}`}
-              value={values.buildings[activeBuilding].wallPanelFinish}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'wallPanelFinish',
-                  e.target.value
-                )
-              }
-              options={wallFinish}
-              label="Finish:"
-            />
-            <div className="cardInput panelImage">
-              {selectedWallPanel && selectedWallPanel.image && (
-                <Image
-                  alt={`${selectedWallPanel.label}`}
-                  src={selectedWallPanel.image}
-                  className="panelImage"
-                />
-              )}
-            </div>
-          </div>
+          <ReusablePanel
+            name="Wall"
+            valueKey="wall"
+            label="Wall"
+            bldg={activeBuilding}
+            value={values.buildings[activeBuilding]}
+            onChange={(e, keyString) =>
+              handleNestedChange(activeBuilding, keyString, e.target.value)
+            }
+          />
         </div>
 
         <div className="divider"></div>
@@ -1078,7 +846,6 @@ const BuildingLayout = ({
         <h4>Building Insulation</h4>
         <div className="grid4">
           <ReusableSelect
-            id={`buildingRoofInsulation-${activeBuilding}`}
             name={`buildingRoofInsulation-${activeBuilding}`}
             value={values.buildings[activeBuilding].roofInsulation}
             onChange={(e) =>
@@ -1112,7 +879,6 @@ const BuildingLayout = ({
             </div>
           </div>
           <ReusableSelect
-            id={`buildingWallInsulation-${activeBuilding}`}
             name={`buildingWallInsulation-${activeBuilding}`}
             value={values.buildings[activeBuilding].wallInsulation}
             onChange={(e) =>

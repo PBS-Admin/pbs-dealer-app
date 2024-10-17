@@ -7,6 +7,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronLeft,
   faChevronRight,
+  faChevronDown,
+  faChevronUp,
+  faArrowRotateLeft,
+  faArrowRotateRight,
   faTrash,
   faCopy,
   faPlus,
@@ -32,12 +36,16 @@ import CopyBuildingDialog from '../../../components/CopyBuildingDialog';
 import DeleteDialog from '../../../components/DeleteDialog';
 import BuildingSketch from '../../../components/BuildingSketch';
 import FeetInchesInput from '../../../components/Inputs/FeetInchesInput';
+import RoofPitchInput from '../../../components/Inputs/RoofPitchInput';
 import ReusableLoader from '@/components/ReusableLoader';
+import ReusableInteger from '../../../components/Inputs/ReusableInteger';
 
 import PageHeader from '@/components/PageHeader';
 import Accessories from '@/components/quoteSections/Accessories';
 
 import { updateStateStructure } from '@/components/StateUpdater';
+
+import { shapes } from '../../../util/dropdownOptions';
 
 export default function ClientQuote({ session, quoteId, initialQuoteData }) {
   // State variables
@@ -93,9 +101,9 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         {
           width: '',
           length: '',
-          offsetX: '',
-          offsetY: '',
-          rotation: '',
+          offsetX: '0',
+          offsetY: '0',
+          rotation: '0',
           commonWall: '',
           shape: 'symmetrical',
           backPeakOffset: '',
@@ -104,14 +112,16 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           backRoofPitch: '',
           frontRoofPitch: '',
           roofBaySpacing: '',
+          frontBaySpacing: '',
+          backBaySpacing: '',
           leftBaySpacing: '',
           rightBaySpacing: '',
           collateralLoad: values.collateralLoad,
           liveLoad: values.liveLoad,
           deadLoad: values.deadLoad,
-          enclosure: '',
+          enclosure: values.enclosure,
           roofSnowLoad: values.roofSnowLoad,
-          thermalFactor: '',
+          thermalFactor: values.thermalFactor,
           frameType: 'rigidFrame',
           intColSpacing: '',
           straightExtColumns: false,
@@ -150,11 +160,11 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           backBaseCondition: 'angle',
           purlinSpacing: '',
           roofPanelType: 'pbr',
-          roofPanelGauge: 26,
-          roofPanelFinish: '',
+          roofPanelGauge: '26',
+          roofPanelFinish: 'painted',
           wallPanelType: 'pbr',
-          wallPanelGauge: 26,
-          wallPanelFinish: '',
+          wallPanelGauge: '26',
+          wallPanelFinish: 'painted',
           includeGutters: false,
           roofInsulation: '',
           roofInsulationOthers: false,
@@ -170,9 +180,9 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           backExtensionBays: '',
           backExtensionColumns: false,
           extensionInsulation: 'none',
-          soffitPanelType: 'tuff',
-          soffitPanelGauge: '',
-          soffitPanelFinish: '',
+          soffitPanelType: 'pbr',
+          soffitPanelGauge: '26',
+          soffitPanelFinish: 'painted',
           canopies: [],
           partitions: [],
           linerPanels: [],
@@ -526,7 +536,41 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       <FontAwesomeIcon icon={faCopy} />
                     </button>
                   </div>
-                  <div className={styles.buildingProjectContainer}>
+
+                  <div className="grid4">
+                    <fieldset
+                      className={`${styles.whiteGroup} radioGroup span2 center`}
+                    >
+                      {shapes.map(({ id, label }) => (
+                        <div key={id}>
+                          <input
+                            type="radio"
+                            id={`${id}-${index}`}
+                            name={`shape-${index}`}
+                            value={id}
+                            checked={building.shape === id}
+                            onChange={(e) =>
+                              handleNestedChange(index, 'shape', e.target.value)
+                            }
+                            disabled={index != activeBuilding}
+                          />
+                          <label htmlFor={`${id}-${index}`}>{label}</label>
+                        </div>
+                      ))}
+                    </fieldset>
+                    {building.shape == 'nonSymmetrical' && (
+                      <FeetInchesInput
+                        name={`buildingPeakOffset-${index}`}
+                        label="Back Peak Offset:"
+                        value={building.backPeakOffset}
+                        onChange={(name, value) =>
+                          handleNestedChange(index, 'backPeakOffset', value)
+                        }
+                        disabled={index != activeBuilding}
+                      />
+                    )}
+                  </div>
+                  <div className="grid4">
                     <FeetInchesInput
                       name={`buildingWidth-${index}`}
                       label="Width:"
@@ -534,11 +578,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       onChange={(name, value) =>
                         handleNestedChange(index, 'width', value)
                       }
-                      row={true}
                       disabled={index != activeBuilding}
                     />
-                  </div>
-                  <div className={styles.buildingProjectContainer}>
                     <FeetInchesInput
                       name={`buildingLength-${index}`}
                       label="Length:"
@@ -546,81 +587,283 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       onChange={(name, value) =>
                         handleNestedChange(index, 'length', value)
                       }
-                      row={true}
                       disabled={index != activeBuilding}
                     />
-                  </div>
-                  <div className={styles.buildingProjectContainer}>
-                    <FeetInchesInput
-                      name={`buildingOffsetX-${index}`}
-                      label="Left/Right:"
-                      value={building.offsetX}
-                      onChange={(name, value) =>
-                        handleNestedChange(index, 'offsetX', value)
-                      }
-                      row={true}
-                      disabled={index != activeBuilding}
-                    />
-                  </div>
-                  <div className={styles.buildingProjectContainer}>
-                    <FeetInchesInput
-                      name={`buildingOffsetY-${index}`}
-                      label="Back/Front:"
-                      value={building.offsetY}
-                      onChange={(name, value) =>
-                        handleNestedChange(index, 'offsetY', value)
-                      }
-                      row={true}
-                      disabled={index != activeBuilding}
-                    />
-                  </div>
-                  {values.buildings.length > 1 && index !== 0 && (
-                    <>
-                      <div className={styles.buildingProjectContainer}>
-                        <label htmlFor={`buildingRotation-${index}`}>
-                          Rotation:
-                        </label>
-                        <input
-                          type="number"
-                          id={`buildingRotation-${index}`}
-                          name={`buildingRotation-${index}`}
-                          value={building.rotation}
+                    {building.shape == 'symmetrical' && (
+                      <>
+                        <FeetInchesInput
+                          name={`buildingBackEaveHeight-${index}`}
+                          label="Eave Height:"
+                          value={building.backEaveHeight}
                           onChange={(name, value) =>
-                            handleNestedChange(index, 'rotation', value)
+                            handleNestedChange(index, 'backEaveHeight', value)
                           }
-                          min="0"
-                          max="270"
-                          step="90"
                           disabled={index != activeBuilding}
                         />
-                      </div>
-                      <div className={styles.buildingProjectContainer}>
-                        <label htmlFor={`buildingCommonWall-${index}`}>
-                          Common Wall:
-                        </label>
-                        <select
-                          id={`buildingCommonWall-${index}`}
-                          name={`buildingCommonWall-${index}`}
-                          value={building.commonWall}
+                        <div className="onDesktop"></div>
+                        <RoofPitchInput
+                          name={`buildingBackRoofPitch-${index}`}
+                          label="Roof Pitch:"
+                          value={building.backRoofPitch}
                           onChange={(name, value) =>
-                            handleNestedChange(index, 'commonWall', value)
+                            handleNestedChange(index, 'backRoofPitch', value)
                           }
                           disabled={index != activeBuilding}
-                        >
-                          <option value="">Select a building</option>
-                          {values.buildings.map(
-                            (_, buildingIndex) =>
-                              buildingIndex !== index && (
-                                <option
-                                  key={buildingIndex}
-                                  value={buildingIndex + 1}
-                                >
-                                  Building{' '}
-                                  {String.fromCharCode(buildingIndex + 65)}
-                                </option>
-                              )
-                          )}
-                        </select>
+                        />
+                      </>
+                    )}
+                    {(building.shape == 'singleSlope' ||
+                      building.shape == 'leanTo') && (
+                      <>
+                        <FeetInchesInput
+                          name={`buildingBackEaveHeight-${index}`}
+                          label="Low Eave Height:"
+                          value={building.backEaveHeight}
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'backEaveHeight', value)
+                          }
+                          disabled={index != activeBuilding}
+                        />
+                        <FeetInchesInput
+                          name={`buildingFrontEaveHeight-${index}`}
+                          label="High Eave Height:"
+                          value={building.frontEaveHeight}
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'frontEaveHeight', value)
+                          }
+                          disabled={index != activeBuilding}
+                        />
+                        <RoofPitchInput
+                          name={`buildingBackRoofPitch-${index}`}
+                          label="Roof Pitch:"
+                          value={building.backRoofPitch}
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'backRoofPitch', value)
+                          }
+                          disabled={index != activeBuilding}
+                        />
+                      </>
+                    )}
+                    {building.shape == 'nonSymmetrical' && (
+                      <>
+                        <FeetInchesInput
+                          name={`buildingBackEaveHeight-${index}`}
+                          label="Back Eave Height:"
+                          value={building.backEaveHeight}
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'backEaveHeight', value)
+                          }
+                          disabled={index != activeBuilding}
+                        />
+                        <FeetInchesInput
+                          name={`buildingFrontEaveHeight-${index}`}
+                          label="Front Eave Height:"
+                          value={building.frontEaveHeight}
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'frontEaveHeight', value)
+                          }
+                          disabled={index != activeBuilding}
+                        />
+                        <RoofPitchInput
+                          name={`buildingBackRoofPitch-${index}`}
+                          label="Back Roof Pitch:"
+                          value={building.backRoofPitch}
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'backRoofPitch', value)
+                          }
+                          disabled={index != activeBuilding}
+                        />
+                        <RoofPitchInput
+                          name={`buildingFrontRoofPitch-${index}`}
+                          label="Front Roof Pitch:"
+                          value={building.frontRoofPitch}
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'frontRoofPitch', value)
+                          }
+                          disabled={index != activeBuilding}
+                        />
+                      </>
+                    )}
+                  </div>
+
+                  {values.buildings.length > 1 && index !== 0 && (
+                    <>
+                      <div className="divider white"></div>
+                      <div className="grid4">
+                        <div className={styles.sliderGrid}>
+                          <div className={styles.buttonContainer}>
+                            <button
+                              className={styles.sliderLeftButton}
+                              type="button"
+                              onClick={() =>
+                                handleNestedChange(
+                                  index,
+                                  'offsetX',
+                                  building.offsetX - 10
+                                )
+                              }
+                              disabled={index != activeBuilding}
+                            >
+                              <FontAwesomeIcon icon={faChevronLeft} />
+                            </button>
+                          </div>
+                          <FeetInchesInput
+                            name={`buildingOffsetX-${index}`}
+                            label="Left/Right:"
+                            value={building.offsetX}
+                            negative={true}
+                            noBlankValue={true}
+                            onChange={(name, value) =>
+                              handleNestedChange(index, 'offsetX', value)
+                            }
+                            disabled={index != activeBuilding}
+                          />
+                          <div className={styles.buttonContainer}>
+                            <button
+                              className={styles.sliderRightButton}
+                              type="button"
+                              onClick={() =>
+                                handleNestedChange(
+                                  index,
+                                  'offsetX',
+                                  building.offsetX + 10
+                                )
+                              }
+                              disabled={index != activeBuilding}
+                            >
+                              <FontAwesomeIcon icon={faChevronRight} />
+                            </button>
+                          </div>
+                        </div>
+                        <div className={styles.sliderGrid}>
+                          <div className={styles.buttonContainer}>
+                            <button
+                              className={styles.sliderLeftButton}
+                              type="button"
+                              onClick={() =>
+                                handleNestedChange(
+                                  index,
+                                  'offsetY',
+                                  building.offsetY - 10
+                                )
+                              }
+                              disabled={index != activeBuilding}
+                            >
+                              <FontAwesomeIcon icon={faChevronDown} />
+                            </button>
+                          </div>
+                          <FeetInchesInput
+                            name={`buildingOffsetY-${index}`}
+                            label="Back/Front:"
+                            value={building.offsetY}
+                            negative={true}
+                            noBlankValue={true}
+                            onChange={(name, value) =>
+                              handleNestedChange(index, 'offsetY', value)
+                            }
+                            disabled={index != activeBuilding}
+                          />
+                          <div className={styles.buttonContainer}>
+                            <button
+                              className={styles.sliderRightButton}
+                              type="button"
+                              onClick={() =>
+                                handleNestedChange(
+                                  index,
+                                  'offsetY',
+                                  building.offsetY + 10
+                                )
+                              }
+                              disabled={index != activeBuilding}
+                            >
+                              <FontAwesomeIcon icon={faChevronUp} />
+                            </button>
+                          </div>
+                        </div>
+                        <div className={styles.sliderGrid}>
+                          <div className={styles.buttonContainer}>
+                            <button
+                              className={styles.sliderLeftButton}
+                              type="button"
+                              onClick={() =>
+                                handleNestedChange(
+                                  index,
+                                  'rotation',
+                                  building.rotation
+                                    ? parseInt(building.rotation) > 0
+                                      ? parseInt(building.rotation) - 90 + '°'
+                                      : '270°'
+                                    : '270°'
+                                )
+                              }
+                              disabled={index != activeBuilding}
+                            >
+                              <FontAwesomeIcon icon={faArrowRotateRight} />
+                            </button>
+                          </div>
+                          <ReusableInteger
+                            name={`buildingRotation-${index}`}
+                            value={building.rotation}
+                            validValues={[0, 90, 180, 270]}
+                            defaultValue="0"
+                            suffix="°"
+                            label="Rotation:"
+                            onChange={(name, value) =>
+                              handleNestedChange(index, 'rotation', value)
+                            }
+                            disabled={index != activeBuilding}
+                          />
+                          <div className={styles.buttonContainer}>
+                            <button
+                              className={styles.sliderRightButton}
+                              type="button"
+                              onClick={() =>
+                                handleNestedChange(
+                                  index,
+                                  'rotation',
+                                  building.rotation
+                                    ? parseInt(building.rotation) < 270
+                                      ? parseInt(building.rotation) + 90 + '°'
+                                      : '0°'
+                                    : '90°'
+                                )
+                              }
+                              disabled={index != activeBuilding}
+                            >
+                              <FontAwesomeIcon icon={faArrowRotateLeft} />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="cardInput">
+                          <div className="center">
+                            <label htmlFor={`buildingCommonWall-${index}`}>
+                              Common Wall:
+                            </label>
+                          </div>
+                          <select
+                            id={`buildingCommonWall-${index}`}
+                            name={`buildingCommonWall-${index}`}
+                            value={building.commonWall}
+                            onChange={(name, value) =>
+                              handleNestedChange(index, 'commonWall', value)
+                            }
+                            disabled={index != activeBuilding}
+                          >
+                            <option value="">Select a building</option>
+                            {values.buildings.map(
+                              (_, buildingIndex) =>
+                                buildingIndex !== index && (
+                                  <option
+                                    key={buildingIndex}
+                                    value={buildingIndex + 1}
+                                  >
+                                    Building{' '}
+                                    {String.fromCharCode(buildingIndex + 65)}
+                                  </option>
+                                )
+                            )}
+                          </select>
+                        </div>
                       </div>
                     </>
                   )}
