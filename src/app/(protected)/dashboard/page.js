@@ -4,8 +4,8 @@ import Image from 'next/image';
 import { authOptions } from '../../api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import styles from './page.module.css';
-import newQuote from '../../../../public/images/NewQuote.png';
-import openQuote from '../../../../public/images/OpenQuote.png';
+import newQuote from '../../../../public/images/quoteNew.png';
+import openQuote from '../../../../public/images/quoteOpen.png';
 import PageHeader from '@/components/PageHeader';
 
 export default async function Dashboard() {
