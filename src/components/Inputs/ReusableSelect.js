@@ -43,7 +43,7 @@ const ReusableSelect = ({
           ? true
           : needsSet;
     });
-    // console.log(name, needsSet, firstItem, dependantOn);
+    console.log(name, needsSet, firstItem, dependantOn);
     if (needsSet) {
       onChange({ target: { name, value: firstItem } });
       setInternalValue(firstItem);

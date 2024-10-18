@@ -1,15 +1,30 @@
 import {
-  pbr,
-  ssr,
-  ms200,
-  doubleLok,
-  ultraDek,
-  hr34,
-  blank,
-  pbrRev,
+  avp,
+  battenLok,
+  bDeck,
+  boxRib,
   corrugated,
-  tuffRib,
+  doubleLok,
   flatSoffit,
+  hr34,
+  hr36,
+  lsdb,
+  lsfp,
+  lspp,
+  lssb,
+  marionR,
+  ms200,
+  pbc,
+  pbd,
+  pbr,
+  marionRRev,
+  pbrRev,
+  ssq,
+  ssr,
+  superLok,
+  tuffRib,
+  ultraDek,
+  blank,
 } from '../../public/images';
 
 export const shapes = [
@@ -84,12 +99,12 @@ export const purlinSpacing = [
 export const roofPanels = [
   { id: 'pbr', label: 'PBR', image: pbr },
   { id: 'pbrDrip', label: 'PBR with Drip Stop', image: pbr },
-  { id: 'ssq', label: 'SSQ-275 Standing Seam', image: ssr },
+  { id: 'ssq', label: 'SSQ-275 Standing Seam', image: ssq },
   { id: 'ms200', label: 'MS-200 Standing Seam', image: ms200 },
   { id: 'doubleLok', label: 'Double-Lok Standing Seam', image: doubleLok },
   { id: 'ultraDek', label: 'Ultra-Dek Standing Seam', image: ultraDek },
-  { id: 'battenLok', label: 'BattenLok HS Standing Seam', image: ms200 },
-  { id: 'superLok', label: 'SuperLok Standing Seam', image: ms200 },
+  { id: 'battenLok', label: 'BattenLok HS Standing Seam', image: battenLok },
+  { id: 'superLok', label: 'SuperLok Standing Seam', image: superLok },
   { id: 'hr34', label: 'HR-34', image: hr34 },
   {
     id: 'kingSeam',
@@ -224,6 +239,13 @@ export const wallInsulation = [
   { id: 'banded30', label: 'Banded Liner System (R-30)' },
 ];
 
+export const hangarDoorInsulation = [
+  { id: 'none', label: 'None' },
+  { id: 'vrr2', label: '2" VRR (R-7)' },
+  { id: 'vrr3', label: '3" VRR (R-10)' },
+  { id: 'vrr4', label: '4" VRR (R-13)' },
+];
+
 export const extInsulation = [
   { id: 'none', label: 'None' },
   { id: 'extend', label: 'Extend Roof Insulation at Extensions' },
@@ -247,11 +269,11 @@ export const panelOptions = [
 ];
 
 export const topOfWall = [
-  { id: 'ba', label: 'Base Angle' },
-  { id: 'bc', label: 'Base Channel' },
-  { id: 'cg', label: 'Cee Girt' },
-  { id: 'hrc', label: 'Hot Rolled Channel' },
-  { id: 'hrb', label: 'Hot Rolled Beam' },
+  { id: 'A', label: 'Base Angle' },
+  { id: 'B', label: 'Base Channel' },
+  { id: 'C', label: 'Cee Girt' },
+  { id: 'U', label: 'Hot Rolled Channel' },
+  { id: 'R', label: 'Hot Rolled Beam' },
 ];
 
 export const polycarbWallSize = [

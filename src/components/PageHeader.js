@@ -26,6 +26,7 @@ const PageHeader = ({ session, title, isLogOut }) => {
           <FontAwesomeIcon icon={faHouse} />
         </Link>
       )}
+      {console.log(session.user)}
       <h1>{title}</h1>
       <div className="avatarBox">
         <div className="avatar">

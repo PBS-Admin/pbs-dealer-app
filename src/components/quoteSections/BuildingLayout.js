@@ -550,7 +550,7 @@ const BuildingLayout = ({
             baySpacing={values.buildings[activeBuilding].roofBaySpacing}
             multiSelect={true}
           />
-          <div className="cardInput">
+          <div>
             <h5>Break Points to Match</h5>
             <fieldset className="radioGroup center">
               {breakPoints.map(({ id, label }) => (
