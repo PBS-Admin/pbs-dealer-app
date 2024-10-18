@@ -31,8 +31,28 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
     setValues
   );
 
+  const windIcon =
+    values.buildingCode == 'ossc22' && values.projectLatitude != ''
+      ? 'lookup'
+      : '';
+  const snowIcon =
+    values.projectLatitude != '' && values.projectLongitude != ''
+      ? 'lookup'
+      : '';
+  const lookupIcon =
+    values.projectLatitude != '' &&
+    values.projectLongitude != '' &&
+    values.buildingCode != '' &&
+    values.seismicSite != ''
+      ? 'lookup'
+      : '';
+
+  const calcIcon =
+    values.seismicSs > 0 && values.seismicS1 > 0 ? 'calculator' : '';
+
   const { getSnowLoad, snowData } = useSnow(values);
-  const { getSeismicLoad, seismicData } = useSeismic(values);
+  const { getSeismicLoad, seismicData, getSmsLoad, smsData } =
+    useSeismic(values);
   const { locationData, loading, error, fetchGeocodingData } = useGeocoding();
 
   const projectInputRef = useRef(null);
@@ -55,7 +75,14 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
       console.log('Clear address clicked');
       const fields =
         addressType === 'project'
-          ? ['projectAddress', 'projectCity', 'projectState', 'projectZip']
+          ? [
+              'projectAddress',
+              'projectCity',
+              'projectState',
+              'projectZip',
+              'projectLatitude',
+              'projectLongitude',
+            ]
           : ['customerAddress', 'customerCity', 'customerState', 'customerZip'];
 
       setValues((prevValues) => {
@@ -162,13 +189,27 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
         seismicS1: seismicData.response.data.s1,
         seismicSms: seismicData.response.data.sms,
         seismicSm1: seismicData.response.data.sm1,
-        sesimicFa: seismicData.response.data.fa,
-        sesimicFv: seismicData.response.data.fv,
-        sesimicSds: seismicData.response.data.sds,
-        sesimicSd1: seismicData.response.data.sd1,
+        seismicFa: seismicData.response.data.fa,
+        seismicFv: seismicData.response.data.fv,
+        seismicSds: seismicData.response.data.sds,
+        seismicSd1: seismicData.response.data.sd1,
       }));
     }
   }, [seismicData, setValues]);
+
+  useEffect(() => {
+    if (smsData) {
+      setValues((prevValues) => ({
+        ...prevValues,
+        seismicSms: smsData.Sms,
+        seismicSm1: smsData.Sm1,
+        seismicFa: smsData.Fa,
+        seismicFv: smsData.Fv,
+        seismicSds: smsData.Sds,
+        seismicSd1: smsData.Sd1,
+      }));
+    }
+  }, [smsData, setValues]);
 
   return (
     <>
@@ -488,7 +529,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
                 Wind Load: <small>(mph)</small>
               </>
             }
-            icon={'faCalculator'}
+            icon={windIcon}
             iconColor={'blue'}
             iconOnClick={getWindLoad}
             disabled={false}
@@ -523,7 +564,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
                 Ground Load: <small>(psf)</small>
               </>
             }
-            icon={'faCalculator'}
+            icon={snowIcon}
             iconColor={'blue'}
             iconOnClick={getSnowLoad}
             disabled={false}
@@ -560,7 +601,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             onChange={handleChange}
             options={seismicCategory}
             label="Seismic Category:"
-            icon={'faCalculator'}
+            icon={lookupIcon}
             iconColor={'blue'}
             iconOnClick={getSeismicLoad}
             defaultValue="D"
@@ -593,6 +634,9 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             onChange={handleChange}
             name={'seismicSms'}
             label={'Sms:'}
+            icon={calcIcon}
+            iconColor={'blue'}
+            iconOnClick={getSmsLoad}
             disabled={false}
             decimalPlaces={3}
           />

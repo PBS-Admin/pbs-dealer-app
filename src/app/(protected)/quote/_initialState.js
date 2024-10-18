@@ -43,7 +43,7 @@ export const initialState = {
   seismicS1: '',
   seismicSms: '',
   seismicSm1: '',
-  sesimicFa: '',
+  seismicFa: '',
   seismicFv: '',
   seismicSds: '',
   seismicSd1: '',

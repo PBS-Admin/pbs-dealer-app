@@ -53,7 +53,7 @@ function useFormState(initialState) {
       const updatedBuildings = prev.buildings.map((building, index) => {
         if (index === buildingIndex) {
           let updatedBuilding;
-          if (field.includes('Gauge') || field.includes('Qty')) {
+          if (field.includes('Qty')) {
             updatedBuilding = { ...building, [field]: parseInt(value) };
           } else {
             updatedBuilding = { ...building, [field]: value };
