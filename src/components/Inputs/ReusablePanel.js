@@ -89,7 +89,7 @@ const ReusablePanel = ({
 
   useEffect(() => {
     if (value[gaugeKey] !== undefined && value[gaugeKey] != '') {
-      setInternalGaugeValue(value[gaugeKey]);
+      setInternalGaugeValue(String.valueOf(value[gaugeKey]));
     }
   }, [value[gaugeKey]]);
 

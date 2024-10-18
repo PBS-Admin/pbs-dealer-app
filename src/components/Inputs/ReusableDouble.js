@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalculator } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalculator,
+  faMagnifyingGlass,
+} from '@fortawesome/free-solid-svg-icons';
 
 const formatDouble = (value, decimalPlaces) => {
   const number = parseFloat(value);
+
   /*
   return isNaN(number)
     ? `0.${'0'.repeat(decimalPlaces)}`
@@ -31,6 +35,11 @@ const ReusableDouble = ({
   decimalPlaces = 2,
 }) => {
   const [inputValue, setInputValue] = useState('');
+
+  const iconMap = {
+    calculator: faCalculator,
+    lookup: faMagnifyingGlass,
+  };
 
   useEffect(() => {
     setInputValue(formatDouble(value, decimalPlaces));
@@ -74,7 +83,7 @@ const ReusableDouble = ({
         <span>{label}</span>
         {icon && (
           <button onClick={iconOnClick} className={`icon ${iconColor}`}>
-            <FontAwesomeIcon icon={faCalculator} />
+            <FontAwesomeIcon icon={iconMap[icon]} />
           </button>
         )}
       </label>

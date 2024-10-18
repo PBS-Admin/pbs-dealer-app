@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalculator } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalculator,
+  faMagnifyingGlass,
+} from '@fortawesome/free-solid-svg-icons';
 
 const ReusableSelect = ({
   name,
@@ -21,6 +24,11 @@ const ReusableSelect = ({
   const [internalValue, setInternalValue] = useState(
     value || defaultValue || ''
   );
+
+  const iconMap = {
+    calculator: faCalculator,
+    lookup: faMagnifyingGlass,
+  };
 
   useEffect(() => {
     if (value !== undefined && value != '') {
@@ -70,7 +78,7 @@ const ReusableSelect = ({
         <span>{label}</span>
         {icon && (
           <button onClick={iconOnClick} className={`icon ${iconColor}`}>
-            <FontAwesomeIcon icon={faCalculator} />
+            <FontAwesomeIcon icon={iconMap[icon]} />
           </button>
         )}
       </label>

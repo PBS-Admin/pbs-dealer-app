@@ -936,11 +936,14 @@ const BuildingOptions = ({
                     name="frontPolyQty"
                     value={values.buildings[activeBuilding].frontPolyQty}
                     label="Front Sidewall Relite Qty:"
-                    negative={false}
-                    allowZero={false}
+                    min={1}
                     max={Math.ceil(values.buildings[activeBuilding].length / 3)}
-                    onChange={(name, value) =>
-                      handleNestedChange(activeBuilding, 'frontPolyQty', value)
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'frontPolyQty',
+                        e.target.value
+                      )
                     }
                     placeholder="Qty"
                   />
@@ -988,11 +991,14 @@ const BuildingOptions = ({
                     name="backPolyQty"
                     value={values.buildings[activeBuilding].backPolyQty}
                     label="Back Sidewall Relite Qty:"
-                    negative={false}
-                    allowZero={false}
+                    min={1}
                     max={Math.ceil(values.buildings[activeBuilding].length / 3)}
-                    onChange={(name, value) =>
-                      handleNestedChange(activeBuilding, 'backPolyQty', value)
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'backPolyQty',
+                        e.target.value
+                      )
                     }
                     placeholder="Qty"
                   />
@@ -1040,11 +1046,14 @@ const BuildingOptions = ({
                     name="leftPolyQty"
                     value={values.buildings[activeBuilding].leftPolyQty}
                     label="Left Endwall Relite Qty:"
-                    negative={false}
-                    allowZero={false}
+                    min={1}
                     max={Math.ceil(values.buildings[activeBuilding].width / 3)}
-                    onChange={(name, value) =>
-                      handleNestedChange(activeBuilding, 'leftPolyQty', value)
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'leftPolyQty',
+                        e.target.value
+                      )
                     }
                     placeholder="Qty"
                   />
@@ -1092,11 +1101,14 @@ const BuildingOptions = ({
                     name="rightPolyQty"
                     value={values.buildings[activeBuilding].rightPolyQty}
                     label="Right Endwall Relite Qty:"
-                    negative={false}
-                    allowZero={false}
+                    min={1}
                     max={Math.ceil(values.buildings[activeBuilding].width / 3)}
-                    onChange={(name, value) =>
-                      handleNestedChange(activeBuilding, 'rightPolyQty', value)
+                    onChange={(e) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'rightPolyQty',
+                        e.target.value
+                      )
                     }
                     placeholder="Qty"
                   />
@@ -1155,13 +1167,16 @@ const BuildingOptions = ({
                   name="backRoofPolyQty"
                   value={values.buildings[activeBuilding].backRoofPolyQty}
                   label="Roof Relite Qty:"
-                  negative={false}
-                  allowZero={false}
+                  min={1}
                   max={Math.floor(
                     Math.floor(values.buildings[activeBuilding].length / 3) / 2
                   )}
-                  onChange={(name, value) =>
-                    handleNestedChange(activeBuilding, 'backRoofPolyQty', value)
+                  onChange={(e) =>
+                    handleNestedChange(
+                      activeBuilding,
+                      'backRoofPolyQty',
+                      e.target.value
+                    )
                   }
                   placeholder="Qty"
                 />
@@ -1202,13 +1217,16 @@ const BuildingOptions = ({
                   name="backRoofPolyQty"
                   value={values.buildings[activeBuilding].backRoofPolyQty}
                   label="Back Roof Relite Qty:"
-                  negative={false}
-                  allowZero={false}
+                  min={1}
                   max={Math.floor(
                     Math.floor(values.buildings[activeBuilding].length / 3) / 2
                   )}
-                  onChange={(name, value) =>
-                    handleNestedChange(activeBuilding, 'backRoofPolyQty', value)
+                  onChange={(e) =>
+                    handleNestedChange(
+                      activeBuilding,
+                      'backRoofPolyQty',
+                      e.target.value
+                    )
                   }
                   placeholder="Qty"
                 />
@@ -1246,16 +1264,15 @@ const BuildingOptions = ({
                   name="frontRoofPolyQty"
                   value={values.buildings[activeBuilding].frontRoofPolyQty}
                   label="Front Roof Relite Qty:"
-                  negative={false}
-                  allowZero={false}
+                  min={1}
                   max={Math.floor(
                     Math.floor(values.buildings[activeBuilding].length / 3) / 2
                   )}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
                       'frontRoofPolyQty',
-                      value
+                      e.target.value
                     )
                   }
                   placeholder="Qty"

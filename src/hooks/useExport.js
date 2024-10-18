@@ -992,7 +992,7 @@ export function useExport() {
     await writable.write(`Collateral=${values.collateralLoad}\n`);
     await writable.write(`Wind_Speed=${values.windLoad}\n`);
     await writable.write(`Reduce=N\n`);
-    await writable.write(`Za=${values.sesimicSms || ''}\n`);
+    await writable.write(`Za=${values.seismicSms || ''}\n`);
     await writable.write(`\n`);
 
     // Building Shape

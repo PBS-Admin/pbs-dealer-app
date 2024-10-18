@@ -973,7 +973,11 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           />
         )}
         {activeCard == 'finalize-quote' && (
-          <FinalizeQuote values={values} handleChange={handleChange} />
+          <FinalizeQuote
+            values={values}
+            setValues={setValues}
+            handleChange={handleChange}
+          />
         )}
         {!isDesktop &&
           (values.buildings[activeBuilding].width > 0 ||
