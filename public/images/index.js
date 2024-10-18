@@ -19,7 +19,7 @@ import pbd from './PBD.png';
 import pbr from './PBR.png';
 import marionRRev from './Rev-MarionR.png';
 import pbrRev from './Rev-PBR.png';
-import ssq from './SSq-275.png';
+import ssq from './SSQ-275.png';
 import ssr from './SSR-218.png';
 import superLok from './SupperLok.png';
 import tuffRib from './Tuff-Rib.png';

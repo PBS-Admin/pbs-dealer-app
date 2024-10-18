@@ -6,7 +6,6 @@ import { redirect } from 'next/navigation';
 import styles from './page.module.css';
 import newQuote from '../../../../public/images/NewQuote.png';
 import openQuote from '../../../../public/images/OpenQuote.png';
-import logo from '../../../../public/images/pbslogo.png';
 import PageHeader from '@/components/PageHeader';
 
 export default async function Dashboard() {
