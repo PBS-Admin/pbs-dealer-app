@@ -12,7 +12,7 @@ const decimalToFeetInches = (decimal) => {
   return { feet, inches };
 };
 
-const formatFeetInches = (feet, inches) => {
+const formatFeetInches = (feet, inches, noBlankValue) => {
   let ft = feet;
   let inch = Math.floor(inches);
   let numerator = Math.round((inches - inch) * 16);
@@ -41,7 +41,7 @@ const formatFeetInches = (feet, inches) => {
   }
 
   if (isNaN(feet) || isNaN(inches)) {
-    return `0'-0"`;
+    return noBlankValue ? `0'-0"` : '';
   } else if (numerator > 0) {
     return `${ft}'-${inch} ${numerator}/${denominator}"`;
   } else {
@@ -80,7 +80,8 @@ const FeetInchesInput = ({
   value,
   name,
   label,
-  labelClass,
+  labelClass = '',
+  showLabel = true,
   onChange,
   onFocus,
   negative = false,
@@ -96,7 +97,7 @@ const FeetInchesInput = ({
 
   useEffect(() => {
     const { feet, inches } = decimalToFeetInches(value);
-    setInputValue(formatFeetInches(feet, inches));
+    setInputValue(formatFeetInches(feet, inches, noBlankValue));
   }, [value]);
 
   const handleInputChange = (e) => {
@@ -110,14 +111,14 @@ const FeetInchesInput = ({
       const { feet, inches } = parsed;
       const decimalValue = feetToDecimal(feet, inches);
       onChange(name, decimalValue);
-      setInputValue(formatFeetInches(feet, inches));
+      setInputValue(formatFeetInches(feet, inches, noBlankValue));
     } else if (inputValue == '') {
       onChange(name, noBlankValue ? 0 : '');
       setInputValue(noBlankValue ? `0'-0"` : '');
     } else {
       // Reset to the last valid value
       const { feet, inches } = decimalToFeetInches(value);
-      setInputValue(formatFeetInches(feet, inches));
+      setInputValue(formatFeetInches(feet, inches, noBlankValue));
     }
   };
 
@@ -126,17 +127,18 @@ const FeetInchesInput = ({
 
   return (
     <div className={`cardInput ${condition}`}>
-      <div className={`${calcClass} ${labelClass}`}>
-        <label className={labelClass} htmlFor={name}>
-          <span>{label}</span>
-        </label>
-        {calc && (
-          <button type="button" onClick={onCalc}>
-            Calc
-          </button>
-        )}
-      </div>
-
+      {showLabel && (
+        <div className={`${calcClass} ${labelClass}`}>
+          <label className={labelClass} htmlFor={name}>
+            <span>{label}</span>
+          </label>
+          {calc && (
+            <button type="button" onClick={onCalc}>
+              Calc
+            </button>
+          )}
+        </div>
+      )}
       <input
         type="text"
         id={name}

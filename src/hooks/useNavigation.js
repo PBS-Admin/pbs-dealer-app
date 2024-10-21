@@ -13,27 +13,36 @@ const useNavigation = (activeBuilding, initialIndex = 0) => {
     },
     {
       id: 'bldg-layout',
-      label: 'Building ' + (activeBuilding + 1) + ' - Layout',
+      label:
+        'Building ' + String.fromCharCode(activeBuilding + 65) + ' - Layout',
     },
     {
       id: 'bldg-extensions',
-      label: 'Building ' + (activeBuilding + 1) + ' - Extensions',
+      label:
+        'Building ' +
+        String.fromCharCode(activeBuilding + 65) +
+        ' - Extensions',
     },
     {
       id: 'bldg-partitions',
-      label: 'Building ' + (activeBuilding + 1) + ' - Partitions',
+      label:
+        'Building ' +
+        String.fromCharCode(activeBuilding + 65) +
+        ' - Partitions',
     },
     {
       id: 'bldg-options',
-      label: 'Building ' + (activeBuilding + 1) + ' - Options',
+      label:
+        'Building ' + String.fromCharCode(activeBuilding + 65) + ' - Options',
     },
     // {
     //   id: 'bldg-cranes',
-    //   label: 'Building ' + (activeBuilding + 1) + ' - Cranes',
+    //   label: 'Building ' + String.fromCharCode(activeBuilding + 65) + ' - Cranes',
     // },
     {
       id: 'bldg-openings',
-      label: 'Building ' + (activeBuilding + 1) + ' - Openings',
+      label:
+        'Building ' + String.fromCharCode(activeBuilding + 65) + ' - Openings',
     },
     { id: 'accessories', label: 'Accessories' },
     {

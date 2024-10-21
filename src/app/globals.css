@@ -703,6 +703,57 @@ button.success:hover{
   grid-template-rows: 1fr;  
 }
 
+.sliderLeftButton {
+  font-size: 18px;
+  padding: 2px;
+  border: 1px solid var(--light-blue);
+  border-radius: 5px 0 0 5px;
+  color: var(--background-white);
+  align-self: flex-end;
+  background: var(--light-gray);
+  aspect-ratio: 1 /1;
+  min-width: 32px;
+}
+
+.sliderRightButton {
+  font-size: 18px;
+  padding: 2px;
+  border: 1px solid var(--light-blue);
+  border-radius: 0 5px 5px 0;
+  color: var(--background-white);
+  align-self: flex-end;
+  background: var(--light-gray);
+  aspect-ratio: 1 /1;
+  min-width: 32px;
+}
+
+.sliderGrid {
+  display: grid;
+  grid-template-columns: 32px minmax(60px, 1fr) 32px;  
+  gap: 0;
+  align-items: flex-end;
+}
+
+.sliderGrid div {
+  padding: 0;
+  min-height: unset;
+}
+
+.sliderGrid label {
+  display: block;
+  text-align: center;
+  min-height: unset;
+}
+
+.sliderGrid input {
+  border-radius: 0 !important;
+  text-align: center;
+}
+
+.sliderGrid button:disabled {
+  border: 1px solid var(--background-white);
+}
+
 .onPhone, .onTablet, .onLaptop, .onDesktop, .hideWithSidebar {
   display: none;
 }
@@ -725,6 +776,10 @@ button.success:hover{
 
   .radioGroup{
     font-size: 3.15vw;
+  }
+
+  .sliderGrid input {
+    font-size: 15px;
   }
 }
 

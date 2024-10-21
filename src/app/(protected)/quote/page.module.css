@@ -250,64 +250,7 @@
     background-color: var(--light-green);
     color: white;
 }
-
-.sliderLeftButton {
-    font-size: 18px;
-    padding: 2px;
-    border: 1px solid var(--light-blue);
-    border-radius: 5px 0 0 5px;
-    color: var(--background-white);
-    align-self: flex-end;
-    background: var(--light-gray);
-    aspect-ratio: 1 /1;
-    min-width: 32px;
-}
-
-.sliderRightButton {
-    font-size: 18px;
-    padding: 2px;
-    border: 1px solid var(--light-blue);
-    border-radius: 0 5px 5px 0;
-    color: var(--background-white);
-    align-self: flex-end;
-    background: var(--light-gray);
-    aspect-ratio: 1 /1;
-    min-width: 32px;
-}
-
-.sliderGrid {
-    display: grid;
-    grid-template-columns: 32px minmax(60px, 1fr) 32px;  
-    gap: 0;
-    padding: .25em;
-    align-items: flex-end;
-}
-
-.sliderGrid div {
-    padding: 4px 0 0 0;
-}
-
-.sliderGrid label {
-    display: block;
-    text-align: center;
-    min-height: unset;
-}
-
-.sliderGrid input {
-    border-radius: 0;
-    text-align: center;
-}
-
-.sliderGrid button:disabled {
-    border: 1px solid var(--background-white);
-}
-
-@media screen and (min-width: 350px) {
-    .sliderGrid input {
-      font-size: 15px;
-    }
-}
-  
+ 
 @media screen and (min-width: 600px) {
     .pageTitle {
         font-size: 2em;

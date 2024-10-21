@@ -39,6 +39,7 @@ import FeetInchesInput from '../../../components/Inputs/FeetInchesInput';
 import RoofPitchInput from '../../../components/Inputs/RoofPitchInput';
 import ReusableLoader from '@/components/ReusableLoader';
 import ReusableInteger from '../../../components/Inputs/ReusableInteger';
+import ReusableSlider from '../../../components/Inputs/ReusableSlider';
 
 import PageHeader from '@/components/PageHeader';
 import Accessories from '@/components/quoteSections/Accessories';
@@ -101,9 +102,9 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         {
           width: '',
           length: '',
-          offsetX: '0',
-          offsetY: '0',
-          rotation: '0',
+          offsetX: 0,
+          offsetY: 0,
+          rotation: 0,
           commonWall: '',
           shape: 'symmetrical',
           backPeakOffset: '',
@@ -165,7 +166,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           wallPanelType: 'pbr',
           wallPanelGauge: '26',
           wallPanelFinish: 'painted',
-          includeGutters: false,
+          includeGutters: true,
           roofInsulation: '',
           roofInsulationOthers: false,
           wallInsulation: '',
@@ -690,150 +691,42 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                     <>
                       <div className="divider white"></div>
                       <div className="grid4">
-                        <div className={styles.sliderGrid}>
-                          <div className={styles.buttonContainer}>
-                            <button
-                              className={styles.sliderLeftButton}
-                              type="button"
-                              onClick={() =>
-                                handleNestedChange(
-                                  index,
-                                  'offsetX',
-                                  building.offsetX - 10
-                                )
-                              }
-                              disabled={index != activeBuilding}
-                            >
-                              <FontAwesomeIcon icon={faChevronLeft} />
-                            </button>
-                          </div>
-                          <FeetInchesInput
-                            name={`buildingOffsetX-${index}`}
-                            label="Left/Right:"
-                            value={building.offsetX}
-                            negative={true}
-                            noBlankValue={true}
-                            onChange={(name, value) =>
-                              handleNestedChange(index, 'offsetX', value)
-                            }
-                            disabled={index != activeBuilding}
-                          />
-                          <div className={styles.buttonContainer}>
-                            <button
-                              className={styles.sliderRightButton}
-                              type="button"
-                              onClick={() =>
-                                handleNestedChange(
-                                  index,
-                                  'offsetX',
-                                  building.offsetX + 10
-                                )
-                              }
-                              disabled={index != activeBuilding}
-                            >
-                              <FontAwesomeIcon icon={faChevronRight} />
-                            </button>
-                          </div>
-                        </div>
-                        <div className={styles.sliderGrid}>
-                          <div className={styles.buttonContainer}>
-                            <button
-                              className={styles.sliderLeftButton}
-                              type="button"
-                              onClick={() =>
-                                handleNestedChange(
-                                  index,
-                                  'offsetY',
-                                  building.offsetY - 10
-                                )
-                              }
-                              disabled={index != activeBuilding}
-                            >
-                              <FontAwesomeIcon icon={faChevronDown} />
-                            </button>
-                          </div>
-                          <FeetInchesInput
-                            name={`buildingOffsetY-${index}`}
-                            label="Back/Front:"
-                            value={building.offsetY}
-                            negative={true}
-                            noBlankValue={true}
-                            onChange={(name, value) =>
-                              handleNestedChange(index, 'offsetY', value)
-                            }
-                            disabled={index != activeBuilding}
-                          />
-                          <div className={styles.buttonContainer}>
-                            <button
-                              className={styles.sliderRightButton}
-                              type="button"
-                              onClick={() =>
-                                handleNestedChange(
-                                  index,
-                                  'offsetY',
-                                  building.offsetY + 10
-                                )
-                              }
-                              disabled={index != activeBuilding}
-                            >
-                              <FontAwesomeIcon icon={faChevronUp} />
-                            </button>
-                          </div>
-                        </div>
-                        <div className={styles.sliderGrid}>
-                          <div className={styles.buttonContainer}>
-                            <button
-                              className={styles.sliderLeftButton}
-                              type="button"
-                              onClick={() =>
-                                handleNestedChange(
-                                  index,
-                                  'rotation',
-                                  building.rotation
-                                    ? parseInt(building.rotation) > 0
-                                      ? parseInt(building.rotation) - 90 + '°'
-                                      : '270°'
-                                    : '270°'
-                                )
-                              }
-                              disabled={index != activeBuilding}
-                            >
-                              <FontAwesomeIcon icon={faArrowRotateRight} />
-                            </button>
-                          </div>
-                          <ReusableInteger
-                            name={`buildingRotation-${index}`}
-                            value={building.rotation}
-                            validValues={[0, 90, 180, 270]}
-                            defaultValue="0"
-                            suffix="°"
-                            label="Rotation:"
-                            onChange={(name, value) =>
-                              handleNestedChange(index, 'rotation', value)
-                            }
-                            disabled={index != activeBuilding}
-                          />
-                          <div className={styles.buttonContainer}>
-                            <button
-                              className={styles.sliderRightButton}
-                              type="button"
-                              onClick={() =>
-                                handleNestedChange(
-                                  index,
-                                  'rotation',
-                                  building.rotation
-                                    ? parseInt(building.rotation) < 270
-                                      ? parseInt(building.rotation) + 90 + '°'
-                                      : '0°'
-                                    : '90°'
-                                )
-                              }
-                              disabled={index != activeBuilding}
-                            >
-                              <FontAwesomeIcon icon={faArrowRotateLeft} />
-                            </button>
-                          </div>
-                        </div>
+                        <ReusableSlider
+                          type="leftRight"
+                          name={`buildingOffsetX-${index}`}
+                          value={building.offsetX}
+                          increment={10}
+                          label="Left/Right:"
+                          labelClass="white center"
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'offsetX', value)
+                          }
+                          disabled={index != activeBuilding}
+                        />
+                        <ReusableSlider
+                          type="upDown"
+                          name={`buildingOffsetY-${index}`}
+                          value={building.offsetY}
+                          increment={10}
+                          label="Back/Front:"
+                          labelClass="white center"
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'offsetY', value)
+                          }
+                          disabled={index != activeBuilding}
+                        />
+                        <ReusableSlider
+                          type="rotation"
+                          name={`buildingRotation-${index}`}
+                          value={building.rotation}
+                          increment={90}
+                          label="Rotation:"
+                          labelClass="white center"
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'rotation', value)
+                          }
+                          disabled={index != activeBuilding}
+                        />
                         <div className="cardInput">
                           <div className="center">
                             <label htmlFor={`buildingCommonWall-${index}`}>
@@ -973,11 +866,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           />
         )}
         {activeCard == 'finalize-quote' && (
-          <FinalizeQuote
-            values={values}
-            setValues={setValues}
-            handleChange={handleChange}
-          />
+          <FinalizeQuote values={values} handleChange={handleChange} />
         )}
         {!isDesktop &&
           (values.buildings[activeBuilding].width > 0 ||

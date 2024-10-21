@@ -56,9 +56,9 @@ export const initialState = {
     {
       width: '',
       length: '',
-      offsetX: '0',
-      offsetY: '0',
-      rotation: '0',
+      offsetX: 0,
+      offsetY: 0,
+      rotation: 0,
       commonWall: '',
       // Building - Layout
       shape: 'symmetrical',
@@ -121,7 +121,7 @@ export const initialState = {
       wallPanelType: 'pbr',
       wallPanelGauge: '26',
       wallPanelFinish: 'painted',
-      includeGutters: false,
+      includeGutters: true,
       roofInsulation: '',
       roofInsulationOthers: false,
       wallInsulation: '',
