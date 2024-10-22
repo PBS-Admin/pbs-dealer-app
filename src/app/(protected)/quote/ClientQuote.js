@@ -12,6 +12,7 @@ import {
   faArrowRotateLeft,
   faArrowRotateRight,
   faTrash,
+  faComment,
   faCopy,
   faPlus,
   faCheck,
@@ -410,12 +411,21 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         <div>
           <div className={styles.tabContainer}>
             {quoteId != 0 && (
-              <button
-                onClick={openQuoteDeleteDialog}
-                className={styles.deleteTab}
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </button>
+              <>
+                <button
+                  // onClick={openQuoteEstimatorNotes}
+                  className={styles.noteTab}
+                >
+                  <FontAwesomeIcon icon={faComment} />
+                  <div className={styles.noteQty}>3</div>
+                </button>
+                <button
+                  onClick={openQuoteDeleteDialog}
+                  className={styles.deleteTab}
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              </>
             )}
             <button onClick={handleSubmit} className={styles.saveTab}>
               <FontAwesomeIcon icon={saveSuccess ? faCheck : faSave} />
@@ -441,37 +451,37 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               Building Project
             </button>
             <button
-              className={`${activeCard == 'bldg-layout' ? styles.activeCard : ''}`}
+              className={`${styles.bldg} ${activeCard == 'bldg-layout' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-layout')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Layout
             </button>
             <button
-              className={`${activeCard == 'bldg-extensions' ? styles.activeCard : ''}`}
+              className={`${styles.bldg} ${activeCard == 'bldg-extensions' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-extensions')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Extensions
             </button>
             <button
-              className={`${activeCard == 'bldg-partitions' ? styles.activeCard : ''}`}
+              className={`${styles.bldg} ${activeCard == 'bldg-partitions' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-partitions')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Partitions
             </button>
             <button
-              className={`${activeCard == 'bldg-options' ? styles.activeCard : ''}`}
+              className={`${styles.bldg} ${activeCard == 'bldg-options' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-options')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Options
             </button>
             {/* <button
-              className={`${activeCard == 'bldg-cranes' ? styles.activeCard : ''}`}
+              className={`${styles.bldg} ${activeCard == 'bldg-cranes' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-cranes')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Cranes
             </button> */}
             <button
-              className={`${activeCard == 'bldg-openings' ? styles.activeCard : ''}`}
+              className={`${styles.bldg} ${activeCard == 'bldg-openings' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-openings')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Openings
@@ -564,6 +574,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                         name={`buildingPeakOffset-${index}`}
                         label="Back Peak Offset:"
                         value={building.backPeakOffset}
+                        allowBlankValue={true}
                         onChange={(name, value) =>
                           handleNestedChange(index, 'backPeakOffset', value)
                         }
@@ -576,6 +587,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       name={`buildingWidth-${index}`}
                       label="Width:"
                       value={building.width}
+                      allowBlankValue={true}
                       onChange={(name, value) =>
                         handleNestedChange(index, 'width', value)
                       }
@@ -585,6 +597,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       name={`buildingLength-${index}`}
                       label="Length:"
                       value={building.length}
+                      allowBlankValue={true}
                       onChange={(name, value) =>
                         handleNestedChange(index, 'length', value)
                       }
@@ -596,6 +609,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           name={`buildingBackEaveHeight-${index}`}
                           label="Eave Height:"
                           value={building.backEaveHeight}
+                          allowBlankValue={true}
                           onChange={(name, value) =>
                             handleNestedChange(index, 'backEaveHeight', value)
                           }
@@ -606,6 +620,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           name={`buildingBackRoofPitch-${index}`}
                           label="Roof Pitch:"
                           value={building.backRoofPitch}
+                          allowBlankValue={true}
                           onChange={(name, value) =>
                             handleNestedChange(index, 'backRoofPitch', value)
                           }
@@ -620,6 +635,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           name={`buildingBackEaveHeight-${index}`}
                           label="Low Eave Height:"
                           value={building.backEaveHeight}
+                          allowBlankValue={true}
                           onChange={(name, value) =>
                             handleNestedChange(index, 'backEaveHeight', value)
                           }
@@ -629,6 +645,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           name={`buildingFrontEaveHeight-${index}`}
                           label="High Eave Height:"
                           value={building.frontEaveHeight}
+                          allowBlankValue={true}
                           onChange={(name, value) =>
                             handleNestedChange(index, 'frontEaveHeight', value)
                           }
@@ -651,6 +668,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           name={`buildingBackEaveHeight-${index}`}
                           label="Back Eave Height:"
                           value={building.backEaveHeight}
+                          allowBlankValue={true}
                           onChange={(name, value) =>
                             handleNestedChange(index, 'backEaveHeight', value)
                           }
@@ -660,6 +678,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           name={`buildingFrontEaveHeight-${index}`}
                           label="Front Eave Height:"
                           value={building.frontEaveHeight}
+                          allowBlankValue={true}
                           onChange={(name, value) =>
                             handleNestedChange(index, 'frontEaveHeight', value)
                           }
@@ -692,9 +711,11 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       <div className="divider white"></div>
                       <div className="grid4">
                         <ReusableSlider
+                          className="blue"
                           type="leftRight"
                           name={`buildingOffsetX-${index}`}
                           value={building.offsetX}
+                          allowBlankValue={false}
                           increment={10}
                           label="Left/Right:"
                           labelClass="white center"
@@ -704,9 +725,11 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           disabled={index != activeBuilding}
                         />
                         <ReusableSlider
+                          className="blue"
                           type="upDown"
                           name={`buildingOffsetY-${index}`}
                           value={building.offsetY}
+                          allowBlankValue={false}
                           increment={10}
                           label="Back/Front:"
                           labelClass="white center"
@@ -716,9 +739,11 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           disabled={index != activeBuilding}
                         />
                         <ReusableSlider
+                          className="blue"
                           type="rotation"
                           name={`buildingRotation-${index}`}
                           value={building.rotation}
+                          allowBlankValue={false}
                           increment={90}
                           label="Rotation:"
                           labelClass="white center"

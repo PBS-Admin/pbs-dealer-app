@@ -9,19 +9,22 @@ import {
   faChevronUp,
   faArrowRotateRight,
   faArrowRotateLeft,
+  faMinus,
+  faPlus,
 } from '@fortawesome/free-solid-svg-icons';
 
 const ReusableSlider = ({
   type = 'leftRight',
   value,
   name,
+  className = '',
   label,
   labelClass = '',
   increment = 10,
   onChange,
   negative = true,
-  noBlankValue = true,
-  allowZero = noBlankValue ? true : false,
+  allowBlankValue = true,
+  allowZero = allowBlankValue ? false : true,
   disabled,
 }) => {
   const validValues = Array.from(
@@ -59,7 +62,9 @@ const ReusableSlider = ({
         ? faChevronDown
         : type == 'rotation'
           ? faArrowRotateRight
-          : faChevronLeft;
+          : type == 'number'
+            ? faMinus
+            : faChevronLeft;
 
   const iconRightSide =
     type == 'leftRight'
@@ -68,14 +73,16 @@ const ReusableSlider = ({
         ? faChevronUp
         : type == 'rotation'
           ? faArrowRotateLeft
-          : faChevronRight;
+          : type == 'number'
+            ? faPlus
+            : faChevronRight;
 
   return (
     <div className="cardInput">
       <label className={labelClass} htmlFor={name}>
         {label}
       </label>
-      <div className="sliderGrid">
+      <div className={`sliderGrid ${className}`}>
         <button
           className="sliderLeftButton"
           type="button"
@@ -85,12 +92,24 @@ const ReusableSlider = ({
         >
           <FontAwesomeIcon icon={iconLeftSide} />
         </button>
-        {type == 'rotation' ? (
+        {type == 'number' ? (
           <ReusableInteger
             name={name}
             value={value}
             validValues={validValues}
-            defaultValue={0}
+            negative={negative}
+            allowBlankValue={allowBlankValue}
+            showLabel={false}
+            onChange={handleInputChange}
+            placeholder="Qty"
+            disabled={disabled}
+          />
+        ) : type == 'rotation' ? (
+          <ReusableInteger
+            name={name}
+            value={value}
+            validValues={validValues}
+            allowZero={true}
             suffix="°"
             showLabel={false}
             onChange={handleInputChange}
@@ -102,7 +121,7 @@ const ReusableSlider = ({
             value={value}
             showLabel={false}
             negative={negative}
-            noBlankValue={noBlankValue}
+            allowBlankValue={allowBlankValue}
             allowZero={allowZero}
             onChange={onChange}
             placeholder=""

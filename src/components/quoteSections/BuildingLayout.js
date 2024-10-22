@@ -581,7 +581,7 @@ const BuildingLayout = ({
 
       <section className="card start">
         <header className="cardHeader">
-          <h3>Purlins and Girts</h3>
+          <h3>Purlins & Girts</h3>
         </header>
         <div className="grid4 alignTop">
           <div className="grid">

@@ -48,6 +48,7 @@ export const initialState = {
   seismicSds: '',
   seismicSd1: '',
   // Accessories
+  skylight4x4: '',
   mandoors: [],
   // Building Project Page
   steelFinish: '',

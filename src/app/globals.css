@@ -231,6 +231,9 @@ p {
   justify-content: center; 
   gap: .25em;
   padding: .25em;
+}
+
+.cardInput:has(button.icon) {
   min-height: 64px;
 }
 
@@ -243,6 +246,13 @@ p {
   justify-content: space-between;
   display: flex;
   min-height: 30px;
+}
+
+.cardButton {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center; 
+  gap: .25em;
 }
 
 .projInput{
@@ -290,6 +300,10 @@ input[type='text']:disabled {
   background-color: var(--light-gray);
 }
 
+input[type='checkbox']:disabled + label {
+  color: var(--dark-gray);
+}
+
 select {  
   height: 1.75em;    
   border-radius: .25em;
@@ -330,6 +344,10 @@ select option:disabled {
   margin-block: .5em;  
   height: 1px;
   background: var(--white-gradient);
+}
+
+.spacer {
+  margin-top: 10px;
 }
 
 .column{
@@ -504,6 +522,36 @@ button.small {
   background-color: var(--dark-blue);
 }
 
+.note {
+  background-color: var(--blue);
+  color: var(--background-white);
+  transition: all .3s ease;
+}
+
+.note:hover {
+  background-color: var(--light-blue);
+}
+
+.delete {
+  background-color: var(--red);
+  color: var(--background-white);
+  transition: all .3s ease;
+}
+
+.delete:hover {
+  background-color: var(--light-red);
+}
+
+.archive {
+  background-color: var(--gray);
+  color: var(--background-white);
+  transition: all .3s ease;
+}
+
+.archive:hover {
+  background-color: var(--light-gray);
+}
+
 .accent{  
   background-color: var(--orange);
   color: var(--background-white);
@@ -658,7 +706,7 @@ button.success:hover{
 }
 
 /* Grid Layout */
-.grid, .grid2, .grid3, .grid4, .grid6, .grid8, .tableGrid5, .tableGrid6, .tableGrid7, .tableGrid8 {
+.grid, .grid2, .grid3, .grid4, .grid6, .grid8, .tableGrid5, .tableGrid6, .tableGrid7, .tableGrid8, .tableGrid9, .tableGrid10 {
   display: grid;
   grid-template-columns: 1fr;  
   gap: 0 .5em;
@@ -704,34 +752,34 @@ button.success:hover{
 }
 
 .sliderLeftButton {
-  font-size: 18px;
+  font-size: 15px;
   padding: 2px;
-  border: 1px solid var(--light-blue);
+  border: 1px solid var(--dark-gray);
   border-radius: 5px 0 0 5px;
   color: var(--background-white);
   align-self: flex-end;
   background: var(--light-gray);
   aspect-ratio: 1 /1;
-  min-width: 32px;
+  width: 28px;
 }
 
 .sliderRightButton {
-  font-size: 18px;
+  font-size: 15px;
   padding: 2px;
-  border: 1px solid var(--light-blue);
+  border: 1px solid var(--dark-gray);
   border-radius: 0 5px 5px 0;
   color: var(--background-white);
   align-self: flex-end;
   background: var(--light-gray);
   aspect-ratio: 1 /1;
-  min-width: 32px;
+  width: 28px;
 }
 
 .sliderGrid {
   display: grid;
-  grid-template-columns: 32px minmax(60px, 1fr) 32px;  
+  grid-template-columns: 28px minmax(60px, 1fr) 28px;  
   gap: 0;
-  align-items: flex-end;
+  /* align-items: flex-end; */
 }
 
 .sliderGrid div {
@@ -748,9 +796,18 @@ button.success:hover{
 .sliderGrid input {
   border-radius: 0 !important;
   text-align: center;
+  height: 26px;
 }
 
-.sliderGrid button:disabled {
+.sliderGrid.blue input {
+  height: 28px;
+}
+
+.sliderGrid.blue button {
+  border: 1px solid var(--light-blue);
+}
+
+.sliderGrid.blue button:disabled {
   border: 1px solid var(--background-white);
 }
 
@@ -883,6 +940,14 @@ button.success:hover{
 
   .tableGrid8 {
     grid-template-columns: repeat(2, 1fr);  
+  }
+
+  .tableGrid10 {
+    grid-template-columns: repeat(3, 1fr);  
+  }
+
+  .tableGrid10 .span3 {
+    grid-column: span 3;
   }
 
   .grid8 .span5, .grid8 .span6, .grid8 .span7 {
@@ -1020,7 +1085,7 @@ button.success:hover{
 @media screen and (min-width: 1000px) {
   main{
     grid-template-columns: 350px 1fr;
-    grid-template-rows: 100px 1fr 100px;    
+    grid-template-rows: 100px 1fr;    
   }
 
   .hideWithSidebar {
@@ -1127,6 +1192,22 @@ button.success:hover{
     grid-template-columns: repeat(4, minmax(180px, 1fr));
   }
 
+  .tableGrid9 {
+    grid-template-columns: repeat(5, minmax(120px, 1fr));
+  }
+
+  .tableGrid10 {
+    grid-template-columns: repeat(5, minmax(120px, 1fr));
+  }
+
+  .tableGrid10 .span6 {
+    grid-column: span 2;
+  }
+
+  .tableGrid10 .span3 {
+    grid-column: span 1 !important;
+  }
+
   .grid8 .span2 {
     grid-column: span 1;
   }
@@ -1168,6 +1249,18 @@ button.success:hover{
     grid-template-columns: repeat(7, minmax(120px, 1fr)) 30px;
   }
 
+  .tableGrid9 {
+    grid-template-columns: repeat(8, minmax(20px, 1fr)) 30px;
+  }
+
+  .tableGrid9 .span2 {
+    grid-column: span 1;
+  }
+
+  .tableGrid10 {
+    grid-template-columns: repeat(9, minmax(20px, 1fr)) 30px;
+  }
+
   .span2 {
     grid-column: span 2 !important;
   }
@@ -1201,6 +1294,10 @@ button.success:hover{
   }
 
   .tableGrid7 .span2 {
+    grid-column: span 1 !important;
+  }
+
+  .tableGrid9 .span2 {
     grid-column: span 1 !important;
   }
 }

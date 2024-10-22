@@ -12,7 +12,7 @@ const decimalToFeetInches = (decimal) => {
   return { feet, inches };
 };
 
-const formatFeetInches = (feet, inches, noBlankValue) => {
+const formatFeetInches = (feet, inches) => {
   let ft = feet;
   let inch = Math.floor(inches);
   let numerator = Math.round((inches - inch) * 16);
@@ -41,7 +41,7 @@ const formatFeetInches = (feet, inches, noBlankValue) => {
   }
 
   if (isNaN(feet) || isNaN(inches)) {
-    return noBlankValue ? `0'-0"` : '';
+    return `0'-0"`;
   } else if (numerator > 0) {
     return `${ft}'-${inch} ${numerator}/${denominator}"`;
   } else {
@@ -50,18 +50,13 @@ const formatFeetInches = (feet, inches, noBlankValue) => {
   // return `${feet}'-${inches.toString().padStart(1, '0')}"`;
 };
 
-const parseFeetInches = (input, zero, neg) => {
+const parseFeetInches = (input, neg) => {
   // Handle decimal input
-  if (
-    (parseFloat(input) != 0 || zero) &&
-    (parseFloat(input) >= 0 || neg) &&
-    !isNaN(parseFloat(input))
-  ) {
+  if (input == '') {
+    return decimalToFeetInches(0);
+  } else if ((parseFloat(input) >= 0 || neg) && !isNaN(parseFloat(input))) {
     return decimalToFeetInches(parseFloat(input));
-  } else if (
-    (parseFloat(input) == 0 && !zero) ||
-    (parseFloat(input) < 0 && !neg)
-  ) {
+  } else if (parseFloat(input) < 0 && !neg) {
     return null;
   }
 
@@ -85,8 +80,8 @@ const FeetInchesInput = ({
   onChange,
   onFocus,
   negative = false,
-  noBlankValue = false,
-  allowZero = noBlankValue ? true : false,
+  allowBlankValue = false,
+  allowZero = allowBlankValue ? false : true,
   row,
   calc,
   onCalc,
@@ -97,7 +92,9 @@ const FeetInchesInput = ({
 
   useEffect(() => {
     const { feet, inches } = decimalToFeetInches(value);
-    setInputValue(formatFeetInches(feet, inches, noBlankValue));
+    setInputValue(
+      value == 0 && !allowZero ? '' : formatFeetInches(feet, inches)
+    );
   }, [value]);
 
   const handleInputChange = (e) => {
@@ -106,19 +103,22 @@ const FeetInchesInput = ({
   };
 
   const handleBlur = () => {
-    const parsed = parseFeetInches(inputValue, allowZero, negative);
+    const parsed = parseFeetInches(inputValue, negative);
     if (parsed) {
       const { feet, inches } = parsed;
       const decimalValue = feetToDecimal(feet, inches);
       onChange(name, decimalValue);
-      setInputValue(formatFeetInches(feet, inches, noBlankValue));
-    } else if (inputValue == '') {
-      onChange(name, noBlankValue ? 0 : '');
-      setInputValue(noBlankValue ? `0'-0"` : '');
+      setInputValue(
+        (inputValue == 0 && !allowZero) || (inputValue == '' && allowBlankValue)
+          ? ''
+          : formatFeetInches(feet, inches)
+      );
     } else {
       // Reset to the last valid value
       const { feet, inches } = decimalToFeetInches(value);
-      setInputValue(formatFeetInches(feet, inches, noBlankValue));
+      setInputValue(
+        value == 0 && !allowZero ? '' : formatFeetInches(feet, inches)
+      );
     }
   };
 
