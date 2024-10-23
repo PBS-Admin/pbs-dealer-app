@@ -101,7 +101,7 @@ const BuildingPartitions = ({
 
   return (
     <>
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Partition Walls</h3>
         </header>

@@ -7,6 +7,7 @@
   --dark-blue: #103494;
   --light-blue: #A3B9F5;
   --blue: #7E9DF1;
+  --yellow: #FFD700;
   --orange: #F94C08;
   --light-orange: #FBB99D;
   --background-white: #F5F5F5;
@@ -139,6 +140,7 @@ p {
   display: grid;
   gap: 1em;
   margin: 1vw;
+  align-content: flex-start;
   /* align-items: center;
   justify-content: center; */
 }
@@ -207,10 +209,6 @@ p {
   margin-bottom: 1em;
 }
 
-.start{
-  align-self: flex-start;
-}
-
 .alignTop {
   align-items: flex-start !important;
 }
@@ -246,6 +244,23 @@ p {
   justify-content: space-between;
   display: flex;
   min-height: 30px;
+}
+
+.cardInput.row {
+  display: flex;
+  flex-flow: row-reverse;
+  align-items: flex-end;
+  justify-content: left;
+}
+
+.cardInput.row label {
+  padding-left: 10px;
+  align-self: center;
+  align-items: center;
+}
+
+.cardInput.row .sliderGrid {
+  max-width: 100px;
 }
 
 .cardButton {
@@ -777,7 +792,7 @@ button.success:hover{
 
 .sliderGrid {
   display: grid;
-  grid-template-columns: 28px minmax(60px, 1fr) 28px;  
+  grid-template-columns: 28px minmax(44px, 1fr) 28px;  
   gap: 0;
   /* align-items: flex-end; */
 }
@@ -827,16 +842,17 @@ button.success:hover{
 .onDesktop, .offOnDesktop = 1500px
 */
 @media screen and (min-width: 350px) {
-  .cardInput label, .cardInput input, .cardInput select, .cardRow label, .cardRow input, .cardRow select{
+  .cardInput label, .cardInput input, .cardInput select, .cardRow label, .cardRow input, .cardRow select, .checkRow.large {
     font-size: 3.15vw;
   }
-
+  
   .radioGroup{
     font-size: 3.15vw;
   }
 
   .sliderGrid input {
     font-size: 15px;
+    padding: 0;
   }
 }
 
@@ -865,7 +881,7 @@ button.success:hover{
     font-size: .75em;
   }
 
-  .cardInput label, .cardInput input, .cardInput select, .cardRow label, .cardRow input, .cardRow select{
+  .cardInput label, .cardInput input, .cardInput select, .cardRow label, .cardRow input, .cardRow select, .checkRow.large {
     font-size: 15px;
   }
 
@@ -1096,7 +1112,7 @@ button.success:hover{
     display: none !important;
   }
 
-  .inputForm{
+  .inputForm {
     margin-right: .5em;
   }
 

@@ -269,7 +269,7 @@ const BuildingOpenings = ({
   );
 
   return (
-    <section className="card start">
+    <section className="card">
       <header>
         <h3>Openings</h3>
       </header>

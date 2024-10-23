@@ -15,7 +15,8 @@ function useFormState(initialState) {
   } = useWind();
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    console.log('handleChange hit', e);
+    const { name, value, type } = e.target;
 
     setValues((prev) => {
       // Parse the value if it's a number field

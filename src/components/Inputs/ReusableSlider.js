@@ -17,14 +17,16 @@ const ReusableSlider = ({
   type = 'leftRight',
   value,
   name,
-  className = '',
+  row = false,
   label,
   labelClass = '',
   increment = 10,
   onChange,
+  onFocus,
   negative = true,
   allowBlankValue = true,
   allowZero = allowBlankValue ? false : true,
+  placeholder = '',
   disabled,
 }) => {
   const validValues = Array.from(
@@ -77,12 +79,14 @@ const ReusableSlider = ({
             ? faPlus
             : faChevronRight;
 
+  const rowLayout = row ? 'row' : '';
+
   return (
-    <div className="cardInput">
+    <div className={`cardInput ${rowLayout}`}>
       <label className={labelClass} htmlFor={name}>
         {label}
       </label>
-      <div className={`sliderGrid ${className}`}>
+      <div className="sliderGrid">
         <button
           className="sliderLeftButton"
           type="button"
@@ -100,8 +104,9 @@ const ReusableSlider = ({
             negative={negative}
             allowBlankValue={allowBlankValue}
             showLabel={false}
-            onChange={handleInputChange}
-            placeholder="Qty"
+            onChange={onChange}
+            onFocus={onFocus}
+            placeholder={placeholder}
             disabled={disabled}
           />
         ) : type == 'rotation' ? (
@@ -113,6 +118,7 @@ const ReusableSlider = ({
             suffix="°"
             showLabel={false}
             onChange={handleInputChange}
+            placeholder={placeholder}
             disabled={disabled}
           />
         ) : (
@@ -124,7 +130,7 @@ const ReusableSlider = ({
             allowBlankValue={allowBlankValue}
             allowZero={allowZero}
             onChange={onChange}
-            placeholder=""
+            placeholder={placeholder}
             disabled={disabled}
           />
         )}

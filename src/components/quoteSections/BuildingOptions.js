@@ -231,7 +231,7 @@ const BuildingOptions = ({
   return (
     <>
       {/* Liner Panel Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Liner Panels</h3>
         </header>
@@ -403,7 +403,7 @@ const BuildingOptions = ({
       </section>
 
       {/* Wainscot Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Wainscots</h3>
         </header>
@@ -591,7 +591,7 @@ const BuildingOptions = ({
       </section>
 
       {/* Partial Wall Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Partial Walls</h3>
         </header>
@@ -755,7 +755,7 @@ const BuildingOptions = ({
       </section>
 
       {/* Wall Skirt Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Wall Skirts</h3>
         </header>
@@ -909,7 +909,7 @@ const BuildingOptions = ({
       </section>
 
       {/* Polycarbonate Relite Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Polycarbonate Relites</h3>
         </header>

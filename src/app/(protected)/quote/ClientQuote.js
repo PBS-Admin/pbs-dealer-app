@@ -501,7 +501,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           </nav>
           {(values.buildings[activeBuilding].width > 0 ||
             values.buildings[activeBuilding].length > 0) && (
-            <section className={`card start ${styles.sketchBox}`}>
+            <section className={`card ${styles.sketchBox}`}>
               <header>
                 <h3>Active Building</h3>
               </header>
@@ -717,6 +717,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           value={building.offsetX}
                           allowBlankValue={false}
                           increment={10}
+                          placeholder="Feet"
                           label="Left/Right:"
                           labelClass="white center"
                           onChange={(name, value) =>
@@ -731,6 +732,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           value={building.offsetY}
                           allowBlankValue={false}
                           increment={10}
+                          placeholder="Feet"
                           label="Back/Front:"
                           labelClass="white center"
                           onChange={(name, value) =>
@@ -745,6 +747,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           value={building.rotation}
                           allowBlankValue={false}
                           increment={90}
+                          placeholder="Degree"
                           label="Rotation:"
                           labelClass="white center"
                           onChange={(name, value) =>
@@ -896,7 +899,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         {!isDesktop &&
           (values.buildings[activeBuilding].width > 0 ||
             values.buildings[activeBuilding].length > 0) && (
-            <section className={`card start ${styles.sketchBox}`}>
+            <section className={`card ${styles.sketchBox}`}>
               <header>
                 <h3>Active Building</h3>
               </header>

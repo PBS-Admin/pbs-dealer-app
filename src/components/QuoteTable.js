@@ -5,8 +5,19 @@ import { useState } from 'react';
 import DeleteDialog from './DeleteDialog';
 import styles from './QuoteTable.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faCopy } from '@fortawesome/free-solid-svg-icons';
-import { faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
+import {
+  faTrash,
+  faCopy,
+  faExclamationTriangle,
+  faCircleQuestion,
+} from '@fortawesome/free-solid-svg-icons';
+import {
+  faCircle,
+  faCircleCheck,
+  faMessage,
+  faRectangleXmark,
+  faComment,
+} from '@fortawesome/free-regular-svg-icons';
 import CopyDialog from './CopyDialog';
 
 export default function QuoteTable({ initialQuotes, onCopyQuote }) {
@@ -141,10 +152,7 @@ export default function QuoteTable({ initialQuotes, onCopyQuote }) {
                           style={{ color: 'var(--green)' }}
                         />
                       ) : (
-                        <FontAwesomeIcon
-                          icon={faCircle}
-                          style={{ color: 'var(--red)' }}
-                        />
+                        <FontAwesomeIcon icon={faCircle} color="var(--red)" />
                       )}
                     </Link>
                   </td>

@@ -73,7 +73,7 @@ const BuildingExtensions = ({
 
   return (
     <>
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Roof Extensions</h3>
         </header>
@@ -236,7 +236,7 @@ const BuildingExtensions = ({
         </div>
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Canopies</h3>
         </header>
@@ -473,18 +473,18 @@ const BuildingExtensions = ({
         )}
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Facia</h3>
         </header>
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Parapet Walls</h3>
         </header>
       </section>
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Bumpouts</h3>
         </header>

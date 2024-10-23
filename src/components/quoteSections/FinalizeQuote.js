@@ -80,7 +80,7 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
 
   return (
     <>
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
           <h3>Finalize Quote</h3>
         </header>
@@ -107,7 +107,7 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
               {isExporting ? status : 'Export To MBS'}
             </button>
           </div>
-          <div class="divider offOnPhone"></div>
+          <div className="divider offOnPhone"></div>
           <div className="cardButton">
             <button
               type="button"
@@ -128,7 +128,7 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
               Open Contract
             </button>
           </div>
-          <div class="divider showWithSidebar span2"></div>
+          <div className="divider showWithSidebar span2"></div>
           <div className="cardButton">
             <button
               type="button"
@@ -140,7 +140,7 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
               Archive Quote
             </button>
           </div>
-          <div class="divider offOnPhone"></div>
+          <div className="divider offOnPhone"></div>
           <div className="cardButton">
             <button
               type="button"
