@@ -8,6 +8,9 @@ export async function POST(request) {
   try {
     const { inputFilePath, outputFilePath } = await request.json();
 
+    console.log('inputFile: ', inputFilePath);
+    console.log('outputFile: ', outputFilePath);
+
     if (!inputFilePath || !outputFilePath) {
       return NextResponse.json(
         { error: 'Missing required paths' },
