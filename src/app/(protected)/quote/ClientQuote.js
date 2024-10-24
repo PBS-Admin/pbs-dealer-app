@@ -720,8 +720,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           placeholder="Feet"
                           label="Left/Right:"
                           labelClass="white center"
-                          onChange={(name, value) =>
-                            handleNestedChange(index, 'offsetX', value)
+                          onChange={(e) =>
+                            handleNestedChange(index, 'offsetX', e.target.value)
                           }
                           disabled={index != activeBuilding}
                         />
@@ -735,8 +735,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           placeholder="Feet"
                           label="Back/Front:"
                           labelClass="white center"
-                          onChange={(name, value) =>
-                            handleNestedChange(index, 'offsetY', value)
+                          onChange={(e) =>
+                            handleNestedChange(index, 'offsetY', e.target.value)
                           }
                           disabled={index != activeBuilding}
                         />
@@ -750,8 +750,12 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           placeholder="Degree"
                           label="Rotation:"
                           labelClass="white center"
-                          onChange={(name, value) =>
-                            handleNestedChange(index, 'rotation', value)
+                          onChange={(e) =>
+                            handleNestedChange(
+                              index,
+                              'rotation',
+                              e.target.value
+                            )
                           }
                           disabled={index != activeBuilding}
                         />

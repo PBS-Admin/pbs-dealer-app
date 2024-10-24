@@ -139,7 +139,7 @@ const Accessories = ({
               increment={1}
               placeholder="Qty"
               label="4x4 Insulated Skylight with Curb"
-              onChange={(e) => handleChange(e, 'skylight4x4')}
+              onChange={handleChange}
               row={true}
             />
             <ReusableSlider
@@ -151,7 +151,7 @@ const Accessories = ({
               increment={1}
               placeholder="Qty"
               label={`12"x10 ft Ridge Vent with Bird Screens and Dampers`}
-              onChange={(e) => handleChange(e, 'ridgeVent10ft')}
+              onChange={handleChange}
               row={true}
             />
             <ReusableSlider
@@ -163,7 +163,7 @@ const Accessories = ({
               increment={1}
               placeholder="Qty"
               label="2x2x6 Light Weight Canopy Kit"
-              onChange={(e) => handleChange(e, 'canopyKit2x2x6')}
+              onChange={handleChange}
               row={true}
             />
             <ReusableSlider
@@ -175,7 +175,7 @@ const Accessories = ({
               increment={1}
               placeholder="Qty"
               label="2x2x9 Light Weight Canopy Kit"
-              onChange={(e) => handleChange(e, 'canopyKit2x2x9')}
+              onChange={handleChange}
               row={true}
             />
           </div>
@@ -213,9 +213,7 @@ const Accessories = ({
                 placeholder="Qty"
                 label="Qty:"
                 labelClass="offOnLaptop"
-                onChange={(e) =>
-                  handleMandoorChange(mandoorIndex, 'qty', e.target.value)
-                }
+                onChange={(e) => handleMandoorChange(mandoorIndex, 'qty', e)}
                 onFocus={() => {
                   if (activeMandoor !== mandoorIndex) {
                     setActiveMandoor(mandoorIndex);
@@ -227,9 +225,7 @@ const Accessories = ({
                 label="Door Size:"
                 labelClass="offOnLaptop"
                 value={mandoor.size}
-                onChange={(e) =>
-                  handleMandoorChange(mandoorIndex, 'size', e.target.value)
-                }
+                onChange={(e) => handleMandoorChange(mandoorIndex, 'size', e)}
                 onFocus={() => {
                   if (activeMandoor !== mandoorIndex) {
                     setActiveMandoor(mandoorIndex);
@@ -242,9 +238,7 @@ const Accessories = ({
                 label="Glass:"
                 labelClass="offOnLaptop"
                 value={mandoor.glass}
-                onChange={(e) =>
-                  handleMandoorChange(mandoorIndex, 'glass', e.target.value)
-                }
+                onChange={(e) => handleMandoorChange(mandoorIndex, 'glass', e)}
                 onFocus={() => {
                   if (activeMandoor !== mandoorIndex) {
                     setActiveMandoor(mandoorIndex);
@@ -261,11 +255,7 @@ const Accessories = ({
                   checked={mandoor.leverLockset}
                   disabled={true}
                   onChange={(e) =>
-                    handleMandoorChange(
-                      mandoorIndex,
-                      'leverLockset',
-                      e.target.value
-                    )
+                    handleMandoorChange(mandoorIndex, 'leverLockset', e)
                   }
                   onFocus={() => {
                     if (activeMandoor !== mandoorIndex) {
@@ -282,18 +272,14 @@ const Accessories = ({
                   type="checkbox"
                   id={`building-mandoorDeadBolt-${mandoorIndex}`}
                   name={`building-mandoorDeadBolt-${mandoorIndex}`}
-                  checked={mandoor.deadBolt && !mandoor.panic}
+                  checked={mandoor.deadBolt}
                   disabled={
                     mandoor.size == '3070' ||
                     mandoor.size == '4070' ||
                     mandoor.size == '6070'
                   }
                   onChange={(e) =>
-                    handleMandoorChange(
-                      mandoorIndex,
-                      'deadBolt',
-                      e.target.value
-                    )
+                    handleMandoorChange(mandoorIndex, 'deadBolt', e)
                   }
                   onFocus={() => {
                     if (activeMandoor !== mandoorIndex) {
@@ -317,7 +303,7 @@ const Accessories = ({
                     mandoor.size == '6070'
                   }
                   onChange={(e) =>
-                    handleMandoorChange(mandoorIndex, 'panic', e.target.value)
+                    handleMandoorChange(mandoorIndex, 'panic', e)
                   }
                   onFocus={() => {
                     if (activeMandoor !== mandoorIndex) {
@@ -346,7 +332,7 @@ const Accessories = ({
                     mandoor.size == '6070'
                   }
                   onChange={(e) =>
-                    handleMandoorChange(mandoorIndex, 'closer', e.target.value)
+                    handleMandoorChange(mandoorIndex, 'closer', e)
                   }
                   onFocus={() => {
                     if (activeMandoor !== mandoorIndex) {
@@ -370,11 +356,7 @@ const Accessories = ({
                     mandoor.size == '6070'
                   }
                   onChange={(e) =>
-                    handleMandoorChange(
-                      mandoorIndex,
-                      'kickPlate',
-                      e.target.value
-                    )
+                    handleMandoorChange(mandoorIndex, 'kickPlate', e)
                   }
                   onFocus={() => {
                     if (activeMandoor !== mandoorIndex) {
@@ -394,7 +376,7 @@ const Accessories = ({
                   checked={mandoor.mullion && mandoor.size == '6070P'}
                   disabled={mandoor.size != '6070P'}
                   onChange={(e) =>
-                    handleMandoorChange(mandoorIndex, 'mullion', e.target.value)
+                    handleMandoorChange(mandoorIndex, 'mullion', e)
                   }
                   onFocus={() => {
                     if (activeMandoor !== mandoorIndex) {
@@ -439,7 +421,7 @@ const Accessories = ({
                   id="noteCMUWallByOthers"
                   name="noteCMUWallByOthers"
                   checked={values.noteCMUWallByOthers}
-                  onChange={(e) => handleChange(e, 'noteCMUWallByOthers')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="noteCMUWallByOthers">
                   CMU Walls - By Others
@@ -451,7 +433,7 @@ const Accessories = ({
                   id="notePlywoodLinerByOthers"
                   name="notePlywoodLinerByOthers"
                   checked={values.notePlywoodLinerByOthers}
-                  onChange={(e) => handleChange(e, 'notePlywoodLinerByOthers')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="notePlywoodLinerByOthers">
                   Plywood Liner - By Others
@@ -463,7 +445,7 @@ const Accessories = ({
                   id="noteMezzanineByOthers"
                   name="noteMezzanineByOthers"
                   checked={values.noteMezzanineByOthers}
-                  onChange={(e) => handleChange(e, 'noteMezzanineByOthers')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="noteMezzanineByOthers">
                   Mezzanine - By Others
@@ -475,7 +457,7 @@ const Accessories = ({
                   id="noteFirewallByOthers"
                   name="noteFirewallByOthers"
                   checked={values.noteFirewallByOthers}
-                  onChange={(e) => handleChange(e, 'noteFirewallByOthers')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="noteFirewallByOthers">
                   Firewall - By Others
@@ -491,7 +473,7 @@ const Accessories = ({
                   id="noteExtBldgDisclaimer"
                   name="noteExtBldgDisclaimer"
                   checked={values.noteExtBldgDisclaimer}
-                  onChange={(e) => handleChange(e, 'noteExtBldgDisclaimer')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="noteExtBldgDisclaimer">
                   Existing Buildings Disclaimer
@@ -503,7 +485,7 @@ const Accessories = ({
                   id="noteRoofPitchDisclaimer"
                   name="noteRoofPitchDisclaimer"
                   checked={values.noteRoofPitchDisclaimer}
-                  onChange={(e) => handleChange(e, 'noteRoofPitchDisclaimer')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="noteRoofPitchDisclaimer">
                   PBR Roofing with 1/2:12 Roof Pitch
@@ -515,7 +497,7 @@ const Accessories = ({
                   id="noteSeismicGapDisclaimer"
                   name="noteSeismicGapDisclaimer"
                   checked={values.noteSeismicGapDisclaimer}
-                  onChange={(e) => handleChange(e, 'noteSeismicGapDisclaimer')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="noteSeismicGapDisclaimer">
                   Seismic Gap Disclaimer
@@ -527,9 +509,7 @@ const Accessories = ({
                   id="noteWaterPondingDisclaimer"
                   name="noteWaterPondingDisclaimer"
                   checked={values.noteWaterPondingDisclaimer}
-                  onChange={(e) =>
-                    handleChange(e, 'noteWaterPondingDisclaimer')
-                  }
+                  onChange={handleChange}
                 />
                 <label htmlFor="noteWaterPondingDisclaimer">
                   Water Ponding Disclaimer
@@ -541,7 +521,7 @@ const Accessories = ({
                   id="noteBldgSpecsDisclaimer"
                   name="noteBldgSpecsDisclaimer"
                   checked={values.addProjectInfo}
-                  onChange={(e) => handleChange(e, 'noteBldgSpecsDisclaimer')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="noteBldgSpecsDisclaimer">
                   Building With Spec's
@@ -559,7 +539,7 @@ const Accessories = ({
                   id="addItemExtBldg"
                   name="addItemExtBldg"
                   checked={values.addItemExtBldg}
-                  onChange={(e) => handleChange(e, 'addItemExtBldg')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="addItemExtBldg">
                   Next to an Existing Building
@@ -571,7 +551,7 @@ const Accessories = ({
                   id="addItemPartWalls"
                   name="addItemPartWalls"
                   checked={values.addItemPartWalls}
-                  onChange={(e) => handleChange(e, 'addItemPartWalls')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="addItemPartWalls">
                   Has Partition Walls By Others
@@ -583,7 +563,7 @@ const Accessories = ({
                   id="addItemRoofOpenings"
                   name="addItemRoofOpenings"
                   checked={values.addItemRoofOpenings}
-                  onChange={(e) => handleChange(e, 'addItemRoofOpenings')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="addItemRoofOpenings">Has Roof Openings</label>
               </div>
@@ -593,7 +573,7 @@ const Accessories = ({
                   id="addItemStepElev"
                   name="addItemStepElev"
                   checked={values.addItemStepElev}
-                  onChange={(e) => handleChange(e, 'addItemStepElev')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="addItemStepElev">Has Step Elevations</label>
               </div>
@@ -603,7 +583,7 @@ const Accessories = ({
                   id="addItemHorizPanels"
                   name="addItemHorizPanels"
                   checked={values.addItemHorizPanels}
-                  onChange={(e) => handleChange(e, 'addItemHorizPanels')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="addItemHorizPanels">
                   Has Horizontal Panels
@@ -615,7 +595,7 @@ const Accessories = ({
                   id="addItemParapetWalls"
                   name="addItemParapetWalls"
                   checked={values.addItemParapetWalls}
-                  onChange={(e) => handleChange(e, 'addItemParapetWalls')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="addItemParapetWalls">Has Parapet Walls</label>
               </div>
@@ -625,7 +605,7 @@ const Accessories = ({
                   id="addItemFaciaWalls"
                   name="addItemFaciaWalls"
                   checked={values.addItemFaciaWalls}
-                  onChange={(e) => handleChange(e, 'addItemFaciaWalls')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="addItemFaciaWalls">Has Facia Walls</label>
               </div>
@@ -635,7 +615,7 @@ const Accessories = ({
                   id="addItemBumpoutWalls"
                   name="addItemBumpoutWalls"
                   checked={values.addItemBumpoutWalls}
-                  onChange={(e) => handleChange(e, 'addItemBumpoutWalls')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="addItemBumpoutWalls">Has Bump-out Walls</label>
               </div>
@@ -645,7 +625,7 @@ const Accessories = ({
                   id="addItemCupolas"
                   name="addItemCupolas"
                   checked={values.addItemCupolas}
-                  onChange={(e) => handleChange(e, 'addItemCupolas')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="addItemCupolas">Has Cupolas</label>
               </div>
@@ -655,7 +635,7 @@ const Accessories = ({
                   id="addItemClearstory"
                   name="addItemClearstory"
                   checked={values.addItemClearstory}
-                  onChange={(e) => handleChange(e, 'addItemClearstory')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="addItemClearstory">Has Clearstory</label>
               </div>
@@ -665,7 +645,7 @@ const Accessories = ({
                   id="addItemHipValley"
                   name="addItemHipValley"
                   checked={values.addItemHipValley}
-                  onChange={(e) => handleChange(e, 'addItemHipValley')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="addItemHipValley">
                   Has Hip/Valley Roof Condition
@@ -677,7 +657,7 @@ const Accessories = ({
                   id="addItemGambrelRoof"
                   name="addItemGambrelRoof"
                   checked={values.addItemGambrelRoof}
-                  onChange={(e) => handleChange(e, 'addItemGambrelRoof')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="addItemGambrelRoof">
                   Has Gable Roof (Special Shape Roof)
@@ -689,7 +669,7 @@ const Accessories = ({
                   id="addItemTiltUpWalls"
                   name="addItemTiltUpWalls"
                   checked={values.addItemTiltUpWalls}
-                  onChange={(e) => handleChange(e, 'addItemTiltUpWalls')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="addItemTiltUpWalls">
                   Has Concrete Tilt Up Walls (All Four Walls)
@@ -707,7 +687,7 @@ const Accessories = ({
                   id="mezzSimple"
                   name="mezzSimple"
                   checked={values.mezzSimple}
-                  onChange={(e) => handleChange(e, 'mezzSimple')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="mezzSimple">Has Simple Mezzanine</label>
               </div>
@@ -717,7 +697,7 @@ const Accessories = ({
                   id="mezzLShape"
                   name="mezzLShape"
                   checked={values.mezzLShape}
-                  onChange={(e) => handleChange(e, 'mezzLShape')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="mezzLShape">Has L-Shape Mezzanine</label>
               </div>
@@ -727,7 +707,7 @@ const Accessories = ({
                   id="mezzNotAligned"
                   name="mezzNotAligned"
                   checked={values.mezzNotAligned}
-                  onChange={(e) => handleChange(e, 'mezzNotAligned')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="mezzNotAligned">
                   Has Mezzanine Not Aligned with Frames
@@ -743,7 +723,7 @@ const Accessories = ({
                   id="craneStepCols"
                   name="craneStepCols"
                   checked={values.craneStepCols}
-                  onChange={(e) => handleChange(e, 'craneStepCols')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="craneStepCols">
                   Has Step Columns for Cranes over 20 tons
@@ -755,7 +735,7 @@ const Accessories = ({
                   id="craneJib"
                   name="craneJib"
                   checked={values.craneJib}
-                  onChange={(e) => handleChange(e, 'craneJib')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="craneJib">Has Jib Cranes</label>
               </div>
@@ -769,7 +749,7 @@ const Accessories = ({
                   id="tHangar"
                   name="tHangar"
                   checked={values.tHangar}
-                  onChange={(e) => handleChange(e, 'tHangar')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="tHangar">Is a T-Hangar</label>
               </div>
@@ -785,7 +765,7 @@ const Accessories = ({
                   id="otherBldgSpecs"
                   name="otherBldgSpecs"
                   checked={values.otherBldgSpecs}
-                  onChange={(e) => handleChange(e, 'otherBldgSpecs')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="otherBldgSpecs">Has Building Spec's</label>
               </div>
@@ -795,7 +775,7 @@ const Accessories = ({
                   id="otherNonStdSpecs"
                   name="otherNonStdSpecs"
                   checked={values.otherNonStdSpecs}
-                  onChange={(e) => handleChange(e, 'otherNonStdSpecs')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="otherNonStdSpecs">
                   Has Non-standard Spec's
@@ -807,7 +787,7 @@ const Accessories = ({
                   id="otherCarrierBms"
                   name="otherCarrierBms"
                   checked={values.otherCarrierBms}
-                  onChange={(e) => handleChange(e, 'otherCarrierBms')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="otherCarrierBms">Has Carrier Beams</label>
               </div>
@@ -817,7 +797,7 @@ const Accessories = ({
                   id="otherPortalCarrier"
                   name="otherPortalCarrier"
                   checked={values.otherPortalCarrier}
-                  onChange={(e) => handleChange(e, 'otherPortalCarrier')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="otherPortalCarrier">
                   Has Portal Carrier Beams
@@ -829,7 +809,7 @@ const Accessories = ({
                   id="otherNonStdCarrier"
                   name="otherNonStdCarrier"
                   checked={values.otherNonStdCarrier}
-                  onChange={(e) => handleChange(e, 'otherNonStdCarrier')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="otherNonStdCarrier">
                   Has Non-standard Carrier Beams
@@ -841,7 +821,7 @@ const Accessories = ({
                   id="otherBarJoists"
                   name="otherBarJoists"
                   checked={values.otherBarJoists}
-                  onChange={(e) => handleChange(e, 'otherBarJoists')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="otherBarJoists">Has Bar Joists</label>
               </div>
@@ -851,7 +831,7 @@ const Accessories = ({
                   id="otherWeakAxis"
                   name="otherWeakAxis"
                   checked={values.otherWeakAxis}
-                  onChange={(e) => handleChange(e, 'otherWeakAxis')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="otherWeakAxis">
                   Has Fixed Base Columns with Weak-axis Bending
@@ -863,7 +843,7 @@ const Accessories = ({
                   id="otherSkewedEndwall"
                   name="otherSkewedEndwall"
                   checked={values.otherSkewedEndwall}
-                  onChange={(e) => handleChange(e, 'otherSkewedEndwall')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="otherSkewedEndwall">
                   Has Skewed Wall at the Endwall
@@ -875,7 +855,7 @@ const Accessories = ({
                   id="otherSkewedSidewall"
                   name="otherSkewedSidewall"
                   checked={values.otherSkewedSidewall}
-                  onChange={(e) => handleChange(e, 'otherSkewedSidewall')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="otherSkewedSidewall">
                   Has Skewed Wall at the Sidewall
@@ -887,7 +867,7 @@ const Accessories = ({
                   id="otherBulkStorageSeeds"
                   name="otherBulkStorageSeeds"
                   checked={values.otherBulkStorageSeeds}
-                  onChange={(e) => handleChange(e, 'otherBulkStorageSeeds')}
+                  onChange={handleChange}
                 />
                 <label htmlFor="otherBulkStorageSeeds">
                   Is Bulk Storage for Seeds
@@ -899,7 +879,7 @@ const Accessories = ({
                   id="otherBulkStorage"
                   name="otherBulkStorage"
                   checked={values.otherBulkStorage}
-                  onChange={(e) => handleChange(e)}
+                  onChange={handleChange}
                 />
                 <label htmlFor="otherBulkStorage">
                   Is Bulk Storage for Potatoes/Onions
@@ -910,7 +890,7 @@ const Accessories = ({
                   type="checkbox"
                   id="otherLoadsByOthers"
                   name="otherLoadsByOthers"
-                  value={values.otherLoadsByOthers}
+                  checked={values.otherLoadsByOthers}
                   onChange={handleChange}
                 />
                 <label htmlFor="otherLoadsByOthers">

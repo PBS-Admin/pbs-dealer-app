@@ -34,27 +34,30 @@ const ReusableSlider = ({
     (_, i) => i * increment
   );
 
-  const handleChangeDecrease = (e) => {
+  const handleChangeDecrease = (name) => {
     // console.log(validValues);
     const distValue =
       !negative && value - increment < 0 ? 0 : value - increment;
     const rotValue =
       value - increment < 0 ? value - increment + 360 : value - increment;
     const newValue = type == 'rotation' ? rotValue : distValue;
-    onChange(name, newValue);
+    const event = { target: { name: name, value: newValue } };
+    onChange(event);
   };
 
-  const handleChangeIncrease = (e) => {
+  const handleChangeIncrease = (name) => {
     const distValue = value + increment;
     const rotValue =
       value + increment >= 360 ? value + increment - 360 : value + increment;
     const newValue = type == 'rotation' ? rotValue : distValue;
-    onChange(name, newValue);
+    const event = { target: { name: name, value: newValue } };
+    onChange(event);
   };
 
   const handleInputChange = (e) => {
     const newInputValue = e.target.value;
-    onChange(name, newInputValue);
+    const event = { target: { name: name, value: newInputValue } };
+    onChange(event);
   };
 
   const iconLeftSide =
@@ -91,7 +94,9 @@ const ReusableSlider = ({
           className="sliderLeftButton"
           type="button"
           tabIndex="-1"
-          onClick={handleChangeDecrease}
+          onClick={() => {
+            handleChangeDecrease(name);
+          }}
           disabled={disabled}
         >
           <FontAwesomeIcon icon={iconLeftSide} />
@@ -117,7 +122,9 @@ const ReusableSlider = ({
             allowZero={true}
             suffix="°"
             showLabel={false}
-            onChange={handleInputChange}
+            onChange={() => {
+              handleInputChange(name);
+            }}
             placeholder={placeholder}
             disabled={disabled}
           />
@@ -138,7 +145,9 @@ const ReusableSlider = ({
           className="sliderRightButton"
           type="button"
           tabIndex="-1"
-          onClick={handleChangeIncrease}
+          onClick={() => {
+            handleChangeIncrease(name);
+          }}
           disabled={disabled}
         >
           <FontAwesomeIcon icon={iconRightSide} />
