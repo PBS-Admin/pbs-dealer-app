@@ -5,6 +5,8 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 
 export async function POST(request) {
+  console.log('post hit');
+  console.log('req: ', request);
   try {
     const { inputFilePath, outputFilePath } = await request.json();
 
