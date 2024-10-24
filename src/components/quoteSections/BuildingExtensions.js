@@ -87,6 +87,7 @@ const BuildingExtensions = ({
               onChange={(name, value) =>
                 handleNestedChange(activeBuilding, 'frontExtensionWidth', value)
               }
+              allowZero={true}
             />
             <div className="checkboxGroup">
               <div className="checkRow">
@@ -141,6 +142,7 @@ const BuildingExtensions = ({
               onChange={(name, value) =>
                 handleNestedChange(activeBuilding, 'backExtensionWidth', value)
               }
+              allowZero={true}
             />
             <div className="checkboxGroup">
               <div className="checkRow">
@@ -194,6 +196,7 @@ const BuildingExtensions = ({
             onChange={(name, value) =>
               handleNestedChange(activeBuilding, 'leftExtensionWidth', value)
             }
+            allowZero={true}
           />
           <FeetInchesInput
             name={`buildingrightExtensionWidth-${activeBuilding}`}
@@ -203,6 +206,7 @@ const BuildingExtensions = ({
             onChange={(name, value) =>
               handleNestedChange(activeBuilding, 'rightExtensionWidth', value)
             }
+            allowZero={true}
           />
         </div>
         <div className="divider"></div>

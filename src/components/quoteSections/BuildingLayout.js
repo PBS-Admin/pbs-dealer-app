@@ -95,14 +95,18 @@ const BuildingLayout = ({
         <h4>Wind Load</h4>
         <div className="grid3">
           <ReusableSelect
-            name={`enclosure`}
-            value={values.buildings[activeBuilding].enclosure}
+            name={`windEnclosure`}
+            value={values.buildings[activeBuilding].windEnclosure}
             onChange={(e) =>
-              handleNestedChange(activeBuilding, 'enclosure', e.target.value)
+              handleNestedChange(
+                activeBuilding,
+                'windEnclosure',
+                e.target.value
+              )
             }
             options={enclosure}
             label="Enclosure:"
-            defaultValue="closed"
+            defaultValue="C"
           />
         </div>
         <h4>Snow Load</h4>
@@ -135,7 +139,7 @@ const BuildingLayout = ({
             }
             options={thermalFactor}
             label="Thermal Factor:"
-            defaultValue="heated"
+            defaultValue={1}
           />
         </div>
       </section>
@@ -480,6 +484,46 @@ const BuildingLayout = ({
             }
           />
         </div>
+        {values.buildings[activeBuilding].frameType == 'multiSpan' && (
+          <>
+            <div className="grid4">
+              <ReusableSelect
+                name={`buildingInteriorBracing-${activeBuilding}`}
+                value={values.buildings[activeBuilding].interiorBracingType}
+                onChange={(e) =>
+                  handleNestedChange(
+                    activeBuilding,
+                    'interiorBracingType',
+                    e.target.value
+                  )
+                }
+                options={SidewallBracingType}
+                label="Interior Bracing Type:"
+              />
+              {values.buildings[activeBuilding].interiorBracingType ==
+                'tier' && (
+                <>
+                  <FeetInchesInput
+                    name={`buildingInteriorBracingHeight-${activeBuilding}`}
+                    label="Height of Portal Frame:"
+                    value={
+                      values.buildings[activeBuilding].interiorBracingHeight
+                    }
+                    onChange={(name, value) =>
+                      handleNestedChange(
+                        activeBuilding,
+                        'interiorBracingHeight',
+                        value
+                      )
+                    }
+                  />
+                  <div className="divider offOnPhone"></div>
+                </>
+              )}
+            </div>
+          </>
+        )}
+
         <div className="divider"></div>
 
         <h4>Wall Braced Bays</h4>

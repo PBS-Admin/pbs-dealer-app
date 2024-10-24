@@ -1,27 +1,36 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { useExport } from '@/hooks/useExport';
 import ReusableLoader from '../ReusableLoader';
 import ReusableDialog from '../ReusableDialog';
 import useValidation from '@/hooks/useValidation';
 import useSeismic from '@/hooks/useSeismic';
+import { useMbsProcessor } from '@/hooks/useMbsProcessor';
+import ReusableToast from '../ReusableToast';
 
 const FinalizeQuote = ({ values, setValues, handleChange }) => {
   const { createFolderAndFiles, status, isExporting } = useExport();
-  const { validateFields, currentPrompt, isDialogOpen, handleResponse } =
-    useValidation(values, setValues);
+  const { handleProcessFiles, mbsStatus, error } = useMbsProcessor();
+  const {
+    validateFields,
+    currentPrompt,
+    isDialogOpen,
+    handleResponse,
+    autoResolveMessage,
+  } = useValidation(values, setValues);
   const { getSeismicLoad, seismicData, getSmsLoad, smsData } =
     useSeismic(values);
 
   useEffect(() => {
-    // Pre-fetch seismic data when component mounts
     getSeismicLoad();
     getSmsLoad();
   }, [getSeismicLoad, getSmsLoad]);
 
+  const toastRef = useRef();
+
   const fieldsToValidate = [
     {
       field: 'windLoad',
-      validate: (value) => value >= 90 && value <= 145,
+      validate: (value) => value >= 60 && value <= 145,
       message:
         'Wind load should be between 60 and 145 mph. Would you like to update it to 100?',
       suggestedValue: 100,
@@ -64,19 +73,89 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
     // Add more fields as needed
   ];
 
+  const autoFillRules = [
+    {
+      field: 'backPeakOffset',
+      condition: (building) => building.shape === 'symmetrical',
+      setValue: (building) => building.width / 2,
+    },
+    {
+      field: 'frontEaveHeight',
+      condition: (building) => building.shape === 'symmetrical',
+      setValue: (building) => building.backEaveHeight,
+    },
+    {
+      field: 'leftBracingType',
+      condition: (building) => building.leftFrame !== 'postAndBeam',
+      setValue: (building) => 'none',
+    },
+  ];
+
+  const handleSave = useCallback(async () => {
+    const isValid = await validateFields([], autoFillRules);
+    if (isValid) {
+      console.log('Save successful');
+    }
+  }, [validateFields, autoFillRules]);
+
   const handleExport = useCallback(async () => {
-    const isValid = await validateFields(fieldsToValidate);
+    const isValid = await validateFields(fieldsToValidate, autoFillRules);
+
     if (isValid) {
       const result = await createFolderAndFiles(values);
-      if (result) {
+      console.log(result);
+      console.log(result.folder.length);
+
+      if (result.success) {
+        for (let i = 0; i < result.folder.length; i++) {
+          let path;
+          if (result.folder.length > 1) {
+            path = `C:\\Jobs\\${result.folder[0]}P\\${result.folder[i]}`;
+          } else {
+            path = `C:\\Jobs\\${result.folder}`;
+          }
+
+          const res = await handleProcessFiles(path);
+          if (res) {
+            console.log('MBS processed');
+          } else {
+            console.log('MBS process failed');
+          }
+        }
+        showSuccessExport();
         console.log('Export successful');
       } else {
+        showRejectExport();
         console.log('Export failed');
       }
     } else {
       console.log(`Couldn't validate all fields`);
     }
-  }, [validateFields, fieldsToValidate, createFolderAndFiles, values]);
+  }, [
+    validateFields,
+    fieldsToValidate,
+    autoFillRules,
+    createFolderAndFiles,
+    values,
+  ]);
+
+  const showSuccessExport = () => {
+    toastRef.current.show({
+      title: 'Success',
+      message: 'Your export to MBS has been successful',
+      timeout: 3000,
+      color: 'success',
+    });
+  };
+
+  const showRejectExport = () => {
+    toastRef.current.show({
+      title: 'Error',
+      message: 'Your export to MBS has failed, try again',
+      timeout: 3000,
+      color: 'reject',
+    });
+  };
 
   return (
     <>
@@ -93,7 +172,9 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
               type="button"
               className="button accent"
               onClick={() => {
-                console.log(values);
+                // handleSave();
+                // showToastExport();
+                console.log('Current values:', values);
               }}
             >
               Submit Quote
@@ -158,10 +239,11 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
       <ReusableDialog
         isOpen={isDialogOpen}
         onClose={() => handleResponse(false)}
-        title="Field Validation"
-        message={currentPrompt?.message}
+        title={autoResolveMessage ? 'Automatic Updates' : 'Field Validation'}
+        message={autoResolveMessage || currentPrompt?.message}
         onConfirm={() => handleResponse(true)}
       />
+      <ReusableToast ref={toastRef} />
     </>
   );
 };

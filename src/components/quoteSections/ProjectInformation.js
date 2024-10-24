@@ -544,12 +544,12 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             defaultValue="C"
           />
           <ReusableSelect
-            name={`enclosure`}
-            value={values.enclosure}
+            name={`windEnclosure`}
+            value={values.windEnclosure}
             onChange={handleChange}
             options={enclosure}
             label="Enclosure:"
-            defaultValue="closed"
+            defaultValue="C"
           />
         </div>
         <h4>Snow Load</h4>
@@ -589,7 +589,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             onChange={handleChange}
             options={thermalFactor}
             label="Thermal Factor:"
-            defaultValue="heated"
+            defaultValue={1}
           />
         </div>
         <h4>Seismic Load</h4>

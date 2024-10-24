@@ -7,6 +7,7 @@ export function useExport() {
   const [status, setStatus] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   const bldgAlpha = ' BCDEFGHI';
+  let folderPaths = [];
 
   const countFiles = async (dirHandle) => {
     let count = 0;
@@ -21,7 +22,8 @@ export function useExport() {
   const createFolderAndFiles = useCallback(async (values) => {
     if (typeof window === 'undefined' || !('showDirectoryPicker' in window)) {
       setStatus('File System Access API is not supported in this environment.');
-      return false;
+      const res = { success: false, folder: '' };
+      return res;
     }
 
     setIsExporting(true);
@@ -73,7 +75,8 @@ export function useExport() {
         );
       } catch (error) {
         setStatus('MBS and Jobs subfolder not found on the selected drive.');
-        return false;
+        const res = { success: false, folder: '' };
+        return res;
       }
 
       let newProjectHandle, rootHandle, newBuildingHandle, shouldCreate;
@@ -102,6 +105,11 @@ export function useExport() {
             create: shouldCreate,
           }
         );
+        if (
+          !folderPaths.includes(values.quoteNumber + bldgAlpha[index].trim())
+        ) {
+          folderPaths.push(values.quoteNumber + bldgAlpha[index].trim());
+        }
       });
 
       // Copy .siz files from MBS/SIZ2 to the new folder
@@ -251,9 +259,12 @@ export function useExport() {
         setStatus(
           `Creating Building${bldgAlpha[index].trim()} DesCtrl.ini file...`
         );
+
         // Loop through buildings and create these files
         await createDesCtrl(rootHandle, values, index);
+
         await createDesLoad(rootHandle, values, index);
+
         await createMBS(rootHandle, values, index);
       }
 
@@ -283,10 +294,12 @@ export function useExport() {
       }
 
       setStatus('Export and file copying completed successfully!');
-      return true;
+      const res = { success: true, folder: folderPaths };
+      return res;
     } catch (error) {
       setStatus(`Error during export: ${error.message}`);
-      return false;
+      const res = { success: false, folder: '' };
+      return res;
     } finally {
       setIsExporting(false);
     }
@@ -405,8 +418,8 @@ export function useExport() {
     await writable.write(`\n`);
     await writable.write(`\n`);
     await writable.write(`\n`);
-    await writable.write(`${values.complexity || 10}\n`); // todo: create var
-    await writable.write(`${values.draftCost || ''}\n`); // todo: create var
+    await writable.write(`${values.complexity || 1}\n`); // todo: create var
+    await writable.write(`${values.draftCost || 50}\n`); // todo: create var
     await writable.write(`${values.foundCost || ''}\n`); // todo: create var
     await writable.write(`${values.farmBureau || ''}\n`); // todo: create var
     await writable.write(`\n`);
@@ -497,6 +510,20 @@ export function useExport() {
   }
 
   async function createDesLoad(rootHandle, values, index = 0) {
+    const response = await fetch('/api/rain', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        zipCode: values.projectZip,
+      }),
+    });
+
+    const rainData = await response.json();
+    const fiveYear = rainData.data.fiveYear;
+    const twentyFiveYear = rainData.data.twentyFiveYear;
+
     const riskLabels = {
       I: 'I - Low',
       II: 'II - Normal',
@@ -523,9 +550,11 @@ export function useExport() {
     );
 
     const windSpeedService = (values.windLoad * 0.65132156).toFixed(4);
+
     const thermalFactor = values.thermalFactor
       ? values.thermalFactor.toFixed(2)
       : '';
+
     const snowFactor = values.snowFactor ? values.snowFactor?.toFixed(2) : '';
     const seismicFa = values.seismicFa ? values.seismicFa?.toFixed(3) : '';
     const seismicFv = values.seismicFv ? values.seismicFv?.toFixed(3) : '';
@@ -533,10 +562,10 @@ export function useExport() {
     const seismicSm1 = values.seismicSm1 ? values.seismicSm1?.toFixed(3) : '';
     const seismicSds = values.seismicSds ? values.seismicSds?.toFixed(3) : '';
     const seismicSd1 = values.seismicSd1 ? values.seismicSd1?.toFixed(3) : '';
-    let taMoment = '',
-      taBrace = '',
-      fiveYear = '',
-      twentyFiveYear = '';
+
+    let averagePeak = getAverageHeight(values.buildings[index]);
+    let taMoment = (0.028 * Math.pow(averagePeak, 0.8)).toFixed(4);
+    let taBrace = (0.02 * Math.pow(averagePeak, 0.75)).toFixed(4);
 
     const desLoadHandle = await newBuildingHandle.getFileHandle('DESLOAD.INI', {
       create: true,
@@ -561,8 +590,10 @@ export function useExport() {
     await writable.write(`Building_Elevation=${values.projectElevation}\n`);
     await writable.write(`[SNOW]\n`);
     await writable.write(`Thermal_Coefficient=${thermalFactor}\n`);
-    await writable.write(`Ground=${values.groundLoad}\n`);
-    await writable.write(`Importance=${snowFactor}\n`);
+    await writable.write(
+      `Ground=${Number(values.groundSnowLoad).toFixed(1)}\n`
+    );
+    await writable.write(`Importance=${Number(snowFactor).toFixed(4)}\n`);
     await writable.write(`Status=F\n`);
     await writable.write(`[SEISMIC]\n`);
     await writable.write(`Status=T\n`);
@@ -575,11 +606,11 @@ export function useExport() {
     await writable.write(`Sm1=${seismicSm1}\n`);
     await writable.write(`Sds=${seismicSds}\n`);
     await writable.write(`Sd1=${seismicSd1}\n`);
-    await writable.write(`Period_Moment=${taMoment}\n`); // todo: get var
-    await writable.write(`Period_Brace=${taBrace}\n`); // todo: get var
+    await writable.write(`Period_Moment=${taMoment}\n`);
+    await writable.write(`Period_Brace=${taBrace}\n`);
     await writable.write(`[RAIN]\n`);
-    await writable.write(`Intensity=${fiveYear}\n`); // todo: get var
-    await writable.write(`Intensity_25=${twentyFiveYear}\n`); // todo: get var
+    await writable.write(`Intensity=${fiveYear}\n`);
+    await writable.write(`Intensity_25=${twentyFiveYear}\n`);
     await writable.write(`[ZIP]\n`);
     await writable.write(`Code=${values.projectZip}\n`);
     await writable.close();
@@ -628,7 +659,7 @@ export function useExport() {
         'FileName=IBC.21' +
         '\n' +
         'Closure=' +
-        values.enclosure +
+        values.windEnclosure +
         '\n' +
         'Zone=' +
         values.seismicCategory +
@@ -666,7 +697,7 @@ export function useExport() {
         'FileName=IBC.18' +
         '\n' +
         'Closure=' +
-        values.enclosure +
+        values.windEnclosure +
         '\n' +
         'Zone=' +
         values.seismicCategory +
@@ -704,7 +735,7 @@ export function useExport() {
         'FileName=IBC.15' +
         '\n' +
         'Closure=' +
-        values.enclosure +
+        values.windEnclosure +
         '\n' +
         'Zone=' +
         values.seismicCategory +
@@ -742,7 +773,7 @@ export function useExport() {
         'FileName=OR_OSSC.22' +
         '\n' +
         'Closure=' +
-        values.enclosure +
+        values.windEnclosure +
         '\n' +
         'Zone=' +
         values.seismicCategory +
@@ -780,7 +811,7 @@ export function useExport() {
         'FileName=OR_OSSC.19' +
         '\n' +
         'Closure=' +
-        values.enclosure +
+        values.windEnclosure +
         '\n' +
         'Zone=' +
         values.seismicCategory +
@@ -818,7 +849,7 @@ export function useExport() {
         'FileName=CA_CBC.22' +
         '\n' +
         'Closure=' +
-        values.enclosure +
+        values.windEnclosure +
         '\n' +
         'Zone=' +
         values.seismicCategory +
@@ -856,7 +887,7 @@ export function useExport() {
         'FileName=CA_CBC.19' +
         '\n' +
         'Closure=' +
-        values.enclosure +
+        values.windEnclosure +
         '\n' +
         'Zone=' +
         values.seismicCategory +
@@ -895,16 +926,16 @@ export function useExport() {
 
     // Wall and Base Options
     await writable.write(`[WALL_OPTIONS1]\n`);
-    await writable.write(`${getGirtTypes(values.buildings[index], 'lew')}\n`);
+    await writable.write(`${getGirtTypes(values.buildings[index], 'left')}\n`);
     await writable.write(`\n`);
     await writable.write(`[WALL_OPTIONS2]\n`);
-    await writable.write(`${getGirtTypes(values.buildings[index], 'fsw')}\n`);
+    await writable.write(`${getGirtTypes(values.buildings[index], 'front')}\n`);
     await writable.write(`\n`);
     await writable.write(`[WALL_OPTIONS3]\n`);
-    await writable.write(`${getGirtTypes(values.buildings[index], 'rew')}\n`);
+    await writable.write(`${getGirtTypes(values.buildings[index], 'right')}\n`);
     await writable.write(`\n`);
     await writable.write(`[WALL_OPTIONS4]\n`);
-    await writable.write(`${getGirtTypes(values.buildings[index], 'bsw')}\n`);
+    await writable.write(`${getGirtTypes(values.buildings[index], 'back')}\n`);
     await writable.write(`\n`);
 
     await writable.write(`[ROOF_OPTIONS]\n`);
@@ -986,10 +1017,18 @@ export function useExport() {
 
     // Building Loads
     await writable.write(`[BUILDING_LOADS]\n`);
-    await writable.write(`Dead=${values.deadLoad}\n`);
-    await writable.write(`Live=${values.liveLoad}\n`);
-    await writable.write(`Snow=${values.roofLoad}\n`);
-    await writable.write(`Collateral=${values.collateralLoad}\n`);
+    await writable.write(
+      `Dead=${values.deadLoad ? values.deadLoad.toFixed(2) : '0.00'}\n`
+    );
+    await writable.write(
+      `Live=${values.liveLoad ? values.liveLoad.toFixed(2) : '0.00'}\n`
+    );
+    await writable.write(
+      `Snow=${values.roofSnowLoad ? values.roofSnowLoad : '0'}\n`
+    );
+    await writable.write(
+      `Collateral=${values.collateralLoad ? values.collateralLoad.toFixed(2) : '0.00'}\n`
+    );
     await writable.write(`Wind_Speed=${values.windLoad}\n`);
     await writable.write(`Reduce=N\n`);
     await writable.write(`Za=${values.seismicSms || ''}\n`);
@@ -1007,18 +1046,20 @@ export function useExport() {
       `HeightR=${values.buildings[index].frontEaveHeight}\n`
     ); //todo: correct all eave heights to be singular
     await writable.write(`PeakOff=${values.buildings[index].backPeakOffset}\n`);
-    await writable.write(`Slope=${values.buildings[index].backRoofPitch}\n`);
+    await writable.write(
+      `Slope=${values.buildings[index].backRoofPitch?.toFixed(4)}\n`
+    );
     await writable.write(`\n`);
 
     // Expand Endwall
     await writable.write(`[EXPAND_EW1]\n`);
     await writable.write(
-      `${getEndFrameTypeData(values.buildings[index], 'lew')}\n`
+      `${getEndFrameTypeData(values.buildings[index], 'left')}\n`
     );
 
     await writable.write(`[EXPAND_EW3]\n`);
     await writable.write(
-      `${getEndFrameTypeData(values.buildings[index], 'rew')}\n`
+      `${getEndFrameTypeData(values.buildings[index], 'right')}\n`
     );
 
     // Bay Spacing
@@ -1047,14 +1088,14 @@ export function useExport() {
       `${formatBaySpacing(values.buildings[index].roofBaySpacing)}\n`
     );
 
-    if (values.buildings[index].lewFrame == 'inset') {
+    if (values.buildings[index].leftFrame == 'inset') {
       await writable.write(`[BAY_SPACING_WALL6]\n`);
       await writable.write(
         `${formatBaySpacing(values.buildings[index].width)}\n`
       ); //todo: I think you need to pass in array of inset wall
     }
 
-    if (values.buildings[index].rewFrame == 'inset') {
+    if (values.buildings[index].rightFrame == 'inset') {
       await writable.write(`[BAY_SPACING_WALL7]\n`);
       await writable.write(
         `${formatBaySpacing(values.buildings[index].width)}\n`
@@ -1313,7 +1354,6 @@ export function useExport() {
     await writable.write(`\n`);
 
     await writable.write(`[WIND_FRAMING_INT]\n`);
-    await writable.write(`Panel_Shear=N\n`);
     await writable.write(
       `${getBracing(values.buildings[index], 'interior')}\n`
     );
@@ -1356,19 +1396,22 @@ export function useExport() {
     // Eave Extensions
     await writable.write(`[EAVE_EXTENSION_WALL2]\n`);
     await writable.write(
-      `${getEaveExtension(values.buildings[index], 'front')}\n`
+      `${await getEaveExtension(values.buildings[index], 'front', values.projectZip)}\n`
     );
     await writable.write(`[EAVE_EXTENSION_WALL4]\n`);
     await writable.write(
-      `${getEaveExtension(values.buildings[index], 'back')}\n`
+      `${await getEaveExtension(values.buildings[index], 'back', values.projectZip)}\n`
     );
 
     // Gutters
     await writable.write(`[GUTTER_DOWNSPOUTS]\n`);
-    await writable.write(`${getDownspouts(values.buildings[index])}\n`);
+    await writable.write(
+      `${await getDownspouts(values.buildings[index], values.projectZip)}\n`
+    );
     await writable.write(`[GUTTERS]\n`);
-    await writable.write(`${getGutters(values.buildings[index])}\n`);
-
+    await writable.write(
+      `${await getGutters(values.buildings[index], values.projectZip)}\n`
+    );
     // Relites
     await writable.write(`[WALL_LIGHT_PANELS]\n`);
     await writable.write(`${getRelites(values.buildings[index], 'Wall')}\n`);
@@ -1379,7 +1422,6 @@ export function useExport() {
     await writable.write(`[DOORS]\n`);
     await writable.write(`${getMandoors(values)}\n`);
     await writable.write(`\n`);
-
     // Accessories
     await writable.write(`[ADDITIONAL_ITEMS]\n`);
     await writable.write(`No_Add=0\n`);
@@ -1411,7 +1453,6 @@ export function useExport() {
     // Est Items
     await writable.write(`[ESTIMATE_ITEMS]\n`);
     await writable.write(`${getCoverAccessories(values)}\n`);
-
     // Canopies
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[CANOPY_WALL${i}]\n`);
@@ -1430,8 +1471,8 @@ export function useExport() {
     // Facia
     await writable.write(`[LOAD_FACIA]\n`);
     await writable.write(`Dead=2.5000\n`);
-    await writable.write(`Live_SW=${values.roofLoad * 2}\n`);
-    await writable.write(`Live_EW=${values.roofLoad * 2}\n`);
+    await writable.write(`Live_SW=${values.roofSnowLoad * 2}\n`);
+    await writable.write(`Live_EW=${values.roofSnowLoad * 2}\n`);
     await writable.write(`\n`);
 
     await writable.write(`[DEFLECT_FACIA]\n`);
@@ -1542,7 +1583,6 @@ export function useExport() {
         `${setWainscot(values.buildings[index], walls[i])}\n`
       );
     }
-
     // Floor
     await writable.write(`[FLOOR_VERSION]\n`);
     await writable.write(`Version=1.06\n`);
@@ -1551,7 +1591,6 @@ export function useExport() {
     // Floor Layout
     await writable.write(`[FLOOR_LAYOUT]\n`);
     await writable.write(`${getMezzanines(values.buildings[index])}\n`);
-
     // Close and Save File
     await writable.close();
     const desCtrlFile = await desCtrlHandle.getFile();
@@ -1745,10 +1784,9 @@ export function useExport() {
   }
 
   function getFramedOpenings(building, wall, index) {
-    // console.log(building);
-    // console.log(wall);
-    // console.log(index);
-    return '';
+    let returnValue = '';
+    let itemNum = 0;
+    return `Number=${itemNum}\n` + returnValue;
   }
 
   function getCornerColRotating(building, corner) {
@@ -1756,13 +1794,13 @@ export function useExport() {
 
     if (
       (corner == 'backLeft' || corner == 'frontLeft') &&
-      building.lewFrame == 'postAndBeam'
+      building.leftFrame == 'postAndBeam'
     ) {
       return returnValue;
     }
     if (
       (corner == 'frontRight' || corner == 'backRight') &&
-      building.rewFrame == 'postAndBeam'
+      building.rightFrame == 'postAndBeam'
     ) {
       return returnValue;
     }
@@ -1979,10 +2017,11 @@ export function useExport() {
 
   function getGableExtension(building) {
     let returnValue = '';
-    const { lewExtensionWidth, rewExtensionWidth, soffitPanelType } = building;
+    const { leftExtensionWidth, rightExtensionWidth, soffitPanelType } =
+      building;
 
-    returnValue += `Surf_Extend_Lt=${lewExtensionWidth}\n`;
-    returnValue += `Surf_Extend_Rt=${rewExtensionWidth}\n`;
+    returnValue += `Surf_Extend_Lt=${leftExtensionWidth}\n`;
+    returnValue += `Surf_Extend_Rt=${rightExtensionWidth}\n`;
 
     if (soffitPanelType == 'none') {
       returnValue += `Soffit_Part=--------\n`;
@@ -2478,7 +2517,7 @@ export function useExport() {
 
     // M-Frame <= 30
     if (frameType == 'multiSpan' && intColSpacing) {
-      if (Math.max(...intColShape) <= 30) {
+      if (Math.max(...intColSpacing) <= 30) {
         frameShape = 'R';
       }
     }
@@ -2622,6 +2661,7 @@ export function useExport() {
         `Elev=0.0000\n` +
         `${formatIntCols(leftIntColSpacing)}\n`;
     }
+
     // Interior Frames
     let startInt =
       leftEndFrame != 'N' && leftEndFrame != 'Y' && leftEndFrame != 'F'
@@ -2643,7 +2683,7 @@ export function useExport() {
 
       returnValue +=
         `[RIGID_FRAME${numFrames}]\n` +
-        `Type=${frameType}\n` +
+        `Type=${frameTypeChar}\n` +
         `Width=${getMaxTrib(building, numTribs)}\n` +
         `Column_Shape=${frameShape}\n` +
         `Connect_Left=P\n` +
@@ -2675,6 +2715,7 @@ export function useExport() {
           `Number=0\n\n`;
       }
     }
+
     // Right Inset Frame
     if (rightEndFrame != 'N' && rightEndFrame != 'Y' && rightEndFrame != 'F') {
       numFrames++;
@@ -2919,8 +2960,10 @@ export function useExport() {
       returnValue = `Number=${bays.length - 1}\n`;
     }
 
+    let loc = 0;
     for (let i = 0; i < bays.length - 1; i++) {
-      returnValue += `Loc${i + 1}=${bays[i]}\n`;
+      loc += bays[i];
+      returnValue += `Loc${i + 1}=${loc}\n`;
     }
 
     return returnValue;
@@ -2948,7 +2991,7 @@ export function useExport() {
 
     // todo: interior doesn't have a variable in state
     // if (loc == 'front' || loc == 'back' || loc == 'interior') {
-    if (loc == 'front' || loc == 'back') {
+    if (loc == 'front' || loc == 'back' || loc == 'interior') {
       if (building[braceKey] == 'xBrace') {
         returnValue =
           `Bracing=R\n` +
@@ -3058,7 +3101,7 @@ export function useExport() {
     return returnValue;
   }
 
-  function getEaveExtension(building, loc) {
+  async function getEaveExtension(building, loc, zip) {
     let returnValue = '';
     const {
       shape,
@@ -3100,7 +3143,7 @@ export function useExport() {
 
     let leftDir = loc == 'front' ? leftExtensionWidth : rightExtensionWidth;
     let rightDir = loc == 'front' ? rightExtensionWidth : leftExtensionWidth;
-    let numDownspouts = calcNoDownspouts(building, loc);
+    let numDownspouts = await calcNoDownspouts(building, loc, zip);
     let extCols = loc == 'front' ? frontExtensionColumns : backExtensionColumns;
 
     returnValue += `No_Extend=${numOfExt}\n`;
@@ -3282,7 +3325,7 @@ export function useExport() {
     return [qty, starts, ends, ons, offs];
   }
 
-  function calcNoDownspouts(building, loc) {
+  async function calcNoDownspouts(building, loc, zip) {
     let returnValue = '';
     const {
       shape,
@@ -3294,7 +3337,21 @@ export function useExport() {
       frontExtensionWidth,
       backExtensionWidth,
     } = building;
-    let fiveYear = 0;
+
+    const response = await fetch('/api/rain', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        zipCode: zip,
+      }),
+    });
+
+    const rainData = await response.json();
+    const fiveYear = rainData.data.fiveYear;
+    const twentyFiveYear = rainData.data.twentyFiveYear;
+
     const rain = fiveYear == 0 ? 6 : fiveYear;
     let roofWidth = 0;
     let roofLength = leftExtensionWidth + length + rightExtensionWidth;
@@ -3343,7 +3400,7 @@ export function useExport() {
     return returnValue;
   }
 
-  function getDownspouts(building) {
+  async function getDownspouts(building, zip) {
     let returnValue = '';
     const {
       shape,
@@ -3354,12 +3411,16 @@ export function useExport() {
       backExtensionWidth,
       includeGutters,
     } = building;
-    let numBackDownspouts = calcNoDownspouts(building, 'back');
-    let numFrontDownspouts = calcNoDownspouts(building, 'front');
-    let roofLength = leftExtensionWidth + length + rightExtensionWidth;
 
+    let numBackDownspouts = await calcNoDownspouts(building, 'back', zip);
+    let numFrontDownspouts = await calcNoDownspouts(building, 'front', zip);
+    let roofLength =
+      parseFloat(leftExtensionWidth) +
+      parseFloat(length) +
+      parseFloat(rightExtensionWidth);
     let extBackData = getExtData(building, 'back');
     let extFrontData = getExtData(building, 'front');
+
     let hasMultExtBack = extBackData[4] > 0 ? true : false;
     let hasMultExtFront = extFrontData[4] > 0 ? true : false;
     numBackDownspouts = hasMultExtBack
@@ -3398,7 +3459,6 @@ export function useExport() {
         returnValue += `Downspout_Style_Front=--\n`;
         returnValue += `No_Downspout_Front=0\n`;
       }
-
       if (backExtensionWidth == 0 || hasMultExtBack) {
         returnValue += `Length_Back=${roofLength.toFixed(4)}\n`;
         returnValue += `Gutter_Location_Id_Back=4\n`;
@@ -3447,7 +3507,7 @@ export function useExport() {
     return returnValue;
   }
 
-  function getGutters(building) {
+  async function getGutters(building, zip) {
     let returnValue = '';
     const {
       shape,
@@ -3456,8 +3516,8 @@ export function useExport() {
       rightExtensionWidth,
       includeGutters,
     } = building;
-    let numBackDownspouts = calcNoDownspouts(building, 'back');
-    let numFrontDownspouts = calcNoDownspouts(building, 'front');
+    let numBackDownspouts = await calcNoDownspouts(building, 'back', zip);
+    let numFrontDownspouts = await calcNoDownspouts(building, 'front', zip);
     let roofLength = leftExtensionWidth + length + rightExtensionWidth;
 
     if (includeGutters) {
@@ -3819,7 +3879,7 @@ export function useExport() {
         : `[LINER_PANELS_ROOF]\n` + `${liners['roof']}\n`;
 
     returnValue += `[LINER_PANELS]\n`;
-    returnValue += `No_Liners${itemNum}\n` + liner;
+    returnValue += `No_Liners=${itemNum}\n` + liner;
 
     return returnValue;
   }
@@ -4649,7 +4709,7 @@ export function useExport() {
       }
     }
 
-    return `No_Sets${itemNum}\n` + returnValue;
+    return `No_Sets=${itemNum}\n` + returnValue;
   }
 
   function getWallStartEnd(building, loc, start, end) {
@@ -4791,7 +4851,8 @@ export function useExport() {
 
   function getMezzanines(building) {
     let returnValue = '';
-    return returnValue;
+    let itemNum = 0;
+    return `No_Floors=${itemNum}\n` + returnValue;
   }
 
   return {

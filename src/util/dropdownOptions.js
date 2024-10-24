@@ -216,7 +216,7 @@ export const soffitFinish = [
 ];
 
 export const roofInsulation = [
-  { id: 'none', label: 'None', validFor: [] },
+  { id: 'none', label: 'None' },
   { id: 'vrr2', label: '2" VRR (R-7)' },
   { id: 'vrr3', label: '3" VRR (R-10)' },
   { id: 'vrr4', label: '4" VRR (R-13)' },
@@ -332,17 +332,17 @@ export const exposure = [
 ];
 
 export const enclosure = [
-  { id: 'closed', label: 'Closed' },
-  { id: 'partial', label: 'Partial' },
-  { id: 'open', label: 'Open' },
+  { id: 'C', label: 'Closed' },
+  { id: 'P', label: 'Partial' },
+  { id: 'O', label: 'Open' },
 ];
 
 export const thermalFactor = [
-  { id: 'greenhouse', label: 'Greenhouse' },
-  { id: 'heated', label: 'Heated' },
-  { id: 'insulated', label: 'Unheated w/ Insulation' },
-  { id: 'uninsulated', label: 'Unheated w/o Insulation' },
-  { id: 'freezing', label: 'Kept below freezing' },
+  { id: 0.85, label: 'Greenhouse' },
+  { id: 1, label: 'Heated' },
+  { id: 1.1, label: 'Unheated w/ Insulation' },
+  { id: 1.2, label: 'Unheated w/o Insulation' },
+  { id: 1.3, label: 'Kept below freezing' },
 ];
 
 export const seismicCategory = [

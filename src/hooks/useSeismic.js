@@ -211,8 +211,9 @@ const useSeismic = (values) => {
     Fa = siteClass == 'D' && Fa < 1.2 ? 1.2 : Fa;
     Sds = Fa != '' ? (2 / 3) * Fa * Ss : '';
     Sd1 = Fv != '' ? (2 / 3) * Fv * S1 : '';
-    Sms = (Ss * Fa).toFixed(3);
-    Sm1 = (S1 * Fv).toFixed(3);
+
+    Sms = Math.round(parseFloat(Ss * Fa) * 1000) / 1000;
+    Sm1 = Math.round(parseFloat(S1 * Fv) * 1000) / 1000;
     const data = {
       Fa,
       Fv,
