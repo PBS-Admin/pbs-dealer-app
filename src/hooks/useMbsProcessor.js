@@ -2,7 +2,6 @@
 'use client';
 
 import { useState } from 'react';
-import path from 'path';
 
 export function useMbsProcessor() {
   const [mbsStatus, setMbsStatus] = useState('idle');
@@ -12,6 +11,11 @@ export function useMbsProcessor() {
     try {
       const inputFile = `${mbsFolder}\\DESCTRL.IN`;
       const outputFile = `${mbsFolder}\\DESCTRL.INI`;
+
+      console.log('Sending request with paths:', {
+        input: inputFile,
+        output: outputFile,
+      });
 
       const response = await fetch('/api/mbs', {
         method: 'POST',
@@ -26,19 +30,27 @@ export function useMbsProcessor() {
 
       const result = await response.json();
 
-      if (!result.success) {
-        throw new Error(result.error);
+      if (!response.ok) {
+        throw new Error(
+          `API Error: ${result.error}\nDetails: ${JSON.stringify(result.details || {})}`
+        );
       }
 
+      if (!result.success) {
+        throw new Error(result.error || 'Unknown error occurred');
+      }
+
+      console.log('MBS process result:', result);
       return result;
     } catch (error) {
       console.error('Error running MBS:', error);
-      throw error;
+      throw new Error(`Failed to run MBS: ${error.message}`);
     }
   }
 
   async function handleProcessFiles(mbsFolder) {
     try {
+      console.log('Processing files for folder:', mbsFolder);
       setMbsStatus('processing');
       setError(null);
 
@@ -47,6 +59,7 @@ export function useMbsProcessor() {
       setMbsStatus('completed');
       return result;
     } catch (error) {
+      console.error('Process files error:', error);
       setMbsStatus('error');
       setError(error.message);
       throw error;

@@ -2,6 +2,7 @@
 import { exec } from 'child_process';
 import { NextResponse } from 'next/server';
 import { existsSync } from 'fs';
+import { join } from 'path';
 
 export async function POST(request) {
   try {
@@ -15,9 +16,21 @@ export async function POST(request) {
     }
 
     const exePath = 'C:\\MBS\\UTIL\\MBS_INI.exe';
-    if (!existsSync(exePath)) {
+
+    console.log('Checking if MBS_INI.exe exists at:', exePath);
+    const exists = existsSync(exePath);
+    console.log('File exists:', exists);
+
+    if (!exists) {
       return NextResponse.json(
-        { error: `MBS_INI.exe not found at ${exePath}` },
+        {
+          error: `MBS_INI.exe not found at ${exePath}`,
+          details: {
+            checkedPath: exePath,
+            currentWorkingDir: process.cwd(),
+            nodeEnv: process.env.NODE_ENV,
+          },
+        },
         { status: 400 }
       );
     }
@@ -26,7 +39,7 @@ export async function POST(request) {
     const sanitizedOutputPath = outputFilePath.replace(/\//g, '\\');
 
     // Construct the command
-    const command = `cmd.exe /c ""${exePath}" 1 "${sanitizedInputPath}" "${sanitizedOutputPath}""`;
+    const command = `"${exePath}" 1 "${sanitizedInputPath}" "${sanitizedOutputPath}"`;
     console.log('Executing command:', command);
 
     return new Promise((resolve) => {
@@ -34,19 +47,28 @@ export async function POST(request) {
         command,
         {
           windowsHide: true,
-          // Add current working directory
           cwd: 'C:\\MBS\\UTIL',
+          shell: true,
+          env: { ...process.env },
         },
         (error, stdout, stderr) => {
+          console.log('Execution complete');
+          console.log('stdout:', stdout);
+          console.log('stderr:', stderr);
           if (error) {
-            console.error(`Error: ${error}`);
+            console.error('Execution error:', error);
             resolve(
               NextResponse.json(
                 {
                   error: error.message,
-                  command: command, // Include command in error for debugging
+                  command: command,
                   stdout: stdout,
                   stderr: stderr,
+                  details: {
+                    code: error.code,
+                    killed: error.killed,
+                    signal: error.signal,
+                  },
                 },
                 { status: 500 }
               )
@@ -59,13 +81,21 @@ export async function POST(request) {
               success: true,
               output: stdout,
               error: stderr || null,
+              command: command, // Include for debugging
             })
           );
         }
       );
     });
   } catch (error) {
-    console.error('Failed to execute MBS:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('API route error:', error);
+    return NextResponse.json(
+      {
+        error: error.message,
+        stack: error.stack,
+        type: error.type,
+      },
+      { status: 500 }
+    );
   }
 }
