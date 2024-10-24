@@ -1,11 +1,11 @@
-.dashMain{    
+.dashMain {    
     display: grid;    
     grid-template-columns: 1fr;
     min-height: 100vh;
     background-color: var(--dark-blue);
 }
 
-.dashCard{
+.dashCard {
     background-color: var(--background-white);
     border-radius: 1em;
     display: flex;
@@ -13,24 +13,49 @@
     align-items: center;
     align-self: center;
     justify-self: center;
-    padding: 1em;
-    margin: .5em;    
-    gap: .5em;
+    padding: .75em;
+    gap: .75em;
 }
 
-.dashCard a{
-    box-shadow: 0 0 5px var(--light-blue);
-    border-radius: .5em;
+.dashCard a {
+    text-decoration: none;
+    text-align: center;
+    transition: all .3s ease;
+    width: 250px;
+}
+
+.dashCard a .cardBody {
+    padding: .75em;
+    border: 1px solid var(--light-gray);
+    border-top: none;
+    border-radius: 0 0 .5em .5em;
+}
+
+.dashCard a .cardBody div {
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    margin: auto;
     text-decoration: none;
     text-align: center;
     transition: all .3s ease;
 }
 
-.dashCard h3{
-    color: var(--dark-blue);
-    margin-top: .5em;
+.dashCard img {
+    max-width: 200px;
+    max-height: 200px;
 }
 
-.dashCard a:hover{
-    box-shadow: 0 0 8px var(--dark-blue);
+.dashCard h3 {
+    background-color: var(--dark-blue);
+    width: 100%;
+    border-radius: .5em .5em 0 0;
+    padding: .25em;
+    text-align: center;
+    max-height: 31px;
+    color: var(--background-white);
+}
+
+.dashCard a:hover .cardBody div {
+    background-color: var(--dark-blue);
 }

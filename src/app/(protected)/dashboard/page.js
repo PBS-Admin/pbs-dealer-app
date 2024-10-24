@@ -25,19 +25,27 @@ export default async function Dashboard() {
       <nav className={styles.dashCard}>
         <Link href="/quote/0" className={styles.buttonCard}>
           <h3 className={styles.cardTitle}>Create New Quote</h3>
-          <Image
-            alt="PBS Buildings Logo"
-            src={newQuote}
-            className={styles.dashImage}
-          />
+          <div className={styles.cardBody}>
+            <div>
+              <Image
+                alt="New Quote"
+                src={newQuote}
+                className={styles.dashImage}
+              />
+            </div>
+          </div>
         </Link>
         <Link href="/tracker" className={styles.buttonCard}>
           <h3 className={styles.cardTitle}>Open Quotes</h3>
-          <Image
-            alt="PBS Buildings Logo"
-            src={openQuote}
-            className={styles.dashImage}
-          />
+          <div className={styles.cardBody}>
+            <div>
+              <Image
+                alt="Open Quote"
+                src={openQuote}
+                className={styles.dashImage}
+              />
+            </div>
+          </div>
         </Link>
         {hasPermission(5) && (
           <>

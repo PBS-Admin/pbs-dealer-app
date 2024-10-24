@@ -15,9 +15,29 @@ function useFormState(initialState) {
   } = useWind();
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    console.log('in handleChange: ', e);
+    const { name, value, type, checked } = e.target;
 
     setValues((prev) => {
+      if (type === 'checkbox') {
+        // Update buildings if the field exists in building objects
+        const updatedBuildings = prev.buildings.map((building) => {
+          if (name in building) {
+            return {
+              ...building,
+              [name]: building[name] === false ? checked : building[name],
+            };
+          }
+          return building;
+        });
+
+        return {
+          ...prev,
+          [name]: checked,
+          buildings: updatedBuildings,
+        };
+      }
+
       // Parse the value if it's a number field
       const newValue = [
         'thermalFactor',
@@ -407,13 +427,40 @@ function useFormState(initialState) {
     }));
   };
 
-  const handleMandoorChange = (mandoorIndex, field, value) => {
-    setValues((prev) => ({
-      ...prev,
-      mandoors: prev.mandoors.map((mandoor, mdIndex) =>
-        mdIndex === mandoorIndex ? { ...mandoor, [field]: value } : mandoor
-      ),
-    }));
+  const handleMandoorChange = (mandoorIndex, field, e) => {
+    const { value, type, checked } = e.target;
+
+    setValues((prev) => {
+      if (type === 'checkbox') {
+        return {
+          ...prev,
+          mandoors: prev.mandoors.map((mandoor, mdIndex) => {
+            if (mdIndex === mandoorIndex) {
+              // If we're setting either panic or deadBolt to true
+              if ((field === 'panic' || field === 'deadBolt') && checked) {
+                return {
+                  ...mandoor,
+                  // Set the current field to checked
+                  [field]: checked,
+                  // Set the opposite field to false
+                  [field === 'panic' ? 'deadBolt' : 'panic']: false,
+                };
+              }
+              // For all other checkbox fields or when unchecking
+              return { ...mandoor, [field]: checked };
+            }
+            return mandoor;
+          }),
+        };
+      }
+
+      return {
+        ...prev,
+        mandoors: prev.mandoors.map((mandoor, mdIndex) =>
+          mdIndex === mandoorIndex ? { ...mandoor, [field]: value } : mandoor
+        ),
+      };
+    });
   };
 
   const handleCalcChange = (buildingIndex, field) => {

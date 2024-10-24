@@ -50,18 +50,13 @@ const formatFeetInches = (feet, inches) => {
   // return `${feet}'-${inches.toString().padStart(1, '0')}"`;
 };
 
-const parseFeetInches = (input, zero, neg) => {
+const parseFeetInches = (input, neg) => {
   // Handle decimal input
-  if (
-    (parseFloat(input) != 0 || zero) &&
-    (parseFloat(input) >= 0 || neg) &&
-    !isNaN(parseFloat(input))
-  ) {
+  if (input == '') {
+    return decimalToFeetInches(0);
+  } else if ((parseFloat(input) >= 0 || neg) && !isNaN(parseFloat(input))) {
     return decimalToFeetInches(parseFloat(input));
-  } else if (
-    (parseFloat(input) == 0 && !zero) ||
-    (parseFloat(input) < 0 && !neg)
-  ) {
+  } else if (parseFloat(input) < 0 && !neg) {
     return null;
   }
 
@@ -80,12 +75,13 @@ const FeetInchesInput = ({
   value,
   name,
   label,
-  labelClass,
+  labelClass = '',
+  showLabel = true,
   onChange,
   onFocus,
   negative = false,
-  noBlankValue = false,
-  allowZero = noBlankValue ? true : false,
+  allowBlankValue = false,
+  allowZero = allowBlankValue ? false : true,
   row,
   calc,
   onCalc,
@@ -96,7 +92,9 @@ const FeetInchesInput = ({
 
   useEffect(() => {
     const { feet, inches } = decimalToFeetInches(value);
-    setInputValue(formatFeetInches(feet, inches));
+    setInputValue(
+      value == 0 && !allowZero ? '' : formatFeetInches(feet, inches)
+    );
   }, [value]);
 
   const handleInputChange = (e) => {
@@ -105,19 +103,22 @@ const FeetInchesInput = ({
   };
 
   const handleBlur = () => {
-    const parsed = parseFeetInches(inputValue, allowZero, negative);
+    const parsed = parseFeetInches(inputValue, negative);
     if (parsed) {
       const { feet, inches } = parsed;
       const decimalValue = feetToDecimal(feet, inches);
       onChange(name, decimalValue);
-      setInputValue(formatFeetInches(feet, inches));
-    } else if (inputValue == '') {
-      onChange(name, noBlankValue ? 0 : '');
-      setInputValue(noBlankValue ? `0'-0"` : '');
+      setInputValue(
+        (inputValue == 0 && !allowZero) || (inputValue == '' && allowBlankValue)
+          ? ''
+          : formatFeetInches(feet, inches)
+      );
     } else {
       // Reset to the last valid value
       const { feet, inches } = decimalToFeetInches(value);
-      setInputValue(formatFeetInches(feet, inches));
+      setInputValue(
+        value == 0 && !allowZero ? '' : formatFeetInches(feet, inches)
+      );
     }
   };
 
@@ -126,17 +127,18 @@ const FeetInchesInput = ({
 
   return (
     <div className={`cardInput ${condition}`}>
-      <div className={`${calcClass} ${labelClass}`}>
-        <label className={labelClass} htmlFor={name}>
-          <span>{label}</span>
-        </label>
-        {calc && (
-          <button type="button" onClick={onCalc}>
-            Calc
-          </button>
-        )}
-      </div>
-
+      {showLabel && (
+        <div className={`${calcClass} ${labelClass}`}>
+          <label className={labelClass} htmlFor={name}>
+            <span>{label}</span>
+          </label>
+          {calc && (
+            <button type="button" onClick={onCalc}>
+              Calc
+            </button>
+          )}
+        </div>
+      )}
       <input
         type="text"
         id={name}

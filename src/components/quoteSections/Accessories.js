@@ -3,6 +3,8 @@ import { mandoors, mandoorGlass } from '../../util/dropdownOptions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import ReusableSelect from '../Inputs/ReusableSelect';
+import ReusableSlider from '../Inputs/ReusableSlider';
+import ReusableInteger from '../Inputs/ReusableInteger';
 
 const Accessories = ({
   values,
@@ -18,15 +20,15 @@ const Accessories = ({
       mandoors: [
         ...prev.mandoors,
         {
-          qty: 0,
-          size: 'bd3070',
-          glass: '',
-          hasLever: true,
-          hasDeadbolt: true,
-          hasPanic: false,
-          hasCloser: false,
-          hasKickplate: false,
-          hasMullion: false,
+          qty: 1,
+          size: '3070',
+          glass: 'none',
+          leverLockset: true,
+          deadBolt: true,
+          panic: false,
+          closer: false,
+          kickPlate: false,
+          mullion: false,
         },
       ],
     }));
@@ -50,79 +52,345 @@ const Accessories = ({
 
   return (
     <>
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
           <h3>Accessories</h3>
         </header>
+        <div className="grid2 alignTop">
+          <div className="grid">
+            <h4>Foundation Design</h4>
+            <div className="checkboxGroup grid2">
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="monoSlabDesign"
+                  name="monoSlabDesign"
+                  checked={values.monoSlabDesign}
+                  onChange={(e) => handleChange(e, 'monoSlabDesign')}
+                />
+                <label htmlFor="monoSlabDesign">
+                  Include Monolothic Slab Design
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="pierFootingDesign"
+                  name="pierFootingDesign"
+                  checked={values.pierFootingDesign}
+                  onChange={(e) => handleChange(e, 'pierFootingDesign')}
+                />
+                <label htmlFor="pierFootingDesign">
+                  Include Pier Footing Design
+                </label>
+              </div>
+            </div>
+
+            <h4>Weather Tight Warranties</h4>
+            <div className="checkboxGroup grid2">
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="standardWarranty"
+                  name="standardWarranty"
+                  checked={values.standardWarranty}
+                  onChange={(e) => handleChange(e, 'standardWarranty')}
+                />
+                <label htmlFor="standardWarranty">
+                  Include Standard Warranty
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="singleSourceWarranty"
+                  name="singleSourceWarranty"
+                  checked={values.pierFootingDesign}
+                  onChange={(e) => handleChange(e, 'singleSourceWarranty')}
+                />
+                <label htmlFor="singleSourceWarranty">
+                  Include Single Source Warranty
+                </label>
+              </div>
+            </div>
+
+            <h4>Shipping</h4>
+            <div className="checkboxGroup grid2">
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="willCall"
+                  name="willCall"
+                  checked={values.willCall}
+                  onChange={(e) => handleChange(e, 'willCall')}
+                />
+                <label htmlFor="willCall">Will Call - Shipping By Others</label>
+              </div>
+            </div>
+          </div>
+          <div className="grid">
+            <h4>Accessories</h4>
+            <ReusableSlider
+              type="number"
+              name="skylight4x4"
+              value={values.skylight4x4}
+              allowBlankValue={true}
+              negative={false}
+              increment={1}
+              placeholder="Qty"
+              label="4x4 Insulated Skylight with Curb"
+              onChange={handleChange}
+              row={true}
+            />
+            <ReusableSlider
+              type="number"
+              name="ridgeVent10ft"
+              value={values.ridgeVent10ft}
+              allowBlankValue={true}
+              negative={false}
+              increment={1}
+              placeholder="Qty"
+              label={`12"x10 ft Ridge Vent with Bird Screens and Dampers`}
+              onChange={handleChange}
+              row={true}
+            />
+            <ReusableSlider
+              type="number"
+              name="canopyKit2x2x6"
+              value={values.canopyKit2x2x6}
+              allowBlankValue={true}
+              negative={false}
+              increment={1}
+              placeholder="Qty"
+              label="2x2x6 Light Weight Canopy Kit"
+              onChange={handleChange}
+              row={true}
+            />
+            <ReusableSlider
+              type="number"
+              name="canopyKit2x2x9"
+              value={values.canopyKit2x2x9}
+              allowBlankValue={true}
+              negative={false}
+              increment={1}
+              placeholder="Qty"
+              label="2x2x9 Light Weight Canopy Kit"
+              onChange={handleChange}
+              row={true}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="card">
+        <header className="cardHeader">
+          <h3>Man Doors</h3>
+        </header>
         {values.mandoors.length > 0 && (
-          <div className="onTablet">
-            <div className="tableGrid6">
-              <h5>Wall</h5>
-              <h5>
-                Start <small>(Left to Right)</small>
-              </h5>
-              <h5>
-                End <small>(Left to Right)</small>
-              </h5>
-              <h5>Height</h5>
-              <h5>Top of Wall</h5>
+          <div className="onLaptop">
+            <div className="tableGrid10">
+              <h5>Qty</h5>
+              <h5>Door Size</h5>
+              <h5>Glass Option</h5>
+              <h5 className="span6">Accessories</h5>
               <h5></h5>
             </div>
           </div>
         )}
         {values.mandoors.map((mandoor, mandoorIndex) => (
           <Fragment key={`building-mandoor-${mandoorIndex}`}>
-            <div className="tableGrid6">
-              <div>
-                <label htmlFor={`building-mandoorQty-${mandoorIndex}`}>
-                  Qty:
-                </label>
-                <input
-                  type="number"
-                  id={`building-mandoorQty-${mandoorIndex}`}
-                  name={`building-mandoorQty-${mandoorIndex}`}
-                  value={mandoor.qty}
-                  onChange={(e) =>
-                    handleMandoorChange(mandoorIndex, 'qty', e.target.value)
+            <div
+              className={`tableGrid10 ${mandoorIndex == activeMandoor ? 'activeRow' : ''}`}
+            >
+              <ReusableSlider
+                type="number"
+                name={`building-mandoorQty-${mandoorIndex}`}
+                value={mandoor.qty}
+                allowBlankValue={false}
+                negative={false}
+                min={1}
+                increment={1}
+                placeholder="Qty"
+                label="Qty:"
+                labelClass="offOnLaptop"
+                onChange={(e) => handleMandoorChange(mandoorIndex, 'qty', e)}
+                onFocus={() => {
+                  if (activeMandoor !== mandoorIndex) {
+                    setActiveMandoor(mandoorIndex);
                   }
-                  min="0"
-                />
-              </div>
+                }}
+              />
               <ReusableSelect
-                id={`building-mandoorSize-${mandoorIndex}`}
                 name={`building-mandoorSize-${mandoorIndex}`}
-                labelClass="offOnTablet"
+                label="Door Size:"
+                labelClass="offOnLaptop"
                 value={mandoor.size}
-                onChange={(e) =>
-                  handleMandoorChange(mandoorIndex, 'size', e.target.value)
-                }
+                onChange={(e) => handleMandoorChange(mandoorIndex, 'size', e)}
                 onFocus={() => {
                   if (activeMandoor !== mandoorIndex) {
                     setActiveMandoor(mandoorIndex);
                   }
                 }}
                 options={mandoors}
-                label="Size"
               />
               <ReusableSelect
-                id={`building-mandoorGlass-${mandoorIndex}`}
                 name={`building-mandoorGlass-${mandoorIndex}`}
-                labelClass="offOnTablet"
+                label="Glass:"
+                labelClass="offOnLaptop"
                 value={mandoor.glass}
-                onChange={(e) =>
-                  handleMandoorChange(mandoorIndex, 'glass', e.target.value)
-                }
+                onChange={(e) => handleMandoorChange(mandoorIndex, 'glass', e)}
                 onFocus={() => {
                   if (activeMandoor !== mandoorIndex) {
                     setActiveMandoor(mandoorIndex);
                   }
                 }}
                 options={mandoorGlass}
-                label="Glass"
               />
+              <div className="spacer offOnLaptop span3"></div>
+              <div className="checkRow">
+                <input
+                  type="checkbox"
+                  id={`building-mandoorLever-${mandoorIndex}`}
+                  name={`building-mandoorLever-${mandoorIndex}`}
+                  checked={mandoor.leverLockset}
+                  disabled={true}
+                  onChange={(e) =>
+                    handleMandoorChange(mandoorIndex, 'leverLockset', e)
+                  }
+                  onFocus={() => {
+                    if (activeMandoor !== mandoorIndex) {
+                      setActiveMandoor(mandoorIndex);
+                    }
+                  }}
+                />
+                <label htmlFor={`building-mandoorLever-${mandoorIndex}`}>
+                  Lever-Lockset
+                </label>
+              </div>
+              <div className="checkRow">
+                <input
+                  type="checkbox"
+                  id={`building-mandoorDeadBolt-${mandoorIndex}`}
+                  name={`building-mandoorDeadBolt-${mandoorIndex}`}
+                  checked={mandoor.deadBolt}
+                  disabled={
+                    mandoor.size == '3070' ||
+                    mandoor.size == '4070' ||
+                    mandoor.size == '6070'
+                  }
+                  onChange={(e) =>
+                    handleMandoorChange(mandoorIndex, 'deadBolt', e)
+                  }
+                  onFocus={() => {
+                    if (activeMandoor !== mandoorIndex) {
+                      setActiveMandoor(mandoorIndex);
+                    }
+                  }}
+                />
+                <label htmlFor={`building-mandoorDeadBolt-${mandoorIndex}`}>
+                  Dead Bolt
+                </label>
+              </div>
+              <div className="checkRow">
+                <input
+                  type="checkbox"
+                  id={`building-mandoorPanic-${mandoorIndex}`}
+                  name={`building-mandoorPanic-${mandoorIndex}`}
+                  checked={mandoor.panic}
+                  disabled={
+                    mandoor.size == '3070' ||
+                    mandoor.size == '4070' ||
+                    mandoor.size == '6070'
+                  }
+                  onChange={(e) =>
+                    handleMandoorChange(mandoorIndex, 'panic', e)
+                  }
+                  onFocus={() => {
+                    if (activeMandoor !== mandoorIndex) {
+                      setActiveMandoor(mandoorIndex);
+                    }
+                  }}
+                />
+                <label htmlFor={`building-mandoorPanic-${mandoorIndex}`}>
+                  Panic Hardware
+                </label>
+              </div>
+              <div className="checkRow">
+                <input
+                  type="checkbox"
+                  id={`building-mandoorCloser-${mandoorIndex}`}
+                  name={`building-mandoorCloser-${mandoorIndex}`}
+                  checked={
+                    mandoor.closer &&
+                    mandoor.size != '3070' &&
+                    mandoor.size != '4070' &&
+                    mandoor.size != '6070'
+                  }
+                  disabled={
+                    mandoor.size == '3070' ||
+                    mandoor.size == '4070' ||
+                    mandoor.size == '6070'
+                  }
+                  onChange={(e) =>
+                    handleMandoorChange(mandoorIndex, 'closer', e)
+                  }
+                  onFocus={() => {
+                    if (activeMandoor !== mandoorIndex) {
+                      setActiveMandoor(mandoorIndex);
+                    }
+                  }}
+                />
+                <label htmlFor={`building-mandoorCloser-${mandoorIndex}`}>
+                  Closers
+                </label>
+              </div>
+              <div className="checkRow">
+                <input
+                  type="checkbox"
+                  id={`building-mandoorKickPlate-${mandoorIndex}`}
+                  name={`building-mandoorKickPlate-${mandoorIndex}`}
+                  checked={mandoor.kickPlate}
+                  disabled={
+                    mandoor.size == '3070' ||
+                    mandoor.size == '4070' ||
+                    mandoor.size == '6070'
+                  }
+                  onChange={(e) =>
+                    handleMandoorChange(mandoorIndex, 'kickPlate', e)
+                  }
+                  onFocus={() => {
+                    if (activeMandoor !== mandoorIndex) {
+                      setActiveMandoor(mandoorIndex);
+                    }
+                  }}
+                />
+                <label htmlFor={`building-mandoorKickPlate-${mandoorIndex}`}>
+                  Kick Plate
+                </label>
+              </div>
+              <div className="checkRow">
+                <input
+                  type="checkbox"
+                  id={`building-mandoorMullion-${mandoorIndex}`}
+                  name={`building-mandoorMullion-${mandoorIndex}`}
+                  checked={mandoor.mullion && mandoor.size == '6070P'}
+                  disabled={mandoor.size != '6070P'}
+                  onChange={(e) =>
+                    handleMandoorChange(mandoorIndex, 'mullion', e)
+                  }
+                  onFocus={() => {
+                    if (activeMandoor !== mandoorIndex) {
+                      setActiveMandoor(mandoorIndex);
+                    }
+                  }}
+                />
+                <label htmlFor={`building-mandoorMullion-${mandoorIndex}`}>
+                  Removable Mullion
+                </label>
+              </div>
               <button
                 onClick={() => removeMandoor(mandoorIndex)}
-                className="icon red"
+                className="icon red deleteRow span3"
               >
                 <FontAwesomeIcon icon={faTrash} />
               </button>
@@ -132,21 +400,505 @@ const Accessories = ({
         ))}
         <button
           type="button"
-          className="button success w5"
+          className="button success addRow"
           onClick={() => addMandoor()}
         >
           Add
         </button>
-        <div>
-          <label htmlFor={`building-testAcc`}>Test:</label>
-          <input
-            type="number"
-            id={`building-testAcc`}
-            name={`boltFinish`}
-            value={values.boltFinish}
-            onChange={handleChange}
-            min="0"
-          />
+      </section>
+
+      <section className="card">
+        <header className="cardHeader">
+          <h3>Additional Project Information</h3>
+        </header>
+        <div className="grid4 alignTop">
+          <div className="grid">
+            <h4>By Others Notes</h4>
+            <div className="checkboxGroup">
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="noteCMUWallByOthers"
+                  name="noteCMUWallByOthers"
+                  checked={values.noteCMUWallByOthers}
+                  onChange={handleChange}
+                />
+                <label htmlFor="noteCMUWallByOthers">
+                  CMU Walls - By Others
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="notePlywoodLinerByOthers"
+                  name="notePlywoodLinerByOthers"
+                  checked={values.notePlywoodLinerByOthers}
+                  onChange={handleChange}
+                />
+                <label htmlFor="notePlywoodLinerByOthers">
+                  Plywood Liner - By Others
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="noteMezzanineByOthers"
+                  name="noteMezzanineByOthers"
+                  checked={values.noteMezzanineByOthers}
+                  onChange={handleChange}
+                />
+                <label htmlFor="noteMezzanineByOthers">
+                  Mezzanine - By Others
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="noteFirewallByOthers"
+                  name="noteFirewallByOthers"
+                  checked={values.noteFirewallByOthers}
+                  onChange={handleChange}
+                />
+                <label htmlFor="noteFirewallByOthers">
+                  Firewall - By Others
+                </label>
+              </div>
+            </div>
+
+            <h4>Disclaimer Notes</h4>
+            <div className="checkboxGroup">
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="noteExtBldgDisclaimer"
+                  name="noteExtBldgDisclaimer"
+                  checked={values.noteExtBldgDisclaimer}
+                  onChange={handleChange}
+                />
+                <label htmlFor="noteExtBldgDisclaimer">
+                  Existing Buildings Disclaimer
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="noteRoofPitchDisclaimer"
+                  name="noteRoofPitchDisclaimer"
+                  checked={values.noteRoofPitchDisclaimer}
+                  onChange={handleChange}
+                />
+                <label htmlFor="noteRoofPitchDisclaimer">
+                  PBR Roofing with 1/2:12 Roof Pitch
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="noteSeismicGapDisclaimer"
+                  name="noteSeismicGapDisclaimer"
+                  checked={values.noteSeismicGapDisclaimer}
+                  onChange={handleChange}
+                />
+                <label htmlFor="noteSeismicGapDisclaimer">
+                  Seismic Gap Disclaimer
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="noteWaterPondingDisclaimer"
+                  name="noteWaterPondingDisclaimer"
+                  checked={values.noteWaterPondingDisclaimer}
+                  onChange={handleChange}
+                />
+                <label htmlFor="noteWaterPondingDisclaimer">
+                  Water Ponding Disclaimer
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="noteBldgSpecsDisclaimer"
+                  name="noteBldgSpecsDisclaimer"
+                  checked={values.addProjectInfo}
+                  onChange={handleChange}
+                />
+                <label htmlFor="noteBldgSpecsDisclaimer">
+                  Building With Spec's
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid">
+            <h4>Additional Building Items</h4>
+            <div className="checkboxGroup">
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="addItemExtBldg"
+                  name="addItemExtBldg"
+                  checked={values.addItemExtBldg}
+                  onChange={handleChange}
+                />
+                <label htmlFor="addItemExtBldg">
+                  Next to an Existing Building
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="addItemPartWalls"
+                  name="addItemPartWalls"
+                  checked={values.addItemPartWalls}
+                  onChange={handleChange}
+                />
+                <label htmlFor="addItemPartWalls">
+                  Has Partition Walls By Others
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="addItemRoofOpenings"
+                  name="addItemRoofOpenings"
+                  checked={values.addItemRoofOpenings}
+                  onChange={handleChange}
+                />
+                <label htmlFor="addItemRoofOpenings">Has Roof Openings</label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="addItemStepElev"
+                  name="addItemStepElev"
+                  checked={values.addItemStepElev}
+                  onChange={handleChange}
+                />
+                <label htmlFor="addItemStepElev">Has Step Elevations</label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="addItemHorizPanels"
+                  name="addItemHorizPanels"
+                  checked={values.addItemHorizPanels}
+                  onChange={handleChange}
+                />
+                <label htmlFor="addItemHorizPanels">
+                  Has Horizontal Panels
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="addItemParapetWalls"
+                  name="addItemParapetWalls"
+                  checked={values.addItemParapetWalls}
+                  onChange={handleChange}
+                />
+                <label htmlFor="addItemParapetWalls">Has Parapet Walls</label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="addItemFaciaWalls"
+                  name="addItemFaciaWalls"
+                  checked={values.addItemFaciaWalls}
+                  onChange={handleChange}
+                />
+                <label htmlFor="addItemFaciaWalls">Has Facia Walls</label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="addItemBumpoutWalls"
+                  name="addItemBumpoutWalls"
+                  checked={values.addItemBumpoutWalls}
+                  onChange={handleChange}
+                />
+                <label htmlFor="addItemBumpoutWalls">Has Bump-out Walls</label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="addItemCupolas"
+                  name="addItemCupolas"
+                  checked={values.addItemCupolas}
+                  onChange={handleChange}
+                />
+                <label htmlFor="addItemCupolas">Has Cupolas</label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="addItemClearstory"
+                  name="addItemClearstory"
+                  checked={values.addItemClearstory}
+                  onChange={handleChange}
+                />
+                <label htmlFor="addItemClearstory">Has Clearstory</label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="addItemHipValley"
+                  name="addItemHipValley"
+                  checked={values.addItemHipValley}
+                  onChange={handleChange}
+                />
+                <label htmlFor="addItemHipValley">
+                  Has Hip/Valley Roof Condition
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="addItemGambrelRoof"
+                  name="addItemGambrelRoof"
+                  checked={values.addItemGambrelRoof}
+                  onChange={handleChange}
+                />
+                <label htmlFor="addItemGambrelRoof">
+                  Has Gable Roof (Special Shape Roof)
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="addItemTiltUpWalls"
+                  name="addItemTiltUpWalls"
+                  checked={values.addItemTiltUpWalls}
+                  onChange={handleChange}
+                />
+                <label htmlFor="addItemTiltUpWalls">
+                  Has Concrete Tilt Up Walls (All Four Walls)
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid">
+            <h4>Mezzanine Buildings</h4>
+            <div className="checkboxGroup">
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="mezzSimple"
+                  name="mezzSimple"
+                  checked={values.mezzSimple}
+                  onChange={handleChange}
+                />
+                <label htmlFor="mezzSimple">Has Simple Mezzanine</label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="mezzLShape"
+                  name="mezzLShape"
+                  checked={values.mezzLShape}
+                  onChange={handleChange}
+                />
+                <label htmlFor="mezzLShape">Has L-Shape Mezzanine</label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="mezzNotAligned"
+                  name="mezzNotAligned"
+                  checked={values.mezzNotAligned}
+                  onChange={handleChange}
+                />
+                <label htmlFor="mezzNotAligned">
+                  Has Mezzanine Not Aligned with Frames
+                </label>
+              </div>
+            </div>
+
+            <h4>Crane Buildings</h4>
+            <div className="checkboxGroup">
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="craneStepCols"
+                  name="craneStepCols"
+                  checked={values.craneStepCols}
+                  onChange={handleChange}
+                />
+                <label htmlFor="craneStepCols">
+                  Has Step Columns for Cranes over 20 tons
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="craneJib"
+                  name="craneJib"
+                  checked={values.craneJib}
+                  onChange={handleChange}
+                />
+                <label htmlFor="craneJib">Has Jib Cranes</label>
+              </div>
+            </div>
+
+            <h4>Hangar Buildings</h4>
+            <div className="checkboxGroup">
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="tHangar"
+                  name="tHangar"
+                  checked={values.tHangar}
+                  onChange={handleChange}
+                />
+                <label htmlFor="tHangar">Is a T-Hangar</label>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid">
+            <h4>Other</h4>
+            <div className="checkboxGroup">
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="otherBldgSpecs"
+                  name="otherBldgSpecs"
+                  checked={values.otherBldgSpecs}
+                  onChange={handleChange}
+                />
+                <label htmlFor="otherBldgSpecs">Has Building Spec's</label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="otherNonStdSpecs"
+                  name="otherNonStdSpecs"
+                  checked={values.otherNonStdSpecs}
+                  onChange={handleChange}
+                />
+                <label htmlFor="otherNonStdSpecs">
+                  Has Non-standard Spec's
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="otherCarrierBms"
+                  name="otherCarrierBms"
+                  checked={values.otherCarrierBms}
+                  onChange={handleChange}
+                />
+                <label htmlFor="otherCarrierBms">Has Carrier Beams</label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="otherPortalCarrier"
+                  name="otherPortalCarrier"
+                  checked={values.otherPortalCarrier}
+                  onChange={handleChange}
+                />
+                <label htmlFor="otherPortalCarrier">
+                  Has Portal Carrier Beams
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="otherNonStdCarrier"
+                  name="otherNonStdCarrier"
+                  checked={values.otherNonStdCarrier}
+                  onChange={handleChange}
+                />
+                <label htmlFor="otherNonStdCarrier">
+                  Has Non-standard Carrier Beams
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="otherBarJoists"
+                  name="otherBarJoists"
+                  checked={values.otherBarJoists}
+                  onChange={handleChange}
+                />
+                <label htmlFor="otherBarJoists">Has Bar Joists</label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="otherWeakAxis"
+                  name="otherWeakAxis"
+                  checked={values.otherWeakAxis}
+                  onChange={handleChange}
+                />
+                <label htmlFor="otherWeakAxis">
+                  Has Fixed Base Columns with Weak-axis Bending
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="otherSkewedEndwall"
+                  name="otherSkewedEndwall"
+                  checked={values.otherSkewedEndwall}
+                  onChange={handleChange}
+                />
+                <label htmlFor="otherSkewedEndwall">
+                  Has Skewed Wall at the Endwall
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="otherSkewedSidewall"
+                  name="otherSkewedSidewall"
+                  checked={values.otherSkewedSidewall}
+                  onChange={handleChange}
+                />
+                <label htmlFor="otherSkewedSidewall">
+                  Has Skewed Wall at the Sidewall
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="otherBulkStorageSeeds"
+                  name="otherBulkStorageSeeds"
+                  checked={values.otherBulkStorageSeeds}
+                  onChange={handleChange}
+                />
+                <label htmlFor="otherBulkStorageSeeds">
+                  Is Bulk Storage for Seeds
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="otherBulkStorage"
+                  name="otherBulkStorage"
+                  checked={values.otherBulkStorage}
+                  onChange={handleChange}
+                />
+                <label htmlFor="otherBulkStorage">
+                  Is Bulk Storage for Potatoes/Onions
+                </label>
+              </div>
+              <div className="checkRow large">
+                <input
+                  type="checkbox"
+                  id="otherLoadsByOthers"
+                  name="otherLoadsByOthers"
+                  checked={values.otherLoadsByOthers}
+                  onChange={handleChange}
+                />
+                <label htmlFor="otherLoadsByOthers">
+                  Has Loads By Others ono PBS Building
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </>

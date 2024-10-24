@@ -18,6 +18,7 @@ export default async function Tracker() {
   console.log('sess:', session);
 
   let quotes = [];
+  let companies = [];
   let error = null;
 
   try {
@@ -26,6 +27,7 @@ export default async function Tracker() {
       session.user.accessToken
     );
     quotes = data.quotes;
+    companies = data.companies;
   } catch (err) {
     console.error('Error fetching quotes:', err);
     error = err.message;
@@ -50,7 +52,12 @@ export default async function Tracker() {
       {error && <div className={styles.error}>{error}</div>}
 
       {error && <div className={styles.error}>{error}</div>}
-      <QuoteTable initialQuotes={quotes} onCopyQuote={handleCopyQuote} />
+      <QuoteTable
+        initialQuotes={quotes}
+        onCopyQuote={handleCopyQuote}
+        companies={companies}
+        permission={session.user.permission}
+      />
     </main>
   );
 }

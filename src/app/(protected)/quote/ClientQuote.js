@@ -12,6 +12,7 @@ import {
   faArrowRotateLeft,
   faArrowRotateRight,
   faTrash,
+  faComment,
   faCopy,
   faPlus,
   faCheck,
@@ -39,6 +40,7 @@ import FeetInchesInput from '../../../components/Inputs/FeetInchesInput';
 import RoofPitchInput from '../../../components/Inputs/RoofPitchInput';
 import ReusableLoader from '@/components/ReusableLoader';
 import ReusableInteger from '../../../components/Inputs/ReusableInteger';
+import ReusableSlider from '../../../components/Inputs/ReusableSlider';
 
 import PageHeader from '@/components/PageHeader';
 import Accessories from '@/components/quoteSections/Accessories';
@@ -101,9 +103,9 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         {
           width: '',
           length: '',
-          offsetX: '0',
-          offsetY: '0',
-          rotation: '0',
+          offsetX: 0,
+          offsetY: 0,
+          rotation: 0,
           commonWall: '',
           shape: 'symmetrical',
           backPeakOffset: '',
@@ -167,7 +169,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           wallPanelType: 'pbr',
           wallPanelGauge: '26',
           wallPanelFinish: 'painted',
-          includeGutters: false,
+          includeGutters: true,
           roofInsulation: 'none',
           roofInsulationOthers: false,
           wallInsulation: 'none',
@@ -411,12 +413,21 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         <div>
           <div className={styles.tabContainer}>
             {quoteId != 0 && (
-              <button
-                onClick={openQuoteDeleteDialog}
-                className={styles.deleteTab}
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </button>
+              <>
+                <button
+                  // onClick={openQuoteEstimatorNotes}
+                  className={styles.noteTab}
+                >
+                  <FontAwesomeIcon icon={faComment} />
+                  <div className={styles.noteQty}>3</div>
+                </button>
+                <button
+                  onClick={openQuoteDeleteDialog}
+                  className={styles.deleteTab}
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              </>
             )}
             <button onClick={handleSubmit} className={styles.saveTab}>
               <FontAwesomeIcon icon={saveSuccess ? faCheck : faSave} />
@@ -442,37 +453,37 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               Building Project
             </button>
             <button
-              className={`${activeCard == 'bldg-layout' ? styles.activeCard : ''}`}
+              className={`${styles.bldg} ${activeCard == 'bldg-layout' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-layout')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Layout
             </button>
             <button
-              className={`${activeCard == 'bldg-extensions' ? styles.activeCard : ''}`}
+              className={`${styles.bldg} ${activeCard == 'bldg-extensions' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-extensions')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Extensions
             </button>
             <button
-              className={`${activeCard == 'bldg-partitions' ? styles.activeCard : ''}`}
+              className={`${styles.bldg} ${activeCard == 'bldg-partitions' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-partitions')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Partitions
             </button>
             <button
-              className={`${activeCard == 'bldg-options' ? styles.activeCard : ''}`}
+              className={`${styles.bldg} ${activeCard == 'bldg-options' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-options')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Options
             </button>
             {/* <button
-              className={`${activeCard == 'bldg-cranes' ? styles.activeCard : ''}`}
+              className={`${styles.bldg} ${activeCard == 'bldg-cranes' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-cranes')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Cranes
             </button> */}
             <button
-              className={`${activeCard == 'bldg-openings' ? styles.activeCard : ''}`}
+              className={`${styles.bldg} ${activeCard == 'bldg-openings' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-openings')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Openings
@@ -492,7 +503,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           </nav>
           {(values.buildings[activeBuilding].width > 0 ||
             values.buildings[activeBuilding].length > 0) && (
-            <section className={`card start ${styles.sketchBox}`}>
+            <section className={`card ${styles.sketchBox}`}>
               <header>
                 <h3>Active Building</h3>
               </header>
@@ -565,6 +576,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                         name={`buildingPeakOffset-${index}`}
                         label="Back Peak Offset:"
                         value={building.backPeakOffset}
+                        allowBlankValue={true}
                         onChange={(name, value) =>
                           handleNestedChange(index, 'backPeakOffset', value)
                         }
@@ -577,6 +589,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       name={`buildingWidth-${index}`}
                       label="Width:"
                       value={building.width}
+                      allowBlankValue={true}
                       onChange={(name, value) =>
                         handleNestedChange(index, 'width', value)
                       }
@@ -586,6 +599,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       name={`buildingLength-${index}`}
                       label="Length:"
                       value={building.length}
+                      allowBlankValue={true}
                       onChange={(name, value) =>
                         handleNestedChange(index, 'length', value)
                       }
@@ -597,6 +611,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           name={`buildingBackEaveHeight-${index}`}
                           label="Eave Height:"
                           value={building.backEaveHeight}
+                          allowBlankValue={true}
                           onChange={(name, value) =>
                             handleNestedChange(index, 'backEaveHeight', value)
                           }
@@ -607,6 +622,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           name={`buildingBackRoofPitch-${index}`}
                           label="Roof Pitch:"
                           value={building.backRoofPitch}
+                          allowBlankValue={true}
                           onChange={(name, value) =>
                             handleNestedChange(index, 'backRoofPitch', value)
                           }
@@ -621,6 +637,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           name={`buildingBackEaveHeight-${index}`}
                           label="Low Eave Height:"
                           value={building.backEaveHeight}
+                          allowBlankValue={true}
                           onChange={(name, value) =>
                             handleNestedChange(index, 'backEaveHeight', value)
                           }
@@ -630,6 +647,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           name={`buildingFrontEaveHeight-${index}`}
                           label="High Eave Height:"
                           value={building.frontEaveHeight}
+                          allowBlankValue={true}
                           onChange={(name, value) =>
                             handleNestedChange(index, 'frontEaveHeight', value)
                           }
@@ -652,6 +670,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           name={`buildingBackEaveHeight-${index}`}
                           label="Back Eave Height:"
                           value={building.backEaveHeight}
+                          allowBlankValue={true}
                           onChange={(name, value) =>
                             handleNestedChange(index, 'backEaveHeight', value)
                           }
@@ -661,6 +680,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           name={`buildingFrontEaveHeight-${index}`}
                           label="Front Eave Height:"
                           value={building.frontEaveHeight}
+                          allowBlankValue={true}
                           onChange={(name, value) =>
                             handleNestedChange(index, 'frontEaveHeight', value)
                           }
@@ -692,150 +712,55 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                     <>
                       <div className="divider white"></div>
                       <div className="grid4">
-                        <div className={styles.sliderGrid}>
-                          <div className={styles.buttonContainer}>
-                            <button
-                              className={styles.sliderLeftButton}
-                              type="button"
-                              onClick={() =>
-                                handleNestedChange(
-                                  index,
-                                  'offsetX',
-                                  building.offsetX - 10
-                                )
-                              }
-                              disabled={index != activeBuilding}
-                            >
-                              <FontAwesomeIcon icon={faChevronLeft} />
-                            </button>
-                          </div>
-                          <FeetInchesInput
-                            name={`buildingOffsetX-${index}`}
-                            label="Left/Right:"
-                            value={building.offsetX}
-                            negative={true}
-                            noBlankValue={true}
-                            onChange={(name, value) =>
-                              handleNestedChange(index, 'offsetX', value)
-                            }
-                            disabled={index != activeBuilding}
-                          />
-                          <div className={styles.buttonContainer}>
-                            <button
-                              className={styles.sliderRightButton}
-                              type="button"
-                              onClick={() =>
-                                handleNestedChange(
-                                  index,
-                                  'offsetX',
-                                  building.offsetX + 10
-                                )
-                              }
-                              disabled={index != activeBuilding}
-                            >
-                              <FontAwesomeIcon icon={faChevronRight} />
-                            </button>
-                          </div>
-                        </div>
-                        <div className={styles.sliderGrid}>
-                          <div className={styles.buttonContainer}>
-                            <button
-                              className={styles.sliderLeftButton}
-                              type="button"
-                              onClick={() =>
-                                handleNestedChange(
-                                  index,
-                                  'offsetY',
-                                  building.offsetY - 10
-                                )
-                              }
-                              disabled={index != activeBuilding}
-                            >
-                              <FontAwesomeIcon icon={faChevronDown} />
-                            </button>
-                          </div>
-                          <FeetInchesInput
-                            name={`buildingOffsetY-${index}`}
-                            label="Back/Front:"
-                            value={building.offsetY}
-                            negative={true}
-                            noBlankValue={true}
-                            onChange={(name, value) =>
-                              handleNestedChange(index, 'offsetY', value)
-                            }
-                            disabled={index != activeBuilding}
-                          />
-                          <div className={styles.buttonContainer}>
-                            <button
-                              className={styles.sliderRightButton}
-                              type="button"
-                              onClick={() =>
-                                handleNestedChange(
-                                  index,
-                                  'offsetY',
-                                  building.offsetY + 10
-                                )
-                              }
-                              disabled={index != activeBuilding}
-                            >
-                              <FontAwesomeIcon icon={faChevronUp} />
-                            </button>
-                          </div>
-                        </div>
-                        <div className={styles.sliderGrid}>
-                          <div className={styles.buttonContainer}>
-                            <button
-                              className={styles.sliderLeftButton}
-                              type="button"
-                              onClick={() =>
-                                handleNestedChange(
-                                  index,
-                                  'rotation',
-                                  building.rotation
-                                    ? parseInt(building.rotation) > 0
-                                      ? parseInt(building.rotation) - 90 + '°'
-                                      : '270°'
-                                    : '270°'
-                                )
-                              }
-                              disabled={index != activeBuilding}
-                            >
-                              <FontAwesomeIcon icon={faArrowRotateRight} />
-                            </button>
-                          </div>
-                          <ReusableInteger
-                            name={`buildingRotation-${index}`}
-                            value={building.rotation}
-                            validValues={[0, 90, 180, 270]}
-                            defaultValue="0"
-                            suffix="°"
-                            label="Rotation:"
-                            onChange={(name, value) =>
-                              handleNestedChange(index, 'rotation', value)
-                            }
-                            disabled={index != activeBuilding}
-                          />
-                          <div className={styles.buttonContainer}>
-                            <button
-                              className={styles.sliderRightButton}
-                              type="button"
-                              onClick={() =>
-                                handleNestedChange(
-                                  index,
-                                  'rotation',
-                                  building.rotation
-                                    ? parseInt(building.rotation) < 270
-                                      ? parseInt(building.rotation) + 90 + '°'
-                                      : '0°'
-                                    : '90°'
-                                )
-                              }
-                              disabled={index != activeBuilding}
-                            >
-                              <FontAwesomeIcon icon={faArrowRotateLeft} />
-                            </button>
-                          </div>
-                        </div>
+                        <ReusableSlider
+                          className="blue"
+                          type="leftRight"
+                          name={`buildingOffsetX-${index}`}
+                          value={building.offsetX}
+                          allowBlankValue={false}
+                          increment={10}
+                          placeholder="Feet"
+                          label="Left/Right:"
+                          labelClass="white center"
+                          onChange={(e) =>
+                            handleNestedChange(index, 'offsetX', e.target.value)
+                          }
+                          disabled={index != activeBuilding}
+                        />
+                        <ReusableSlider
+                          className="blue"
+                          type="upDown"
+                          name={`buildingOffsetY-${index}`}
+                          value={building.offsetY}
+                          allowBlankValue={false}
+                          increment={10}
+                          placeholder="Feet"
+                          label="Back/Front:"
+                          labelClass="white center"
+                          onChange={(e) =>
+                            handleNestedChange(index, 'offsetY', e.target.value)
+                          }
+                          disabled={index != activeBuilding}
+                        />
+                        <ReusableSlider
+                          className="blue"
+                          type="rotation"
+                          name={`buildingRotation-${index}`}
+                          value={building.rotation}
+                          allowBlankValue={false}
+                          increment={90}
+                          placeholder="Degree"
+                          label="Rotation:"
+                          labelClass="white center"
+                          onChange={(e) =>
+                            handleNestedChange(
+                              index,
+                              'rotation',
+                              e.target.value
+                            )
+                          }
+                          disabled={index != activeBuilding}
+                        />
                         <div className="cardInput">
                           <div className="center">
                             <label htmlFor={`buildingCommonWall-${index}`}>
@@ -975,16 +900,12 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           />
         )}
         {activeCard == 'finalize-quote' && (
-          <FinalizeQuote
-            values={values}
-            setValues={setValues}
-            handleChange={handleChange}
-          />
+          <FinalizeQuote values={values} handleChange={handleChange} />
         )}
         {!isDesktop &&
           (values.buildings[activeBuilding].width > 0 ||
             values.buildings[activeBuilding].length > 0) && (
-            <section className={`card start ${styles.sketchBox}`}>
+            <section className={`card ${styles.sketchBox}`}>
               <header>
                 <h3>Active Building</h3>
               </header>
