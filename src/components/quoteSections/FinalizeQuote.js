@@ -99,37 +99,42 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
   }, [validateFields, autoFillRules]);
 
   const handleExport = useCallback(async () => {
-    const isValid = await validateFields(fieldsToValidate, autoFillRules);
+    try {
+      const isValid = await validateFields(fieldsToValidate, autoFillRules);
 
-    if (isValid) {
-      const result = await createFolderAndFiles(values);
-      console.log(result);
-      console.log(result.folder.length);
+      if (isValid) {
+        const result = await createFolderAndFiles(values);
+        console.log(result);
+        console.log(result.folder.length);
 
-      if (result.success) {
-        for (let i = 0; i < result.folder.length; i++) {
-          let path;
-          if (result.folder.length > 1) {
-            path = `C:\\Jobs\\${result.folder[0]}P\\${result.folder[i]}`;
-          } else {
-            path = `C:\\Jobs\\${result.folder}`;
+        if (result.success) {
+          for (let i = 0; i < result.folder.length; i++) {
+            let path;
+            if (result.folder.length > 1) {
+              path = `C:\\Jobs\\${result.folder[0]}P\\${result.folder[i]}`;
+            } else {
+              path = `C:\\Jobs\\${result.folder}`;
+            }
+
+            const res = await handleProcessFiles(path);
+            if (res) {
+              console.log('MBS processed');
+            } else {
+              console.log('MBS process failed');
+            }
           }
-
-          const res = await handleProcessFiles(path);
-          if (res) {
-            console.log('MBS processed');
-          } else {
-            console.log('MBS process failed');
-          }
+          showSuccessExport();
+          console.log('Export successful');
+        } else {
+          showRejectExport();
+          console.log('Export failed');
         }
-        showSuccessExport();
-        console.log('Export successful');
       } else {
-        showRejectExport();
-        console.log('Export failed');
+        console.log(`Couldn't validate all fields`);
       }
-    } else {
-      console.log(`Couldn't validate all fields`);
+    } catch (error) {
+      console.error('Export error: ', error);
+      showRejectExport();
     }
   }, [
     validateFields,
