@@ -36,24 +36,42 @@ function useValidation(initialFormValues, setFormValues) {
 
   const autoResolveFields = useCallback(
     async (autoFillRules) => {
+      console.log('autoFillRules:', autoFillRules); // Check structure
+      console.log('initialFormValues:', initialFormValues);
+
       let updatedValues = { ...initialFormValues };
       let autoFilledChanges = { buildings: [] };
       let hasChanges = false;
 
+      if (!autoFillRules || !Array.isArray(autoFillRules)) {
+        console.error('autoFillRules is not an array:', autoFillRules);
+        return false;
+      }
+
       if (updatedValues.buildings && Array.isArray(updatedValues.buildings)) {
         const updatedBuildings = updatedValues.buildings.map(
           (building, index) => {
+            console.log('Processing building:', index);
             let updatedBuilding = { ...building };
             let buildingChanges = {};
 
             for (const rule of autoFillRules) {
-              if (rule.condition(building)) {
-                const newValue = rule.setValue(building);
-                if (newValue !== building[rule.field]) {
-                  buildingChanges[rule.field] = newValue;
-                  updatedBuilding[rule.field] = newValue;
-                  hasChanges = true;
+              console.log('Rule:', rule);
+              console.log('Rule condition type:', typeof rule.condition);
+              console.log('Rule setValue type:', typeof rule.setValue);
+
+              try {
+                if (rule.condition(building)) {
+                  const newValue = rule.setValue(building);
+                  if (newValue !== building[rule.field]) {
+                    buildingChanges[rule.field] = newValue;
+                    updatedBuilding[rule.field] = newValue;
+                    hasChanges = true;
+                  }
                 }
+              } catch (error) {
+                console.error('Error processing rule:', error);
+                throw error;
               }
             }
 
