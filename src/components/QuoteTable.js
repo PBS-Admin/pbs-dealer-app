@@ -5,11 +5,27 @@ import { useState } from 'react';
 import DeleteDialog from './DeleteDialog';
 import styles from './QuoteTable.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faCopy } from '@fortawesome/free-solid-svg-icons';
-import { faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
+import {
+  faTrash,
+  faCopy,
+  faExclamationTriangle,
+  faCircleQuestion,
+} from '@fortawesome/free-solid-svg-icons';
+import {
+  faCircle,
+  faCircleCheck,
+  faMessage,
+  faRectangleXmark,
+  faComment,
+} from '@fortawesome/free-regular-svg-icons';
 import CopyDialog from './CopyDialog';
 
-export default function QuoteTable({ initialQuotes, onCopyQuote }) {
+export default function QuoteTable({
+  initialQuotes,
+  onCopyQuote,
+  companies,
+  permission,
+}) {
   const [quotes, setQuotes] = useState(initialQuotes);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [quoteToDelete, setQuoteToDelete] = useState(null);
@@ -112,7 +128,23 @@ export default function QuoteTable({ initialQuotes, onCopyQuote }) {
 
   return (
     <div className={styles.quoteContainer}>
-      <h2>Company Quotes</h2>
+      {permission > 4 && (
+        <div className={styles.companyList}>
+          <select
+            className="selectInput"
+            id="companyList"
+            name="companyList"
+            value={1}
+            // onChange={onChange}
+          >
+            {companies.map((option) => (
+              <option key={option.ID} value={option.ID}>
+                {option.Name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className={styles.quoteTable}>
         {quotes.length > 0 ? (
           <table>
@@ -120,7 +152,7 @@ export default function QuoteTable({ initialQuotes, onCopyQuote }) {
               <tr>
                 <th>Submitted</th>
                 <th>Quote</th>
-                <th>Rev</th>
+                <th>Complex</th>
                 <th>Project</th>
                 <th>Customer</th>
                 <th>Date Started</th>
@@ -141,10 +173,7 @@ export default function QuoteTable({ initialQuotes, onCopyQuote }) {
                           style={{ color: 'var(--green)' }}
                         />
                       ) : (
-                        <FontAwesomeIcon
-                          icon={faCircle}
-                          style={{ color: 'var(--red)' }}
-                        />
+                        <FontAwesomeIcon icon={faCircle} color="var(--red)" />
                       )}
                     </Link>
                   </td>
@@ -153,7 +182,9 @@ export default function QuoteTable({ initialQuotes, onCopyQuote }) {
                       href={`/quote/${quote.ID}`}
                       className={styles.quoteLink}
                     >
-                      {quote.Quote}
+                      {quote.Rev > 0
+                        ? `${quote.Prefix}${quote.Quote} R${quote.Rev}`
+                        : `${quote.Prefix}${quote.Quote}`}
                     </Link>
                   </td>
                   <td>
@@ -161,7 +192,7 @@ export default function QuoteTable({ initialQuotes, onCopyQuote }) {
                       href={`/quote/${quote.ID}`}
                       className={styles.quoteLink}
                     >
-                      {quote.Rev}
+                      {quote.Complexity}
                     </Link>
                   </td>
                   <td>

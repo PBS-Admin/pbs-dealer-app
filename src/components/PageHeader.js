@@ -31,7 +31,7 @@ const PageHeader = ({ session, title, isLogOut }) => {
         <div className="avatar">
           <Image alt="PBS Buildings Logo" src={logo} className="avatar" />
         </div>
-        <p>{session.user.email}</p>
+        <p>{session.user.fullName}</p>
       </div>
     </header>
   );

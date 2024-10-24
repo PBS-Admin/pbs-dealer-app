@@ -80,12 +80,12 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
 
   return (
     <>
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
           <h3>Finalize Quote</h3>
         </header>
-        <div className="grid4">
-          <div className="cardInput">
+        <div className="grid4 alignTop">
+          <div className="cardButton">
             <button type="submit" className="button success">
               Save Quote
             </button>
@@ -105,6 +105,51 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
               disabled={isExporting}
             >
               {isExporting ? status : 'Export To MBS'}
+            </button>
+          </div>
+          <div className="divider offOnPhone"></div>
+          <div className="cardButton">
+            <button
+              type="button"
+              className="button note"
+              onClick={() => {
+                console.log(values);
+              }}
+            >
+              Notes for Estimator
+            </button>
+            <button
+              type="button"
+              className="button archive"
+              onClick={() => {
+                console.log(values);
+              }}
+            >
+              Open Contract
+            </button>
+          </div>
+          <div className="divider showWithSidebar span2"></div>
+          <div className="cardButton">
+            <button
+              type="button"
+              className="button archive"
+              onClick={() => {
+                console.log(values);
+              }}
+            >
+              Archive Quote
+            </button>
+          </div>
+          <div className="divider offOnPhone"></div>
+          <div className="cardButton">
+            <button
+              type="button"
+              className="button delete"
+              onClick={() => {
+                console.log(values);
+              }}
+            >
+              Delete Quote
             </button>
           </div>
         </div>

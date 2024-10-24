@@ -130,8 +130,9 @@ const BuildingOpenings = ({
           value={opening.bay}
           label="Bay:"
           labelClass="offOnTablet"
-          // min="1"
+          min="1"
           // max={`${values.buildings[`${activeBuilding}`][`${activeWallKey}BaySpacing`].length}`}
+          allowBlankValue={true}
           onChange={(name, value) =>
             handleOpeningChange(
               activeBuilding,
@@ -146,6 +147,7 @@ const BuildingOpenings = ({
               setActiveOpening(openingIndex);
             }
           }}
+          placeholder="Bay"
         />
         <ReusableSelect
           name={`building-${activeBuilding}-openingType-${openingIndex}`}
@@ -172,6 +174,7 @@ const BuildingOpenings = ({
           label="Width:"
           labelClass="offOnTablet"
           value={opening.width}
+          allowBlankValue={true}
           onChange={(name, value) =>
             handleOpeningChange(
               activeBuilding,
@@ -192,6 +195,7 @@ const BuildingOpenings = ({
           label="Height:"
           labelClass="offOnTablet"
           value={opening.height}
+          allowBlankValue={true}
           onChange={(name, value) =>
             handleOpeningChange(
               activeBuilding,
@@ -212,6 +216,7 @@ const BuildingOpenings = ({
           label="Sill:"
           labelClass="offOnTablet"
           value={opening.sill}
+          allowBlankValue={true}
           allowZero={true}
           onChange={(name, value) =>
             handleOpeningChange(
@@ -233,6 +238,7 @@ const BuildingOpenings = ({
           label="Offset:"
           labelClass="offOnTablet"
           value={opening.offset}
+          allowBlankValue={true}
           allowZero={true}
           onChange={(name, value) =>
             handleOpeningChange(
@@ -263,7 +269,7 @@ const BuildingOpenings = ({
   );
 
   return (
-    <section className="card start">
+    <section className="card">
       <header>
         <h3>Openings</h3>
       </header>

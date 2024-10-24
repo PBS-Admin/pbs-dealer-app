@@ -213,7 +213,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
 
   return (
     <>
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
           <h3>Customer Information</h3>
         </header>
@@ -344,7 +344,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
         </div>
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
           <h3>Project Information</h3>
         </header>
@@ -455,7 +455,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
         </div>
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
           <h3>Design Codes</h3>
         </header>

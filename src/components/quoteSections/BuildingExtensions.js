@@ -16,6 +16,7 @@ const BuildingExtensions = ({
   setValues,
 }) => {
   const [activeCanopy, setActiveCanopy] = useState(0);
+
   const addCanopy = (buildingIndex) => {
     setValues((prev) => ({
       ...prev,
@@ -72,7 +73,7 @@ const BuildingExtensions = ({
 
   return (
     <>
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Roof Extensions</h3>
         </header>
@@ -81,6 +82,7 @@ const BuildingExtensions = ({
             <FeetInchesInput
               name={`buildingfrontExtensionWidth-${activeBuilding}`}
               label="Front Sidewall Extension Width:"
+              allowBlankValue={true}
               value={values.buildings[activeBuilding].frontExtensionWidth}
               onChange={(name, value) =>
                 handleNestedChange(activeBuilding, 'frontExtensionWidth', value)
@@ -134,6 +136,7 @@ const BuildingExtensions = ({
             <FeetInchesInput
               name={`buildingbackExtensionWidth-${activeBuilding}`}
               label="Back Sidewall Extension Width:"
+              allowBlankValue={true}
               value={values.buildings[activeBuilding].backExtensionWidth}
               onChange={(name, value) =>
                 handleNestedChange(activeBuilding, 'backExtensionWidth', value)
@@ -186,6 +189,7 @@ const BuildingExtensions = ({
           <FeetInchesInput
             name={`buildingleftExtensionWidth-${activeBuilding}`}
             label="Left Endwall Extension Width:"
+            allowBlankValue={true}
             value={values.buildings[activeBuilding].leftExtensionWidth}
             onChange={(name, value) =>
               handleNestedChange(activeBuilding, 'leftExtensionWidth', value)
@@ -194,6 +198,7 @@ const BuildingExtensions = ({
           <FeetInchesInput
             name={`buildingrightExtensionWidth-${activeBuilding}`}
             label="Right Endwall Extension Width:"
+            allowBlankValue={true}
             value={values.buildings[activeBuilding].rightExtensionWidth}
             onChange={(name, value) =>
               handleNestedChange(activeBuilding, 'rightExtensionWidth', value)
@@ -231,7 +236,7 @@ const BuildingExtensions = ({
         </div>
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Canopies</h3>
         </header>
@@ -280,6 +285,7 @@ const BuildingExtensions = ({
                   label="Width:"
                   labelClass="offOnDesktop"
                   value={canopy.width}
+                  allowBlankValue={true}
                   onChange={(name, value) =>
                     handleCanopyChange(
                       activeBuilding,
@@ -316,7 +322,9 @@ const BuildingExtensions = ({
                 <ReusableInteger
                   name={`building-${activeBuilding}-canopyStartBay-${canopyIndex}`}
                   value={canopy.startBay}
+                  min={1}
                   negative={false}
+                  allowBlankValue={true}
                   label="Start Bay:"
                   labelClass="offOnDesktop"
                   onChange={(e) =>
@@ -338,6 +346,7 @@ const BuildingExtensions = ({
                   name={`building-${activeBuilding}-canopyEndBay-${canopyIndex}`}
                   value={canopy.endBay}
                   negative={false}
+                  allowBlankValue={true}
                   label="End Bay:"
                   labelClass="offOnDesktop"
                   onChange={(e) =>
@@ -360,6 +369,7 @@ const BuildingExtensions = ({
                   label="Elevation:"
                   labelClass="offOnDesktop"
                   value={canopy.elevation}
+                  allowBlankValue={true}
                   onChange={(name, value) =>
                     handleCanopyChange(
                       activeBuilding,
@@ -463,18 +473,18 @@ const BuildingExtensions = ({
         )}
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Facia</h3>
         </header>
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Parapet Walls</h3>
         </header>
       </section>
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Bumpouts</h3>
         </header>

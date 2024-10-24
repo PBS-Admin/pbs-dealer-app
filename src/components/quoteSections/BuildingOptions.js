@@ -231,7 +231,7 @@ const BuildingOptions = ({
   return (
     <>
       {/* Liner Panel Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Liner Panels</h3>
         </header>
@@ -290,6 +290,8 @@ const BuildingOptions = ({
                   }
                   labelClass="offOnTablet"
                   value={linerPanel.start}
+                  allowBlankValue={true}
+                  allowZero={true}
                   onChange={(name, value) =>
                     handleLinerPanelChange(
                       activeBuilding,
@@ -315,6 +317,7 @@ const BuildingOptions = ({
                   }
                   labelClass="offOnTablet"
                   value={linerPanel.end}
+                  allowBlankValue={true}
                   onChange={(name, value) =>
                     handleLinerPanelChange(
                       activeBuilding,
@@ -334,6 +337,7 @@ const BuildingOptions = ({
                   label="Height:"
                   labelClass="offOnTablet"
                   value={linerPanel.height}
+                  allowBlankValue={true}
                   onChange={(name, value) =>
                     handleLinerPanelChange(
                       activeBuilding,
@@ -399,7 +403,7 @@ const BuildingOptions = ({
       </section>
 
       {/* Wainscot Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Wainscots</h3>
         </header>
@@ -458,6 +462,8 @@ const BuildingOptions = ({
                   }
                   labelClass="offOnTablet"
                   value={wainscot.start}
+                  allowBlankValue={true}
+                  allowZero={true}
                   onChange={(name, value) =>
                     handleWainscotChange(
                       activeBuilding,
@@ -483,6 +489,7 @@ const BuildingOptions = ({
                   }
                   labelClass="offOnTablet"
                   value={wainscot.end}
+                  allowBlankValue={true}
                   onChange={(name, value) =>
                     handleWainscotChange(
                       activeBuilding,
@@ -502,6 +509,7 @@ const BuildingOptions = ({
                   label="Height:"
                   labelClass="offOnTablet"
                   value={wainscot.height}
+                  allowBlankValue={true}
                   onChange={(name, value) =>
                     handleWainscotChange(
                       activeBuilding,
@@ -583,7 +591,7 @@ const BuildingOptions = ({
       </section>
 
       {/* Partial Wall Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Partial Walls</h3>
         </header>
@@ -642,6 +650,8 @@ const BuildingOptions = ({
                   }
                   labelClass="offOnTablet"
                   value={partialWall.start}
+                  allowBlankValue={true}
+                  allowZero={true}
                   onChange={(name, value) =>
                     handlePartialWallChange(
                       activeBuilding,
@@ -667,6 +677,7 @@ const BuildingOptions = ({
                   }
                   labelClass="offOnTablet"
                   value={partialWall.end}
+                  allowBlankValue={true}
                   onChange={(name, value) =>
                     handlePartialWallChange(
                       activeBuilding,
@@ -686,6 +697,7 @@ const BuildingOptions = ({
                   label="Height:"
                   labelClass="offOnTablet"
                   value={partialWall.height}
+                  allowBlankValue={true}
                   onChange={(name, value) =>
                     handlePartialWallChange(
                       activeBuilding,
@@ -743,7 +755,7 @@ const BuildingOptions = ({
       </section>
 
       {/* Wall Skirt Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Wall Skirts</h3>
         </header>
@@ -796,6 +808,8 @@ const BuildingOptions = ({
                   label="Start Bay:"
                   labelClass="offOnTablet"
                   value={wallSkirt.startBay}
+                  allowBlankValue={true}
+                  allowZero={true}
                   onChange={(name, value) =>
                     handleWallSkirtChange(
                       activeBuilding,
@@ -815,6 +829,7 @@ const BuildingOptions = ({
                   label="End Bay:"
                   labelClass="offOnTablet"
                   value={wallSkirt.endBay}
+                  allowBlankValue={true}
                   onChange={(name, value) =>
                     handleWallSkirtChange(
                       activeBuilding,
@@ -834,6 +849,7 @@ const BuildingOptions = ({
                   label="Height:"
                   labelClass="offOnTablet"
                   value={wallSkirt.height}
+                  allowBlankValue={true}
                   onChange={(name, value) =>
                     handleWallSkirtChange(
                       activeBuilding,
@@ -893,7 +909,7 @@ const BuildingOptions = ({
       </section>
 
       {/* Polycarbonate Relite Options */}
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Polycarbonate Relites</h3>
         </header>
@@ -936,7 +952,8 @@ const BuildingOptions = ({
                     name="frontPolyQty"
                     value={values.buildings[activeBuilding].frontPolyQty}
                     label="Front Sidewall Relite Qty:"
-                    min={1}
+                    negative={false}
+                    allowBlankValue={true}
                     max={Math.ceil(values.buildings[activeBuilding].length / 3)}
                     onChange={(e) =>
                       handleNestedChange(
@@ -991,7 +1008,8 @@ const BuildingOptions = ({
                     name="backPolyQty"
                     value={values.buildings[activeBuilding].backPolyQty}
                     label="Back Sidewall Relite Qty:"
-                    min={1}
+                    negative={false}
+                    allowBlankValue={true}
                     max={Math.ceil(values.buildings[activeBuilding].length / 3)}
                     onChange={(e) =>
                       handleNestedChange(
@@ -1046,7 +1064,8 @@ const BuildingOptions = ({
                     name="leftPolyQty"
                     value={values.buildings[activeBuilding].leftPolyQty}
                     label="Left Endwall Relite Qty:"
-                    min={1}
+                    negative={false}
+                    allowBlankValue={true}
                     max={Math.ceil(values.buildings[activeBuilding].width / 3)}
                     onChange={(e) =>
                       handleNestedChange(
@@ -1101,7 +1120,8 @@ const BuildingOptions = ({
                     name="rightPolyQty"
                     value={values.buildings[activeBuilding].rightPolyQty}
                     label="Right Endwall Relite Qty:"
-                    min={1}
+                    negative={false}
+                    allowBlankValue={true}
                     max={Math.ceil(values.buildings[activeBuilding].width / 3)}
                     onChange={(e) =>
                       handleNestedChange(
@@ -1167,7 +1187,8 @@ const BuildingOptions = ({
                   name="backRoofPolyQty"
                   value={values.buildings[activeBuilding].backRoofPolyQty}
                   label="Roof Relite Qty:"
-                  min={1}
+                  negative={false}
+                  allowBlankValue={true}
                   max={Math.floor(
                     Math.floor(values.buildings[activeBuilding].length / 3) / 2
                   )}
@@ -1217,7 +1238,8 @@ const BuildingOptions = ({
                   name="backRoofPolyQty"
                   value={values.buildings[activeBuilding].backRoofPolyQty}
                   label="Back Roof Relite Qty:"
-                  min={1}
+                  negative={false}
+                  allowBlankValue={true}
                   max={Math.floor(
                     Math.floor(values.buildings[activeBuilding].length / 3) / 2
                   )}
@@ -1264,7 +1286,8 @@ const BuildingOptions = ({
                   name="frontRoofPolyQty"
                   value={values.buildings[activeBuilding].frontRoofPolyQty}
                   label="Front Roof Relite Qty:"
-                  min={1}
+                  negative={false}
+                  allowBlankValue={true}
                   max={Math.floor(
                     Math.floor(values.buildings[activeBuilding].length / 3) / 2
                   )}

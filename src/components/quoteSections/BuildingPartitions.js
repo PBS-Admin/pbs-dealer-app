@@ -101,7 +101,7 @@ const BuildingPartitions = ({
 
   return (
     <>
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Partition Walls</h3>
         </header>
@@ -162,6 +162,8 @@ const BuildingPartitions = ({
                   }
                   labelClass="offOnDesktop"
                   value={partition.start}
+                  allowBlankValue={true}
+                  allowZero={true}
                   onChange={(name, value) =>
                     handlePartitionChange(
                       activeBuilding,
@@ -185,6 +187,7 @@ const BuildingPartitions = ({
                   }
                   labelClass="offOnDesktop"
                   value={partition.end}
+                  allowBlankValue={true}
                   onChange={(name, value) =>
                     handlePartitionChange(
                       activeBuilding,
@@ -208,6 +211,8 @@ const BuildingPartitions = ({
                   }
                   labelClass="offOnDesktop"
                   value={partition.offset}
+                  allowBlankValue={true}
+                  allowZero={true}
                   onChange={(name, value) =>
                     handlePartitionChange(
                       activeBuilding,
@@ -227,6 +232,7 @@ const BuildingPartitions = ({
                   label="Height:"
                   labelClass="offOnDesktop"
                   value={partition.height}
+                  allowBlankValue={true}
                   onChange={(name, value) =>
                     handlePartitionChange(
                       activeBuilding,

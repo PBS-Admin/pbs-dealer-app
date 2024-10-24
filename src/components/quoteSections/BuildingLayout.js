@@ -31,7 +31,7 @@ const BuildingLayout = ({
 }) => {
   return (
     <>
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
           <h3>
             Design Codes <small>- Individual Building Override</small>
@@ -140,7 +140,7 @@ const BuildingLayout = ({
         </div>
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header>
           <h3>Bay Spacing</h3>
         </header>
@@ -202,7 +202,7 @@ const BuildingLayout = ({
         </div>
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
           <h3>Frame Type</h3>
         </header>
@@ -368,7 +368,7 @@ const BuildingLayout = ({
         </div>
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
           <h3>Bracing</h3>
         </header>
@@ -579,9 +579,9 @@ const BuildingLayout = ({
         </div>
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
-          <h3>Purlins and Girts</h3>
+          <h3>Purlins & Girts</h3>
         </header>
         <div className="grid4 alignTop">
           <div className="grid">
@@ -788,7 +788,7 @@ const BuildingLayout = ({
         </div>
       </section>
 
-      <section className="card start">
+      <section className="card">
         <header className="cardHeader">
           <h3>Sheeting & Insulation</h3>
         </header>

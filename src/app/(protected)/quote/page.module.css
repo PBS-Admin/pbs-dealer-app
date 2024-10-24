@@ -27,6 +27,11 @@
     background: var(--background-disabled);
 }
 
+.sidebar .bldg {
+    text-align: left;
+    padding-left: 23%;
+}
+
 .tabContainer{
     margin-top: 1vw;
     display: flex;
@@ -37,13 +42,14 @@
 }
 
 .tabContainer button{    
-    aspect-ratio: 1 / 1;    
+    aspect-ratio: 1 / 0.95;    
     font-size: 1.5em;    
     border: none;
     color: var(--black);
     padding:0 .5em;
     border-radius: .5em .5em 0 0;
     transition: all ease .3s;
+    min-width: 48px;
 }
 
 .saveTab{    
@@ -60,6 +66,31 @@
 
 .deleteTab:hover{
     background-color: var(--red);
+}
+
+.noteTab {
+    background-color: var(--light-blue);
+    position: relative;
+}
+
+.noteTab:hover {
+    background-color: var(--blue);
+}
+
+.noteQty {
+    font-size: .5em;
+    line-height: 16px;
+    text-align: center;
+    position: absolute;
+    top: -6px;
+    right: -5px;
+    min-width: 22px;
+    height: 22px;
+    padding: 2px;
+    border-radius: 50%;
+    background-color: var(--red);
+    color: var(--background-white);
+    font-weight: 600;
 }
 
 .sketchBox{
@@ -148,17 +179,17 @@
 
 .buildingContainer input {
     padding-left: 0.25em;
-    line-height: 2em;
+    line-height: 1.75em;
     border-radius: 5px;
     border: 1px solid var(--light-blue);
 }
 
 .buildingContainer select {
     padding-left: 0.25em;
-    line-height: 2em;
+    line-height: 1.75em;
     border-radius: 5px;
     border: 1px solid var(--light-blue);
-    min-height: 32px;
+    min-height: 28px;
 }
 
 .buildingContainer input:focus, .buildingContainer select:focus {
@@ -250,64 +281,7 @@
     background-color: var(--light-green);
     color: white;
 }
-
-.sliderLeftButton {
-    font-size: 18px;
-    padding: 2px;
-    border: 1px solid var(--light-blue);
-    border-radius: 5px 0 0 5px;
-    color: var(--background-white);
-    align-self: flex-end;
-    background: var(--light-gray);
-    aspect-ratio: 1 /1;
-    min-width: 32px;
-}
-
-.sliderRightButton {
-    font-size: 18px;
-    padding: 2px;
-    border: 1px solid var(--light-blue);
-    border-radius: 0 5px 5px 0;
-    color: var(--background-white);
-    align-self: flex-end;
-    background: var(--light-gray);
-    aspect-ratio: 1 /1;
-    min-width: 32px;
-}
-
-.sliderGrid {
-    display: grid;
-    grid-template-columns: 32px minmax(60px, 1fr) 32px;  
-    gap: 0;
-    padding: .25em;
-    align-items: flex-end;
-}
-
-.sliderGrid div {
-    padding: 4px 0 0 0;
-}
-
-.sliderGrid label {
-    display: block;
-    text-align: center;
-    min-height: unset;
-}
-
-.sliderGrid input {
-    border-radius: 0;
-    text-align: center;
-}
-
-.sliderGrid button:disabled {
-    border: 1px solid var(--background-white);
-}
-
-@media screen and (min-width: 350px) {
-    .sliderGrid input {
-      font-size: 15px;
-    }
-}
-  
+ 
 @media screen and (min-width: 600px) {
     .pageTitle {
         font-size: 2em;
