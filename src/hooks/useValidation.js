@@ -61,9 +61,43 @@ function useValidation(initialFormValues, setFormValues) {
               console.log('Rule setValue type:', typeof rule.setValue);
 
               try {
-                if (rule.condition(building)) {
-                  const newValue = rule.setValue(building);
-                  if (newValue !== building[rule.field]) {
+                console.log('Building being validated:', building);
+
+                if (typeof rule.condition !== 'function') {
+                  console.error('Rule condition is not a function:', rule);
+                  continue;
+                }
+                let conditionResult;
+                try {
+                  console.log('Executing condition...');
+                  conditionResult = rule.condition(building);
+                  console.log('Condition result:', conditionResult);
+                } catch (conditionError) {
+                  console.error('Error executing condition:', conditionError);
+                  continue;
+                }
+
+                if (conditionResult) {
+                  // Execute setValue with try/catch
+                  let newValue;
+                  try {
+                    console.log('Executing setValue...');
+                    newValue = rule.setValue(building);
+                    console.log('New value:', newValue);
+                  } catch (setValueError) {
+                    console.error('Error executing setValue:', setValueError);
+                    continue;
+                  }
+
+                  // Safe comparison
+                  const currentValue = building[rule.field];
+                  console.log('Comparing values:', {
+                    current: currentValue,
+                    new: newValue,
+                  });
+
+                  if (newValue !== currentValue) {
+                    console.log('Updating values...');
                     buildingChanges[rule.field] = newValue;
                     updatedBuilding[rule.field] = newValue;
                     hasChanges = true;
