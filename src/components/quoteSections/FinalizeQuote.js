@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef, useMemo } from 'react';
 import { useExport } from '@/hooks/useExport';
 import ReusableLoader from '../ReusableLoader';
 import ReusableDialog from '../ReusableDialog';
@@ -73,23 +73,26 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
     // Add more fields as needed
   ];
 
-  const autoFillRules = [
-    {
-      field: 'backPeakOffset',
-      condition: (building) => building.shape === 'symmetrical',
-      setValue: (building) => building.width / 2,
-    },
-    {
-      field: 'frontEaveHeight',
-      condition: (building) => building.shape === 'symmetrical',
-      setValue: (building) => building.backEaveHeight,
-    },
-    {
-      field: 'leftBracingType',
-      condition: (building) => building.leftFrame !== 'postAndBeam',
-      setValue: (building) => 'none',
-    },
-  ];
+  const autoFillRules = useMemo(
+    () => [
+      {
+        field: 'backPeakOffset',
+        condition: (building) => building.shape === 'symmetrical',
+        setValue: (building) => building.width / 2,
+      },
+      {
+        field: 'frontEaveHeight',
+        condition: (building) => building.shape === 'symmetrical',
+        setValue: (building) => building.backEaveHeight,
+      },
+      {
+        field: 'leftBracingType',
+        condition: (building) => building.leftFrame !== 'postAndBeam',
+        setValue: (building) => 'none',
+      },
+    ],
+    []
+  );
 
   const handleSave = useCallback(async () => {
     const isValid = await validateFields([], autoFillRules);

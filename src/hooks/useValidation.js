@@ -20,7 +20,7 @@ function useValidation(initialFormValues, setFormValues) {
     [setFormValues]
   );
 
-  const generateChangeMessage = (changes) => {
+  const generateChangeMessage = useCallback((changes) => {
     const messages = [];
     if (changes.buildings) {
       changes.buildings.forEach((building, index) => {
@@ -32,7 +32,7 @@ function useValidation(initialFormValues, setFormValues) {
       });
     }
     return messages.join('\n');
-  };
+  }, []);
 
   const autoResolveFields = useCallback(
     async (autoFillRules) => {
@@ -96,7 +96,12 @@ function useValidation(initialFormValues, setFormValues) {
 
       return hasChanges;
     },
-    [initialFormValues, updateFormValues]
+    [
+      initialFormValues,
+      updateFormValues,
+      setAutoResolveMessage,
+      setIsDialogOpen,
+    ]
   );
 
   const validateFields = useCallback(
