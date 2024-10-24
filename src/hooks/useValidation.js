@@ -8,7 +8,7 @@ function useValidation(initialFormValues, setFormValues) {
   const changesRef = useRef({});
 
   const updateFormValues = useCallback(
-    (newValues) => {
+    async (newValues) => {
       setFormValues((prevValues) => {
         const updatedValues = {
           ...prevValues,
@@ -116,24 +116,58 @@ function useValidation(initialFormValues, setFormValues) {
             }
 
             if (Object.keys(buildingChanges).length > 0) {
-              autoFilledChanges.buildings[index] = buildingChanges;
+              console.log('Building changes exist:', buildingChanges);
+              try {
+                console.log('Setting autoFilledChanges for index:', index);
+                console.log('Current autoFilledChanges:', autoFilledChanges);
+                autoFilledChanges.buildings[index] = buildingChanges;
+                console.log('Updated autoFilledChanges:', autoFilledChanges);
+              } catch (error) {
+                console.error('Error setting autoFilledChanges:', error);
+              }
             }
 
+            console.log('Returning updatedBuilding:', updatedBuilding);
             return updatedBuilding;
           }
         );
 
         if (hasChanges) {
-          updateFormValues({ buildings: updatedBuildings });
-          const changeMessage = generateChangeMessage(autoFilledChanges);
-          setAutoResolveMessage(
-            'The following changes were made to ensure compatibility:\n\n' +
-              changeMessage
-          );
-          setIsDialogOpen(true);
+          console.log('Has changes, preparing to update...');
+
+          try {
+            console.log('Calling updateFormValues with:', {
+              buildings: updatedBuildings,
+            });
+            await updateFormValues({ buildings: updatedBuildings });
+            console.log('UpdateFormValues completed');
+          } catch (error) {
+            console.error('Error in updateFormValues:', error);
+            throw error;
+          }
+
+          try {
+            console.log('Generating change message...');
+            console.log('autoFilledChanges:', autoFilledChanges);
+            const changeMessage = generateChangeMessage(autoFilledChanges);
+            console.log('Change message generated:', changeMessage);
+
+            setAutoResolveMessage(
+              'The following changes were made to ensure compatibility:\n\n' +
+                changeMessage
+            );
+            console.log('Auto resolve message set');
+
+            setIsDialogOpen(true);
+            console.log('Dialog opened');
+          } catch (error) {
+            console.error('Error in message generation/dialog:', error);
+            throw error;
+          }
         }
       }
 
+      console.log('Returning hasChanges:', hasChanges);
       return hasChanges;
     },
     [
