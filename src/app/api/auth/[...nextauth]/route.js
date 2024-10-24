@@ -50,6 +50,7 @@ export const authOptions = {
         return {
           id: user[0].ID,
           email: user[0].Username,
+          fullName: user[0].FullName,
           company: user[0].Company,
           permission: user[0].Permission,
         };
@@ -61,6 +62,7 @@ export const authOptions = {
       if (user) {
         token.id = user.id;
         token.email = user.email;
+        token.fullName = user.fullName;
         token.company = user.company;
         token.permission = user.permission;
       }
@@ -72,6 +74,7 @@ export const authOptions = {
     async session({ session, token }) {
       session.user.id = token.id;
       session.user.email = token.email;
+      session.user.fullName = token.fullName;
       session.user.company = token.company;
       session.user.permission = token.permission;
       session.user.accessToken = token.accessToken;

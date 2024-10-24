@@ -110,8 +110,8 @@ p {
 
 .avatarBox {
   display: flex;  
-  flex-flow: column nowrap;
-  gap: .25em;  
+  flex-flow: row-reverse nowrap;
+  gap: .75em;  
   justify-content: center;
   align-items: center;
   justify-self: flex-end;

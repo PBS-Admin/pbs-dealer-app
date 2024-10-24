@@ -40,7 +40,8 @@ export async function GET(req) {
 
     // Only select the columns we need
     const result = await query(
-      'SELECT ID, Submitted, Quote, Rev, Customer, ProjectName, DateStarted FROM Dealer_Quotes WHERE Company = ? AND Active = 1',
+      // 'SELECT ID, Submitted, Quote, Rev, Complexity, Customer, ProjectName, DateStarted FROM Dealer_Quotes WHERE Company = ? AND Active = 1',
+      'SELECT q.ID as ID, q.Submitted asSubmitted, c.Initials as Prefix, q.Quote as Quote, q.Rev as Rev, q.Complexity as Complexity, q.Customer as Customer, q.ProjectName as ProjectName, q.DateStarted as DateStarted FROM Dealer_Quotes q LEFT JOIN Dealer_Company c ON q.Company = c.ID WHERE q.Company = ? AND q.Active = 1',
       [company]
     );
 
@@ -49,17 +50,32 @@ export async function GET(req) {
       ...quote,
       ID: quote.ID,
       Submitted: quote.Submitted,
+      Prefix: quote.Prefix != null ? quote.Prefix : '',
       Quote: quote.Quote,
       Rev: quote.Rev,
+      Complexity: quote.Complexity,
       Customer: quote.Customer,
       ProjectName: quote.ProjectName,
       DateStarted: quote.DateStarted,
     }));
 
+    // Get List of all Companies
+    const compResult = await query('SELECT ID, Name FROM Dealer_Company');
+
+    const parsedCompanies = compResult.map((companies) => ({
+      ...companies,
+      ID: companies.ID,
+      Name: companies.Name,
+    }));
+
     const status = await getPoolStatus();
     console.log('Pool status:', status);
 
-    return NextResponse.json({ quotes: parsedQuotes }, { status: 200 });
+    return NextResponse.json(
+      // { quotes: parsedQuotes },
+      { quotes: parsedQuotes, companies: parsedCompanies },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Error in GET function:', error);
     return NextResponse.json(

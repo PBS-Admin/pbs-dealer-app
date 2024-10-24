@@ -20,7 +20,12 @@ import {
 } from '@fortawesome/free-regular-svg-icons';
 import CopyDialog from './CopyDialog';
 
-export default function QuoteTable({ initialQuotes, onCopyQuote }) {
+export default function QuoteTable({
+  initialQuotes,
+  onCopyQuote,
+  companies,
+  permission,
+}) {
   const [quotes, setQuotes] = useState(initialQuotes);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [quoteToDelete, setQuoteToDelete] = useState(null);
@@ -123,7 +128,23 @@ export default function QuoteTable({ initialQuotes, onCopyQuote }) {
 
   return (
     <div className={styles.quoteContainer}>
-      <h2>Company Quotes</h2>
+      {permission > 4 && (
+        <div className={styles.companyList}>
+          <select
+            className="selectInput"
+            id="companyList"
+            name="companyList"
+            value={1}
+            // onChange={onChange}
+          >
+            {companies.map((option) => (
+              <option key={option.ID} value={option.ID}>
+                {option.Name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className={styles.quoteTable}>
         {quotes.length > 0 ? (
           <table>
@@ -131,7 +152,7 @@ export default function QuoteTable({ initialQuotes, onCopyQuote }) {
               <tr>
                 <th>Submitted</th>
                 <th>Quote</th>
-                <th>Rev</th>
+                <th>Complex</th>
                 <th>Project</th>
                 <th>Customer</th>
                 <th>Date Started</th>
@@ -161,7 +182,9 @@ export default function QuoteTable({ initialQuotes, onCopyQuote }) {
                       href={`/quote/${quote.ID}`}
                       className={styles.quoteLink}
                     >
-                      {quote.Quote}
+                      {quote.Rev > 0
+                        ? `${quote.Prefix}${quote.Quote} R${quote.Rev}`
+                        : `${quote.Prefix}${quote.Quote}`}
                     </Link>
                   </td>
                   <td>
@@ -169,7 +192,7 @@ export default function QuoteTable({ initialQuotes, onCopyQuote }) {
                       href={`/quote/${quote.ID}`}
                       className={styles.quoteLink}
                     >
-                      {quote.Rev}
+                      {quote.Complexity}
                     </Link>
                   </td>
                   <td>
