@@ -20,10 +20,16 @@ function useFormState(initialState) {
     setValues((prev) => {
       // Parse the value if it's a number field
       const newValue = [
+        'thermalFactor',
+        'seismicSms',
+        'seismicSm1',
+        'seismicSs',
+        'seismicS1',
+        'windLoad',
         'collateralLoad',
         'liveLoad',
         'deadLoad',
-        'roofLoad',
+        'roofSnowLoad',
       ].includes(name)
         ? parseFloat(value)
         : value;
@@ -55,6 +61,18 @@ function useFormState(initialState) {
           let updatedBuilding;
           if (field.includes('Qty')) {
             updatedBuilding = { ...building, [field]: parseInt(value) };
+          } else if (field.includes('thermalFactor')) {
+            updatedBuilding = { ...building, [field]: parseFloat(value) };
+          } else if (
+            field.includes('deadLoad') ||
+            field.includes('liveLoad') ||
+            field.includes('roofSnowLoad') ||
+            field.includes('collateralLoad')
+          ) {
+            updatedBuilding = {
+              ...building,
+              [field]: Math.round((value * 100) / 100),
+            };
           } else {
             updatedBuilding = { ...building, [field]: value };
           }

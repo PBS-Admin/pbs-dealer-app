@@ -4,22 +4,90 @@ function useValidation(initialFormValues, setFormValues) {
   const [validationPrompts, setValidationPrompts] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [autoResolveMessage, setAutoResolveMessage] = useState('');
   const changesRef = useRef({});
 
   const updateFormValues = useCallback(
     (newValues) => {
-      setFormValues((prevValues) => ({
-        ...prevValues,
-        ...newValues,
-      }));
+      setFormValues((prevValues) => {
+        const updatedValues = {
+          ...prevValues,
+          ...newValues,
+        };
+        return updatedValues;
+      });
     },
     [setFormValues]
   );
 
+  const generateChangeMessage = (changes) => {
+    const messages = [];
+    if (changes.buildings) {
+      changes.buildings.forEach((building, index) => {
+        Object.entries(building).forEach(([field, value]) => {
+          messages.push(
+            `Building ${index + 1}: ${field} was updated to ${value}`
+          );
+        });
+      });
+    }
+    return messages.join('\n');
+  };
+
+  const autoResolveFields = useCallback(
+    async (autoFillRules) => {
+      let updatedValues = { ...initialFormValues };
+      let autoFilledChanges = { buildings: [] };
+      let hasChanges = false;
+
+      if (updatedValues.buildings && Array.isArray(updatedValues.buildings)) {
+        const updatedBuildings = updatedValues.buildings.map(
+          (building, index) => {
+            let updatedBuilding = { ...building };
+            let buildingChanges = {};
+
+            for (const rule of autoFillRules) {
+              if (rule.condition(building)) {
+                const newValue = rule.setValue(building);
+                if (newValue !== building[rule.field]) {
+                  buildingChanges[rule.field] = newValue;
+                  updatedBuilding[rule.field] = newValue;
+                  hasChanges = true;
+                }
+              }
+            }
+
+            if (Object.keys(buildingChanges).length > 0) {
+              autoFilledChanges.buildings[index] = buildingChanges;
+            }
+
+            return updatedBuilding;
+          }
+        );
+
+        if (hasChanges) {
+          updateFormValues({ buildings: updatedBuildings });
+          const changeMessage = generateChangeMessage(autoFilledChanges);
+          setAutoResolveMessage(
+            'The following changes were made to ensure compatibility:\n\n' +
+              changeMessage
+          );
+          setIsDialogOpen(true);
+        }
+      }
+
+      return hasChanges;
+    },
+    [initialFormValues, updateFormValues]
+  );
+
   const validateFields = useCallback(
-    async (fieldsToValidate) => {
+    async (fieldsToValidate, autoFillRules = []) => {
+      // First, try to auto-resolve any issues
+      const hasAutoResolved = await autoResolveFields(autoFillRules);
+
+      // Then proceed with regular validation
       const newValidationPrompts = [];
-      const values = initialFormValues;
 
       for (const {
         field,
@@ -27,41 +95,48 @@ function useValidation(initialFormValues, setFormValues) {
         message,
         suggestedValue,
       } of fieldsToValidate) {
-        if (!validate(values[field])) {
+        if (!validate(initialFormValues[field])) {
           const suggestedValueResolved =
             typeof suggestedValue === 'function'
-              ? await suggestedValue()
+              ? await suggestedValue(initialFormValues)
               : suggestedValue;
 
           newValidationPrompts.push({
             field,
             message,
-            currentValue: values[field],
+            currentValue: initialFormValues[field],
             suggestedValue: suggestedValueResolved,
+            isAutoResolved: false,
           });
         }
       }
 
-      setValidationPrompts(newValidationPrompts);
-      setCurrentIndex(0);
-      changesRef.current = {};
-
       if (newValidationPrompts.length > 0) {
-        setIsDialogOpen(true);
+        setValidationPrompts(newValidationPrompts);
+        setCurrentIndex(0);
+        if (!hasAutoResolved) {
+          setIsDialogOpen(true);
+        }
         return false;
       }
 
       return true;
     },
-    [initialFormValues]
+    [initialFormValues, autoResolveFields]
   );
 
   const handleResponse = useCallback(
     (response) => {
+      if (autoResolveMessage) {
+        // If we're showing an auto-resolve message, just close the dialog
+        setAutoResolveMessage('');
+        setIsDialogOpen(false);
+        return;
+      }
+
       const currentPrompt = validationPrompts[currentIndex];
 
       if (response) {
-        // User confirmed the update
         changesRef.current[currentPrompt.field] = currentPrompt.suggestedValue;
       }
 
@@ -69,13 +144,13 @@ function useValidation(initialFormValues, setFormValues) {
       if (nextIndex < validationPrompts.length) {
         setCurrentIndex(nextIndex);
       } else {
-        // We've reached the end of the prompts
         setIsDialogOpen(false);
-        // Update form values with all accumulated changes
-        updateFormValues(changesRef.current);
+        if (Object.keys(changesRef.current).length > 0) {
+          updateFormValues(changesRef.current);
+        }
       }
     },
-    [currentIndex, validationPrompts, updateFormValues]
+    [currentIndex, validationPrompts, updateFormValues, autoResolveMessage]
   );
 
   return {
@@ -83,6 +158,7 @@ function useValidation(initialFormValues, setFormValues) {
     currentPrompt: validationPrompts[currentIndex],
     isDialogOpen,
     handleResponse,
+    autoResolveMessage,
   };
 }
 

@@ -514,6 +514,10 @@ button.small {
   background-color: var(--light-orange);
 }
 
+.success{
+  background-color: var(--green);
+}
+
 button.success {  
   background-color: var(--green);
   color: var(--background-white);
@@ -705,6 +709,44 @@ button.success:hover{
 
 .onPhone, .onTablet, .onLaptop, .onDesktop, .hideWithSidebar {
   display: none;
+}
+
+.toast{  
+  position: relative;  
+  bottom: 0;
+  display: flex;
+  justify-content: center;  
+}
+
+.toastContent{    
+  /* background-color: var(--green); */
+  height: 5rem;
+  color: var(--background-white);
+  padding: .75em 1.5em 1.5em 1.5em;
+  display: flex;
+  flex-flow: column nowrap;  
+  justify-content: center;
+  align-items: center;
+  gap: .5em;
+  border-radius: 2em;  
+}
+
+.toastContent h3{
+  font-size: 1.25rem;
+}
+
+.toastContent p{
+  color: var(--background-white);
+  font-size: .75rem;
+}
+
+/* Loading Animation */
+.rotate{
+  animation: spinner 1s linear infinite; 
+}
+
+@keyframes spinner {
+  to { transform: rotate(360deg); }
 }
 
 /* END */
