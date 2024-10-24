@@ -1,24 +1,45 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 function useValidation(initialFormValues, setFormValues) {
+  if (!initialFormValues || typeof setFormValues !== 'function') {
+    throw new Error('useValidation: Invalid parameters provided');
+  }
+
   const [validationPrompts, setValidationPrompts] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [autoResolveMessage, setAutoResolveMessage] = useState('');
   const changesRef = useRef({});
 
-  const updateFormValues = useCallback(
-    async (newValues) => {
-      setFormValues((prevValues) => {
+  const setFormValuesRef = useRef(setFormValues);
+  useEffect(() => {
+    setFormValuesRef.current = setFormValues;
+  }, [setFormValues]);
+
+  const updateFormValues = useCallback(async (newValues) => {
+    console.log('updateFormValues called with:', newValues);
+    console.log('setFormValues type:', typeof setFormValuesRef.current);
+
+    if (typeof setFormValuesRef.current !== 'function') {
+      console.error('setFormValues is not a function');
+      return;
+    }
+
+    try {
+      setFormValuesRef.current((prevValues) => {
+        console.log('Previous values:', prevValues);
         const updatedValues = {
           ...prevValues,
           ...newValues,
         };
+        console.log('Updated values:', updatedValues);
         return updatedValues;
       });
-    },
-    [setFormValues]
-  );
+    } catch (error) {
+      console.error('Error in updateFormValues:', error);
+      throw error;
+    }
+  }, []);
 
   const generateChangeMessage = useCallback((changes) => {
     const messages = [];
@@ -268,6 +289,7 @@ function useValidation(initialFormValues, setFormValues) {
     isDialogOpen,
     handleResponse,
     autoResolveMessage,
+    updateFormValues,
   };
 }
 

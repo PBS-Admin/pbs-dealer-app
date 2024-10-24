@@ -8,6 +8,8 @@ import { useMbsProcessor } from '@/hooks/useMbsProcessor';
 import ReusableToast from '../ReusableToast';
 
 const FinalizeQuote = ({ values, setValues, handleChange }) => {
+  const memoizedSetValues = useCallback(setValues, []);
+
   const { createFolderAndFiles, status, isExporting } = useExport();
   const { handleProcessFiles, mbsStatus, error } = useMbsProcessor();
   const {
@@ -16,7 +18,7 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
     isDialogOpen,
     handleResponse,
     autoResolveMessage,
-  } = useValidation(values, setValues);
+  } = useValidation(values, memoizedSetValues);
   const { getSeismicLoad, seismicData, getSmsLoad, smsData } =
     useSeismic(values);
 
