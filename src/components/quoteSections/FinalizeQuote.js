@@ -100,12 +100,14 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
 
   const handleExport = useCallback(async () => {
     try {
+      console.log('Starting export...');
       const isValid = await validateFields(fieldsToValidate, autoFillRules);
+      console.log('Validation result:', isValid);
 
       if (isValid) {
+        console.log('Creating folders with values:', values);
         const result = await createFolderAndFiles(values);
-        console.log(result);
-        console.log(result.folder.length);
+        console.log('Creation result:', result);
 
         if (result.success) {
           for (let i = 0; i < result.folder.length; i++) {
