@@ -83,44 +83,56 @@ function useValidation(initialFormValues, setFormValues) {
 
   const validateFields = useCallback(
     async (fieldsToValidate, autoFillRules = []) => {
-      // First, try to auto-resolve any issues
-      const hasAutoResolved = await autoResolveFields(autoFillRules);
+      console.log('fieldsToValidate:', fieldsToValidate); // Check structure
+      console.log('autoFillRules:', autoFillRules); // Check structure
 
-      // Then proceed with regular validation
-      const newValidationPrompts = [];
+      try {
+        console.log('autoResolveFields type:', typeof autoResolveFields);
+        const hasAutoResolved = await autoResolveFields(autoFillRules);
+        console.log('hasAutoResolved:', hasAutoResolved);
 
-      for (const {
-        field,
-        validate,
-        message,
-        suggestedValue,
-      } of fieldsToValidate) {
-        if (!validate(initialFormValues[field])) {
-          const suggestedValueResolved =
-            typeof suggestedValue === 'function'
-              ? await suggestedValue(initialFormValues)
-              : suggestedValue;
+        // Then proceed with regular validation
+        const newValidationPrompts = [];
 
-          newValidationPrompts.push({
-            field,
-            message,
-            currentValue: initialFormValues[field],
-            suggestedValue: suggestedValueResolved,
-            isAutoResolved: false,
-          });
+        for (const {
+          field,
+          validate,
+          message,
+          suggestedValue,
+        } of fieldsToValidate) {
+          console.log('Validating field:', field);
+          console.log('validate function type:', typeof field.validate);
+
+          if (!validate(initialFormValues[field])) {
+            const suggestedValueResolved =
+              typeof suggestedValue === 'function'
+                ? await suggestedValue(initialFormValues)
+                : suggestedValue;
+
+            newValidationPrompts.push({
+              field,
+              message,
+              currentValue: initialFormValues[field],
+              suggestedValue: suggestedValueResolved,
+              isAutoResolved: false,
+            });
+          }
         }
-      }
 
-      if (newValidationPrompts.length > 0) {
-        setValidationPrompts(newValidationPrompts);
-        setCurrentIndex(0);
-        if (!hasAutoResolved) {
-          setIsDialogOpen(true);
+        if (newValidationPrompts.length > 0) {
+          setValidationPrompts(newValidationPrompts);
+          setCurrentIndex(0);
+          if (!hasAutoResolved) {
+            setIsDialogOpen(true);
+          }
+          return false;
         }
-        return false;
-      }
 
-      return true;
+        return true;
+      } catch (error) {
+        console.error('Validation error:', error);
+        throw error;
+      }
     },
     [initialFormValues, autoResolveFields]
   );
