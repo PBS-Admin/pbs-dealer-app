@@ -105,7 +105,13 @@ function useValidation(initialFormValues, setFormValues) {
                 }
               } catch (error) {
                 console.error('Error processing rule:', error);
-                throw error;
+                console.error('Error context:', {
+                  rule,
+                  building,
+                  buildingChanges,
+                  updatedBuilding,
+                });
+                continue;
               }
             }
 
