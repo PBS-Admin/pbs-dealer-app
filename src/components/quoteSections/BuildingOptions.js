@@ -4,7 +4,7 @@ import ReusablePanel from '../Inputs/ReusablePanel';
 import ReusableInteger from '../Inputs/ReusableInteger';
 import FeetInchesInput from '../Inputs/FeetInchesInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import {
   walls,
   panelOptions,
@@ -354,10 +354,11 @@ const BuildingOptions = ({
                   placeholder="Leave Blank for Full Ht"
                 />
                 <button
+                  type="button"
+                  className="icon reject deleteRow"
                   onClick={() =>
                     removeLinerPanel(activeBuilding, linerPanelIndex)
                   }
-                  className="icon red deleteRow span2"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -366,13 +367,6 @@ const BuildingOptions = ({
             </Fragment>
           )
         )}
-        <button
-          type="button"
-          className="button success addRow"
-          onClick={() => addLinerPanel(activeBuilding)}
-        >
-          Add
-        </button>
 
         {values.buildings[activeBuilding].linerPanels.length > 0 && (
           <>
@@ -400,6 +394,17 @@ const BuildingOptions = ({
             </div>
           </>
         )}
+
+        <div className="divider"></div>
+        <div className="buttonFooter">
+          <button
+            type="button"
+            className="addButton"
+            onClick={() => addLinerPanel(activeBuilding)}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
+        </div>
       </section>
 
       {/* Wainscot Options */}
@@ -545,8 +550,9 @@ const BuildingOptions = ({
                   label="Panel Option:"
                 />
                 <button
+                  type="button"
+                  className="icon reject deleteRow"
                   onClick={() => removeWainscot(activeBuilding, wainscotIndex)}
-                  className="icon red deleteRow"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -555,13 +561,7 @@ const BuildingOptions = ({
             </Fragment>
           )
         )}
-        <button
-          type="button"
-          className="button success addRow"
-          onClick={() => addWainscot(activeBuilding)}
-        >
-          Add
-        </button>
+
         {values.buildings[activeBuilding].wainscots.length > 0 && (
           <>
             <div className="divider onDesktop"></div>
@@ -588,6 +588,17 @@ const BuildingOptions = ({
             </div>
           </>
         )}
+
+        <div className="divider"></div>
+        <div className="buttonFooter">
+          <button
+            type="button"
+            className="addButton"
+            onClick={() => addWainscot(activeBuilding)}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
+        </div>
       </section>
 
       {/* Partial Wall Options */}
@@ -733,25 +744,32 @@ const BuildingOptions = ({
                   label="Top of Wall:"
                 />
                 <button
+                  type="button"
+                  className="icon reject deleteRow"
                   onClick={() =>
                     removePartialWall(activeBuilding, partialWallIndex)
                   }
-                  className="icon red deleteRow"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </div>
-              <div className="divider offOnTablet"></div>
+              {partialWallIndex + 1 <
+                values.buildings[activeBuilding].partialWalls.length && (
+                <div className="divider offOnTablet"></div>
+              )}
             </Fragment>
           )
         )}
-        <button
-          type="button"
-          className="button success addRow"
-          onClick={() => addPartialWall(activeBuilding)}
-        >
-          Add
-        </button>
+        <div className="divider"></div>
+        <div className="buttonFooter">
+          <button
+            type="button"
+            className="addButton"
+            onClick={() => addPartialWall(activeBuilding)}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
+        </div>
       </section>
 
       {/* Wall Skirt Options */}
@@ -888,24 +906,32 @@ const BuildingOptions = ({
                   </div>
                 </div>
                 <button
+                  type="button"
+                  className="icon reject deleteRow"
                   onClick={() =>
                     removeWallSkirt(activeBuilding, wallSkirtIndex)
                   }
-                  className="icon red deleteRow"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </div>
+              {wallSkirtIndex + 1 <
+                values.buildings[activeBuilding].wallSkirts.length && (
+                <div className="divider offOnTablet"></div>
+              )}
             </Fragment>
           )
         )}
-        <button
-          type="button"
-          className="button success addRow"
-          onClick={() => addWallSkirt(activeBuilding)}
-        >
-          Add
-        </button>
+        <div className="divider"></div>
+        <div className="buttonFooter">
+          <button
+            type="button"
+            className="addButton"
+            onClick={() => addWallSkirt(activeBuilding)}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
+        </div>
       </section>
 
       {/* Polycarbonate Relite Options */}

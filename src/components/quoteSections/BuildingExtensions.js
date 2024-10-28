@@ -5,7 +5,7 @@ import ReusablePanel from '../Inputs/ReusablePanel';
 import FeetInchesInput from '../Inputs/FeetInchesInput';
 import RoofPitchInput from '../Inputs/RoofPitchInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { extInsulation, walls } from '../../util/dropdownOptions';
 
 const BuildingExtensions = ({
@@ -417,8 +417,9 @@ const BuildingExtensions = ({
                   </div>
                 </div>
                 <button
+                  type="button"
+                  className="icon reject deleteRow"
                   onClick={() => removeCanopy(activeBuilding, canopyIndex)}
-                  className="icon red deleteRow"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -427,13 +428,6 @@ const BuildingExtensions = ({
             </Fragment>
           )
         )}
-        <button
-          type="button"
-          className="button success addRow"
-          onClick={() => addCanopy(activeBuilding)}
-        >
-          Add
-        </button>
 
         {values.buildings[activeBuilding].canopies.length > 0 && (
           <>
@@ -475,6 +469,17 @@ const BuildingExtensions = ({
             </div>
           </>
         )}
+
+        <div className="divider"></div>
+        <div className="buttonFooter">
+          <button
+            type="button"
+            className="addButton"
+            onClick={() => addCanopy(activeBuilding)}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
+        </div>
       </section>
 
       <section className="card">

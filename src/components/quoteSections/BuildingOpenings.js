@@ -3,7 +3,7 @@ import ReusableSelect from '../Inputs/ReusableSelect';
 import ReusableInteger from '../Inputs/ReusableInteger';
 import FeetInchesInput from '../Inputs/FeetInchesInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { openingTypes } from '../../util/dropdownOptions';
 
 const BuildingOpenings = ({
@@ -256,10 +256,11 @@ const BuildingOpenings = ({
           }}
         />
         <button
+          type="button"
+          className="icon reject deleteRow"
           onClick={() =>
             removeOpening(activeBuilding, activeWallKey, openingIndex)
           }
-          className="icon red deleteRow span2"
         >
           <FontAwesomeIcon icon={faTrash} />
         </button>
@@ -312,13 +313,17 @@ const BuildingOpenings = ({
             </Fragment>
           )
         )}
-        <button
-          type="button"
-          className="button success addRow"
-          onClick={() => addOpening(activeBuilding, activeWallKey)}
-        >
-          Add
-        </button>
+        {values.buildings[activeBuilding].openings[activeWallKey]?.length >
+          0 && <div className="divider onTablet"></div>}
+        <div className="buttonFooter">
+          <button
+            type="button"
+            className="addButton"
+            onClick={() => addOpening(activeBuilding, activeWallKey)}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
+        </div>
       </div>
     </section>
   );

@@ -1,48 +1,58 @@
-:root {   
+:root {
   --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
-      'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
-      'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
+    'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
+    'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
 
   --black: #141414;
   --dark-blue: #103494;
-  --light-blue: #A3B9F5;
-  --blue: #7E9DF1;
-  --yellow: #FFD700;
-  --orange: #F94C08;
-  --light-orange: #FBB99D;
-  --background-white: #F5F5F5;
-  --background-disabled: #DDDDDD;
-  --blue-disabled: #889AC4;
-  --red: #FB4B4B;
-  --light-red: #FD8787;
-  --green: #4CB852;
-  --light-green: #8AD08E;
+  --light-blue: #a3b9f5;
+  --blue: #7e9df1;
+  --yellow: #ffd700;
+  --orange: #f94c08;
+  --light-orange: #fbb99d;
+  --background-white: #f5f5f5;
+  --background-disabled: #dddddd;
+  --blue-disabled: #889ac4;
+  --red: #fb4b4b;
+  --light-red: #fd8787;
+  --green: #4cb852;
+  --light-green: #8ad08e;
   --dark-gray: #666666;
-  --gray: #A2A2A2;
-  --light-gray: #CCCCCC;
-  --black-gradient: linear-gradient(to bottom, #666666, #F5F5F5, #F5F5F5) 0% 50%;
-  --white-gradient: linear-gradient(90deg, rgba(16,52,148,1) 0%, rgba(245,245,245,1) 50%, rgba(16,52,148,1) 100%);
-  --blue-gradient: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(16,52,148,1) 50%, rgba(255,255,255,0) 100%);
+  --gray: #a2a2a2;
+  --light-gray: #cccccc;
+  --black-gradient: linear-gradient(to bottom, #666666, #f5f5f5, #f5f5f5) 0% 50%;
+  --white-gradient: linear-gradient(
+    90deg,
+    rgba(16, 52, 148, 1) 0%,
+    rgba(245, 245, 245, 1) 50%,
+    rgba(16, 52, 148, 1) 100%
+  );
+  --blue-gradient: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(16, 52, 148, 1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
 
 * {
   box-sizing: border-box;
   padding: 0;
-  margin: 0;   
+  margin: 0;
 }
 
 *::-webkit-scrollbar {
-  width: 17px;   
+  width: 17px;
 }
 
 *::-webkit-scrollbar-track {
-  background: var(--dark-blue);  
+  background: var(--dark-blue);
 }
 
 *::-webkit-scrollbar-thumb {
   background-color: var(--background-white);
   border-radius: 100vw;
-  border: 3px solid var(--dark-blue);  
+  border: 3px solid var(--dark-blue);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -55,7 +65,8 @@ html {
   text-size-adjust: none;
 }
 
-html, body {
+html,
+body {
   max-width: 100vw;
   overflow-x: hidden;
 }
@@ -66,15 +77,18 @@ main {
   grid-template-rows: 100px 1fr 100px;
   grid-template-columns: 1fr;
   min-height: 100vh;
-  background-color: var(--dark-blue);  
+  background-color: var(--dark-blue);
 }
 
-h1, h4, h5 {
+h1,
+h4,
+h5 {
   color: var(--dark-blue);
   text-align: center;
 }
 
-h2, h3 {
+h2,
+h3 {
   color: var(--background-white);
 }
 
@@ -85,80 +99,82 @@ p {
 /* !! Global Class Styles */
 
 /* Page Header Styles */
-.pageHeader{
+.pageHeader {
   grid-row: 1;
   grid-column: span 2;
   background-color: var(--background-white);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  align-content: center;  
-  align-items: center;  
+  align-content: center;
+  align-items: center;
 }
 
-.pageHeader button{
+.pageHeader button,
+.pageHeader .button {
   border: none;
   background: none;
   flex-grow: 0;
   justify-self: flex-start;
   margin-left: 2em;
+  color: var(--dark-blue);
+  font-size: 1.5em;
 }
 
-.backBox {
-  justify-self: flex-start;
-  margin-left: 2em;
+.pageHeader button:hover,
+.pageHeader .button:hover {
+  background-color: transparent;
+  color: var(--light-blue);
 }
 
 .avatarBox {
-  display: flex;  
+  display: flex;
   flex-flow: row-reverse nowrap;
-  gap: .75em;  
+  gap: 0.75em;
   justify-content: center;
   align-items: center;
   justify-self: flex-end;
   margin-right: 2em;
 }
 
-.avatarBox p{
+.avatarBox p {
   color: var(--dark-blue);
 }
 
 .avatar {
   display: flex;
   width: 35px;
-  height: 35px;    
+  height: 35px;
   justify-content: center;
   align-items: center;
 }
 
 .avatar img {
   max-width: 100%;
-  height: auto;  
+  height: auto;
 }
 
 /* Global Card Styles */
-.inputForm{
+.inputForm {
   display: grid;
   gap: 1em;
   margin: 1vw;
   align-content: flex-start;
-  /* align-items: center;
-  justify-content: center; */
 }
 
-.card{
+.card {
   display: grid;
   background-color: var(--background-white);
   border-radius: 1em;
-  padding: .75em;    
+  padding: 0.75em;
 }
 
 .card header {
   background-color: var(--dark-blue);
   width: 100%;
-  border-radius: .5em .5em 0 0;
-  padding: .25em;
+  border-radius: 0.5em 0.5em 0 0;
+  padding: 0.25em;
   text-align: center;
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
   max-height: 31px;
 }
 
@@ -167,8 +183,8 @@ p {
   margin-block: 1em 0em;
 }
 
-.small{  
-  font-size: .65em;  
+.small {
+  font-size: 0.65em;
   align-self: center;
 }
 
@@ -178,12 +194,12 @@ p {
 
 .radioGroup {
   accent-color: var(--dark-blue);
-  display: flex;    
-  gap: 1em;    
+  display: flex;
+  gap: 1em;
   border: none;
-  background-color: rgba(0, 0, 0, 0.10);
-  padding: .5em;
-  border-radius: .5em;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 0.5em;
+  border-radius: 0.5em;
   align-self: center;
   font-size: 11px;
   width: 100%;
@@ -201,9 +217,9 @@ p {
 
 .reliteGroup {
   border: none;
-  background-color: rgba(0, 0, 0, 0.10);
-  padding: .5em;
-  border-radius: .5em;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 0.5em;
+  border-radius: 0.5em;
   align-self: center;
   width: 100%;
   margin-bottom: 1em;
@@ -217,29 +233,37 @@ p {
   align-items: flex-end !important;
 }
 
-.center{
+.center {
   align-self: center !important;
-  justify-self: center !important;  
-  text-align: center !important;  
+  justify-self: center !important;
+  text-align: center !important;
+}
+
+.right {
+  align-self: right !important;
+  justify-self: right !important;
+  text-align: right !important;
 }
 
 .cardInput {
   display: flex;
   flex-flow: column nowrap;
-  justify-content: center; 
-  gap: .25em;
-  padding: .25em;
+  justify-content: center;
+  gap: 0.25em;
+  padding: 0.25em;
 }
 
 .cardInput:has(button.icon) {
   min-height: 64px;
 }
 
-.cardInput:has(label.offOnTablet), .cardInput:has(label.offOnDesktop) {
+.cardInput:has(label.offOnTablet),
+.cardInput:has(label.offOnDesktop) {
   min-height: 36px;
 }
 
-.cardInput label, .cardLabel {  
+.cardInput label,
+.cardLabel {
   align-items: flex-end;
   justify-content: space-between;
   display: flex;
@@ -266,48 +290,47 @@ p {
 .cardButton {
   display: flex;
   flex-flow: column nowrap;
-  justify-content: center; 
-  gap: .25em;
+  justify-content: center;
+  gap: 0.25em;
 }
 
-.projInput{
+.projInput {
   flex-flow: row nowrap;
   align-items: center;
   gap: 1em;
 }
 
-.cardRow{
+.cardRow {
   display: flex;
   flex-flow: row nowrap;
-  justify-content: center; 
-  gap: .25em;
-  padding: .25em; 
+  justify-content: center;
+  gap: 0.25em;
+  padding: 0.25em;
 }
 
-.cardRow input{
+.cardRow input {
   line-height: 1.75em;
-  border-radius: .25em;
+  border-radius: 0.25em;
   border: none;
   outline: 1px solid var(--black);
-  padding-left: .25em;
+  padding-left: 0.25em;
 }
 
-.cardRow input:focus{
+.cardRow input:focus {
   outline: 1px solid var(--orange);
 }
 
-
 input[type='text'] {
   line-height: 1.75em;
-  border-radius: .25em;
+  border-radius: 0.25em;
   border: none;
-  outline: 1px solid var(--dark-gray);  
-  padding-left: .25em;
-  transition: all .3s ease;
+  outline: 1px solid var(--dark-gray);
+  padding-left: 0.25em;
+  transition: all 0.3s ease;
 }
 
 input[type='text']:focus {
-  outline: 1px solid var(--blue);  
+  outline: 1px solid var(--blue);
 }
 
 input[type='text']:disabled {
@@ -319,13 +342,13 @@ input[type='checkbox']:disabled + label {
   color: var(--dark-gray);
 }
 
-select {  
-  height: 1.75em;    
-  border-radius: .25em;
+select {
+  height: 1.75em;
+  border-radius: 0.25em;
   border: none;
-  outline: 1px solid var(--dark-gray);  
-  padding-left: .25em;
-  transition: all .3s ease;
+  outline: 1px solid var(--dark-gray);
+  padding-left: 0.25em;
+  transition: all 0.3s ease;
 }
 
 select:disabled {
@@ -335,28 +358,28 @@ select:disabled {
 
 select option:disabled {
   color: var(--dark-gray);
-  background-color: var(--light-gray); ;
+  background-color: var(--light-gray);
 }
 
-.checkRow{
-  font-size: .75em;
+.checkRow {
+  font-size: 0.75em;
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;
-  gap: 1em;  
-  align-self: center;  
+  gap: 1em;
+  align-self: center;
   accent-color: var(--dark-blue);
   margin-left: 0.25em;
 }
 
 .divider {
-  margin-block: .5em;  
+  margin-block: 0.5em;
   height: 1px;
   background: var(--blue-gradient);
 }
 
 .divider.white {
-  margin-block: .5em;  
+  margin-block: 0.5em;
   height: 1px;
   background: var(--white-gradient);
 }
@@ -365,14 +388,15 @@ select option:disabled {
   margin-top: 10px;
 }
 
-.column{
+.column {
   flex-flow: row nowrap;
   align-items: center;
   justify-content: center;
   justify-self: center;
 }
 
-.column input, .column input:focus{  
+.column input,
+.column input:focus {
   outline: none;
 }
 
@@ -398,10 +422,10 @@ select option:disabled {
 .tab {
   padding: 8px 16px;
   border: 1px solid var(--dark-gray);
-  border-radius: .25em .25em 0 0;
+  border-radius: 0.25em 0.25em 0 0;
   background: var(--background-disabled);
   cursor: pointer;
-  color: var(--dark-gray);  
+  color: var(--dark-gray);
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
@@ -412,7 +436,7 @@ select option:disabled {
 .activeTab {
   border-bottom: none;
   background: var(--background-white);
-  color: var(--dark-blue);  
+  color: var(--dark-blue);
   cursor: default;
 }
 
@@ -431,7 +455,19 @@ select option:disabled {
 }
 
 /* Global Button Classes */
-button.addRow {
+button,
+.button {
+  cursor: pointer;
+  border: none;
+  border-radius: 0.5em;
+  padding: 1em;
+  text-decoration: none;
+  color: var(--background-white);
+  transition: all 0.3s ease;
+}
+
+button.addRow,
+.button.addRow {
   width: 5em;
   min-height: 30px;
   max-height: 42px;
@@ -439,176 +475,219 @@ button.addRow {
   padding: 0.5em;
 }
 
-button.deleteRow {
+button.deleteRow,
+.button.deleteRow {
   margin: 2px;
 }
 
-.iconPrim{  
-  background-color: none;
-  color: var(--dark-blue);  
-  transition: all .3s ease;
-  font-size: 1.5em;
-}
-
-.iconPrim:hover{  
-  background-color: none;
-  color: var(--light-blue);  
-}
-
-.icon {
-  border-color: transparent;  
-  width: 2em;
-  height: 2em;
-  font-size: 1em;
-  border-radius: .5em;
-  justify-self: flex-end; 
-  align-self: flex-end; 
-  background: none;   
-  transition: all .3s ease;
-}
-
-.icon.blue {
-  color: var(--dark-blue);    
-}
-
-.icon.blue:hover {  
+button.prim,
+.button.prim {
   background-color: var(--dark-blue);
-  color: var(--background-white); 
 }
 
-.icon.red {  
-  color: var(--red);    
-}
-
-.icon.red:hover {  
-  background-color: var(--red);
-  color: var(--background-white); 
-}
-
-.iconReject{  
-  color: var(--light-red);
-  margin-bottom: .5em;    
-}
-
-.iconReject:hover{  
-  background-color: var(--red);
-  color: var(--background-white); 
-}
-
-.iconClear{  
-  color: var(--light-red);    
-}
-
-.iconClear:hover{  
-  background-color: var(--red);
-  color: var(--background-white); 
-}
-
-.button {
-  cursor: pointer;
-  border: none;
-  border-radius: .5em;
-  padding: 1em;  
-  text-decoration: none;
-}
-
-button.small {
-  width: 5em;
-  padding: 0.25em;
-}
-
-.prim{  
-  background-color: var(--dark-blue);
-  color: var(--background-white);
-  transition: all .3s ease;
-}
-
-.prim:hover{
+button.prim:hover,
+button.prim:hover {
   background-color: var(--light-blue);
 }
 
-.sec{
+button.sec,
+.button.sec {
   background-color: var(--light-blue);
-  color: var(--background-white);
-  transition: all .3s ease;
 }
 
-.sec:hover{
-  background-color: var(--dark-blue);
-}
-
-.note {
+button.sec:hover,
+button.sec:hover {
   background-color: var(--blue);
-  color: var(--background-white);
-  transition: all .3s ease;
 }
 
-.note:hover {
-  background-color: var(--light-blue);
-}
-
-.delete {
-  background-color: var(--red);
-  color: var(--background-white);
-  transition: all .3s ease;
-}
-
-.delete:hover {
-  background-color: var(--light-red);
-}
-
-.archive {
-  background-color: var(--gray);
-  color: var(--background-white);
-  transition: all .3s ease;
-}
-
-.archive:hover {
-  background-color: var(--light-gray);
-}
-
-.accent{  
+button.accent,
+.button.accent {
   background-color: var(--orange);
-  color: var(--background-white);
-  transition: all .3s ease;
 }
 
-.accent:hover{
+button.accent:hover,
+button.accent:hover {
   background-color: var(--light-orange);
 }
 
-.success{
+button.success,
+.button.success {
   background-color: var(--green);
 }
 
-button.success {  
-  background-color: var(--green);
-  color: var(--background-white);
-  transition: all .3s ease;
-}
-
-button.success:hover{
+button.success:hover,
+button.success:hover {
   background-color: var(--light-green);
 }
 
-.reject{  
+button.reject,
+.button.reject {
   background-color: var(--red);
-  color: var(--background-white);
-  transition: all .3s ease;
 }
 
-.reject:hover{
+button.reject:hover,
+button.reject:hover {
   background-color: var(--light-red);
 }
 
-.nuetral{  
+button.nuetral,
+.button.nuetral {
   background-color: var(--gray);
-  color: var(--background-white);
-  transition: all .3s ease;
 }
 
-.nuetral:hover{
+button.nuetral:hover,
+button.nuetral:hover {
   background-color: var(--light-gray);
+}
+
+.icon {
+  border-color: transparent;
+  width: 2em;
+  height: 2em;
+  font-size: 1em;
+  padding: 0;
+  border-radius: 0.5em;
+  justify-self: flex-end;
+  align-self: flex-end;
+  background: none;
+  transition: all 0.3s ease;
+}
+
+.icon.prim {
+  background-color: transparent;
+  color: var(--dark-blue);
+}
+
+.icon.prim:hover {
+  background-color: var(--dark-blue);
+  color: var(--background-white);
+}
+
+.icon.sec {
+  background-color: transparent;
+  color: var(--light-blue);
+}
+
+.icon.sec:hover {
+  background-color: var(--light-blue);
+  color: var(--background-white);
+}
+
+.icon.accent {
+  background-color: transparent;
+  color: var(--orange);
+}
+
+.icon.accent:hover {
+  background-color: var(--orange);
+  color: var(--background-white);
+}
+
+.icon.success {
+  background-color: transparent;
+  color: var(--green);
+}
+
+.icon.success:hover {
+  background-color: var(--green);
+  color: var(--background-white);
+}
+
+.icon.reject {
+  background-color: transparent;
+  color: var(--red);
+}
+
+.icon.reject:hover {
+  background-color: var(--red);
+  color: var(--background-white);
+}
+
+.icon.nuetral {
+  background-color: transparent;
+  color: var(--gray);
+}
+
+.icon.nuetral:hover {
+  background-color: var(--gray);
+  color: var(--background-white);
+}
+
+.icon.actionButton {
+  font-size: 1em;
+  border: none;
+  border-radius: 5px;
+  color: var(--background-white);
+  transition: all ease 0.3s;
+  aspect-ratio: 1 /1;
+  width: 35px;
+  height: 35px;
+}
+
+.icon.actionButton.prim {
+  background: var(--dark-blue);
+}
+
+.icon.actionButton.prim:hover {
+  background: var(--light-blue);
+}
+
+.icon.actionButton.sec {
+  background: var(--light-blue);
+}
+
+.icon.actionButton.sec:hover {
+  background: var(--blue);
+}
+
+.icon.actionButton.accent {
+  background: var(--orange);
+}
+
+.icon.actionButton.accent:hover {
+  background: var(--light-orange);
+}
+
+.icon.actionButton.success {
+  background: var(--green);
+}
+
+.icon.actionButton.success:hover {
+  background: var(--light-green);
+}
+
+.icon.actionButton.reject {
+  background: var(--light-red);
+}
+
+.icon.actionButton.reject:hover {
+  background: var(--red);
+}
+
+.icon.actionButton.nuetral {
+  background: var(--gray);
+}
+
+.icon.actionButton.nuetral:hover {
+  background: var(--light-gray);
+}
+
+.buttonFooter {
+  /* border-top: 1px solid var(--dark-blue); */
+  text-align: center;
+  padding-top: 8px;
+}
+
+.addButton {
+  color: var(--background-white);
+  background-color: var(--dark-blue);
+  border: none;
+  border-radius: 50%;
+  width: 2em;
+  height: 2em;
+  font-size: 1.25em;
+  align-self: center;
+  padding: 0;
 }
 
 /* Global Dialog Styles */
@@ -629,7 +708,7 @@ button.success:hover{
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
-  gap: .75em;
+  gap: 0.75em;
   background-color: var(--background-white);
   color: var(--black);
   padding: 1em 3em 3em 3em;
@@ -638,7 +717,7 @@ button.success:hover{
 
 .dialog-content ul {
   display: flex;
-  gap: .75em;
+  gap: 0.75em;
   list-style-type: none;
 }
 
@@ -657,7 +736,7 @@ button.success:hover{
 .backButton {
   color: var(--dark-blue);
   align-self: flex-start;
-  font-size: 1.5em;  
+  font-size: 1.5em;
 }
 
 .image {
@@ -669,50 +748,50 @@ button.success:hover{
 
 .panelImage {
   align-self: center;
-  height: auto;    
+  height: auto;
   width: 90%;
-  max-width: 280px;    
+  max-width: 280px;
   justify-self: center;
 }
 
 /* Global Utility Styles */
 
-.black{
+.black {
   color: var(--black);
 }
 
-.white{
+.white {
   color: var(--background-white);
 }
 
-.projectCard{  
+.projectCard {
   display: grid;
   background-color: var(--background-white);
-  align-content: center;  
+  align-content: center;
   justify-items: center;
   gap: 1em;
   justify-self: center;
-  align-self: center;  
+  align-self: center;
   flex-grow: 0;
   /* width: 25em; */
   border-radius: 1em;
-  padding: .75em;    
+  padding: 0.75em;
 }
 
 /* Building Sketch Styles */
-.sketchButtonContainer{  
-  display: flex;  
-  width: 100%;  
+.sketchButtonContainer {
+  display: flex;
+  width: 100%;
   justify-content: space-between;
   margin-top: 10px;
 }
 
 .sketchButton {
   aspect-ratio: 1 /1;
-  padding: .35em;  
+  padding: 0.35em;
   border: none;
   background-color: var(--dark-blue);
-  border-radius: .25em;
+  border-radius: 0.25em;
   border: var(--background-white);
   color: var(--background-white);
   min-width: 38px;
@@ -725,23 +804,40 @@ button.success:hover{
 }
 
 /* Grid Layout */
-.grid, .grid2, .grid3, .grid4, .grid6, .grid8, .tableGrid5, .tableGrid6, .tableGrid7, .tableGrid8, .tableGrid9, .tableGrid10 {
+.grid,
+.grid2,
+.grid3,
+.grid4,
+.grid6,
+.grid8,
+.tableGrid5,
+.tableGrid6,
+.tableGrid7,
+.tableGrid8,
+.tableGrid9,
+.tableGrid10 {
   display: grid;
-  grid-template-columns: 1fr;  
-  gap: 0 .5em;
+  grid-template-columns: 1fr;
+  gap: 0 0.5em;
   align-items: flex-end;
   justify-content: center;
 }
 
-.span2, .span3, .span4, .span5, .span6, .span7, .span8 {
+.span2,
+.span3,
+.span4,
+.span5,
+.span6,
+.span7,
+.span8 {
   grid-column: span 1;
 }
 
 .panelGrid {
   display: grid;
-  grid-template-columns: 1fr;  
-  grid-template-rows: repeat(5, 1fr);  
-  gap: 0 .5em;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(5, 1fr);
+  gap: 0 0.5em;
   align-items: flex-end;
   justify-content: center;
 }
@@ -767,7 +863,7 @@ button.success:hover{
 }
 
 .panelGrid:has(div.openWall) {
-  grid-template-rows: 1fr;  
+  grid-template-rows: 1fr;
 }
 
 .sliderLeftButton {
@@ -796,7 +892,7 @@ button.success:hover{
 
 .sliderGrid {
   display: grid;
-  grid-template-columns: 28px minmax(44px, 1fr) 28px;  
+  grid-template-columns: 28px minmax(44px, 1fr) 28px;
   gap: 0;
   /* align-items: flex-end; */
 }
@@ -830,50 +926,57 @@ button.success:hover{
   border: 1px solid var(--background-white);
 }
 
-.onPhone, .onTablet, .onLaptop, .onDesktop, .hideWithSidebar {
+.onPhone,
+.onTablet,
+.onLaptop,
+.onDesktop,
+.hideWithSidebar {
   display: none;
 }
 
-.toast{  
-  position: relative;  
+.toast {
+  position: relative;
   bottom: 0;
   display: flex;
-  justify-content: center;  
+  justify-content: center;
 }
 
-.toastContent{    
+.toastContent {
   /* background-color: var(--green); */
   height: 5rem;
   color: var(--background-white);
-  padding: .75em 1.5em 1.5em 1.5em;
+  padding: 0.75em 1.5em 1.5em 1.5em;
   display: flex;
-  flex-flow: column nowrap;  
+  flex-flow: column nowrap;
   justify-content: center;
   align-items: center;
-  gap: .5em;
-  border-radius: 2em;  
+  gap: 0.5em;
+  border-radius: 2em;
 }
 
-.toastContent h3{
+.toastContent h3 {
   font-size: 1.25rem;
 }
 
-.toastContent p{
+.toastContent p {
   color: var(--background-white);
-  font-size: .75rem;
+  font-size: 0.75rem;
 }
 
 /* Loading Animation */
-.rotate{
-  animation: spinner 1s linear infinite; 
+.rotate {
+  color: var(--dark-blue);
+  font-size: 1.5em;
+  animation: spinner 1s linear infinite;
 }
 
 @keyframes spinner {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* END */
-
 
 /*
 .showWithSidebar, .hideWithSidebar = 1000px
@@ -884,11 +987,17 @@ button.success:hover{
 .onDesktop, .offOnDesktop = 1500px
 */
 @media screen and (min-width: 350px) {
-  .cardInput label, .cardInput input, .cardInput select, .cardRow label, .cardRow input, .cardRow select, .checkRow.large {
+  .cardInput label,
+  .cardInput input,
+  .cardInput select,
+  .cardRow label,
+  .cardRow input,
+  .cardRow select,
+  .checkRow.large {
     font-size: 3.15vw;
   }
-  
-  .radioGroup{
+
+  .radioGroup {
     font-size: 3.15vw;
   }
 
@@ -898,13 +1007,11 @@ button.success:hover{
   }
 }
 
-
 @media screen and (min-width: 476px) {
-  .radioGroup{
+  .radioGroup {
     font-size: 15px;
   }
 }
-
 
 @media screen and (min-width: 550px) {
   .offOnPhone {
@@ -916,14 +1023,20 @@ button.success:hover{
   }
 
   .pageHeaderLeft {
-    font-size: 1.25em;      
+    font-size: 1.25em;
   }
 
   .pageHeaderRight {
-    font-size: .75em;
+    font-size: 0.75em;
   }
 
-  .cardInput label, .cardInput input, .cardInput select, .cardRow label, .cardRow input, .cardRow select, .checkRow.large {
+  .cardInput label,
+  .cardInput input,
+  .cardInput select,
+  .cardRow label,
+  .cardRow input,
+  .cardRow select,
+  .checkRow.large {
     font-size: 15px;
   }
 
@@ -937,11 +1050,11 @@ button.success:hover{
   }
 
   .grid2:has(.panelGrid) {
-    grid-template-columns: 1fr;  
+    grid-template-columns: 1fr;
   }
 
   .grid2 .grid2 {
-    grid-template-columns: 1fr;  
+    grid-template-columns: 1fr;
   }
 
   .grid2 .grid2 .span2 {
@@ -949,70 +1062,75 @@ button.success:hover{
   }
 
   .grid4 {
-    grid-template-columns: repeat(2, 1fr);  
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .grid4:has(.panelGrid) {
-    grid-template-columns: 1fr;  
+    grid-template-columns: 1fr;
   }
 
-  .grid4 .span2, .grid4 .span3 {
+  .grid4 .span2,
+  .grid4 .span3 {
     grid-column: span 1;
   }
 
-  .grid4 .divider.span2, .grid4 .divider.span3 {
+  .grid4 .divider.span2,
+  .grid4 .divider.span3 {
     grid-column: span 2;
   }
 
   .tableGrid5 {
-    grid-template-columns: repeat(2, 1fr);  
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .tableGrid5 .span2 {
+  .tableGrid5 button.deleteRow {
     grid-column: span 2;
   }
 
   .grid6 {
-    grid-template-columns: repeat(2, 1fr);  
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .tableGrid6 {
-    grid-template-columns: repeat(2, 1fr);  
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .grid6 .span2, .grid6 .span4, .grid6 .span5 {
+  .grid6 .span2,
+  .grid6 .span4,
+  .grid6 .span5 {
     grid-column: span 2;
   }
 
   .tableGrid7 {
-    grid-template-columns: repeat(2, 1fr);  
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .tableGrid7 .span2 {
+  .tableGrid7 button.deleteRow {
     grid-column: span 2;
   }
 
   .grid8 {
-    grid-template-columns: repeat(2, 1fr);  
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .tableGrid8 {
-    grid-template-columns: repeat(2, 1fr);  
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .tableGrid10 {
-    grid-template-columns: repeat(3, 1fr);  
+    grid-template-columns: repeat(3, 1fr);
   }
 
-  .tableGrid10 .span3 {
+  .tableGrid10 button.deleteRow {
     grid-column: span 3;
   }
 
-  .grid8 .span5, .grid8 .span6, .grid8 .span7 {
+  .grid8 .span5,
+  .grid8 .span6,
+  .grid8 .span7 {
     grid-column: span 2;
   }
 }
-
 
 @media screen and (min-width: 768px) {
   .offOnTablet {
@@ -1037,22 +1155,23 @@ button.success:hover{
   }
 
   .grid4:has(.panelGrid) {
-    grid-template-columns: repeat(2, 1fr); 
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .tableGrid5 {
     grid-template-columns: repeat(4, minmax(60px, 1fr)) 30px;
   }
 
-  .tableGrid5 .span2 {
+  .tableGrid5 button.deleteRow {
     grid-column: span 1;
   }
 
   .grid6 {
-    grid-template-columns: repeat(6, minmax(60px, 1fr));  
+    grid-template-columns: repeat(6, minmax(60px, 1fr));
   }
 
-  .grid6 div, .grid6 .span2 {
+  .grid6 div,
+  .grid6 .span2 {
     grid-column: span 2;
   }
 
@@ -1076,34 +1195,34 @@ button.success:hover{
     grid-template-columns: repeat(6, minmax(60px, 1fr)) 30px;
   }
 
-  .tableGrid7 .span2 {
+  .tableGrid7 button.deleteRow {
     grid-column: span 1;
   }
 
   .panelGrid {
     display: grid;
-    grid-template-columns: 1fr 1fr 2fr;  
-    grid-template-rows: 1fr 1fr;  
-    gap: 0 .5em;
+    grid-template-columns: 1fr 1fr 2fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 0 0.5em;
     align-items: flex-end;
     justify-content: center;
   }
-  
+
   .panelGrid .panelType {
     grid-column: 1 / span 2;
     grid-row: 1;
   }
-  
+
   .panelGrid .panelGauge {
     grid-column: 1;
     grid-row: 2;
   }
-  
+
   .panelGrid .panelFinish {
     grid-column: 2;
     grid-row: 2;
   }
-  
+
   .panelGrid .panelImage {
     grid-column: 3 / 4;
     grid-row: 1 / 3;
@@ -1111,39 +1230,38 @@ button.success:hover{
 
   .grid4 .panelGrid {
     display: grid;
-    grid-template-columns:  minmax(60px, 1fr);  
-    grid-template-rows: repeat(5, 1fr);  
-    gap: 0 .5em;
+    grid-template-columns: minmax(60px, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 0 0.5em;
     align-items: flex-end;
     justify-content: center;
   }
-    
+
   .grid4 .panelGrid .panelType {
     grid-column: 1;
     grid-row: 3;
   }
-    
+
   .grid4 .panelGrid .panelGauge {
     grid-column: 1;
     grid-row: 4;
   }
-    
+
   .grid4 .panelGrid .panelFinish {
     grid-column: 1;
     grid-row: 5;
   }
-    
+
   .grid4 .panelGrid .panelImage {
     grid-column: 1;
     grid-row: 1 / 3;
   }
 }
 
-
 @media screen and (min-width: 1000px) {
-  main{
+  main {
     grid-template-columns: 350px 1fr;
-    grid-template-rows: 100px 1fr;    
+    grid-template-rows: 100px 1fr;
   }
 
   .hideWithSidebar {
@@ -1155,7 +1273,7 @@ button.success:hover{
   }
 
   .inputForm {
-    margin-right: .5em;
+    margin-right: 0.5em;
   }
 
   /* Grid Layout */
@@ -1169,7 +1287,7 @@ button.success:hover{
   }
 
   .grid4:has(.panelGrid) {
-    grid-template-columns: repeat(2, 1fr); 
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .grid4 .span2 {
@@ -1180,7 +1298,6 @@ button.success:hover{
     grid-column: span 3;
   }
 }
-
 
 @media screen and (min-width: 1200px) {
   .offOnLaptop {
@@ -1193,11 +1310,11 @@ button.success:hover{
 
   /* Grid Layout */
   .grid2:has(.panelGrid) {
-    grid-template-columns: repeat(2, 1fr); 
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .grid2 .grid2 {
-    grid-template-columns: repeat(2, 1fr);  
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .grid2 .grid2 .span2 {
@@ -1254,15 +1371,15 @@ button.success:hover{
     grid-template-columns: repeat(5, minmax(120px, 1fr));
   }
 
+  .tableGrid9 button.deleteRow {
+    grid-column: span 2;
+  }
+
   .tableGrid10 {
     grid-template-columns: repeat(5, minmax(120px, 1fr));
   }
 
-  .tableGrid10 .span6 {
-    grid-column: span 2;
-  }
-
-  .tableGrid10 .span3 {
+  .tableGrid10 button.deleteRow {
     grid-column: span 1 !important;
   }
 
@@ -1270,11 +1387,13 @@ button.success:hover{
     grid-column: span 1;
   }
 
-  .grid8 .span3, .grid8 .span4 {
+  .grid8 .span3,
+  .grid8 .span4 {
     grid-column: span 2;
   }
 
-  .grid8 .span5, .grid8 .span6 {
+  .grid8 .span5,
+  .grid8 .span6 {
     grid-column: span 3;
   }
 
@@ -1282,7 +1401,6 @@ button.success:hover{
     grid-column: span 4;
   }
 }
-
 
 @media screen and (min-width: 1500px) {
   .offOnDesktop {
@@ -1311,7 +1429,7 @@ button.success:hover{
     grid-template-columns: repeat(8, minmax(20px, 1fr)) 30px;
   }
 
-  .tableGrid9 .span2 {
+  .tableGrid9 button.deleteRow {
     grid-column: span 1;
   }
 
@@ -1347,15 +1465,15 @@ button.success:hover{
     grid-column: span 8 !important;
   }
 
-  .tableGrid5 .span2 {
+  .tableGrid5 button.deleteRow {
     grid-column: span 1 !important;
   }
 
-  .tableGrid7 .span2 {
+  .tableGrid7 button.deleteRow {
     grid-column: span 1 !important;
   }
 
-  .tableGrid9 .span2 {
+  .tableGrid9 button.deleteRow {
     grid-column: span 1 !important;
   }
 }

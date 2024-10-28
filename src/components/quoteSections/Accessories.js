@@ -206,7 +206,7 @@ const Accessories = ({
                 type="number"
                 name={`building-mandoorQty-${mandoorIndex}`}
                 value={mandoor.qty}
-                allowBlankValue={false}
+                allowZero={false}
                 negative={false}
                 min={1}
                 increment={1}
@@ -252,7 +252,12 @@ const Accessories = ({
                   type="checkbox"
                   id={`building-mandoorLever-${mandoorIndex}`}
                   name={`building-mandoorLever-${mandoorIndex}`}
-                  checked={mandoor.leverLockset}
+                  checked={
+                    !mandoor.panic ||
+                    mandoor.size == '3070' ||
+                    mandoor.size == '4070' ||
+                    mandoor.size == '6070'
+                  }
                   disabled={true}
                   onChange={(e) =>
                     handleMandoorChange(mandoorIndex, 'leverLockset', e)
@@ -272,7 +277,12 @@ const Accessories = ({
                   type="checkbox"
                   id={`building-mandoorDeadBolt-${mandoorIndex}`}
                   name={`building-mandoorDeadBolt-${mandoorIndex}`}
-                  checked={mandoor.deadBolt}
+                  checked={
+                    mandoor.deadBolt ||
+                    mandoor.size == '3070' ||
+                    mandoor.size == '4070' ||
+                    mandoor.size == '6070'
+                  }
                   disabled={
                     mandoor.size == '3070' ||
                     mandoor.size == '4070' ||
@@ -296,7 +306,12 @@ const Accessories = ({
                   type="checkbox"
                   id={`building-mandoorPanic-${mandoorIndex}`}
                   name={`building-mandoorPanic-${mandoorIndex}`}
-                  checked={mandoor.panic}
+                  checked={
+                    mandoor.panic &&
+                    mandoor.size != '3070' &&
+                    mandoor.size != '4070' &&
+                    mandoor.size != '6070'
+                  }
                   disabled={
                     mandoor.size == '3070' ||
                     mandoor.size == '4070' ||
@@ -349,7 +364,12 @@ const Accessories = ({
                   type="checkbox"
                   id={`building-mandoorKickPlate-${mandoorIndex}`}
                   name={`building-mandoorKickPlate-${mandoorIndex}`}
-                  checked={mandoor.kickPlate}
+                  checked={
+                    mandoor.kickPlate &&
+                    mandoor.size != '3070' &&
+                    mandoor.size != '4070' &&
+                    mandoor.size != '6070'
+                  }
                   disabled={
                     mandoor.size == '3070' ||
                     mandoor.size == '4070' ||
@@ -389,8 +409,9 @@ const Accessories = ({
                 </label>
               </div>
               <button
+                type="button"
+                className="icon reject deleteRow"
                 onClick={() => removeMandoor(mandoorIndex)}
-                className="icon red deleteRow span3"
               >
                 <FontAwesomeIcon icon={faTrash} />
               </button>
@@ -400,7 +421,7 @@ const Accessories = ({
         ))}
         <button
           type="button"
-          className="button success addRow"
+          className="success addRow"
           onClick={() => addMandoor()}
         >
           Add

@@ -16,7 +16,7 @@ const ReusableSelect = ({
   label,
   labelClass,
   icon = '',
-  iconColor = '',
+  iconClass = '',
   iconOnClick = null,
   defaultValue,
   disabled,
@@ -69,7 +69,11 @@ const ReusableSelect = ({
       <label className={labelClass} htmlFor={name}>
         <span>{label}</span>
         {icon && (
-          <button onClick={iconOnClick} className={`icon ${iconColor}`}>
+          <button
+            type="button"
+            onClick={iconOnClick}
+            className={`icon ${iconClass}`}
+          >
             <FontAwesomeIcon icon={iconMap[icon]} />
           </button>
         )}

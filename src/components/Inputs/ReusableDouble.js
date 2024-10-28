@@ -28,7 +28,7 @@ const ReusableDouble = ({
   label,
   onChange,
   icon = '',
-  iconColor = '',
+  iconClass = '',
   iconOnClick = null,
   disabled = false,
   placeholder,
@@ -82,7 +82,11 @@ const ReusableDouble = ({
       <label htmlFor={name}>
         <span>{label}</span>
         {icon && (
-          <button onClick={iconOnClick} className={`icon ${iconColor}`}>
+          <button
+            type="button"
+            onClick={iconOnClick}
+            className={`icon ${iconClass}`}
+          >
             <FontAwesomeIcon icon={iconMap[icon]} />
           </button>
         )}

@@ -11,10 +11,10 @@ const DeleteDialog = ({ isOpen, onClose, onDelete, title, message }) => {
         </div>
         <p className="black">{message}</p>
         <div className="dialog-buttons">
-          <button className="button nuetral" onClick={onClose}>
+          <button type="button" className="nuetral" onClick={onClose}>
             Cancel
           </button>
-          <button className="button reject" onClick={onDelete}>
+          <button type="button" className="reject" onClick={onDelete}>
             Delete
           </button>
         </div>

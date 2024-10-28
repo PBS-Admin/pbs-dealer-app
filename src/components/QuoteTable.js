@@ -225,15 +225,13 @@ export default function QuoteTable({
                   <td>
                     <div>
                       <button
-                        className={`${styles.removeQuote} ${styles.actionButton}`}
-                        style={{ cursor: 'pointer' }}
+                        className="icon actionButton reject"
                         onClick={() => openDeleteDialog(quote.ID)}
                       >
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
                       <button
-                        className={`${styles.copyQuote} ${styles.actionButton}`}
-                        style={{ cursor: 'pointer' }}
+                        className="icon actionButton sec"
                         onClick={() => openCopyDialog(quote.ID)}
                       >
                         <FontAwesomeIcon icon={faCopy} />

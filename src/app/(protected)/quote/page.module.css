@@ -1,296 +1,248 @@
 /* Navigation Styles */
-.sidebar {          
-    display: flex;
-    flex-flow: column nowrap;
-    background-color: var(--background-white);
-    border-radius: 0 1em 1em 0;
-    padding: 1em 0; 
-    align-self: flex-start;    
+.sidebar {
+  display: flex;
+  flex-flow: column nowrap;
+  background-color: var(--background-white);
+  border-radius: 0 1em 1em 0;
+  padding: 1em 0;
+  align-self: flex-start;
 }
 
 .sidebar button {
-    background: none;
-    font-size: 1em;
-    margin: 0 1em;
-    padding: 1em;
-    border: none;
-    cursor: pointer;
-    border-radius: 0.75em;
-    transition: background-color .5s ease;
+  background: none;
+  font-size: 1em;
+  margin: 0 1em;
+  padding: 1em;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.75em;
+  transition: background-color 0.5s ease;
+  color: var(--black);
 }
 
 .sidebar button:hover {
-    background: var(--light-orange);
+  background: var(--light-orange);
 }
 
-.sidebar .activeCard {
-    background: var(--background-disabled);
+.sidebar button.activeCard {
+  background: var(--background-disabled);
 }
 
 .sidebar .bldg {
-    text-align: left;
-    padding-left: 23%;
+  text-align: left;
+  padding-left: 23%;
 }
 
-.tabContainer{
-    margin-top: 1vw;
-    display: flex;
-    width: 100%;    
-    justify-content: flex-end;    
-    padding-inline: 1em;
-    gap: 1em;
+.tabContainer {
+  margin-top: 1vw;
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  padding-inline: 1em;
+  gap: 1em;
 }
 
-.tabContainer button{    
-    aspect-ratio: 1 / 0.95;    
-    font-size: 1.5em;    
-    border: none;
-    color: var(--black);
-    padding:0 .5em;
-    border-radius: .5em .5em 0 0;
-    transition: all ease .3s;
-    min-width: 48px;
+.tabContainer button {
+  aspect-ratio: 1 / 0.95;
+  font-size: 1.5em;
+  border: none;
+  color: var(--black);
+  padding: 0 0.5em;
+  border-radius: 0.5em 0.5em 0 0;
+  transition: all ease 0.3s;
+  min-width: 48px;
 }
 
-.saveTab{    
-    background-color: var(--light-green);
+.saveTab {
+  background-color: var(--light-green);
 }
 
-.saveTab:hover{
-    background-color: var(--green);    
+.saveTab:hover {
+  background-color: var(--green);
 }
 
-.deleteTab{
-    background-color: var(--light-red);
+.deleteTab {
+  background-color: var(--light-red);
 }
 
-.deleteTab:hover{
-    background-color: var(--red);
+.deleteTab:hover {
+  background-color: var(--red);
 }
 
 .noteTab {
-    background-color: var(--light-blue);
-    position: relative;
+  background-color: var(--light-blue);
+  position: relative;
 }
 
 .noteTab:hover {
-    background-color: var(--blue);
+  background-color: var(--blue);
 }
 
 .noteQty {
-    font-size: .5em;
-    line-height: 16px;
-    text-align: center;
-    position: absolute;
-    top: -6px;
-    right: -5px;
-    min-width: 22px;
-    height: 22px;
-    padding: 2px;
-    border-radius: 50%;
-    background-color: var(--red);
-    color: var(--background-white);
-    font-weight: 600;
+  font-size: 0.5em;
+  line-height: 16px;
+  text-align: center;
+  position: absolute;
+  top: -6px;
+  right: -5px;
+  min-width: 22px;
+  height: 22px;
+  padding: 2px;
+  border-radius: 50%;
+  background-color: var(--red);
+  color: var(--background-white);
+  font-weight: 600;
 }
 
-.sketchBox{
-    align-items: center;
-    grid-column: 1;    
-    border-radius: 1em;    
+.sketchBox {
+  align-items: center;
+  grid-column: 1;
+  border-radius: 1em;
 }
 
-.sketch{    
-    display: flex;
-    justify-content: center;    
+.sketch {
+  display: flex;
+  justify-content: center;
 }
 
 .carouselNav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    background-color: var(--background-white);
-    padding: 1em;
-    position: fixed;
-    bottom: 0;
-    left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background-color: var(--background-white);
+  padding: 1em;
+  position: fixed;
+  bottom: 0;
+  left: 0;
 }
 
 .carouselContainer {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .carouselItem {
-    color: var(--dark-blue);
-    font-size: 1em;
-    font-weight: 600;
-    padding: 0.5em;
-    white-space: nowrap;
-    margin-bottom: 0.5em;
+  color: var(--dark-blue);
+  font-size: 1em;
+  font-weight: 600;
+  padding: 0.5em;
+  white-space: nowrap;
+  margin-bottom: 0.5em;
 }
 
 .dotContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: var(--light-orange);
-    margin: 0 4px;
-    transition: all 0.3s ease;
-    border: none;
-    padding: 0;
-    cursor: pointer;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--light-orange);
+  margin: 0 4px;
+  transition: all 0.3s ease;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
 .activeDot {
-    width: 16px;
-    height: 16px;
-    background-color: var(--orange);
+  width: 16px;
+  height: 16px;
+  background-color: var(--orange);
 }
 
 .navArrow {
-    color: var(--dark-blue);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.5em;
+  color: var(--dark-blue);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5em;
 }
 
 /* END */
 
 .buildingContainer {
-    display: flex;
-    flex-flow: column nowrap;    
-    padding: .5em;
-    gap: .25em;
-    background-color: var(--dark-blue);
-    border-radius: 10px;
-    color: var(--background-white);
-    width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  padding: 0.5em;
+  gap: 0.25em;
+  background-color: var(--dark-blue);
+  border-radius: 10px;
+  color: var(--background-white);
+  width: 100%;
 }
 
 .buildingContainer input {
-    padding-left: 0.25em;
-    line-height: 1.75em;
-    border-radius: 5px;
-    border: 1px solid var(--light-blue);
+  padding-left: 0.25em;
+  line-height: 1.75em;
+  border-radius: 5px;
+  border: 1px solid var(--light-blue);
 }
 
 .buildingContainer select {
-    padding-left: 0.25em;
-    line-height: 1.75em;
-    border-radius: 5px;
-    border: 1px solid var(--light-blue);
-    min-height: 28px;
+  padding-left: 0.25em;
+  line-height: 1.75em;
+  border-radius: 5px;
+  border: 1px solid var(--light-blue);
+  min-height: 28px;
 }
 
-.buildingContainer input:focus, .buildingContainer select:focus {
-    outline: 1px solid var(--blue);
+.buildingContainer input:focus,
+.buildingContainer select:focus {
+  outline: 1px solid var(--blue);
 }
- 
+
 .buildingTitleContainer {
-    display: flex;
-    justify-content: space-between;
-    color: var(--background-white);
+  display: flex;
+  justify-content: space-between;
+  color: var(--background-white);
 }
 
 .whiteGroup {
-    accent-color: var(--dark-blue);
-    background-color: rgba(245, 245, 245, 0.40);
+  accent-color: var(--dark-blue);
+  background-color: rgba(245, 245, 245, 0.4);
 }
-  
+
 .whiteGroup:has(input:disabled) {
-    background-color: rgba(245, 245, 245, 0.20);
+  background-color: rgba(245, 245, 245, 0.2);
 }
 
-.whiteGroup input, .whiteGroup input:focus {
-    /* accent-color: var(--blue); */
-    outline: none;
-    align-self: center;
+.whiteGroup input,
+.whiteGroup input:focus {
+  /* accent-color: var(--blue); */
+  outline: none;
+  align-self: center;
 }
 
-.buildingContainer input:disabled, .buildingContainer select:disabled {
-    color: var(--background-white);  
-    border: 1px solid var(--background-white);
-    background-color: var(--blue-disabled);
-    outline: none;
-  }
-
-.copyBuilding {
-    font-size: 1em;
-    padding: .5em;
-    border: none;
-    border-radius: 5px;
-    color: var(--background-white);
-    align-self: center;
-    background-color: var(--light-blue);
-    aspect-ratio: 1 /1;
-    min-width: 35px;
-}
-
-.addBuilding {
-    color: var(--background-white);
-    background-color: var(--dark-blue);
-    border: none;
-    border-radius: 50%;
-    width: 2em;
-    height: 2em;
-    font-size: 1.25em;
-    align-self: center;
+.buildingContainer input:disabled,
+.buildingContainer select:disabled {
+  color: var(--background-white);
+  border: 1px solid var(--background-white);
+  background-color: var(--blue-disabled);
+  outline: none;
 }
 
 .buttonContainer {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
 }
 
-.removeBuilding {
-    font-size: 1em;
-    padding: .5em;
-    border: none;
-    border-radius: 5px;
-    color: var(--background-white);
-    align-self: flex-end;
-    background: var(--red);
-    aspect-ratio: 1 /1;
-    min-width: 35px;
-}
-
-.activeBuilding {
-    font-size: 1em;
-    padding: .5em;
-    border: none;
-    border-radius: 5px;
-    color: var(--background-white);
-    align-self: flex-end;
-    background: rgba(0, 0, 0, 0.5);
-    aspect-ratio: 1 /1;
-    min-width: 35px;
-}
-
-.activeBuildingSelected {
-    background-color: var(--light-green);
-    color: white;
-}
- 
 @media screen and (min-width: 600px) {
-    .pageTitle {
-        font-size: 2em;
-    }
+  .pageTitle {
+    font-size: 2em;
+  }
 }
 
 @media screen and (min-width: 1000px) {
-    .sketchBox{        
-        border-radius: 0 1em 1em 0;  
-        margin-top: 1em;      
-    }
-}  
+  .sketchBox {
+    border-radius: 0 1em 1em 0;
+    margin: 1em 0;
+  }
+}

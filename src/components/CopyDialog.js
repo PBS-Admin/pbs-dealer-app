@@ -11,10 +11,10 @@ const CopyDialog = ({ isOpen, onClose, onCopy, title, message }) => {
         </div>
         <p className="black">{message}</p>
         <div className="dialog-buttons">
-          <button className="button nuetral" onClick={onClose}>
+          <button type="button" className="nuetral" onClick={onClose}>
             Cancel
           </button>
-          <button className="button prim" onClick={onCopy}>
+          <button type="button" className="prim" onClick={onCopy}>
             Copy
           </button>
         </div>

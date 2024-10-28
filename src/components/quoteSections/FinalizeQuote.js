@@ -203,12 +203,12 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
         </header>
         <div className="grid4 alignTop">
           <div className="cardButton">
-            <button type="submit" className="button success">
+            <button type="submit" className="success">
               Save Quote
             </button>
             <button
               type="button"
-              className="button accent"
+              className="accent"
               onClick={() => {
                 // handleSave();
                 // showToastExport();
@@ -219,7 +219,7 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
             </button>
             <button
               type="button"
-              className="button prim"
+              className="prim"
               onClick={handleExport}
               disabled={isExporting}
             >
@@ -230,7 +230,7 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
           <div className="cardButton">
             <button
               type="button"
-              className="button note"
+              className="sec"
               onClick={() => {
                 console.log(values);
               }}
@@ -239,7 +239,7 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
             </button>
             <button
               type="button"
-              className="button archive"
+              className="nuetral"
               onClick={() => {
                 console.log(values);
               }}
@@ -251,7 +251,7 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
           <div className="cardButton">
             <button
               type="button"
-              className="button archive"
+              className="nuetral"
               onClick={() => {
                 console.log(values);
               }}
@@ -263,7 +263,7 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
           <div className="cardButton">
             <button
               type="button"
-              className="button delete"
+              className="reject"
               onClick={() => {
                 console.log(values);
               }}
