@@ -109,13 +109,9 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
         const result = await createFolderAndFiles(values);
 
         if (result.success) {
-<<<<<<< HEAD
           console.log('result success: ', result.folder);
           await createImportBAT(result.folder);
           console.log('import success');
-=======
-          await createImportBAT(result.folder);
->>>>>>> 0dfb1ab5707cbb024caa554681e83b8f901c8c0b
           showSuccessExport();
           console.log('Export successful');
         } else {
@@ -170,11 +166,7 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
       for (let i = 0; i < values.buildings.length; i++) {
         const newFolderName = values.quoteNumber + bldgAlpha[i].trim();
         await writable.write(
-<<<<<<< HEAD
           `c:\\mbs\\util\\mbs_ini.exe 1 ${newFolderName}\\desctrl.in ${newFolderName}\\desctrl.ini\n`
-=======
-          `c:\\mbs\\util\\mbs_ini.exe 1 ${newProjectName}\\${newFolderName}\\desctrl.in ${newProjectName}\\${newFolderName}\\desctrl.ini\n`
->>>>>>> 0dfb1ab5707cbb024caa554681e83b8f901c8c0b
         );
       }
     } else {
