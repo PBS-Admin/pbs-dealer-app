@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 const formatRoofPitch = (value) => {
-  console.log(value);
   return value == '' ? '' : value || value == 0 ? `${value}:12` : '';
 };
 

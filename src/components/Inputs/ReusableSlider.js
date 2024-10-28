@@ -35,7 +35,6 @@ const ReusableSlider = ({
   );
 
   const handleChangeDecrease = (name) => {
-    // console.log(validValues);
     const distValue =
       !negative && value - increment < 0 ? 0 : value - increment;
     const rotValue =

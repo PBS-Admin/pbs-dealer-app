@@ -41,7 +41,6 @@ export async function POST(req) {
       };
 
       const status = await getPoolStatus();
-      console.log('Pool status:', status);
 
       return NextResponse.json({ message }, { status: 201 });
     } else if (currentQuote > 0) {

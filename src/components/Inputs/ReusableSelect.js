@@ -51,7 +51,7 @@ const ReusableSelect = ({
           ? true
           : needsSet;
     });
-    // console.log(name, needsSet, firstItem, dependantOn);
+
     if (needsSet) {
       onChange({ target: { name, value: firstItem } });
       setInternalValue(firstItem);
@@ -63,14 +63,6 @@ const ReusableSelect = ({
     setInternalValue(newValue);
     onChange(e);
   };
-
-  // {
-  //   options.map((option) => {
-  //     if (option.id == value) {
-  //       console.log('test');
-  //     }
-  //   });
-  // }
 
   return (
     <div className={`cardInput ${className}`}>

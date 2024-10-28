@@ -3,7 +3,6 @@ import { query, getPoolStatus } from '../../../../../lib/db';
 import jwt from 'jsonwebtoken';
 
 export async function GET(req, { params }) {
-  console.log('API route hit:', req.url, 'Params:', params);
   try {
     const authHeader = req.headers.get('authorization');
 

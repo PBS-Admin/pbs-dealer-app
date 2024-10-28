@@ -17,9 +17,6 @@ function useValidation(initialFormValues, setFormValues) {
   }, [setFormValues]);
 
   const updateFormValues = useCallback(async (newValues) => {
-    console.log('updateFormValues called with:', newValues);
-    console.log('setFormValues type:', typeof setFormValuesRef.current);
-
     if (typeof setFormValuesRef.current !== 'function') {
       console.error('setFormValues is not a function');
       return;
@@ -27,12 +24,10 @@ function useValidation(initialFormValues, setFormValues) {
 
     try {
       setFormValuesRef.current((prevValues) => {
-        console.log('Previous values:', prevValues);
         const updatedValues = {
           ...prevValues,
           ...newValues,
         };
-        console.log('Updated values:', updatedValues);
         return updatedValues;
       });
     } catch (error) {
@@ -72,27 +67,18 @@ function useValidation(initialFormValues, setFormValues) {
       if (updatedValues.buildings && Array.isArray(updatedValues.buildings)) {
         const updatedBuildings = updatedValues.buildings.map(
           (building, index) => {
-            console.log('Processing building:', index);
             let updatedBuilding = { ...building };
             let buildingChanges = {};
 
             for (const rule of autoFillRules) {
-              console.log('Rule:', rule);
-              console.log('Rule condition type:', typeof rule.condition);
-              console.log('Rule setValue type:', typeof rule.setValue);
-
               try {
-                console.log('Building being validated:', building);
-
                 if (typeof rule.condition !== 'function') {
                   console.error('Rule condition is not a function:', rule);
                   continue;
                 }
                 let conditionResult;
                 try {
-                  console.log('Executing condition...');
                   conditionResult = rule.condition(building);
-                  console.log('Condition result:', conditionResult);
                 } catch (conditionError) {
                   console.error('Error executing condition:', conditionError);
                   continue;
@@ -102,9 +88,7 @@ function useValidation(initialFormValues, setFormValues) {
                   // Execute setValue with try/catch
                   let newValue;
                   try {
-                    console.log('Executing setValue...');
                     newValue = rule.setValue(building);
-                    console.log('New value:', newValue);
                   } catch (setValueError) {
                     console.error('Error executing setValue:', setValueError);
                     continue;
@@ -112,13 +96,8 @@ function useValidation(initialFormValues, setFormValues) {
 
                   // Safe comparison
                   const currentValue = building[rule.field];
-                  console.log('Comparing values:', {
-                    current: currentValue,
-                    new: newValue,
-                  });
 
                   if (newValue !== currentValue) {
-                    console.log('Updating values...');
                     buildingChanges[rule.field] = newValue;
                     updatedBuilding[rule.field] = newValue;
                     hasChanges = true;
@@ -137,58 +116,40 @@ function useValidation(initialFormValues, setFormValues) {
             }
 
             if (Object.keys(buildingChanges).length > 0) {
-              console.log('Building changes exist:', buildingChanges);
               try {
-                console.log('Setting autoFilledChanges for index:', index);
-                console.log('Current autoFilledChanges:', autoFilledChanges);
                 autoFilledChanges.buildings[index] = buildingChanges;
-                console.log('Updated autoFilledChanges:', autoFilledChanges);
               } catch (error) {
                 console.error('Error setting autoFilledChanges:', error);
               }
             }
 
-            console.log('Returning updatedBuilding:', updatedBuilding);
             return updatedBuilding;
           }
         );
 
         if (hasChanges) {
-          console.log('Has changes, preparing to update...');
-
           try {
-            console.log('Calling updateFormValues with:', {
-              buildings: updatedBuildings,
-            });
             await updateFormValues({ buildings: updatedBuildings });
-            console.log('UpdateFormValues completed');
           } catch (error) {
             console.error('Error in updateFormValues:', error);
             throw error;
           }
 
           try {
-            console.log('Generating change message...');
-            console.log('autoFilledChanges:', autoFilledChanges);
             const changeMessage = generateChangeMessage(autoFilledChanges);
-            console.log('Change message generated:', changeMessage);
 
             setAutoResolveMessage(
               'The following changes were made to ensure compatibility:\n\n' +
                 changeMessage
             );
-            console.log('Auto resolve message set');
 
             setIsDialogOpen(true);
-            console.log('Dialog opened');
           } catch (error) {
             console.error('Error in message generation/dialog:', error);
             throw error;
           }
         }
       }
-
-      console.log('Returning hasChanges:', hasChanges);
       return hasChanges;
     },
     [
@@ -201,15 +162,9 @@ function useValidation(initialFormValues, setFormValues) {
 
   const validateFields = useCallback(
     async (fieldsToValidate, autoFillRules = []) => {
-      console.log('fieldsToValidate:', fieldsToValidate); // Check structure
-      console.log('autoFillRules:', autoFillRules); // Check structure
-
       try {
-        console.log('autoResolveFields type:', typeof autoResolveFields);
         const hasAutoResolved = await autoResolveFields(autoFillRules);
-        console.log('hasAutoResolved:', hasAutoResolved);
 
-        // Then proceed with regular validation
         const newValidationPrompts = [];
 
         for (const {
@@ -218,9 +173,6 @@ function useValidation(initialFormValues, setFormValues) {
           message,
           suggestedValue,
         } of fieldsToValidate) {
-          console.log('Validating field:', field);
-          console.log('validate function type:', typeof field.validate);
-
           if (!validate(initialFormValues[field])) {
             const suggestedValueResolved =
               typeof suggestedValue === 'function'

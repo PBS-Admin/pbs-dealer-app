@@ -4,14 +4,12 @@ import ReusableLoader from '../ReusableLoader';
 import ReusableDialog from '../ReusableDialog';
 import useValidation from '@/hooks/useValidation';
 import useSeismic from '@/hooks/useSeismic';
-import { useMbsProcessor } from '@/hooks/useMbsProcessor';
 import ReusableToast from '../ReusableToast';
 
 const FinalizeQuote = ({ values, setValues, handleChange }) => {
   const memoizedSetValues = useCallback(setValues, []);
 
   const { createFolderAndFiles, status, isExporting } = useExport();
-  const { handleProcessFiles, mbsStatus, error } = useMbsProcessor();
   const {
     validateFields,
     currentPrompt,
@@ -105,31 +103,13 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
 
   const handleExport = useCallback(async () => {
     try {
-      console.log('Starting export...');
       const isValid = await validateFields(fieldsToValidate, autoFillRules);
-      console.log('Validation result:', isValid);
 
       if (isValid) {
-        console.log('Creating folders with values:', values);
         const result = await createFolderAndFiles(values);
-        console.log('Creation result:', result);
 
         if (result.success) {
-          for (let i = 0; i < result.folder.length; i++) {
-            let path;
-            if (result.folder.length > 1) {
-              path = `C:\\Jobs\\${result.folder[0]}P\\${result.folder[i]}`;
-            } else {
-              path = `C:\\Jobs\\${result.folder}`;
-            }
-
-            const res = await handleProcessFiles(path);
-            if (res) {
-              console.log('MBS processed');
-            } else {
-              console.log('MBS process failed');
-            }
-          }
+          await createImportBAT(result.folder);
           showSuccessExport();
           console.log('Export successful');
         } else {
@@ -150,6 +130,50 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
     createFolderAndFiles,
     values,
   ]);
+
+  const createImportBAT = async (folder) => {
+    if (typeof window === 'undefined' || !('showDirectoryPicker' in window)) {
+      console.log(
+        'File System Access API is not supported in this environment.'
+      );
+      const res = { success: false, folder: '' };
+      return res;
+    }
+
+    let newProjectHandle, newProjectName;
+
+    if (values.buildings.length > 1) {
+      newProjectName = values.quoteNumber + 'P';
+    } else {
+      newProjectName = values.quoteNumber;
+    }
+
+    newProjectHandle = await folder.getDirectoryHandle(newProjectName, {
+      create: false,
+    });
+
+    const batchHandle = await newProjectHandle.getFileHandle('autoImport.bat', {
+      create: true,
+    });
+
+    const writable = await batchHandle.createWritable();
+
+    if (values.buildings.length > 1) {
+      const newProjectName = values.quoteNumber + 'P';
+      const bldgAlpha = ' BCDEFGHI';
+      for (let i = 0; i < values.buildings.length; i++) {
+        const newFolderName = values.quoteNumber + bldgAlpha[i].trim();
+        await writable.write(
+          `c:\\mbs\\util\\mbs_ini.exe 1 ${newProjectName}\\${newFolderName}\\desctrl.in ${newProjectName}\\${newFolderName}\\desctrl.ini\n`
+        );
+      }
+    } else {
+      await writable.write(
+        'c:\\mbs\\util\\mbs_ini.exe 1 desctrl.in desctrl.ini\n'
+      );
+    }
+    await writable.close();
+  };
 
   const showSuccessExport = () => {
     toastRef.current.show({

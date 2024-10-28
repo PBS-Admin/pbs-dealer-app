@@ -1,6 +1,5 @@
 'use client';
 
-import { baseCondition } from '@/util/dropdownOptions';
 import { useState, useCallback } from 'react';
 
 export function useExport() {
@@ -45,7 +44,6 @@ export function useExport() {
         id: 'DocSelection',
         mode: 'readwrite',
         title: 'Select your folder containing Jobs folders',
-        startIn: 'documents',
       });
 
       // Get and set handlers for MBS subfolders and Jobs folder
@@ -294,7 +292,7 @@ export function useExport() {
       }
 
       setStatus('Export and file copying completed successfully!');
-      const res = { success: true, folder: folderPaths };
+      const res = { success: true, folder: jobsFolderHandle };
       return res;
     } catch (error) {
       setStatus(`Error during export: ${error.message}`);
