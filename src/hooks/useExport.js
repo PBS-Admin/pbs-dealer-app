@@ -266,6 +266,8 @@ export function useExport() {
         await createDesLoad(rootHandle, values, index);
 
         await createMBS(rootHandle, values, index);
+
+        await createBldCtrl(rootHandle, values, index);
       }
 
       if (newProjectHandle) {
@@ -507,6 +509,63 @@ export function useExport() {
 
     const mbsFile = await mbsInHandle.getFile();
     return mbsFile;
+  }
+
+  async function createBldCtrl(rootHandle, values, index = 0) {
+    const newBuildingHandle = await rootHandle.getDirectoryHandle(
+      values.quoteNumber + bldgAlpha[index].trim(),
+      {
+        create: false,
+      }
+    );
+
+    const bldCtrlHandle = await newBuildingHandle.getFileHandle('BldCtrl.log', {
+      create: true,
+    });
+
+    const writable = await bldCtrlHandle.createWritable();
+    await writable.write(
+      `*==============================================================================\n`
+    );
+    await writable.write(`* BldCtrl.Log  :  Auto Generated\n`);
+    await writable.write(
+      `*==============================================================================\n`
+    );
+    await writable.write(`*\n`);
+    await writable.write(`*(1) DESCTRL SELECTED FILE:\n`);
+    await writable.write(`*\n`);
+    await writable.write(
+      `* Date         ID       File              Description\n`
+    );
+    await writable.write(
+      `''            'IN'     'Desctrl.IN'      'Default Building'\n`
+    );
+    await writable.write(`\n`);
+    await writable.write(`(2) DWGCTRL SELECTED FILE:*\n`);
+    await writable.write(
+      `* Date         ID       File              Description\n`
+    );
+    await writable.write(
+      `''            'IN'     'DwgCtrl.IN'      'Preliminary (Estimating) 11x17'\n`
+    );
+    await writable.write(`\n`);
+    await writable.write(`*(3) JOBINFO SELECTED FILE:\n`);
+    await writable.write(
+      `* Date         ID       File              Description\n`
+    );
+    await writable.write(`''            '--'     ''                ''\n`);
+    await writable.write(`\n`);
+    await writable.write(`*\n`);
+    await writable.write(`*(4) DATABASE SELECTED FILES:\n`);
+    await writable.write(`*\n`);
+    await writable.write(
+      `* Date         ID       File              Description\n`
+    );
+    await writable.write(`\n`);
+    await writable.close();
+
+    const logFile = await bldCtrlHandle.getFile();
+    return logFile;
   }
 
   async function createDesLoad(rootHandle, values, index = 0) {
