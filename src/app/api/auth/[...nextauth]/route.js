@@ -44,7 +44,6 @@ export const authOptions = {
         }
 
         const status = await getPoolStatus();
-        console.log('Pool status:', status);
 
         console.log('Authorization successful');
         return {
