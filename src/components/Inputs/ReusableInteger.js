@@ -42,17 +42,10 @@ const ReusableInteger = ({
 
   useEffect(() => {
     setInputValue((value == 0 && !allowZero ? '' : value) + suffix);
-    // console.log('in useEffect:: value=', value);
   }, [value]);
 
   const handleInputChange = (e) => {
     const newInputValue = e.target.value;
-    // console.log(
-    //   'in handleInputChange:: value=',
-    //   value,
-    //   ', newInputValue=',
-    //   newInputValue
-    // );
     // Allow only numbers
     if (/^-?\d*$/.test(newInputValue)) {
       setInputValue(newInputValue);
@@ -67,14 +60,7 @@ const ReusableInteger = ({
       negative,
       validValues
     );
-    // console.log(
-    //   'in handleBlur:: value=',
-    //   value,
-    //   ' inputValue=',
-    //   inputValue,
-    //   ', parsedValue=',
-    //   parsedValue
-    // );
+
     setInputValue((parsedValue == 0 && !allowZero ? '' : parsedValue) + suffix);
     onChange({
       target: {

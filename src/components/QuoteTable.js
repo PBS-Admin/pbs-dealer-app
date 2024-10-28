@@ -93,7 +93,6 @@ export default function QuoteTable({
       const values = JSON.parse(quote.QuoteData);
 
       try {
-        console.log('attempting to save');
         const response = await fetch('/api/auth/save', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

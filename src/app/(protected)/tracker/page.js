@@ -15,8 +15,6 @@ export default async function Tracker() {
     redirect('/login');
   }
 
-  console.log('sess:', session);
-
   let quotes = [];
   let companies = [];
   let error = null;
