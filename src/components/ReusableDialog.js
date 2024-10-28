@@ -11,10 +11,10 @@ const ReusableDialog = ({ isOpen, onClose, onConfirm, title, message }) => {
         </div>
         <p className="center">{message}</p>
         <div className="dialog-buttons">
-          <button className="button nuetral" onClick={onClose}>
+          <button type="button" className="nuetral" onClick={onClose}>
             Cancel
           </button>
-          <button className="button prim" onClick={onConfirm}>
+          <button type="button" className="prim" onClick={onConfirm}>
             Confirm
           </button>
         </div>

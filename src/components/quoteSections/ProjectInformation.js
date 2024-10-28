@@ -248,8 +248,8 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               Street Address:
               <button
                 type="button"
+                className="icon reject"
                 onClick={() => clearAddress('customer')}
-                className="icon iconClear"
               >
                 <FontAwesomeIcon icon={faEraser} />
               </button>
@@ -380,8 +380,8 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               Street Address:
               <button
                 type="button"
+                className="icon reject"
                 onClick={() => clearAddress('project')}
-                className="icon iconClear"
               >
                 <FontAwesomeIcon icon={faEraser} />
               </button>
@@ -530,7 +530,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               </>
             }
             icon={windIcon}
-            iconColor={'blue'}
+            iconClass={'prim'}
             iconOnClick={getWindLoad}
             disabled={false}
             placeholder={'mph'}
@@ -565,7 +565,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               </>
             }
             icon={snowIcon}
-            iconColor={'blue'}
+            iconClass={'prim'}
             iconOnClick={getSnowLoad}
             disabled={false}
             placeholder={'psf'}
@@ -602,7 +602,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             options={seismicCategory}
             label="Seismic Category:"
             icon={lookupIcon}
-            iconColor={'blue'}
+            iconClass={'prim'}
             iconOnClick={getSeismicLoad}
             defaultValue="D"
           />
@@ -635,7 +635,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             name={'seismicSms'}
             label={'Sms:'}
             icon={calcIcon}
-            iconColor={'blue'}
+            iconClass={'prim'}
             iconOnClick={getSmsLoad}
             disabled={false}
             decimalPlaces={3}

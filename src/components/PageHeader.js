@@ -18,11 +18,11 @@ const PageHeader = ({ session, title, isLogOut }) => {
   return (
     <header className="pageHeader">
       {isLogOut ? (
-        <button onClick={handleLogout} className="iconPrim">
+        <button onClick={handleLogout}>
           <FontAwesomeIcon icon={faDoorOpen} />
         </button>
       ) : (
-        <Link href="/dashboard" className="iconPrim backBox">
+        <Link href="/dashboard" className="button">
           <FontAwesomeIcon icon={faHouse} />
         </Link>
       )}

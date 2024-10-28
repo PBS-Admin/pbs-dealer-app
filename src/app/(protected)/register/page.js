@@ -68,7 +68,7 @@ export default function Register() {
             />
           </div>
         </div>
-        <button className="button prim" type="submit">
+        <button className="prim" type="submit">
           Register
         </button>
       </form>

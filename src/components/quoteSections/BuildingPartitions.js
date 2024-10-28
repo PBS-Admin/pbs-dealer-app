@@ -4,7 +4,7 @@ import ReusablePanel from '../Inputs/ReusablePanel';
 import BaySpacingInput from '../Inputs/BaySpacingInput';
 import FeetInchesInput from '../Inputs/FeetInchesInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { wallInsulation, orientations } from '../../util/dropdownOptions';
 
 const BuildingPartitions = ({
@@ -288,10 +288,11 @@ const BuildingPartitions = ({
                   label="Insuation:"
                 />
                 <button
+                  type="button"
+                  className="icon reject deleteRow"
                   onClick={() =>
                     removePartition(activeBuilding, partitionIndex)
                   }
-                  className="icon red deleteRow"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -300,19 +301,7 @@ const BuildingPartitions = ({
             </Fragment>
           )
         )}
-        {values.buildings[activeBuilding].partitions.length > 5 ? (
-          <button type="button" className="button addRow disabled">
-            6 Max
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="button success addRow"
-            onClick={() => addPartition(activeBuilding)}
-          >
-            Add
-          </button>
-        )}
+
         {values.buildings[activeBuilding].partitions.length > 0 && (
           <>
             <div className="divider onDesktop"></div>
@@ -354,6 +343,21 @@ const BuildingPartitions = ({
                   )
                 }
               />
+            </div>
+          </>
+        )}
+
+        {values.buildings[activeBuilding].partitions.length < 6 && (
+          <>
+            <div className="divider"></div>
+            <div className="buttonFooter">
+              <button
+                type="button"
+                className="addButton"
+                onClick={() => addPartition(activeBuilding)}
+              >
+                <FontAwesomeIcon icon={faPlus} />
+              </button>
             </div>
           </>
         )}

@@ -16,7 +16,7 @@ const ReusableSelect = ({
   label,
   labelClass,
   icon = '',
-  iconColor = '',
+  iconClass = '',
   iconOnClick = null,
   defaultValue,
   disabled,
@@ -64,20 +64,16 @@ const ReusableSelect = ({
     onChange(e);
   };
 
-  // {
-  //   options.map((option) => {
-  //     if (option.id == value) {
-  //       console.log('test');
-  //     }
-  //   });
-  // }
-
   return (
     <div className={`cardInput ${className}`}>
       <label className={labelClass} htmlFor={name}>
         <span>{label}</span>
         {icon && (
-          <button onClick={iconOnClick} className={`icon ${iconColor}`}>
+          <button
+            type="button"
+            onClick={iconOnClick}
+            className={`icon ${iconClass}`}
+          >
             <FontAwesomeIcon icon={iconMap[icon]} />
           </button>
         )}

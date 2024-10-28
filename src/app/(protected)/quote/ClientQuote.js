@@ -7,10 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronLeft,
   faChevronRight,
-  faChevronDown,
-  faChevronUp,
-  faArrowRotateLeft,
-  faArrowRotateRight,
   faTrash,
   faComment,
   faCopy,
@@ -18,7 +14,7 @@ import {
   faCheck,
   faSave,
 } from '@fortawesome/free-solid-svg-icons';
-
+import { faCircle, faCircleDot } from '@fortawesome/free-regular-svg-icons';
 import useFormState from '@/hooks/useFormState';
 import useNavigation from '@/hooks/useNavigation';
 import useWind from '@/hooks/useWind';
@@ -415,21 +411,27 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
             {quoteId != 0 && (
               <>
                 <button
-                  // onClick={openQuoteEstimatorNotes}
+                  type="button"
                   className={styles.noteTab}
+                  // onClick={openQuoteEstimatorNotes}
                 >
                   <FontAwesomeIcon icon={faComment} />
                   <div className={styles.noteQty}>3</div>
                 </button>
                 <button
-                  onClick={openQuoteDeleteDialog}
+                  type="button"
                   className={styles.deleteTab}
+                  onClick={openQuoteDeleteDialog}
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </>
             )}
-            <button onClick={handleSubmit} className={styles.saveTab}>
+            <button
+              type="button"
+              className={styles.saveTab}
+              onClick={handleSubmit}
+            >
               <FontAwesomeIcon icon={saveSuccess ? faCheck : faSave} />
             </button>
           </div>
@@ -542,8 +544,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                   <div className={styles.buildingTitleContainer}>
                     <h3>Building {String.fromCharCode(index + 65)}</h3>
                     <button
-                      className={styles.copyBuilding}
                       type="button"
+                      className="icon actionButton sec"
                       onClick={() => openCopyDialog(index)}
                     >
                       <FontAwesomeIcon icon={faCopy} />
@@ -797,18 +799,20 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                   <div className={styles.buttonContainer}>
                     {/* Active Button */}
                     <button
-                      className={`${styles.activeBuilding} ${activeBuilding === index ? styles.activeBuildingSelected : ''}`}
                       type="button"
+                      className={`icon actionButton ${activeBuilding === index ? 'success' : 'nuetral'}`}
                       onClick={() => setActiveBuilding(index)}
                     >
-                      <FontAwesomeIcon icon={faCheck} />
+                      <FontAwesomeIcon
+                        icon={activeBuilding === index ? faCircleDot : faCircle}
+                      />
                     </button>
 
                     {/* Delete Button */}
                     {values.buildings.length > 1 && index !== 0 && (
                       <button
-                        className={styles.removeBuilding}
                         type="button"
+                        className="icon actionButton reject"
                         onClick={() => openDeleteDialog(index)}
                       >
                         <FontAwesomeIcon icon={faTrash} />
@@ -819,8 +823,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               ))}
               {values.buildings.length < 9 && (
                 <button
-                  className={styles.addBuilding}
                   type="button"
+                  className="addButton"
                   onClick={addBuilding}
                 >
                   <FontAwesomeIcon icon={faPlus} />
@@ -922,7 +926,11 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
       {/* Carousel Navigation */}
       {!isDesktop && (
         <nav className={styles.carouselNav}>
-          <button className={styles.navArrow} onClick={handlePrev}>
+          <button
+            type="button"
+            className={styles.navArrow}
+            onClick={handlePrev}
+          >
             <FontAwesomeIcon icon={faChevronLeft} size="2x" />
           </button>
           <div className={styles.carouselContainer}>
@@ -940,7 +948,11 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               ))}
             </div>
           </div>
-          <button className={styles.navArrow} onClick={handleNext}>
+          <button
+            type="button"
+            className={styles.navArrow}
+            onClick={handleNext}
+          >
             <FontAwesomeIcon icon={faChevronRight} size="2x" />
           </button>
         </nav>

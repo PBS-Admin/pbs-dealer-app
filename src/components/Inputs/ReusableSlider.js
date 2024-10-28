@@ -97,6 +97,7 @@ const ReusableSlider = ({
           onClick={() => {
             handleChangeDecrease(name);
           }}
+          onFocus={onFocus}
           disabled={disabled}
         >
           <FontAwesomeIcon icon={iconLeftSide} />
@@ -148,6 +149,7 @@ const ReusableSlider = ({
           onClick={() => {
             handleChangeIncrease(name);
           }}
+          onFocus={onFocus}
           disabled={disabled}
         >
           <FontAwesomeIcon icon={iconRightSide} />

@@ -12,12 +12,12 @@ const ReusableLoader = ({ isOpen, title, message }) => {
           <h4>{title}</h4>
         </div>
         <p className="center">{message}</p>
-        <FontAwesomeIcon className="rotate iconPrim" icon={faCircleNotch} />
+        <FontAwesomeIcon className="rotate" icon={faCircleNotch} />
         {/* <div className="dialog-buttons">
-          <button className="button nuetral" onClick={onClose}>
+          <button type="button" className="nuetral" onClick={onClose}>
             Cancel
           </button>
-          <button className="button prim" onClick={onConfirm}>
+          <button type="button" className="prim" onClick={onConfirm}>
             Confirm
           </button>
         </div> */}

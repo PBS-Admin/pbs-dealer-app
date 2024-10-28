@@ -1,86 +1,87 @@
-.quoteContainer{ 
+.quoteContainer {
   margin-top: 1em;
   text-align: center;
   overflow-x: auto;
-  max-width: 100%;  
-  transition: all ease .5s;
+  max-width: 100%;
+  transition: all ease 0.5s;
 }
 
 .quoteTable {
   justify-self: center;
   align-self: start;
   margin-top: 1em;
-  display: grid;    
+  display: grid;
   max-width: 100%;
-  overflow-x: auto;    
+  overflow-x: auto;
 }
 
-.quoteTable h2{    
+.quoteTable h2 {
   justify-self: center;
   margin-bottom: 1em;
 }
 
-.quoteTable::before{
+.quoteTable::before {
   content: '';
   background: var(--background-white);
   display: block;
   border-radius: 1em 1em 0 0;
   width: 100%;
   height: 20px;
-  z-index: 1;   
+  z-index: 1;
 }
 
 .quoteTable table {
   /* width: 100%; */
-  border-collapse: collapse;    
+  border-collapse: collapse;
   border-radius: 1em 1em 0 0;
-  overflow-x: scroll;          
+  overflow-x: scroll;
 }
 
-.quoteTable::after{
+.quoteTable::after {
   content: '';
   background: var(--background-white);
   display: block;
   border-radius: 0 0 1em 1em;
   width: 100%;
-  height: 20px;    
+  height: 20px;
 }
-  
-.quoteTable th, .quoteTable td {
-  border: 1px solid var(--background-white);  
+
+.quoteTable th,
+.quoteTable td {
+  border: 1px solid var(--background-white);
   text-align: center;
-  padding: 0;  
-  min-width: 100px;  
+  padding: 0;
+  min-width: 100px;
 }
 
 .quoteTable th {
   background-color: var(--background-white);
 }
 
-.quoteTable tr{      
-  transition: all ease .3s;
+.quoteTable tr {
+  transition: all ease 0.3s;
 }
 
 .quoteTable td a {
   text-decoration: none;
-  color: var(--background-white);  
-  display: block;  
-  padding: 1em;    
-  transition: all ease .3s;
+  color: var(--background-white);
+  display: block;
+  padding: 1em;
+  transition: all ease 0.3s;
 }
 
-.quoteTable tr:hover {  
+.quoteTable tr:hover {
   background-color: var(--blue);
 }
 
-.quoteTable tbody td:last-child div {  
+.quoteTable tbody td:last-child div {
   display: flex;
-  gap: .75em;
+  gap: 0.75em;
   justify-content: center;
-  padding: .5em;
+  padding: 0.5em;
 }
 
-.actionButton {
+/* .actionButton {
   font-size: 1em;
   padding: .5em;
   border: none;
@@ -103,20 +104,29 @@
 
 .copyQuote:hover {
   background: var(--dark-blue);
-}
+} */
 
-.message{
+.message {
   color: var(--background-white);
   padding: 1em;
 }
 
 .companyList select {
-  height: 30px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--blue);
+  color: var(--background-white);
   font-size: 20px;
+  text-align: center;
+}
+
+.companyList select option {
+  background-color: var(--background-white);
+  color: var(--black);
 }
 
 @media screen and (min-width: 1000px) {
-  .quoteContainer{     
-     padding: 0 5em;
-   }
+  .quoteContainer {
+    padding: 0 5em;
+  }
 }
