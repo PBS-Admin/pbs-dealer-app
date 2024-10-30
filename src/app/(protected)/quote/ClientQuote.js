@@ -71,10 +71,13 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
     handleNestedChange,
     handleCanopyChange,
     handlePartitionChange,
-    handleLinerPanelChange,
+    handleWallLinerPanelChange,
+    handleRoofLinerPanelChange,
     handleWainscotChange,
     handlePartialWallChange,
     handleWallSkirtChange,
+    handleWallReliteChange,
+    handleRoofReliteChange,
     handleMandoorChange,
     handleOpeningChange,
     handleCalcChange,
@@ -138,7 +141,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           leftBracingHeight: '',
           rightBracingType: 'xBrace',
           rightBracingHeight: '',
-          interiorBracingType: 'none',
+          interiorBracingType: 'xBrace',
           interiorBracingHeight: '',
           frontBracedBays: '',
           backBracedBays: '',
@@ -148,16 +151,22 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           roofBreakPoints: 'left',
           frontGirtType: 'bipass',
           backGirtType: 'bipass',
+          outerLeftGirtType: 'bipass',
           leftGirtType: 'bipass',
           rightGirtType: 'bipass',
+          outerRightGirtType: 'bipass',
           frontGirtSpacing: 'default',
           backGirtSpacing: 'default',
+          outerLeftGirtSpacing: 'default',
           leftGirtSpacing: 'default',
           rightGirtSpacing: 'default',
-          leftBaseCondition: 'angle',
-          rightBaseCondition: 'angle',
+          outerRightGirtSpacing: 'default',
           frontBaseCondition: 'angle',
           backBaseCondition: 'angle',
+          leftBaseCondition: 'angle',
+          outerLeftBaseCondition: 'angle',
+          rightBaseCondition: 'angle',
+          outerRightBaseCondition: 'angle',
           purlinSpacing: '',
           roofPanelType: 'pbr',
           roofPanelGauge: '26',
@@ -165,11 +174,36 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           wallPanelType: 'pbr',
           wallPanelGauge: '26',
           wallPanelFinish: 'painted',
+          allWallsSame: true,
+          frontWallPanelType: 'pbr',
+          frontWallPanelGauge: '26',
+          frontWallPanelFinish: 'painted',
+          backWallPanelType: 'pbr',
+          backWallPanelGauge: '26',
+          backWallPanelFinish: 'painted',
+          outerLeftWallPanelType: 'pbr',
+          outerLeftWallPanelGauge: '26',
+          outerLeftWallPanelFinish: 'painted',
+          leftWallPanelType: 'pbr',
+          leftWallPanelGauge: '26',
+          leftWallPanelFinish: 'painted',
+          rightWallPanelType: 'pbr',
+          rightWallPanelGauge: '26',
+          rightWallPanelFinish: 'painted',
+          outerRightWallPanelType: 'pbr',
+          outerRightWallPanelGauge: '26',
+          outerRightWallPanelFinish: 'painted',
           includeGutters: true,
           roofInsulation: 'none',
           roofInsulationOthers: false,
           wallInsulation: 'none',
           wallInsulationOthers: false,
+          wallFrontInsulation: 'none',
+          wallBackInsulation: 'none',
+          wallOuterLeftInsulation: 'none',
+          wallLeftInsulation: 'none',
+          wallRightInsulation: 'none',
+          wallOuterRightInsulation: 'none',
           // Building - Extensions
           frontExtensionWidth: 0,
           backExtensionWidth: 0,
@@ -179,34 +213,19 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           frontExtensionColumns: false,
           backExtensionBays: '',
           backExtensionColumns: false,
-          extensionInsulation: 'none',
+          extensionInsulation: true,
           soffitPanelType: 'pbr',
           soffitPanelGauge: '26',
           soffitPanelFinish: 'painted',
           canopies: [],
           partitions: [],
-          linerPanels: [],
+          wallLinerPanels: [],
+          roofLinerPanels: [],
           wainscots: [],
           partialWalls: [],
           wallSkirts: [],
-          frontPolySize: '3',
-          frontPolyColor: 'clear',
-          frontPolyQty: '',
-          backPolySize: '3',
-          backPolyColor: 'clear',
-          backPolyQty: '',
-          leftPolySize: '3',
-          leftPolyColor: 'clear',
-          leftPolyQty: '',
-          rightPolySize: '3',
-          rightPolyColor: 'clear',
-          rightPolyQty: '',
-          backRoofPolySize: '10',
-          backRoofPolyColor: 'clear',
-          backRoofPolyQty: '',
-          frontRoofPolySize: '10',
-          frontRoofPolyColor: 'clear',
-          frontRoofPolyQty: '',
+          wallRelites: [],
+          roofRelites: [],
           openings: {
             front: [],
             back: [],
@@ -403,7 +422,16 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
 
   return (
     <main>
-      <PageHeader session={session} title="Quote Input" isLogOut={false} />
+      <PageHeader
+        session={session}
+        title="Quote Input"
+        subtitle={
+          values.quoteNumber +
+          (values.customerName ? ' - ' + values.customerName : '') +
+          (values.projectName ? ' - ' + values.projectName : '')
+        }
+        isLogOut={false}
+      />
       {/* Sidebar Navigation */}
       {isDesktop && (
         <div>
@@ -442,12 +470,6 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
             >
               Project Information
             </button>
-            {/* <button
-              className={`${activeCard == 'design-code' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('design-code')}
-            >
-              Design Codes
-            </button> */}
             <button
               className={`${activeCard == 'building-project' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('building-project')}
@@ -461,28 +483,34 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               Building {String.fromCharCode(activeBuilding + 65)} - Layout
             </button>
             <button
-              className={`${styles.bldg} ${activeCard == 'bldg-extensions' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('bldg-extensions')}
-            >
-              Building {String.fromCharCode(activeBuilding + 65)} - Extensions
-            </button>
-            <button
               className={`${styles.bldg} ${activeCard == 'bldg-partitions' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-partitions')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Partitions
             </button>
             <button
+              className={`${styles.bldg} ${activeCard == 'bldg-extensions' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('bldg-extensions')}
+            >
+              Building {String.fromCharCode(activeBuilding + 65)} - Roof Options
+            </button>
+            <button
               className={`${styles.bldg} ${activeCard == 'bldg-options' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-options')}
             >
-              Building {String.fromCharCode(activeBuilding + 65)} - Options
+              Building {String.fromCharCode(activeBuilding + 65)} - Wall Options
             </button>
             {/* <button
               className={`${styles.bldg} ${activeCard == 'bldg-cranes' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('bldg-cranes')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Cranes
+            </button> */}
+            {/* <button
+              className={`${styles.bldg} ${activeCard == 'bldg-mezzanines' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('bldg-mezzanines')}
+            >
+              Building {String.fromCharCode(activeBuilding + 65)} - Mezzanines
             </button> */}
             <button
               className={`${styles.bldg} ${activeCard == 'bldg-openings' ? styles.activeCard : ''}`}
@@ -579,12 +607,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                         label="Back Peak Offset:"
                         value={building.backPeakOffset}
                         allowBlankValue={true}
-                        onChange={(e) =>
-                          handleNestedChange(
-                            index,
-                            'backPeakOffset',
-                            e.target.value
-                          )
+                        onChange={(name, value) =>
+                          handleNestedChange(index, 'backPeakOffset', value)
                         }
                         disabled={index != activeBuilding}
                       />
@@ -596,8 +620,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       label="Width:"
                       value={building.width}
                       allowBlankValue={true}
-                      onChange={(e) =>
-                        handleNestedChange(index, 'width', e.target.value)
+                      onChange={(name, value) =>
+                        handleNestedChange(index, 'width', value)
                       }
                       disabled={index != activeBuilding}
                     />
@@ -606,8 +630,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       label="Length:"
                       value={building.length}
                       allowBlankValue={true}
-                      onChange={(e) =>
-                        handleNestedChange(index, 'length', e.target.value)
+                      onChange={(name, value) =>
+                        handleNestedChange(index, 'length', value)
                       }
                       disabled={index != activeBuilding}
                     />
@@ -618,12 +642,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           label="Eave Height:"
                           value={building.backEaveHeight}
                           allowBlankValue={true}
-                          onChange={(e) =>
-                            handleNestedChange(
-                              index,
-                              'backEaveHeight',
-                              e.target.value
-                            )
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'backEaveHeight', value)
                           }
                           disabled={index != activeBuilding}
                         />
@@ -648,12 +668,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           label="Low Eave Height:"
                           value={building.backEaveHeight}
                           allowBlankValue={true}
-                          onChange={(e) =>
-                            handleNestedChange(
-                              index,
-                              'backEaveHeight',
-                              e.target.value
-                            )
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'backEaveHeight', value)
                           }
                           disabled={index != activeBuilding}
                         />
@@ -662,12 +678,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           label="High Eave Height:"
                           value={building.frontEaveHeight}
                           allowBlankValue={true}
-                          onChange={(e) =>
-                            handleNestedChange(
-                              index,
-                              'frontEaveHeight',
-                              e.target.value
-                            )
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'frontEaveHeight', value)
                           }
                           disabled={index != activeBuilding}
                         />
@@ -689,12 +701,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           label="Back Eave Height:"
                           value={building.backEaveHeight}
                           allowBlankValue={true}
-                          onChange={(e) =>
-                            handleNestedChange(
-                              index,
-                              'backEaveHeight',
-                              e.target.value
-                            )
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'backEaveHeight', value)
                           }
                           disabled={index != activeBuilding}
                         />
@@ -703,12 +711,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           label="Front Eave Height:"
                           value={building.frontEaveHeight}
                           allowBlankValue={true}
-                          onChange={(e) =>
-                            handleNestedChange(
-                              index,
-                              'frontEaveHeight',
-                              e.target.value
-                            )
+                          onChange={(name, value) =>
+                            handleNestedChange(index, 'frontEaveHeight', value)
                           }
                           disabled={index != activeBuilding}
                         />
@@ -866,19 +870,6 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
             handleCalcChange={handleCalcChange}
           />
         )}
-        {/* Building Extensions Page */}
-        {activeCard == 'bldg-extensions' && (
-          <>
-            <BuildingRoofOptions
-              values={values}
-              activeBuilding={activeBuilding}
-              handleNestedChange={handleNestedChange}
-              handleCanopyChange={handleCanopyChange}
-              setValues={setValues}
-              isDesktop={isDesktop}
-            />
-          </>
-        )}
         {/* Building Partitions Page */}
         {activeCard == 'bldg-partitions' && (
           <>
@@ -891,6 +882,19 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
             />
           </>
         )}
+        {/* Building Extensions Page */}
+        {activeCard == 'bldg-extensions' && (
+          <>
+            <BuildingRoofOptions
+              values={values}
+              activeBuilding={activeBuilding}
+              handleNestedChange={handleNestedChange}
+              handleRoofReliteChange={handleRoofReliteChange}
+              setValues={setValues}
+              isDesktop={isDesktop}
+            />
+          </>
+        )}
         {/* Building Options Page */}
         {activeCard == 'bldg-options' && (
           <>
@@ -898,10 +902,13 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               values={values}
               activeBuilding={activeBuilding}
               handleNestedChange={handleNestedChange}
-              handleLinerPanelChange={handleLinerPanelChange}
+              handleWallLinerPanelChange={handleWallLinerPanelChange}
+              handleRoofLinerPanelChange={handleRoofLinerPanelChange}
               handleWainscotChange={handleWainscotChange}
               handlePartialWallChange={handlePartialWallChange}
               handleWallSkirtChange={handleWallSkirtChange}
+              handleCanopyChange={handleCanopyChange}
+              handleWallReliteChange={handleWallReliteChange}
               setValues={setValues}
               isDesktop={isDesktop}
             />

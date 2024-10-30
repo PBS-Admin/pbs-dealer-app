@@ -1,45 +1,45 @@
 import { useState, useEffect, Fragment } from 'react';
+import ReusablePanel from '../Inputs/ReusablePanel';
 import ReusableSelect from '../Inputs/ReusableSelect';
 import ReusableInteger from '../Inputs/ReusableInteger';
-import ReusablePanel from '../Inputs/ReusablePanel';
+import ReusableLocation from '../Inputs/ReusableLocation';
 import FeetInchesInput from '../Inputs/FeetInchesInput';
 import RoofPitchInput from '../Inputs/RoofPitchInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { extInsulation, walls } from '../../util/dropdownOptions';
+import {
+  roofs,
+  roofInsulation,
+  polycarbRoofSize,
+  polycarbRoofColor,
+} from '../../util/dropdownOptions';
 
 const BuildingRoofOptions = ({
   values,
   activeBuilding,
   handleNestedChange,
-  handleCanopyChange,
+  handleRoofReliteChange,
   setValues,
 }) => {
-  const [activeCanopy, setActiveCanopy] = useState(0);
+  const [activeRoofRelite, setActiveRoofRelite] = useState(0);
 
-  const addCanopy = (buildingIndex) => {
+  const addRoofRelite = (buildingIndex) => {
     setValues((prev) => ({
       ...prev,
       buildings: prev.buildings.map((building, index) =>
         index === buildingIndex
           ? {
               ...building,
-              canopies: [
-                ...building.canopies,
+              roofRelites: [
+                ...building.roofRelites,
                 {
-                  wall: 'front',
-                  width: '',
-                  slope: '',
-                  startBay: '',
-                  endBay: '',
-                  elevation: '',
-                  addColumns: false,
-                  roofPanelType: 'pbr',
-                  roofPanelGauge: '26',
-                  roofPanelFinish: 'painted',
-                  soffitPanelType: 'pbr',
-                  soffitPanelGauge: '26',
-                  soffitPanelFinish: 'painted',
+                  roof: 'back',
+                  size: '10',
+                  color: 'clear',
+                  qty: '',
+                  location: '',
+                  offset: '',
+                  cutPanels: false,
                 },
               ],
             }
@@ -48,23 +48,25 @@ const BuildingRoofOptions = ({
     }));
   };
 
-  const removeCanopy = (buildingIndex, canopyIndex) => {
+  const removeRoofRelites = (buildingIndex, roofReliteIndex) => {
     setValues((prev) => {
       const newBuildings = prev.buildings.map((building, bIndex) =>
         bIndex === buildingIndex
           ? {
               ...building,
-              canopies: building.canopies.filter(
-                (_, cIndex) => cIndex !== canopyIndex
+              roofRelites: building.roofRelites.filter(
+                (_, wsIndex) => wsIndex !== roofReliteIndex
               ),
             }
           : building
       );
 
-      // Update activeCanopy if necessary
-      const remainingCanopies = newBuildings[buildingIndex].canopies.length;
-      if (canopyIndex <= activeCanopy && activeCanopy > 0) {
-        setActiveCanopy(Math.min(activeCanopy - 1, remainingCanopies - 1));
+      const remainingRoofRelites =
+        newBuildings[buildingIndex].roofRelites.length;
+      if (roofReliteIndex <= activeRoofRelite && activeRoofRelite > 0) {
+        setActiveRoofRelite(
+          Math.min(activeRoofRelite - 1, remainingRoofRelites - 1)
+        );
       }
 
       return { ...prev, buildings: newBuildings };
@@ -73,6 +75,93 @@ const BuildingRoofOptions = ({
 
   return (
     <>
+      {/* Sheeting & Insulation */}
+      <section className="card">
+        <header className="cardHeader">
+          <h3>Sheeting & Insulation</h3>
+        </header>
+
+        <div className="grid2 alignTop">
+          <div className="grid2">
+            <ReusableSelect
+              name={`buildingRoofInsulation-${activeBuilding}`}
+              value={values.buildings[activeBuilding].roofInsulation}
+              onChange={(e) =>
+                handleNestedChange(
+                  activeBuilding,
+                  'roofInsulation',
+                  e.target.value
+                )
+              }
+              options={roofInsulation}
+              label="Roof Insulation:"
+            />
+            <div className="checkboxGroup">
+              <div className="checkRow">
+                <input
+                  type="checkbox"
+                  id={`buildingRoofInsulationOthers-${activeBuilding}`}
+                  name={`buildingRoofInsulationOthers-${activeBuilding}`}
+                  checked={
+                    values.buildings[activeBuilding].roofInsulationOthers
+                  }
+                  onChange={(e) =>
+                    handleNestedChange(
+                      activeBuilding,
+                      'roofInsulationOthers',
+                      e.target.checked
+                    )
+                  }
+                />
+                <label
+                  htmlFor={`buildingRoofInsulationOthers-${activeBuilding}`}
+                >
+                  By Others (Roof Insulation)
+                </label>
+              </div>
+            </div>
+          </div>
+          <div className="divider offOnLaptop"></div>
+          <ReusablePanel
+            name="Roof"
+            valueKey="roof"
+            label="Roof"
+            bldg={activeBuilding}
+            value={values.buildings[activeBuilding]}
+            onChange={(e, keyString) =>
+              handleNestedChange(activeBuilding, keyString, e.target.value)
+            }
+          />
+        </div>
+
+        <div className="divider"></div>
+
+        <h4>Gutters and Downspouts</h4>
+        <div className="grid">
+          <div className="checkboxGroup">
+            <div className="checkRow">
+              <input
+                type="checkbox"
+                id={`buildingIncludeGutters-${activeBuilding}`}
+                name={`buildingIncludeGutters-${activeBuilding}`}
+                checked={values.buildings[activeBuilding].includeGutters}
+                onChange={(e) =>
+                  handleNestedChange(
+                    activeBuilding,
+                    'includeGutters',
+                    e.target.checked
+                  )
+                }
+              />
+              <label htmlFor={`buildingIncludeGutters-${activeBuilding}`}>
+                Include Gutters and Downspouts
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Roof Extensions */}
       <section className="card">
         <header>
           <h3>Roof Extensions</h3>
@@ -84,12 +173,8 @@ const BuildingRoofOptions = ({
               label="Front Sidewall Extension Width:"
               allowBlankValue={true}
               value={values.buildings[activeBuilding].frontExtensionWidth}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'frontExtensionWidth',
-                  e.target.value
-                )
+              onChange={(name, value) =>
+                handleNestedChange(activeBuilding, 'frontExtensionWidth', value)
               }
               allowZero={true}
             />
@@ -143,12 +228,8 @@ const BuildingRoofOptions = ({
               label="Back Sidewall Extension Width:"
               allowBlankValue={true}
               value={values.buildings[activeBuilding].backExtensionWidth}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'backExtensionWidth',
-                  e.target.value
-                )
+              onChange={(name, value) =>
+                handleNestedChange(activeBuilding, 'backExtensionWidth', value)
               }
               allowZero={true}
             />
@@ -201,12 +282,8 @@ const BuildingRoofOptions = ({
             label="Left Endwall Extension Width:"
             allowBlankValue={true}
             value={values.buildings[activeBuilding].leftExtensionWidth}
-            onChange={(e) =>
-              handleNestedChange(
-                activeBuilding,
-                'leftExtensionWidth',
-                e.target.value
-              )
+            onChange={(name, value) =>
+              handleNestedChange(activeBuilding, 'leftExtensionWidth', value)
             }
             allowZero={true}
           />
@@ -215,12 +292,8 @@ const BuildingRoofOptions = ({
             label="Right Endwall Extension Width:"
             allowBlankValue={true}
             value={values.buildings[activeBuilding].rightExtensionWidth}
-            onChange={(e) =>
-              handleNestedChange(
-                activeBuilding,
-                'rightExtensionWidth',
-                e.target.value
-              )
+            onChange={(name, value) =>
+              handleNestedChange(activeBuilding, 'rightExtensionWidth', value)
             }
             allowZero={true}
           />
@@ -228,7 +301,28 @@ const BuildingRoofOptions = ({
         <div className="divider"></div>
 
         <div className="grid2 alignTop">
-          <ReusableSelect
+          <div className="checkboxGroup">
+            <div className="checkRow">
+              <input
+                type="checkbox"
+                id={`buildingExtensionInsulation-${activeBuilding}`}
+                name={`buildingExtensionInsulation-${activeBuilding}`}
+                checked={values.buildings[activeBuilding].extensionInsulation}
+                onChange={(e) =>
+                  handleNestedChange(
+                    activeBuilding,
+                    'extensionInsulation',
+                    e.target.checked
+                  )
+                }
+              />
+              <label htmlFor={`buildingExtensionInsulation-${activeBuilding}`}>
+                Insulation In Extension
+              </label>
+            </div>
+          </div>
+
+          {/* <ReusableSelect
             name={`buildingExtensionInsulation-${activeBuilding}`}
             value={values.buildings[activeBuilding].extensionInsulation}
             onChange={(e) =>
@@ -240,7 +334,7 @@ const BuildingRoofOptions = ({
             }
             options={extInsulation}
             label="Insulation In Extension:"
-          />
+          /> */}
 
           <div className="divider offOnLaptop"></div>
           <ReusablePanel
@@ -256,151 +350,165 @@ const BuildingRoofOptions = ({
         </div>
       </section>
 
+      {/* Point Loads */}
+      {/* <section className="card">
+        <header>
+          <h3>Point Loads</h3>
+        </header>
+      </section> */}
+
+      {/* Roof Relite Options */}
       <section className="card">
         <header>
-          <h3>Canopies</h3>
+          <h3>Roof Relites</h3>
         </header>
-        {values.buildings[activeBuilding].canopies.length > 0 && (
+        {values.buildings[activeBuilding].roofRelites.length > 0 && (
           <div className="onDesktop">
             <div className="tableGrid8">
-              <h5>Wall</h5>
-              <h5>Width</h5>
-              <h5>Slope</h5>
-              <h5>Start Bay</h5>
-              <h5>End Bay</h5>
-              <h5>Elevation</h5>
-              <h5>Add Columns</h5>
+              <h5>Roof</h5>
+              <h5>Size</h5>
+              <h5>Color</h5>
+              <h5>Qty</h5>
+              <h5>Locations</h5>
+              <h5>Offset</h5>
+              <h5>Panel Option</h5>
               <h5></h5>
             </div>
           </div>
         )}
-        {values.buildings[activeBuilding].canopies.map(
-          (canopy, canopyIndex) => (
-            <Fragment key={`building-${activeBuilding}-canopy-${canopyIndex}`}>
+        {values.buildings[activeBuilding].roofRelites.map(
+          (roofRelite, roofReliteIndex) => (
+            <Fragment
+              key={`building-${activeBuilding}-roofRelite-${roofReliteIndex}`}
+            >
               <div
-                className={`tableGrid8 ${canopyIndex == activeCanopy ? 'activeRow' : ''}`}
+                className={`tableGrid8 ${roofReliteIndex == activeRoofRelite ? 'activeRow' : ''}`}
               >
                 <ReusableSelect
-                  name={`building-${activeBuilding}-canopyWall-${canopyIndex}`}
+                  name={`building-${activeBuilding}-roofReliteRoof-${roofReliteIndex}`}
+                  label="Roof:"
                   labelClass="offOnDesktop"
-                  value={canopy.wall}
+                  value={roofRelite.roof}
                   onChange={(e) =>
-                    handleCanopyChange(
+                    handleRoofReliteChange(
                       activeBuilding,
-                      canopyIndex,
-                      'wall',
+                      roofReliteIndex,
+                      'roof',
                       e.target.value
                     )
                   }
                   onFocus={() => {
-                    if (activeCanopy !== canopyIndex) {
-                      setActiveCanopy(canopyIndex);
+                    if (activeRoofRelite !== roofReliteIndex) {
+                      setActiveRoofRelite(roofReliteIndex);
                     }
                   }}
-                  options={walls}
-                  label="Wall:"
+                  options={roofs}
                 />
-                <FeetInchesInput
-                  name={`building-${activeBuilding}-canopyWidth-${canopyIndex}`}
-                  label="Width:"
+                <ReusableSelect
+                  name={`building-${activeBuilding}-roofReliteSize-${roofReliteIndex}`}
+                  label="Size:"
                   labelClass="offOnDesktop"
-                  value={canopy.width}
+                  value={roofRelite.size}
+                  onChange={(e) =>
+                    handleRoofReliteChange(
+                      activeBuilding,
+                      roofReliteIndex,
+                      'size',
+                      e.target.value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeRoofRelite !== roofReliteIndex) {
+                      setActiveRoofRelite(roofReliteIndex);
+                    }
+                  }}
+                  options={polycarbRoofSize}
+                />
+                <ReusableSelect
+                  name={`building-${activeBuilding}-roofReliteColor-${roofReliteIndex}`}
+                  label="Color:"
+                  labelClass="offOnDesktop"
+                  value={roofRelite.color}
+                  onChange={(e) =>
+                    handleRoofReliteChange(
+                      activeBuilding,
+                      roofReliteIndex,
+                      'color',
+                      e.target.value
+                    )
+                  }
+                  onFocus={() => {
+                    if (activeRoofRelite !== roofReliteIndex) {
+                      setActiveRoofRelite(roofReliteIndex);
+                    }
+                  }}
+                  options={polycarbRoofColor}
+                />
+                <ReusableInteger
+                  name={`building-${activeBuilding}-roofReliteQty-${roofReliteIndex}`}
+                  value={roofRelite.qty}
+                  min={1}
+                  max={Math.floor(
+                    Math.floor(values.buildings[activeBuilding].length / 3) / 2
+                  )}
+                  negative={false}
                   allowBlankValue={true}
+                  label="Qty:"
+                  labelClass="offOnDesktop"
                   onChange={(e) =>
-                    handleCanopyChange(
+                    handleRoofReliteChange(
                       activeBuilding,
-                      canopyIndex,
-                      'width',
+                      roofReliteIndex,
+                      'qty',
                       e.target.value
                     )
                   }
                   onFocus={() => {
-                    if (activeCanopy !== canopyIndex) {
-                      setActiveCanopy(canopyIndex);
+                    if (activeRoofRelite !== roofReliteIndex) {
+                      setActiveRoofRelite(roofReliteIndex);
                     }
                   }}
+                  placeholder="Qty"
                 />
-                <RoofPitchInput
-                  name={`building-${activeBuilding}-canopySlope-${canopyIndex}`}
-                  label="Slope:"
+                <ReusableLocation
+                  name={`building-${activeBuilding}-roofReliteLocation-${roofReliteIndex}`}
+                  label="Locations:"
                   labelClass="offOnDesktop"
-                  value={canopy.slope}
+                  value={roofRelite.location}
                   onChange={(name, value) =>
-                    handleCanopyChange(
+                    handleRoofReliteChange(
                       activeBuilding,
-                      canopyIndex,
-                      'slope',
+                      roofReliteIndex,
+                      'location',
                       value
                     )
                   }
                   onFocus={() => {
-                    if (activeCanopy !== canopyIndex) {
-                      setActiveCanopy(canopyIndex);
+                    if (activeRoofRelite !== roofReliteIndex) {
+                      setActiveRoofRelite(roofReliteIndex);
                     }
                   }}
-                />
-                <ReusableInteger
-                  name={`building-${activeBuilding}-canopyStartBay-${canopyIndex}`}
-                  value={canopy.startBay}
-                  min={1}
-                  negative={false}
-                  allowBlankValue={true}
-                  label="Start Bay:"
-                  labelClass="offOnDesktop"
-                  onChange={(e) =>
-                    handleCanopyChange(
-                      activeBuilding,
-                      canopyIndex,
-                      'startBay',
-                      e.target.value
-                    )
-                  }
-                  onFocus={() => {
-                    if (activeCanopy !== canopyIndex) {
-                      setActiveCanopy(canopyIndex);
-                    }
-                  }}
-                  placeholder="Bay#"
-                />
-                <ReusableInteger
-                  name={`building-${activeBuilding}-canopyEndBay-${canopyIndex}`}
-                  value={canopy.endBay}
-                  negative={false}
-                  allowBlankValue={true}
-                  label="End Bay:"
-                  labelClass="offOnDesktop"
-                  onChange={(e) =>
-                    handleCanopyChange(
-                      activeBuilding,
-                      canopyIndex,
-                      'endBay',
-                      e.target.value
-                    )
-                  }
-                  onFocus={() => {
-                    if (activeCanopy !== canopyIndex) {
-                      setActiveCanopy(canopyIndex);
-                    }
-                  }}
-                  placeholder="Bay#"
+                  compareLabel="building length"
+                  compareValue={values.buildings[activeBuilding].length}
+                  placeholder=""
                 />
                 <FeetInchesInput
-                  name={`building-${activeBuilding}-canopyElevation-${canopyIndex}`}
-                  label="Elevation:"
+                  name={`building-${activeBuilding}-roofReliteOffset-${roofReliteIndex}`}
+                  label="Offset:"
                   labelClass="offOnDesktop"
-                  value={canopy.elevation}
+                  value={roofRelite.offset}
                   allowBlankValue={true}
-                  onChange={(e) =>
-                    handleCanopyChange(
+                  onChange={(name, value) =>
+                    handleRoofReliteChange(
                       activeBuilding,
-                      canopyIndex,
-                      'elevation',
-                      e.target.value
+                      roofReliteIndex,
+                      'offset',
+                      value
                     )
                   }
                   onFocus={() => {
-                    if (activeCanopy !== canopyIndex) {
-                      setActiveCanopy(canopyIndex);
+                    if (activeRoofRelite !== roofReliteIndex) {
+                      setActiveRoofRelite(roofReliteIndex);
                     }
                   }}
                 />
@@ -408,111 +516,52 @@ const BuildingRoofOptions = ({
                   <div className="checkRow">
                     <input
                       type="checkbox"
-                      id={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
-                      name={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
-                      checked={canopy.addColumns}
+                      id={`building-${activeBuilding}-roofReliteCutPanels-${roofReliteIndex}`}
+                      name={`building-${activeBuilding}-roofReliteCutPanels-${roofReliteIndex}`}
+                      checked={roofRelite.cutPanels}
                       onChange={(e) =>
-                        handleCanopyChange(
+                        handleRoofReliteChange(
                           activeBuilding,
-                          canopyIndex,
-                          'addColumns',
+                          roofReliteIndex,
+                          'cutPanels',
                           e.target.checked
                         )
                       }
-                      onFocus={() => {
-                        if (activeCanopy !== canopyIndex) {
-                          setActiveCanopy(canopyIndex);
-                        }
-                      }}
                     />
                     <label
-                      htmlFor={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
+                      htmlFor={`building-${activeBuilding}-roofReliteCutPanels-${roofReliteIndex}`}
                     >
-                      Add Columns
+                      Cut Panels
                     </label>
                   </div>
                 </div>
                 <button
                   type="button"
                   className="icon reject deleteRow"
-                  onClick={() => removeCanopy(activeBuilding, canopyIndex)}
+                  onClick={() =>
+                    removeRoofRelites(activeBuilding, roofReliteIndex)
+                  }
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </div>
-              <div className="divider offOnDesktop"></div>
+              {roofReliteIndex + 1 <
+                values.buildings[activeBuilding].roofRelites.length && (
+                <div className="divider offOnTablet"></div>
+              )}
             </Fragment>
           )
         )}
-
-        {values.buildings[activeBuilding].canopies.length > 0 && (
-          <>
-            <div className="divider onDesktop"></div>
-            <div className="grid2 alignTop">
-              <ReusablePanel
-                name="CanopyRoof"
-                valueKey="roof"
-                label="Roof"
-                bldg={activeBuilding}
-                idx={activeCanopy}
-                value={values.buildings[activeBuilding].canopies[activeCanopy]}
-                onChange={(e, keyString) =>
-                  handleCanopyChange(
-                    activeBuilding,
-                    activeCanopy,
-                    keyString,
-                    e.target.value
-                  )
-                }
-              />
-              <div className="divider offOnLaptop"></div>
-              <ReusablePanel
-                name="CanopySoffit"
-                valueKey="soffit"
-                label="Soffit"
-                bldg={activeBuilding}
-                idx={activeCanopy}
-                value={values.buildings[activeBuilding].canopies[activeCanopy]}
-                onChange={(e, keyString) =>
-                  handleCanopyChange(
-                    activeBuilding,
-                    activeCanopy,
-                    keyString,
-                    e.target.value
-                  )
-                }
-              />
-            </div>
-          </>
-        )}
-
         <div className="divider"></div>
         <div className="buttonFooter">
           <button
             type="button"
             className="addButton"
-            onClick={() => addCanopy(activeBuilding)}
+            onClick={() => addRoofRelite(activeBuilding)}
           >
             <FontAwesomeIcon icon={faPlus} />
           </button>
         </div>
-      </section>
-
-      <section className="card">
-        <header>
-          <h3>Facia</h3>
-        </header>
-      </section>
-
-      <section className="card">
-        <header>
-          <h3>Parapet Walls</h3>
-        </header>
-      </section>
-      <section className="card">
-        <header>
-          <h3>Bumpouts</h3>
-        </header>
       </section>
     </>
   );
