@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { extInsulation, walls } from '../../util/dropdownOptions';
 
-const BuildingExtensions = ({
+const BuildingRoofOptions = ({
   values,
   activeBuilding,
   handleNestedChange,
@@ -518,4 +518,4 @@ const BuildingExtensions = ({
   );
 };
 
-export default BuildingExtensions;
+export default BuildingRoofOptions;

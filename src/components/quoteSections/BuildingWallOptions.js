@@ -15,7 +15,7 @@ import {
   polycarbRoofColor,
 } from '../../util/dropdownOptions';
 
-const BuildingOptions = ({
+const BuildingWallOptions = ({
   values,
   activeBuilding,
   handleNestedChange,
@@ -1452,4 +1452,4 @@ const BuildingOptions = ({
   );
 };
 
-export default BuildingOptions;
+export default BuildingWallOptions;

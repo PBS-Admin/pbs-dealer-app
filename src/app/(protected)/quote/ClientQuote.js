@@ -23,8 +23,8 @@ import { initialState } from './_initialState';
 // Quote Form Section
 import ProjectInformation from '../../../components/quoteSections/ProjectInformation';
 import BuildingLayout from '../../../components/quoteSections/BuildingLayout';
-import BuildingOptions from '../../../components/quoteSections/BuildingOptions';
-import BuildingExtensions from '../../../components/quoteSections/BuildingExtensions';
+import BuildingWallOptions from '../../../components/quoteSections/BuildingWallOptions';
+import BuildingRoofOptions from '../../../components/quoteSections/BuildingRoofOptions';
 import BuildingPartitions from '../../../components/quoteSections/BuildingPartitions';
 import BuildingOpenings from '../../../components/quoteSections/BuildingOpenings';
 import FinalizeQuote from '../../../components/quoteSections/FinalizeQuote';
@@ -869,7 +869,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         {/* Building Extensions Page */}
         {activeCard == 'bldg-extensions' && (
           <>
-            <BuildingExtensions
+            <BuildingRoofOptions
               values={values}
               activeBuilding={activeBuilding}
               handleNestedChange={handleNestedChange}
@@ -894,7 +894,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         {/* Building Options Page */}
         {activeCard == 'bldg-options' && (
           <>
-            <BuildingOptions
+            <BuildingWallOptions
               values={values}
               activeBuilding={activeBuilding}
               handleNestedChange={handleNestedChange}
