@@ -15,7 +15,6 @@ function useFormState(initialState) {
   } = useWind();
 
   const handleChange = (e) => {
-    console.log('in handleChange: ', e);
     const { name, value, type, checked } = e.target;
 
     setValues((prev) => {
@@ -358,7 +357,7 @@ function useFormState(initialState) {
     buildingIndex,
     partialWallIndex,
     field,
-    value
+    value = ''
   ) => {
     setValues((prev) => ({
       ...prev,
@@ -381,7 +380,7 @@ function useFormState(initialState) {
     buildingIndex,
     wallSkirtIndex,
     field,
-    value
+    value = ''
   ) => {
     setValues((prev) => ({
       ...prev,
@@ -405,7 +404,7 @@ function useFormState(initialState) {
     wall,
     openingIndex,
     field,
-    value
+    value = ''
   ) => {
     setValues((prev) => ({
       ...prev,

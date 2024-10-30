@@ -1,4 +1,4 @@
-import { React, useState, Fragment } from 'react';
+import { React, useState, Fragment, useEffect } from 'react';
 import ReusableSelect from '../Inputs/ReusableSelect';
 import ReusablePanel from '../Inputs/ReusablePanel';
 import ReusableInteger from '../Inputs/ReusableInteger';
@@ -30,6 +30,28 @@ const BuildingOptions = ({
   const [activeWainscot, setActiveWainscot] = useState(0);
   const [activePartialWall, setActivePartialWall] = useState(0);
   const [activeWallSkirt, setActiveWallSkirt] = useState(0);
+
+  // useEffect(() => {
+  //   // If wall type changes to non-left/right, ensure cutColumns is false
+  //   const updatedWallSkirts = values.buildings[activeBuilding].wallSkirts.map(
+  //     (wallSkirt) => {
+  //       if (
+  //         wallSkirt.wall !== 'left' &&
+  //         wallSkirt.wall !== 'right' &&
+  //         wallSkirt.cutColumns
+  //       ) {
+  //         return { ...wallSkirt, cutColumns: false };
+  //       }
+  //       return wallSkirt;
+  //     }
+  //   );
+
+  //   if (JSON.stringify(updatedWallSkirts) !== JSON.stringify(wallSkirts)) {
+  //     setWallSkirts(updatedWallSkirts);
+  //   }
+  // }, [
+  //   values.buildings[activeBuilding].wallSkirts.map((w) => w.wall).join(','),
+  // ]);
 
   const addLinerPanel = (buildingIndex) => {
     setValues((prev) => ({
@@ -292,12 +314,12 @@ const BuildingOptions = ({
                   value={linerPanel.start}
                   allowBlankValue={true}
                   allowZero={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleLinerPanelChange(
                       activeBuilding,
                       linerPanelIndex,
                       'start',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -318,12 +340,12 @@ const BuildingOptions = ({
                   labelClass="offOnTablet"
                   value={linerPanel.end}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleLinerPanelChange(
                       activeBuilding,
                       linerPanelIndex,
                       'end',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -338,12 +360,12 @@ const BuildingOptions = ({
                   labelClass="offOnTablet"
                   value={linerPanel.height}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleLinerPanelChange(
                       activeBuilding,
                       linerPanelIndex,
                       'height',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -469,12 +491,12 @@ const BuildingOptions = ({
                   value={wainscot.start}
                   allowBlankValue={true}
                   allowZero={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleWainscotChange(
                       activeBuilding,
                       wainscotIndex,
                       'start',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -495,12 +517,12 @@ const BuildingOptions = ({
                   labelClass="offOnTablet"
                   value={wainscot.end}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleWainscotChange(
                       activeBuilding,
                       wainscotIndex,
                       'end',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -515,12 +537,12 @@ const BuildingOptions = ({
                   labelClass="offOnTablet"
                   value={wainscot.height}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleWainscotChange(
                       activeBuilding,
                       wainscotIndex,
                       'height',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -663,12 +685,12 @@ const BuildingOptions = ({
                   value={partialWall.start}
                   allowBlankValue={true}
                   allowZero={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handlePartialWallChange(
                       activeBuilding,
                       partialWallIndex,
                       'start',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -689,12 +711,12 @@ const BuildingOptions = ({
                   labelClass="offOnTablet"
                   value={partialWall.end}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handlePartialWallChange(
                       activeBuilding,
                       partialWallIndex,
                       'end',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -709,12 +731,12 @@ const BuildingOptions = ({
                   labelClass="offOnTablet"
                   value={partialWall.height}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handlePartialWallChange(
                       activeBuilding,
                       partialWallIndex,
                       'height',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -821,46 +843,51 @@ const BuildingOptions = ({
                   options={walls}
                   label="Wall:"
                 />
-                <FeetInchesInput
+                <ReusableInteger
                   name={`building-${activeBuilding}-wallSkirtStartBay-${wallSkirtIndex}`}
+                  value={wallSkirt.startBay}
                   label="Start Bay:"
                   labelClass="offOnTablet"
-                  value={wallSkirt.startBay}
+                  min="1"
+                  max={`${values.buildings[`${activeBuilding}`][`${wallSkirt.wall}BaySpacing`].length}`}
                   allowBlankValue={true}
-                  allowZero={true}
-                  onChange={(name, value) =>
+                  onChange={(e) => {
                     handleWallSkirtChange(
                       activeBuilding,
                       wallSkirtIndex,
                       'startBay',
-                      value
-                    )
-                  }
+                      e.target.value
+                    );
+                  }}
                   onFocus={() => {
                     if (activeWallSkirt !== wallSkirtIndex) {
                       setActiveWallSkirt(wallSkirtIndex);
                     }
                   }}
+                  placeholder="Bay"
                 />
-                <FeetInchesInput
+                <ReusableInteger
                   name={`building-${activeBuilding}-wallSkirtEndBay-${wallSkirtIndex}`}
+                  value={wallSkirt.endBay}
                   label="End Bay:"
                   labelClass="offOnTablet"
-                  value={wallSkirt.endBay}
+                  min="1"
+                  max={`${values.buildings[`${activeBuilding}`][`${wallSkirt.wall}BaySpacing`].length}`}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) => {
                     handleWallSkirtChange(
                       activeBuilding,
                       wallSkirtIndex,
                       'endBay',
-                      value
-                    )
-                  }
+                      e.target.value
+                    );
+                  }}
                   onFocus={() => {
                     if (activeWallSkirt !== wallSkirtIndex) {
                       setActiveWallSkirt(wallSkirtIndex);
                     }
                   }}
+                  placeholder="Bay"
                 />
                 <FeetInchesInput
                   name={`building-${activeBuilding}-wallSkirtHeight-${wallSkirtIndex}`}
@@ -868,12 +895,12 @@ const BuildingOptions = ({
                   labelClass="offOnTablet"
                   value={wallSkirt.height}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleWallSkirtChange(
                       activeBuilding,
                       wallSkirtIndex,
                       'height',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -888,7 +915,14 @@ const BuildingOptions = ({
                       type="checkbox"
                       id={`building-${activeBuilding}-wallSkirtCutColumns-${wallSkirtIndex}`}
                       name={`building-${activeBuilding}-wallSkirtCutColumns-${wallSkirtIndex}`}
-                      checked={wallSkirt.cutColumns}
+                      disabled={
+                        wallSkirt.wall != 'left' && wallSkirt.wall != 'right'
+                      }
+                      checked={
+                        (wallSkirt.wall == 'left' ||
+                          wallSkirt.wall == 'right') &&
+                        wallSkirt.cutColumns
+                      }
                       onChange={(e) =>
                         handleWallSkirtChange(
                           activeBuilding,

@@ -164,12 +164,12 @@ const BuildingPartitions = ({
                   value={partition.start}
                   allowBlankValue={true}
                   allowZero={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handlePartitionChange(
                       activeBuilding,
                       partitionIndex,
                       'start',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -188,12 +188,12 @@ const BuildingPartitions = ({
                   labelClass="offOnDesktop"
                   value={partition.end}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handlePartitionChange(
                       activeBuilding,
                       partitionIndex,
                       'end',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -213,12 +213,12 @@ const BuildingPartitions = ({
                   value={partition.offset}
                   allowBlankValue={true}
                   allowZero={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handlePartitionChange(
                       activeBuilding,
                       partitionIndex,
                       'offset',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -233,12 +233,12 @@ const BuildingPartitions = ({
                   labelClass="offOnDesktop"
                   value={partition.height}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handlePartitionChange(
                       activeBuilding,
                       partitionIndex,
                       'height',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {

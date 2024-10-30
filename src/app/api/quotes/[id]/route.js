@@ -11,8 +11,6 @@ export async function DELETE(req, { params }) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  console.log('Received delete request for quote ID:', id);
-
   try {
     const result = await query(
       'UPDATE Dealer_Quotes SET Active = 0 WHERE ID = ?',

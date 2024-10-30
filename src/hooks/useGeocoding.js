@@ -32,6 +32,7 @@ const useGeocoding = () => {
         state: data.adminArea3,
         county: data.adminArea4.replace(' County', ''),
         elevation: data.elevation,
+        mileage: data.mileage,
       });
     } catch (error) {
       setError(error.message);

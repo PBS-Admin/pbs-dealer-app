@@ -84,8 +84,12 @@ const BuildingExtensions = ({
               label="Front Sidewall Extension Width:"
               allowBlankValue={true}
               value={values.buildings[activeBuilding].frontExtensionWidth}
-              onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'frontExtensionWidth', value)
+              onChange={(e) =>
+                handleNestedChange(
+                  activeBuilding,
+                  'frontExtensionWidth',
+                  e.target.value
+                )
               }
               allowZero={true}
             />
@@ -139,8 +143,12 @@ const BuildingExtensions = ({
               label="Back Sidewall Extension Width:"
               allowBlankValue={true}
               value={values.buildings[activeBuilding].backExtensionWidth}
-              onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'backExtensionWidth', value)
+              onChange={(e) =>
+                handleNestedChange(
+                  activeBuilding,
+                  'backExtensionWidth',
+                  e.target.value
+                )
               }
               allowZero={true}
             />
@@ -193,8 +201,12 @@ const BuildingExtensions = ({
             label="Left Endwall Extension Width:"
             allowBlankValue={true}
             value={values.buildings[activeBuilding].leftExtensionWidth}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'leftExtensionWidth', value)
+            onChange={(e) =>
+              handleNestedChange(
+                activeBuilding,
+                'leftExtensionWidth',
+                e.target.value
+              )
             }
             allowZero={true}
           />
@@ -203,8 +215,12 @@ const BuildingExtensions = ({
             label="Right Endwall Extension Width:"
             allowBlankValue={true}
             value={values.buildings[activeBuilding].rightExtensionWidth}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'rightExtensionWidth', value)
+            onChange={(e) =>
+              handleNestedChange(
+                activeBuilding,
+                'rightExtensionWidth',
+                e.target.value
+              )
             }
             allowZero={true}
           />
@@ -290,12 +306,12 @@ const BuildingExtensions = ({
                   labelClass="offOnDesktop"
                   value={canopy.width}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleCanopyChange(
                       activeBuilding,
                       canopyIndex,
                       'width',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -374,12 +390,12 @@ const BuildingExtensions = ({
                   labelClass="offOnDesktop"
                   value={canopy.elevation}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleCanopyChange(
                       activeBuilding,
                       canopyIndex,
                       'elevation',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {

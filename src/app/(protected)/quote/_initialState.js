@@ -18,6 +18,7 @@ export const initialState = {
   projectState: '',
   projectZip: '',
   projectCounty: '',
+  projectMileage: '',
   buildingUse: '',
   projectLatitude: '',
   projectLongitude: '',
@@ -99,7 +100,7 @@ export const initialState = {
   otherBulkStorage: false,
   otherLoadsByOthers: false,
   // Building Project Page
-  steelFinish: '',
+  steelFinish: 'GZ',
   boltFinish: '',
   buildings: [
     {
@@ -145,7 +146,7 @@ export const initialState = {
       leftBracingHeight: '',
       rightBracingType: 'xBrace',
       rightBracingHeight: '',
-      interiorBracingType: 'xBrace',
+      interiorBracingType: 'none',
       interiorBracingHeight: '',
       frontBracedBays: '',
       backBracedBays: '',

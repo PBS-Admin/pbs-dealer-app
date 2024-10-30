@@ -52,9 +52,6 @@ function useValidation(initialFormValues, setFormValues) {
 
   const autoResolveFields = useCallback(
     async (autoFillRules) => {
-      console.log('autoFillRules:', autoFillRules); // Check structure
-      console.log('initialFormValues:', initialFormValues);
-
       let updatedValues = { ...initialFormValues };
       let autoFilledChanges = { buildings: [] };
       let hasChanges = false;

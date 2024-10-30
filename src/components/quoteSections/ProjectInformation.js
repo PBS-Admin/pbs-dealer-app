@@ -168,6 +168,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
         projectLongitude: locationData.lng,
         projectCounty: locationData.county,
         projectElevation: locationData.elevation,
+        projectMileage: locationData.mileage,
       }));
     }
   }, [locationData, setValues]);
