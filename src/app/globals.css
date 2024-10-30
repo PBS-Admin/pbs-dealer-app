@@ -245,6 +245,10 @@ p {
   text-align: right !important;
 }
 
+.openWallNote {
+  margin: 0.25em auto 0 auto !important;
+}
+
 .cardInput {
   display: flex;
   flex-flow: column nowrap;
@@ -452,6 +456,39 @@ select option:disabled {
   background-color: var(--background-disabled);
   border: 1px solid var(--light-gray);
   border-radius: 4px;
+}
+
+.error {
+  border-color: var(--red) !important;
+  outline: 1px solid var(--red) !important;
+}
+
+.errorMsg {
+  position: relative;
+  margin-top: -4px;
+}
+
+.errorMsg p {
+  position: absolute;
+  top: 8px;
+  font-size: 0.8em;
+  border: 1px solid var(--light-red);
+  border-radius: 0.5em;
+  background-color: var(--light-red);
+  padding: 0.5em;
+  z-index: 99;
+  /* box-shadow: var(--dark-gray) 2px 2px 3px; */
+}
+
+.errorMsg p::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -8px;
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent transparent var(--light-red) transparent;
 }
 
 /* Global Button Classes */
@@ -1066,7 +1103,7 @@ button.nuetral:hover {
   }
 
   .grid4:has(.panelGrid) {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(40px, 1fr);
   }
 
   .grid4 .span2,
@@ -1075,7 +1112,8 @@ button.nuetral:hover {
   }
 
   .grid4 .divider.span2,
-  .grid4 .divider.span3 {
+  .grid4 .divider.span3,
+  .grid4 .divider.span4 {
     grid-column: span 2;
   }
 
@@ -1296,6 +1334,10 @@ button.nuetral:hover {
 
   .grid4 .span3 {
     grid-column: span 3;
+  }
+
+  .grid4 .divider.span4 {
+    grid-column: span 4;
   }
 }
 

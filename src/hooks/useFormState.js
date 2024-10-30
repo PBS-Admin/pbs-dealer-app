@@ -313,9 +313,9 @@ function useFormState(initialState) {
     }));
   };
 
-  const handleLinerPanelChange = (
+  const handleWallLinerPanelChange = (
     buildingIndex,
-    linerPanelIndex,
+    wallLinerPanelIndex,
     field,
     value
   ) => {
@@ -325,10 +325,35 @@ function useFormState(initialState) {
         bIndex === buildingIndex
           ? {
               ...building,
-              linerPanels: building.linerPanels.map((linerPanel, lpIndex) =>
-                lpIndex === linerPanelIndex
-                  ? { ...linerPanel, [field]: value }
-                  : linerPanel
+              wallLinerPanels: building.wallLinerPanels.map(
+                (wallLinerPanel, lpIndex) =>
+                  lpIndex === wallLinerPanelIndex
+                    ? { ...wallLinerPanel, [field]: value }
+                    : wallLinerPanel
+              ),
+            }
+          : building
+      ),
+    }));
+  };
+
+  const handleRoofLinerPanelChange = (
+    buildingIndex,
+    roofLinerPanelIndex,
+    field,
+    value
+  ) => {
+    setValues((prev) => ({
+      ...prev,
+      buildings: prev.buildings.map((building, bIndex) =>
+        bIndex === buildingIndex
+          ? {
+              ...building,
+              roofLinerPanels: building.roofLinerPanels.map(
+                (roofLinerPanel, lpIndex) =>
+                  lpIndex === roofLinerPanelIndex
+                    ? { ...roofLinerPanel, [field]: value }
+                    : roofLinerPanel
               ),
             }
           : building
@@ -393,6 +418,52 @@ function useFormState(initialState) {
                 wsIndex === wallSkirtIndex
                   ? { ...wallSkirt, [field]: value }
                   : wallSkirt
+              ),
+            }
+          : building
+      ),
+    }));
+  };
+
+  const handleWallReliteChange = (
+    buildingIndex,
+    wallReliteIndex,
+    field,
+    value
+  ) => {
+    setValues((prev) => ({
+      ...prev,
+      buildings: prev.buildings.map((building, bIndex) =>
+        bIndex === buildingIndex
+          ? {
+              ...building,
+              wallRelites: building.wallRelites.map((wallRelite, wsIndex) =>
+                wsIndex === wallReliteIndex
+                  ? { ...wallRelite, [field]: value }
+                  : wallRelite
+              ),
+            }
+          : building
+      ),
+    }));
+  };
+
+  const handleRoofReliteChange = (
+    buildingIndex,
+    roofReliteIndex,
+    field,
+    value
+  ) => {
+    setValues((prev) => ({
+      ...prev,
+      buildings: prev.buildings.map((building, bIndex) =>
+        bIndex === buildingIndex
+          ? {
+              ...building,
+              roofRelites: building.roofRelites.map((roofRelite, wsIndex) =>
+                wsIndex === roofReliteIndex
+                  ? { ...roofRelite, [field]: value }
+                  : roofRelite
               ),
             }
           : building
@@ -525,10 +596,13 @@ function useFormState(initialState) {
     handleNestedChange,
     handleCanopyChange,
     handlePartitionChange,
-    handleLinerPanelChange,
+    handleWallLinerPanelChange,
+    handleRoofLinerPanelChange,
     handleWainscotChange,
     handlePartialWallChange,
     handleWallSkirtChange,
+    handleWallReliteChange,
+    handleRoofReliteChange,
     handleMandoorChange,
     handleOpeningChange,
     handleCalcChange,

@@ -246,16 +246,41 @@ export const hangarDoorInsulation = [
   { id: 'vrr4', label: '4" VRR (R-13)' },
 ];
 
-export const extInsulation = [
-  { id: 'none', label: 'None' },
-  { id: 'extend', label: 'Extend Roof Insulation at Extensions' },
-];
-
 export const walls = [
   { id: 'front', label: 'Front Sidewall' },
   { id: 'back', label: 'Back Sidewall' },
   { id: 'left', label: 'Left Endwall' },
   { id: 'right', label: 'Right Endwall' },
+];
+
+export const wallsOuterLeft = [
+  { id: 'front', label: 'Front Sidewall' },
+  { id: 'back', label: 'Back Sidewall' },
+  { id: 'outerLeft', label: 'Outer Left Endwall' },
+  { id: 'left', label: 'Left Endwall' },
+  { id: 'right', label: 'Right Endwall' },
+];
+
+export const wallsOuterRight = [
+  { id: 'front', label: 'Front Sidewall' },
+  { id: 'back', label: 'Back Sidewall' },
+  { id: 'left', label: 'Left Endwall' },
+  { id: 'right', label: 'Right Endwall' },
+  { id: 'outerRight', label: 'Outer Right Endwall' },
+];
+
+export const wallsOuterBoth = [
+  { id: 'front', label: 'Front Sidewall' },
+  { id: 'back', label: 'Back Sidewall' },
+  { id: 'outerLeft', label: 'Outer Left Endwall' },
+  { id: 'left', label: 'Left Endwall' },
+  { id: 'right', label: 'Right Endwall' },
+  { id: 'outerRight', label: 'Outer Right Endwall' },
+];
+
+export const roofs = [
+  { id: 'back', label: 'Back Roof' },
+  { id: 'front', label: 'Front Roof' },
 ];
 
 export const orientations = [

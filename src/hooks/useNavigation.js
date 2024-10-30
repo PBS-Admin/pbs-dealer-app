@@ -6,7 +6,6 @@ const useNavigation = (activeBuilding, initialIndex = 0) => {
       id: 'quote-info',
       label: 'Project Information',
     },
-    // { id: 'design-code', label: 'Design Codes' },
     {
       id: 'building-project',
       label: 'Building Project',
@@ -17,13 +16,6 @@ const useNavigation = (activeBuilding, initialIndex = 0) => {
         'Building ' + String.fromCharCode(activeBuilding + 65) + ' - Layout',
     },
     {
-      id: 'bldg-extensions',
-      label:
-        'Building ' +
-        String.fromCharCode(activeBuilding + 65) +
-        ' - Extensions',
-    },
-    {
       id: 'bldg-partitions',
       label:
         'Building ' +
@@ -31,13 +23,26 @@ const useNavigation = (activeBuilding, initialIndex = 0) => {
         ' - Partitions',
     },
     {
+      id: 'bldg-extensions',
+      label:
+        'Building ' +
+        String.fromCharCode(activeBuilding + 65) +
+        ' - Roof Options',
+    },
+    {
       id: 'bldg-options',
       label:
-        'Building ' + String.fromCharCode(activeBuilding + 65) + ' - Options',
+        'Building ' +
+        String.fromCharCode(activeBuilding + 65) +
+        ' - Wall Options',
     },
     // {
     //   id: 'bldg-cranes',
     //   label: 'Building ' + String.fromCharCode(activeBuilding + 65) + ' - Cranes',
+    // },
+    // {
+    //   id: 'bldg-mezzanines',
+    //   label: 'Building ' + String.fromCharCode(activeBuilding + 65) + ' - Mezzanines',
     // },
     {
       id: 'bldg-openings',
