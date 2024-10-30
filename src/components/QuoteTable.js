@@ -100,7 +100,6 @@ export default function QuoteTable({
         });
 
         if (response.ok) {
-          console.log('Response was ok');
           const data = await response.json();
 
           if (isNaN(data.message.quoteId)) {

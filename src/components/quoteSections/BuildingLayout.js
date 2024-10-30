@@ -405,11 +405,11 @@ const BuildingLayout = ({
                   name={`buildingfrontBracingHeight-${activeBuilding}`}
                   label="Height of Portal Frame:"
                   value={values.buildings[activeBuilding].frontBracingHeight}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
                       'frontBracingHeight',
-                      value
+                      e.target.value
                     )
                   }
                 />
@@ -437,11 +437,11 @@ const BuildingLayout = ({
                   name={`buildingbackBracingHeight-${activeBuilding}`}
                   label="Height of Portal Frame:"
                   value={values.buildings[activeBuilding].backBracingHeight}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
                       'backBracingHeight',
-                      value
+                      e.target.value
                     )
                   }
                 />
@@ -517,11 +517,11 @@ const BuildingLayout = ({
                     value={
                       values.buildings[activeBuilding].interiorBracingHeight
                     }
-                    onChange={(name, value) =>
+                    onChange={(e) =>
                       handleNestedChange(
                         activeBuilding,
                         'interiorBracingHeight',
-                        value
+                        e.target.value
                       )
                     }
                   />

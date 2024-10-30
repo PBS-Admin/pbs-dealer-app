@@ -11,7 +11,6 @@ const CopyBuildingDialog = ({
 
   return (
     <div className="dialog-overlay">
-      {console.log(sourceBuildingIndex)}
       <div className="dialog-content">
         <div className="dialog-title">
           <h4>Copy Building {String.fromCharCode(sourceBuildingIndex + 65)}</h4>

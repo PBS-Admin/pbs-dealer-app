@@ -9,7 +9,6 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import styles from './page.module.css';
 
 export default function Register() {
-  console.log('Register component rendered');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');

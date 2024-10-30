@@ -28,7 +28,7 @@ const BuildingOpenings = ({
                   ...(building.openings[wall] || []),
                   {
                     bay: '',
-                    openType: '',
+                    openType: 'overhead',
                     width: '',
                     height: '',
                     sill: '',
@@ -131,17 +131,17 @@ const BuildingOpenings = ({
           label="Bay:"
           labelClass="offOnTablet"
           min="1"
-          // max={`${values.buildings[`${activeBuilding}`][`${activeWallKey}BaySpacing`].length}`}
+          max={`${values.buildings[`${activeBuilding}`][`${activeWallKey}BaySpacing`].length}`}
           allowBlankValue={true}
-          onChange={(name, value) =>
+          onChange={(e) => {
             handleOpeningChange(
               activeBuilding,
               activeWallKey,
               openingIndex,
               'bay',
-              value
-            )
-          }
+              e.target.value
+            );
+          }}
           onFocus={() => {
             if (activeOpening !== openingIndex) {
               setActiveOpening(openingIndex);
@@ -156,6 +156,7 @@ const BuildingOpenings = ({
           labelClass="offOnTablet"
           onChange={(e) =>
             handleOpeningChange(
+              activeBuilding,
               activeWallKey,
               openingIndex,
               'openType',
@@ -175,15 +176,15 @@ const BuildingOpenings = ({
           labelClass="offOnTablet"
           value={opening.width}
           allowBlankValue={true}
-          onChange={(name, value) =>
+          onChange={(e) => {
             handleOpeningChange(
               activeBuilding,
               activeWallKey,
               openingIndex,
               'width',
-              value
-            )
-          }
+              e.target.value
+            );
+          }}
           onFocus={() => {
             if (activeOpening !== openingIndex) {
               setActiveOpening(openingIndex);
@@ -196,13 +197,13 @@ const BuildingOpenings = ({
           labelClass="offOnTablet"
           value={opening.height}
           allowBlankValue={true}
-          onChange={(name, value) =>
+          onChange={(e) =>
             handleOpeningChange(
               activeBuilding,
               activeWallKey,
               openingIndex,
               'height',
-              value
+              e.target.value
             )
           }
           onFocus={() => {
@@ -218,13 +219,13 @@ const BuildingOpenings = ({
           value={opening.sill}
           allowBlankValue={true}
           allowZero={true}
-          onChange={(name, value) =>
+          onChange={(e) =>
             handleOpeningChange(
               activeBuilding,
               activeWallKey,
               openingIndex,
               'sill',
-              value
+              e.target.value
             )
           }
           onFocus={() => {
@@ -240,13 +241,13 @@ const BuildingOpenings = ({
           value={opening.offset}
           allowBlankValue={true}
           allowZero={true}
-          onChange={(name, value) =>
+          onChange={(e) =>
             handleOpeningChange(
               activeBuilding,
               activeWallKey,
               openingIndex,
               'offset',
-              value
+              e.target.value
             )
           }
           onFocus={() => {

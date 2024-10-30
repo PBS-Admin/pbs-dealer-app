@@ -109,11 +109,8 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
         const result = await createFolderAndFiles(values);
 
         if (result.success) {
-          console.log('result success: ', result.folder);
           await createImportBAT(result.folder);
-          console.log('import success');
           showSuccessExport();
-          console.log('Export successful');
         } else {
           showRejectExport();
           console.log('Export failed');

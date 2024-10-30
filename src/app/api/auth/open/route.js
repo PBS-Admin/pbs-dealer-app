@@ -69,7 +69,6 @@ export async function GET(req) {
     }));
 
     const status = await getPoolStatus();
-    console.log('Pool status:', status);
 
     return NextResponse.json(
       // { quotes: parsedQuotes },

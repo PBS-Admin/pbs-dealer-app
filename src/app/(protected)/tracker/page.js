@@ -7,7 +7,6 @@ import QuoteTable from '@/components/QuoteTable';
 import { getQuotes, getQuote } from '@/util/quoteUtils';
 
 export default async function Tracker() {
-  console.log('Entering Tracker component');
   const session = await getServerSession(authOptions);
 
   if (!session) {

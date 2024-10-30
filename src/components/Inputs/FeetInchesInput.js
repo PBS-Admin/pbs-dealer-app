@@ -107,7 +107,8 @@ const FeetInchesInput = ({
     if (parsed) {
       const { feet, inches } = parsed;
       const decimalValue = feetToDecimal(feet, inches);
-      onChange(name, decimalValue);
+      const event = { target: { name: name, value: decimalValue } };
+      onChange(event);
       setInputValue(
         (inputValue == 0 && !allowZero) || (inputValue == '' && allowBlankValue)
           ? ''

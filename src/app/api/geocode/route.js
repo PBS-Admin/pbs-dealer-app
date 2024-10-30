@@ -22,11 +22,23 @@ export async function GET(req) {
 
     const data = await response.json();
     const geocodeData = data.results[0].locations[0];
+
+    const mileageResponse = await fetch(
+      `http://www.mapquestapi.com/directions/v2/route?key=wBcOobwGxbJwS3RjQ3L1LH0y7KH4kNJa&outFormat=json&from=2100+North+Pacific+Highway+Woodburn+OR+97071&to=${loc}`
+    );
+
+    if (!mileageResponse.ok) {
+      throw new Error('Mileage response was not ok');
+    }
+
+    const mileageData = await mileageResponse.json();
+
     let location = `${geocodeData.latLng.lat},${geocodeData.latLng.lng}`;
 
     let combinedData = {
       ...geocodeData,
-      elevation: 100, // Default elevation
+      elevation: 100,
+      mileage: mileageData.route.distance,
     };
 
     try {
