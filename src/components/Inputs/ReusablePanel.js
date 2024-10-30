@@ -22,6 +22,7 @@ const ReusablePanel = ({
   value,
   className = '',
   onChange,
+  disabled,
 }) => {
   const panelKey = `${valueKey}PanelType`;
 
@@ -44,36 +45,57 @@ const ReusablePanel = ({
   const panelMap = {
     Roof: roofPanels,
     Wall: wallPanels,
+    FrontWall: wallPanels,
+    BackWall: wallPanels,
+    OuterLeftWall: wallPanels,
+    LeftWall: wallPanels,
+    RightWall: wallPanels,
+    OuterRightWall: wallPanels,
     Soffit: soffitPanels,
     CanopyRoof: roofPanels,
     CanopySoffit: soffitPanels,
     PartitionLeft: wallPanels,
     PartitionRight: wallPanels,
-    Liner: wallPanels,
+    WallLiner: wallPanels,
+    RoofLiner: soffitPanels,
     Wainscot: wallPanels,
   };
 
   const gaugeMap = {
     Roof: roofGauge,
     Wall: wallGauge,
+    FrontWall: wallGauge,
+    BackWall: wallGauge,
+    OuterLeftWall: wallGauge,
+    LeftWall: wallGauge,
+    RightWall: wallGauge,
+    OuterRightWall: wallGauge,
     Soffit: soffitGauge,
     CanopyRoof: roofGauge,
     CanopySoffit: soffitGauge,
     PartitionLeft: wallGauge,
     PartitionRight: wallGauge,
-    Liner: wallGauge,
+    WallLiner: wallGauge,
+    RoofLiner: soffitGauge,
     Wainscot: wallGauge,
   };
 
   const finishMap = {
     Roof: roofFinish,
     Wall: wallFinish,
+    FrontWall: wallFinish,
+    BackWall: wallFinish,
+    OuterLeftWall: wallFinish,
+    LeftWall: wallFinish,
+    RightWall: wallFinish,
+    OuterRightWall: wallFinish,
     Soffit: soffitFinish,
     CanopyRoof: roofFinish,
     CanopySoffit: soffitFinish,
     PartitionLeft: wallFinish,
     PartitionRight: wallFinish,
-    Liner: wallFinish,
+    WallLiner: wallFinish,
+    RoofLiner: soffitFinish,
     Wainscot: wallFinish,
   };
 
@@ -128,6 +150,7 @@ const ReusablePanel = ({
             onChange={handlePanelChange}
             options={panelMap[name]}
             label={`${label} Panels:`}
+            disabled={disabled}
           />
           {internalPanelValue != 'none' && internalPanelValue != 'open' ? (
             <>
@@ -139,6 +162,7 @@ const ReusablePanel = ({
                 onChange={handleGaugeChange}
                 options={gaugeMap[name]}
                 label="Gauge:"
+                disabled={disabled}
               />
               <ReusableSelect
                 className="panelFinish"
@@ -148,6 +172,7 @@ const ReusablePanel = ({
                 onChange={handleFinishChange}
                 options={finishMap[name]}
                 label="Finish:"
+                disabled={disabled}
               />
               <div className="cardInput panelImage">
                 {selectedPanel && selectedPanel.image && (

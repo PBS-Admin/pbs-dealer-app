@@ -6,14 +6,6 @@ import React, {
   useRef,
 } from 'react';
 import ReusableSelect from '../Inputs/ReusableSelect';
-import {
-  buildingCodes,
-  enclosure,
-  exposure,
-  riskCategories,
-  seismicCategory,
-  thermalFactor,
-} from '../../util/dropdownOptions';
 import ReusableDouble from '../Inputs/ReusableDouble';
 import ReusableDialog from '../ReusableDialog';
 import ReusableLoader from '../ReusableLoader';
@@ -24,6 +16,14 @@ import useSeismic from '@/hooks/useSeismic';
 import useAddress from '@/hooks/useAddress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEraser } from '@fortawesome/free-solid-svg-icons';
+import {
+  buildingCodes,
+  enclosure,
+  exposure,
+  riskCategories,
+  seismicCategory,
+  thermalFactor,
+} from '../../util/dropdownOptions';
 
 const ProjectInformation = ({ values, handleChange, setValues }) => {
   const { getWindLoad, currentPrompt, isDialogOpen, handleResponse } = useWind(

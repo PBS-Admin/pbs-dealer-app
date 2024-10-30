@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment } from 'react';
-import ReusableSelect from '../Inputs/ReusableSelect';
 import ReusablePanel from '../Inputs/ReusablePanel';
+import ReusableSelect from '../Inputs/ReusableSelect';
 import BaySpacingInput from '../Inputs/BaySpacingInput';
 import FeetInchesInput from '../Inputs/FeetInchesInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -101,6 +101,7 @@ const BuildingPartitions = ({
 
   return (
     <>
+      {/* Partition Walls */}
       <section className="card">
         <header>
           <h3>Partition Walls</h3>

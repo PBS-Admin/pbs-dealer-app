@@ -7,7 +7,7 @@ import { logo } from '../../public/images';
 import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
-const PageHeader = ({ session, title, isLogOut }) => {
+const PageHeader = ({ session, title, subtitle, isLogOut }) => {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -26,7 +26,10 @@ const PageHeader = ({ session, title, isLogOut }) => {
           <FontAwesomeIcon icon={faHouse} />
         </Link>
       )}
-      <h1>{title}</h1>
+      <div>
+        <h1>{title}</h1>
+        {subtitle && <h4>{subtitle}</h4>}
+      </div>
       <div className="avatarBox">
         <div className="avatar">
           <Image alt="PBS Buildings Logo" src={logo} className="avatar" />
