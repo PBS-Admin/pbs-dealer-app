@@ -1,6 +1,7 @@
 export const initialState = {
   // Quote Information Page
   quoteNumber: '',
+  revNumber: 0,
   customerName: '',
   contactName: '',
   customerAddress: '',

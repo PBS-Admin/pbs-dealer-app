@@ -23,14 +23,14 @@ const useNavigation = (activeBuilding, initialIndex = 0) => {
         ' - Partitions',
     },
     {
-      id: 'bldg-extensions',
+      id: 'bldg-roof-options',
       label:
         'Building ' +
         String.fromCharCode(activeBuilding + 65) +
         ' - Roof Options',
     },
     {
-      id: 'bldg-options',
+      id: 'bldg-wall-options',
       label:
         'Building ' +
         String.fromCharCode(activeBuilding + 65) +

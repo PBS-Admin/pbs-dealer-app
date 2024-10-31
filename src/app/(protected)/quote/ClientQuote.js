@@ -427,8 +427,14 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         title="Quote Input"
         subtitle={
           values.quoteNumber +
-          (values.customerName ? ' - ' + values.customerName : '') +
-          (values.projectName ? ' - ' + values.projectName : '')
+          (values.revNumber > 0 ? ' R' + values.revNumber : '') +
+          (values.customerName
+            ? (values.quoteNumber ? ' - ' : '') + values.customerName
+            : '') +
+          (values.projectName
+            ? (values.quoteNumber || values.customerName ? ' - ' : '') +
+              values.projectName
+            : '')
         }
         isLogOut={false}
       />
@@ -489,14 +495,14 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               Building {String.fromCharCode(activeBuilding + 65)} - Partitions
             </button>
             <button
-              className={`${styles.bldg} ${activeCard == 'bldg-extensions' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('bldg-extensions')}
+              className={`${styles.bldg} ${activeCard == 'bldg-roof-options' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('bldg-roof-options')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Roof Options
             </button>
             <button
-              className={`${styles.bldg} ${activeCard == 'bldg-options' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('bldg-options')}
+              className={`${styles.bldg} ${activeCard == 'bldg-wall-options' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('bldg-wall-options')}
             >
               Building {String.fromCharCode(activeBuilding + 65)} - Wall Options
             </button>
@@ -906,8 +912,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
             />
           </>
         )}
-        {/* Building Extensions Page */}
-        {activeCard == 'bldg-extensions' && (
+        {/* Building Roof Options Page */}
+        {activeCard == 'bldg-roof-options' && (
           <>
             <BuildingRoofOptions
               values={values}
@@ -919,8 +925,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
             />
           </>
         )}
-        {/* Building Options Page */}
-        {activeCard == 'bldg-options' && (
+        {/* Building Wall Options Page */}
+        {activeCard == 'bldg-wall-options' && (
           <>
             <BuildingWallOptions
               values={values}

@@ -466,7 +466,7 @@ const BuildingWallOptions = ({
                   label="Front Sidewall Insulation:"
                 />
               </div>
-              <div className="divider offOnPhone"></div>
+              <div className="divider offOnTablet"></div>
               <div
                 className={
                   values.buildings[activeBuilding].leftFrame == 'insetRF' ||
@@ -544,7 +544,7 @@ const BuildingWallOptions = ({
                       label="OuterLeft Left Endwall Insulation:"
                     />
                   </div>
-                  <div className="divider offOnPhone"></div>
+                  <div className="divider offOnTablet"></div>
                 </>
               )}
               {values.buildings[activeBuilding].leftFrame != 'insetRF' &&
@@ -582,9 +582,9 @@ const BuildingWallOptions = ({
               </div>
               {values.buildings[activeBuilding].leftFrame == 'insetRF' ||
               values.buildings[activeBuilding].rightFrame == 'insetRF' ? (
-                <div className="divider showWithSidebar span2"></div>
+                <div className="divider offOnDesktop span2"></div>
               ) : (
-                <div className="divider offOnPhone"></div>
+                <div className="divider offOnTablet"></div>
               )}
               <div className="grid">
                 <ReusablePanel
@@ -617,7 +617,7 @@ const BuildingWallOptions = ({
               </div>
               {values.buildings[activeBuilding].rightFrame == 'insetRF' && (
                 <>
-                  <div className="divider offOnPhone"></div>
+                  <div className="divider offOnTablet"></div>
                   <div className="grid">
                     <ReusablePanel
                       name="OuterRightWall"

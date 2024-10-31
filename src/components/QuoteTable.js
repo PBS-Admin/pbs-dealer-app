@@ -181,8 +181,8 @@ export default function QuoteTable({
                       className={styles.quoteLink}
                     >
                       {quote.Rev > 0
-                        ? `${quote.Prefix}${quote.Quote} R${quote.Rev}`
-                        : `${quote.Prefix}${quote.Quote}`}
+                        ? `${quote.Quote} R${quote.Rev}`
+                        : `${quote.Quote}`}
                     </Link>
                   </td>
                   <td>

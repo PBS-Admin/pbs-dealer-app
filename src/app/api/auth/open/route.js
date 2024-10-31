@@ -40,8 +40,7 @@ export async function GET(req) {
 
     // Only select the columns we need
     const result = await query(
-      // 'SELECT ID, Submitted, Quote, Rev, Complexity, Customer, ProjectName, DateStarted FROM Dealer_Quotes WHERE Company = ? AND Active = 1',
-      'SELECT q.ID as ID, q.Submitted asSubmitted, c.Initials as Prefix, q.Quote as Quote, q.Rev as Rev, q.Complexity as Complexity, q.Customer as Customer, q.ProjectName as ProjectName, q.DateStarted as DateStarted FROM Dealer_Quotes q LEFT JOIN Dealer_Company c ON q.Company = c.ID WHERE q.Company = ? AND q.Active = 1',
+      'SELECT ID, Submitted, Quote, Rev, Complexity, Customer, ProjectName, DateStarted FROM Dealer_Quotes WHERE Company = ? AND Active = 1',
       [company]
     );
 
@@ -50,7 +49,6 @@ export async function GET(req) {
       ...quote,
       ID: quote.ID,
       Submitted: quote.Submitted,
-      Prefix: quote.Prefix != null ? quote.Prefix : '',
       Quote: quote.Quote,
       Rev: quote.Rev,
       Complexity: quote.Complexity,
