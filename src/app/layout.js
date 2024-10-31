@@ -10,8 +10,8 @@ import VersionCheck from '../components/VersionCheck';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Your Cloud Application',
-  description: 'A modern cloud application with authentication',
+  title: 'PBS Dealer App',
+  description: 'A modern quoting system for metal buildings',
   manifest: '/manifest.json',
   icons: {
     apple: '/ios/192.png',
