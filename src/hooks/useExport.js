@@ -1110,11 +1110,13 @@ export function useExport() {
     );
     await writable.write(`Width=${values.buildings[index].width}\n`);
     await writable.write(`Length=${values.buildings[index].length}\n`);
-    await writable.write(`HeightL=${values.buildings[index].backEaveHeight}\n`); //todo: correct all eave heights to be singular
+    await writable.write(`HeightL=${values.buildings[index].backEaveHeight}\n`);
     await writable.write(
       `HeightR=${values.buildings[index].frontEaveHeight}\n`
-    ); //todo: correct all eave heights to be singular
-    await writable.write(`PeakOff=${values.buildings[index].backPeakOffset}\n`);
+    );
+    await writable.write(
+      `PeakOff=${values.buildings[index].shape == 'leanTo' || values.buildings[index].shape == 'singleSlope' ? '0' : values.buildings[index].backPeakOffset}\n`
+    );
     await writable.write(
       `Slope=${values.buildings[index].backRoofPitch?.toFixed(4)}\n`
     );
@@ -3733,9 +3735,8 @@ export function useExport() {
 
     if (includeGutters) {
       if (
-        ((shape == 'symmetrical' || shape == 'nonSymmetrical') &&
-          frontExtensionWidth == 0) ||
-        hasMultExtFront
+        (shape == 'symmetrical' || shape == 'nonSymmetrical') &&
+        (frontExtensionWidth == 0 || hasMultExtFront)
       ) {
         returnValue += `Length_Front=${roofLength.toFixed(4)}\n`;
         returnValue += `Gutter_Location_Id_Front=2\n`;
@@ -3869,7 +3870,8 @@ export function useExport() {
       let reliteQtyKey = `${surf[i]}PolyQty`;
       let reliteSizeKey = `${surf[i]}PolySize`;
       let reliteColorKey = `${surf[i]}PolyColor`;
-      if (building[reliteQtyKey] != '') {
+
+      if (building[reliteQtyKey] != '' && building[reliteQtyKey] != null) {
         itemNum++;
         surfLength = surf[i] == 'left' || surf[i] == 'right' ? width : length;
         returnValue += `${surfName}_Id${itemNum}=${i + surfOffset}\n`;
