@@ -1117,6 +1117,11 @@ button.nuetral:hover {
     grid-column: span 2;
   }
 
+  .grid4:has(.panelGrid) .divider.span2,
+  .grid4:has(.panelGrid) .divider.span4 {
+    grid-column: span 1;
+  }
+
   .tableGrid5 {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1194,6 +1199,11 @@ button.nuetral:hover {
 
   .grid4:has(.panelGrid) {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid4:has(.panelGrid) .divider.span2,
+  .grid4:has(.panelGrid) .divider.span4 {
+    grid-column: span 2;
   }
 
   .tableGrid5 {
@@ -1334,6 +1344,10 @@ button.nuetral:hover {
 
   .grid4 .span3 {
     grid-column: span 3;
+  }
+
+  .grid4 .span2:has(.panelGrid) {
+    grid-column: span 1;
   }
 
   .grid4 .divider.span4 {

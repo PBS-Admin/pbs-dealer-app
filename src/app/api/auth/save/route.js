@@ -3,15 +3,19 @@ import { query, transaction, getPoolStatus } from '../../../../lib/db';
 
 export async function POST(req) {
   try {
-    let result, quoteNum, nextQuoteNum;
+    let result, quoteNum, quoteNumber, nextQuoteNum;
     const { currentQuote, user, values } = await req.json();
     if (currentQuote == 0) {
       await transaction(async (conn) => {
         quoteNum = await conn.query(
-          'SELECT NextQuoteNum From Dealer_Company WHERE ID = ?',
+          'SELECT Initials, NextQuoteNum From Dealer_Company WHERE ID = ?',
           [user.company]
         );
 
+        quoteNumber =
+          quoteNum[0].Initials === null
+            ? `${quoteNum[0].NextQuoteNum}`
+            : `${quoteNum[0].Initials}${quoteNum[0].NextQuoteNum}`;
         nextQuoteNum = quoteNum[0].NextQuoteNum;
 
         await conn.query(
@@ -19,12 +23,12 @@ export async function POST(req) {
           [user.company]
         );
 
-        const updatedValues = { ...values, quoteNumber: nextQuoteNum };
+        const updatedValues = { ...values, quoteNumber: quoteNumber };
 
         result = await conn.query(
           'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, Active, DateStarted, LastSaved, SavedBy) VALUES (?, ?, ?, ?, ?, 1, Now(), Now(), ?)',
           [
-            nextQuoteNum,
+            quoteNumber,
             values.customerName,
             values.projectName,
             user.company,
@@ -37,7 +41,7 @@ export async function POST(req) {
       const quoteId = Number(result.insertId);
       const message = {
         quoteId: quoteId,
-        quoteNum: nextQuoteNum,
+        quoteNum: quoteNumber,
       };
 
       const status = await getPoolStatus();
