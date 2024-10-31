@@ -667,7 +667,7 @@ const BuildingWallOptions = ({
         values.buildings[activeBuilding].leftGirtType != 'open' ||
         values.buildings[activeBuilding].rightGirtType != 'open' ? (
           <>
-            {values.buildings[activeBuilding].wallLinerPanels.length > 0 && (
+            {values.buildings[activeBuilding].wallLinerPanels?.length > 0 && (
               <div className="onTablet">
                 <div className="tableGrid5">
                   <h5>Wall</h5>
@@ -683,7 +683,7 @@ const BuildingWallOptions = ({
                 </div>
               </div>
             )}
-            {values.buildings[activeBuilding].wallLinerPanels.map(
+            {values.buildings[activeBuilding].wallLinerPanels?.map(
               (wallLinerPanel, wallLinerPanelIndex) => (
                 <Fragment
                   key={`building-${activeBuilding}-wallLinerPanel-${wallLinerPanelIndex}`}
@@ -724,12 +724,12 @@ const BuildingWallOptions = ({
                       value={wallLinerPanel.start}
                       allowBlankValue={true}
                       allowZero={true}
-                      onChange={(name, value) =>
+                      onChange={(e) =>
                         handleWallLinerPanelChange(
                           activeBuilding,
                           wallLinerPanelIndex,
                           'start',
-                          value
+                          e.target.value
                         )
                       }
                       onFocus={() => {
@@ -750,12 +750,12 @@ const BuildingWallOptions = ({
                       labelClass="offOnTablet"
                       value={wallLinerPanel.end}
                       allowBlankValue={true}
-                      onChange={(name, value) =>
+                      onChange={(e) =>
                         handleWallLinerPanelChange(
                           activeBuilding,
                           wallLinerPanelIndex,
                           'end',
-                          value
+                          e.target.value
                         )
                       }
                       onFocus={() => {
@@ -770,12 +770,12 @@ const BuildingWallOptions = ({
                       labelClass="offOnTablet"
                       value={wallLinerPanel.height}
                       allowBlankValue={true}
-                      onChange={(name, value) =>
+                      onChange={(e) =>
                         handleWallLinerPanelChange(
                           activeBuilding,
                           wallLinerPanelIndex,
                           'height',
-                          value
+                          e.target.value
                         )
                       }
                       onFocus={() => {
@@ -803,7 +803,7 @@ const BuildingWallOptions = ({
               )
             )}
 
-            {values.buildings[activeBuilding].wallLinerPanels.length > 0 && (
+            {values.buildings[activeBuilding].wallLinerPanels?.length > 0 && (
               <>
                 <div className="divider onDesktop"></div>
                 <div className="grid2">
@@ -918,12 +918,12 @@ const BuildingWallOptions = ({
                       value={wainscot.start}
                       allowBlankValue={true}
                       allowZero={true}
-                      onChange={(name, value) =>
+                      onChange={(e) =>
                         handleWainscotChange(
                           activeBuilding,
                           wainscotIndex,
                           'start',
-                          value
+                          e.target.value
                         )
                       }
                       onFocus={() => {
@@ -944,12 +944,12 @@ const BuildingWallOptions = ({
                       labelClass="offOnTablet"
                       value={wainscot.end}
                       allowBlankValue={true}
-                      onChange={(name, value) =>
+                      onChange={(e) =>
                         handleWainscotChange(
                           activeBuilding,
                           wainscotIndex,
                           'end',
-                          value
+                          e.target.value
                         )
                       }
                       onFocus={() => {
@@ -964,12 +964,12 @@ const BuildingWallOptions = ({
                       labelClass="offOnTablet"
                       value={wainscot.height}
                       allowBlankValue={true}
-                      onChange={(name, value) =>
+                      onChange={(e) =>
                         handleWainscotChange(
                           activeBuilding,
                           wainscotIndex,
                           'height',
-                          value
+                          e.target.value
                         )
                       }
                       onFocus={() => {
@@ -1126,12 +1126,12 @@ const BuildingWallOptions = ({
                       value={partialWall.start}
                       allowBlankValue={true}
                       allowZero={true}
-                      onChange={(name, value) =>
+                      onChange={(e) =>
                         handlePartialWallChange(
                           activeBuilding,
                           partialWallIndex,
                           'start',
-                          value
+                          e.target.value
                         )
                       }
                       onFocus={() => {
@@ -1152,12 +1152,12 @@ const BuildingWallOptions = ({
                       labelClass="offOnTablet"
                       value={partialWall.end}
                       allowBlankValue={true}
-                      onChange={(name, value) =>
+                      onChange={(e) =>
                         handlePartialWallChange(
                           activeBuilding,
                           partialWallIndex,
                           'end',
-                          value
+                          e.target.value
                         )
                       }
                       onFocus={() => {
@@ -1172,12 +1172,12 @@ const BuildingWallOptions = ({
                       labelClass="offOnTablet"
                       value={partialWall.height}
                       allowBlankValue={true}
-                      onChange={(name, value) =>
+                      onChange={(e) =>
                         handlePartialWallChange(
                           activeBuilding,
                           partialWallIndex,
                           'height',
-                          value
+                          e.target.value
                         )
                       }
                       onFocus={() => {
@@ -1344,12 +1344,12 @@ const BuildingWallOptions = ({
                       labelClass="offOnTablet"
                       value={wallSkirt.height}
                       allowBlankValue={true}
-                      onChange={(name, value) =>
+                      onChange={(e) =>
                         handleWallSkirtChange(
                           activeBuilding,
                           wallSkirtIndex,
                           'height',
-                          value
+                          e.target.value
                         )
                       }
                       onFocus={() => {
@@ -1469,12 +1469,12 @@ const BuildingWallOptions = ({
                   labelClass="offOnDesktop"
                   value={canopy.width}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleCanopyChange(
                       activeBuilding,
                       canopyIndex,
                       'width',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -1553,12 +1553,12 @@ const BuildingWallOptions = ({
                   labelClass="offOnDesktop"
                   value={canopy.elevation}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleCanopyChange(
                       activeBuilding,
                       canopyIndex,
                       'elevation',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {
@@ -1692,7 +1692,7 @@ const BuildingWallOptions = ({
         values.buildings[activeBuilding].leftGirtType != 'open' ||
         values.buildings[activeBuilding].rightGirtType != 'open' ? (
           <>
-            {values.buildings[activeBuilding].wallRelites.length > 0 && (
+            {values.buildings[activeBuilding].wallRelites?.length > 0 && (
               <div className="onDesktop">
                 <div className="tableGrid8">
                   <h5>Wall</h5>
@@ -1706,7 +1706,7 @@ const BuildingWallOptions = ({
                 </div>
               </div>
             )}
-            {values.buildings[activeBuilding].wallRelites.map(
+            {values.buildings[activeBuilding].wallRelites?.map(
               (wallRelite, wallReliteIndex) => (
                 <Fragment
                   key={`building-${activeBuilding}-wallRelite-${wallReliteIndex}`}
@@ -1842,12 +1842,12 @@ const BuildingWallOptions = ({
                       labelClass="offOnDesktop"
                       value={wallRelite.offset}
                       allowBlankValue={true}
-                      onChange={(name, value) =>
+                      onChange={(e) =>
                         handleWallReliteChange(
                           activeBuilding,
                           wallReliteIndex,
                           'offset',
-                          value
+                          e.target.value
                         )
                       }
                       onFocus={() => {

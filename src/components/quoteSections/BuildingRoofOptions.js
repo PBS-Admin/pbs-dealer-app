@@ -173,8 +173,12 @@ const BuildingRoofOptions = ({
               label="Front Sidewall Extension Width:"
               allowBlankValue={true}
               value={values.buildings[activeBuilding].frontExtensionWidth}
-              onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'frontExtensionWidth', value)
+              onChange={(e) =>
+                handleNestedChange(
+                  activeBuilding,
+                  'frontExtensionWidth',
+                  e.target.value
+                )
               }
               allowZero={true}
             />
@@ -228,8 +232,12 @@ const BuildingRoofOptions = ({
               label="Back Sidewall Extension Width:"
               allowBlankValue={true}
               value={values.buildings[activeBuilding].backExtensionWidth}
-              onChange={(name, value) =>
-                handleNestedChange(activeBuilding, 'backExtensionWidth', value)
+              onChange={(e) =>
+                handleNestedChange(
+                  activeBuilding,
+                  'backExtensionWidth',
+                  e.target.value
+                )
               }
               allowZero={true}
             />
@@ -282,8 +290,12 @@ const BuildingRoofOptions = ({
             label="Left Endwall Extension Width:"
             allowBlankValue={true}
             value={values.buildings[activeBuilding].leftExtensionWidth}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'leftExtensionWidth', value)
+            onChange={(e) =>
+              handleNestedChange(
+                activeBuilding,
+                'leftExtensionWidth',
+                e.target.value
+              )
             }
             allowZero={true}
           />
@@ -292,8 +304,12 @@ const BuildingRoofOptions = ({
             label="Right Endwall Extension Width:"
             allowBlankValue={true}
             value={values.buildings[activeBuilding].rightExtensionWidth}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'rightExtensionWidth', value)
+            onChange={(e) =>
+              handleNestedChange(
+                activeBuilding,
+                'rightExtensionWidth',
+                e.target.value
+              )
             }
             allowZero={true}
           />
@@ -362,7 +378,7 @@ const BuildingRoofOptions = ({
         <header>
           <h3>Roof Relites</h3>
         </header>
-        {values.buildings[activeBuilding].roofRelites.length > 0 && (
+        {values.buildings[activeBuilding].roofRelites?.length > 0 && (
           <div className="onDesktop">
             <div className="tableGrid8">
               <h5>Roof</h5>
@@ -376,7 +392,7 @@ const BuildingRoofOptions = ({
             </div>
           </div>
         )}
-        {values.buildings[activeBuilding].roofRelites.map(
+        {values.buildings[activeBuilding].roofRelites?.map(
           (roofRelite, roofReliteIndex) => (
             <Fragment
               key={`building-${activeBuilding}-roofRelite-${roofReliteIndex}`}
@@ -498,12 +514,12 @@ const BuildingRoofOptions = ({
                   labelClass="offOnDesktop"
                   value={roofRelite.offset}
                   allowBlankValue={true}
-                  onChange={(name, value) =>
+                  onChange={(e) =>
                     handleRoofReliteChange(
                       activeBuilding,
                       roofReliteIndex,
                       'offset',
-                      value
+                      e.target.value
                     )
                   }
                   onFocus={() => {

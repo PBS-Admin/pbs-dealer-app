@@ -607,8 +607,12 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                         label="Back Peak Offset:"
                         value={building.backPeakOffset}
                         allowBlankValue={true}
-                        onChange={(name, value) =>
-                          handleNestedChange(index, 'backPeakOffset', value)
+                        onChange={(e) =>
+                          handleNestedChange(
+                            index,
+                            'backPeakOffset',
+                            e.target.value
+                          )
                         }
                         disabled={index != activeBuilding}
                       />
@@ -620,8 +624,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       label="Width:"
                       value={building.width}
                       allowBlankValue={true}
-                      onChange={(name, value) =>
-                        handleNestedChange(index, 'width', value)
+                      onChange={(e) =>
+                        handleNestedChange(index, 'width', e.target.value)
                       }
                       disabled={index != activeBuilding}
                     />
@@ -630,8 +634,8 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       label="Length:"
                       value={building.length}
                       allowBlankValue={true}
-                      onChange={(name, value) =>
-                        handleNestedChange(index, 'length', value)
+                      onChange={(e) =>
+                        handleNestedChange(index, 'length', e.target.value)
                       }
                       disabled={index != activeBuilding}
                     />
@@ -642,8 +646,12 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           label="Eave Height:"
                           value={building.backEaveHeight}
                           allowBlankValue={true}
-                          onChange={(name, value) =>
-                            handleNestedChange(index, 'backEaveHeight', value)
+                          onChange={(e) =>
+                            handleNestedChange(
+                              index,
+                              'backEaveHeight',
+                              e.target.value
+                            )
                           }
                           disabled={index != activeBuilding}
                         />
@@ -668,8 +676,12 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           label="Low Eave Height:"
                           value={building.backEaveHeight}
                           allowBlankValue={true}
-                          onChange={(name, value) =>
-                            handleNestedChange(index, 'backEaveHeight', value)
+                          onChange={(e) =>
+                            handleNestedChange(
+                              index,
+                              'backEaveHeight',
+                              e.target.value
+                            )
                           }
                           disabled={index != activeBuilding}
                         />
@@ -678,8 +690,12 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           label="High Eave Height:"
                           value={building.frontEaveHeight}
                           allowBlankValue={true}
-                          onChange={(name, value) =>
-                            handleNestedChange(index, 'frontEaveHeight', value)
+                          onChange={(e) =>
+                            handleNestedChange(
+                              index,
+                              'frontEaveHeight',
+                              e.target.value
+                            )
                           }
                           disabled={index != activeBuilding}
                         />
@@ -701,8 +717,12 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           label="Back Eave Height:"
                           value={building.backEaveHeight}
                           allowBlankValue={true}
-                          onChange={(name, value) =>
-                            handleNestedChange(index, 'backEaveHeight', value)
+                          onChange={(e) =>
+                            handleNestedChange(
+                              index,
+                              'backEaveHeight',
+                              e.target.value
+                            )
                           }
                           disabled={index != activeBuilding}
                         />
@@ -711,8 +731,12 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           label="Front Eave Height:"
                           value={building.frontEaveHeight}
                           allowBlankValue={true}
-                          onChange={(name, value) =>
-                            handleNestedChange(index, 'frontEaveHeight', value)
+                          onChange={(e) =>
+                            handleNestedChange(
+                              index,
+                              'frontEaveHeight',
+                              e.target.value
+                            )
                           }
                           disabled={index != activeBuilding}
                         />
