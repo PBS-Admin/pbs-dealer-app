@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCalculator,
   faMagnifyingGlass,
+  faCircleInfo,
 } from '@fortawesome/free-solid-svg-icons';
 
 const ReusableSelect = ({
@@ -18,6 +19,7 @@ const ReusableSelect = ({
   icon = '',
   iconClass = '',
   iconOnClick = null,
+  tooltip,
   defaultValue,
   disabled,
 }) => {
@@ -28,7 +30,18 @@ const ReusableSelect = ({
   const iconMap = {
     calculator: faCalculator,
     lookup: faMagnifyingGlass,
+    info: faCircleInfo,
   };
+
+  //Option Groups
+  const groupedOptions = options.reduce((acc, option) => {
+    const accOptionGroup = acc[option.optionGroup] || [];
+
+    return {
+      ...acc,
+      [option.optionGroup]: [...accOptionGroup, option],
+    };
+  }, {});
 
   useEffect(() => {
     if (value !== undefined && value != '') {
@@ -72,9 +85,10 @@ const ReusableSelect = ({
           <button
             type="button"
             onClick={iconOnClick}
-            className={`icon ${iconClass}`}
+            className={`icon ${iconClass} ${tooltip ? 'tooltip' : ''}`}
           >
             <FontAwesomeIcon icon={iconMap[icon]} />
+            {tooltip && <p>{tooltip}</p>}
           </button>
         )}
       </label>
@@ -91,18 +105,36 @@ const ReusableSelect = ({
         }}
         disabled={disabled}
       >
-        {options.map((option) => (
-          <option
-            key={option.id}
-            value={option.id}
-            disabled={
-              option.validFor && !option.validFor.includes(dependantOn)
-                ? 'disabled'
-                : ''
-            }
-          >
-            {option.label}
-          </option>
+        {Object.keys(groupedOptions).map((optionGroupName) => (
+          <>
+            {optionGroupName !== 'undefined' ? (
+              <optgroup key={optionGroupName} label={optionGroupName}>
+                {groupedOptions[optionGroupName].map(({ id, label }) => (
+                  <option key={label} value={id}>
+                    {label}
+                  </option>
+                ))}
+              </optgroup>
+            ) : (
+              <>
+                {groupedOptions[optionGroupName].map(
+                  ({ id, label, validFor }) => (
+                    <option
+                      key={label}
+                      value={id}
+                      disabled={
+                        validFor && !validFor.includes(dependantOn)
+                          ? 'disabled'
+                          : ''
+                      }
+                    >
+                      {label}
+                    </option>
+                  )
+                )}
+              </>
+            )}
+          </>
         ))}
       </select>
     </div>

@@ -15,7 +15,7 @@ import useSnow from '@/hooks/useSnow';
 import useSeismic from '@/hooks/useSeismic';
 import useAddress from '@/hooks/useAddress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEraser } from '@fortawesome/free-solid-svg-icons';
+import { faEraser, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import {
   buildingCodes,
   enclosure,
@@ -249,10 +249,11 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               Street Address:
               <button
                 type="button"
-                className="icon reject"
+                className="icon reject tooltip"
                 onClick={() => clearAddress('customer')}
               >
                 <FontAwesomeIcon icon={faEraser} />
+                <p>Clear Address</p>
               </button>
             </label>
             <input
@@ -381,10 +382,11 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               Street Address:
               <button
                 type="button"
-                className="icon reject"
+                className="icon reject tooltip"
                 onClick={() => clearAddress('project')}
               >
                 <FontAwesomeIcon icon={faEraser} />
+                <p>Clear Address</p>
               </button>
             </label>
             <input
@@ -533,6 +535,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             icon={windIcon}
             iconClass={'prim'}
             iconOnClick={getWindLoad}
+            tooltip="Lookup Wind Load"
             disabled={false}
             placeholder={'mph'}
           />
@@ -568,6 +571,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             icon={snowIcon}
             iconClass={'prim'}
             iconOnClick={getSnowLoad}
+            tooltip="Lookup Snow Load"
             disabled={false}
             placeholder={'psf'}
           />
@@ -591,6 +595,21 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             options={thermalFactor}
             label="Thermal Factor:"
             defaultValue={1}
+            icon={'info'}
+            iconClass={'info left'}
+            tooltip={
+              <>
+                Greenhouse = 0.85
+                <br />
+                Heated = 1.0
+                <br />
+                Unheated with Insulation = 1.1
+                <br />
+                Unheated w/o Insulation = 1.2
+                <br />
+                Kept Below Freezing = 1.3
+              </>
+            }
           />
         </div>
         <h4>Seismic Load</h4>
@@ -605,6 +624,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             icon={lookupIcon}
             iconClass={'prim'}
             iconOnClick={getSeismicLoad}
+            tooltip="Lookup Seismic Data"
             defaultValue="D"
           />
           <ReusableDouble
@@ -638,6 +658,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             icon={calcIcon}
             iconClass={'prim'}
             iconOnClick={getSmsLoad}
+            tooltip="Calculate Sms & Sm1"
             disabled={false}
             decimalPlaces={3}
           />

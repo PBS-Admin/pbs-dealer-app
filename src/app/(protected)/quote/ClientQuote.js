@@ -106,6 +106,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           offsetY: 0,
           rotation: 0,
           commonWall: '',
+          steelFinish: 'NC',
           shape: 'symmetrical',
           backPeakOffset: '',
           backEaveHeight: '',

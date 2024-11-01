@@ -7,6 +7,7 @@ import BaySpacingInput from '../Inputs/BaySpacingInput';
 import BaySelectionInput from '../Inputs/BaySelectionInput';
 import {
   shapes,
+  steelFinish,
   frames,
   FrameOptions,
   SidewallBracingType,
@@ -219,6 +220,15 @@ const BuildingLayout = ({
               </label>
             </div>
           </div>
+          <ReusableSelect
+            name={`buildingSteelFinish-${activeBuilding}`}
+            value={values.buildings[activeBuilding].steelFinish}
+            onChange={(e) =>
+              handleNestedChange(activeBuilding, 'steelFinish', e.target.value)
+            }
+            options={steelFinish}
+            label="Steel Finish:"
+          />
         </div>
 
         <h4>Endwall Frames</h4>
