@@ -1301,12 +1301,12 @@ const BuildingWallOptions = ({
                       allowBlankValue={true}
                       label="Start Bay:"
                       labelClass="offOnTablet"
-                      onChange={(name, value) =>
+                      onChange={(e) =>
                         handleWallSkirtChange(
                           activeBuilding,
                           wallSkirtIndex,
                           'startBay',
-                          value
+                          e.target.value
                         )
                       }
                       onFocus={() => {
@@ -1323,12 +1323,12 @@ const BuildingWallOptions = ({
                       allowBlankValue={true}
                       label="End Bay:"
                       labelClass="offOnTablet"
-                      onChange={(name, value) =>
+                      onChange={(e) =>
                         handleWallSkirtChange(
                           activeBuilding,
                           wallSkirtIndex,
                           'endBay',
-                          value
+                          e.target.value
                         )
                       }
                       onFocus={() => {

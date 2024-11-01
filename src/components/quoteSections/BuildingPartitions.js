@@ -267,6 +267,8 @@ const BuildingPartitions = ({
                       setActivePartition(partitionIndex);
                     }
                   }}
+                  compareLabel="partition length"
+                  compareValue={partition.end - partition.start}
                 />
                 <ReusableSelect
                   name={`building-${activeBuilding}-partitionInsulation-${partitionIndex}`}

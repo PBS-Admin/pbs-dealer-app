@@ -1028,7 +1028,7 @@ export function useExport() {
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[BASE_OPTIONS${i}]\n`);
       await writable.write(
-        `${await getGirtTypes(values.buildings[index], 'base')}\n`
+        `${getGirtTypes(values.buildings[index], 'base')}\n`
       );
       await writable.write(`\n`);
     }
@@ -1958,6 +1958,9 @@ export function useExport() {
     let itemNum = 0;
 
     // todo: add additional if statements
+    if (loc == 'partition') {
+      loc = `partition${partIndex}`;
+    }
 
     openings[loc].forEach((opening, index) => {
       itemNum = index + 1;
@@ -2394,7 +2397,7 @@ export function useExport() {
     }
 
     if (
-      (loc == 'Roof' || loc == 'CanopyRoof') &&
+      (loc == 'roof' || loc == 'canopyRoof') &&
       (panel == 'kingSeam' ||
         panel == 'dm40' ||
         panel == 'insulated' ||
@@ -2424,6 +2427,9 @@ export function useExport() {
   function getPanelPart(building, loc) {
     let panel = '';
     let gauge = '';
+    if (loc.includes('canopy')) {
+      loc = loc.replace('canopy', '').toLowerCase();
+    }
     let locTypeKey = `${loc}PanelType`;
     let locGaugeKey = `${loc}PanelGauge`;
     if (loc.includes('partition')) {
@@ -2437,6 +2443,9 @@ export function useExport() {
       panel = building[locTypeKey];
       gauge = building[locGaugeKey];
     }
+    console.log('Getting panels: ', loc);
+    console.log('getting panel: ', panel);
+    console.log('getting gauge: ', gauge);
     return getPanelData(panel, gauge, loc)[1];
   }
 
@@ -3453,7 +3462,7 @@ export function useExport() {
     for (let i = 0; i < numOfExt; i++) {
       returnValue += `Bay_Start${i + 1}=${extStarts[i]}\n`;
       returnValue += `Bay_End${i + 1}=${extEnds[i]}\n`;
-      returnValue += `Bay_Width${i + 1}=${extSlope}\n`;
+      returnValue += `Bay_Width${i + 1}=${extWidth}\n`;
       returnValue += `Slope${i + 1}=${extSlope}\n`;
 
       if (i == 0 && extStarts[0] == 1) {
@@ -3995,28 +4004,28 @@ export function useExport() {
       returnValue += `Color${i + 1}=WH\n`;
       returnValue += `Style${i + 1}=--\n`;
       returnValue += `Weather_Strip${i + 1}=N\n`;
-      if (mandoors[i].hasPanic) {
+      if (mandoors[i].panic) {
         returnValue += `Panic${i + 1}=HW\n`;
       } else {
         returnValue += `Panic${i + 1}=N\n`;
       }
-      if (mandoors[i].hasMullion) {
+      if (mandoors[i].mullion) {
         returnValue += `Mullion${i + 1}=LL\n`;
       } else {
         returnValue += `Mullion${i + 1}=N\n`;
       }
       returnValue += `Type${i + 1}=DR\n`;
-      if (mandoors[i].hasDeadbolt) {
+      if (mandoors[i].deadBolt) {
         returnValue += `Lock_Type${i + 1}=DB\n`;
       } else {
         returnValue += `Lock_Type${i + 1}=N\n`;
       }
-      if (mandoors[i].hasKickplate) {
+      if (mandoors[i].kickPlate) {
         returnValue += `Access_Type${i + 1}=KP\n`;
       } else {
         returnValue += `Access_Type${i + 1}=N\n`;
       }
-      if (mandoors[i].hasCloser) {
+      if (mandoors[i].closer) {
         returnValue += `Closer_Type${i + 1}=CY\n`;
       } else {
         returnValue += `Closer_Type${i + 1}=N\n`;
@@ -4046,7 +4055,6 @@ export function useExport() {
     let liner = '';
     let wallNum = ['left', 'front', 'right', 'back'];
 
-    console.log('before wall');
     if (hasBandedLiner(building, 'wall')) {
       for (let i = 0; i < 4; i++) {
         liners[wallNum[i]] += `Use=Y\n`;
@@ -4074,7 +4082,7 @@ export function useExport() {
         if (i % 2 == 0) {
           liner += `Loc_End${itemNum}=${width}\n`;
         } else {
-          liner += `Loc_End${itemNum}=${length}`;
+          liner += `Loc_End${itemNum}=${length}\n`;
         }
         liner += `Height${itemNum}=0.0000\n`;
         liner += `Part${itemNum}=B-LINER\n`;
@@ -4089,7 +4097,6 @@ export function useExport() {
       }
     }
 
-    console.log('before roof');
     if (hasBandedLiner(building, 'roof')) {
       liners['roof'] += `Use=Y\n`;
       liners['roof'] += `Loc_Start=0.0000\n`;
@@ -4348,7 +4355,8 @@ export function useExport() {
   // }
 
   function hasBandedLiner(building, loc) {
-    const { wallInsultation, roofInsulation } = building;
+    let roofValue, wallValue;
+    const { wallInsulation, roofInsulation } = building;
     const insOptions = [
       'banded25',
       'banded30',
@@ -4358,12 +4366,14 @@ export function useExport() {
       'banded40',
       'banded49',
     ];
+
     if (loc == 'roof') {
-      return insOptions.includes(roofInsulation) ? true : false;
+      roofValue = insOptions.includes(roofInsulation) ? true : false;
     }
     if (loc == 'wall') {
-      return insOptions.includes(wallInsultation) ? true : false;
+      wallValue = insOptions.includes(wallInsulation) ? true : false;
     }
+    return roofValue || wallValue;
   }
 
   function getWallLoads(building, loc) {
@@ -4850,28 +4860,36 @@ export function useExport() {
     const { roofBaySpacing, partitions } = building;
     let itemTotal = partitions.length;
     let itemNum = 0;
-    let partBays, offsetBays, bays;
+    let partBays,
+      offsetBays = [],
+      bays;
 
     returnValue += `No_Partition_Wall=${itemTotal}\n`;
 
     for (let i = 0; i < itemTotal; i++) {
       itemNum++;
       partBays = partitions[i].baySpacing;
-      offsetBays = partitions[i].offset;
+
+      console.log('num: ', itemNum);
+      console.log('parts: ', partitions[i]);
+      offsetBays.push(partitions[i].offset);
       bays = roofBaySpacing;
       returnValue += `\n[PARTITION_LOCATION${itemNum}]\n`;
-      returnValue += `Orient=${partitions[i].orientation}\n`; //todo: check that the orientation is the variable needed
+      returnValue += `Orient=${partitions[i].orientation == 't' ? 'T' : 'L'}\n`;
       returnValue += `Direct=CR\n`;
-      returnValue += `Offset1=${partitions[i].start}`;
+      returnValue += `Offset1=${partitions[i].start || 0}\n`;
       returnValue += `Adj_Wall_Id1=0\n`;
       returnValue += `Tie_In_Option1=3\n`;
-      returnValue += `Offset2=${partitions[i].end}`;
+      returnValue += `Offset2=${partitions[i].end || 0}\n`;
       returnValue += `Adj_Wall_Id2=0\n`;
       returnValue += `Tie_In_Option2=3\n`;
       returnValue += `Number=${offsetBays.length}\n`;
       for (let j = 0; j < offsetBays.length; j++) {
         returnValue += `Loc${j + 1}=${offsetBays[j]}\n`;
       }
+
+      console.log('bays: ', bays);
+      console.log('offsets: ', offsetBays);
 
       returnValue += `\n[PARTITION_BAY_SPACING_WALL${itemNum}]\n`;
       returnValue += `${formatBaySpacing(partitions[i].baySpacing)}`;
@@ -4880,7 +4898,7 @@ export function useExport() {
       returnValue += `${getFramedOpenings(building, 'partition', i + 1)}`;
 
       returnValue += `\n[PARTITION_FRAMING_WALL${itemNum}]\n`;
-      if (partitions[i].wall == 'T' && bays.includes(offsetBays[0])) {
+      if (partitions[i].wall == 't' && bays.includes(offsetBays[0])) {
         returnValue += `Col_Depth=0.0000\n`;
         returnValue += `Start_Col_Type=R\n`;
         returnValue += `Int_Col_Type=R\n`;
@@ -5185,7 +5203,10 @@ export function useExport() {
     let bays = building[wallKey];
     bays = loc == 'back' ? Array.from(bays).reverse() : bays;
 
+    let totalWidth = 0;
+    let prevWidth = 0;
     for (let i = 0; i < bays.length; i++) {
+      totalWidth += bays[i];
       if (i == 0) {
         if (start < bays[i]) {
           startBay = 1;
@@ -5196,13 +5217,14 @@ export function useExport() {
           endOffset = bays[i] - end;
         }
       } else {
+        prevWidth += bays[i - 1];
         if (start < bays[i] && start >= bays[i - 1]) {
           startBay = i + 1;
           startOffset = start - bays[i - 1];
         }
-        if (end <= bays[i] && end > bays[i - 1]) {
+        if (end <= totalWidth && end > prevWidth) {
           endBay = i + 1;
-          endOffset = bays[i] - end;
+          endOffset = totalWidth - end;
         }
       }
     }
