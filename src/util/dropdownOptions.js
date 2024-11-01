@@ -34,6 +34,19 @@ export const shapes = [
   { id: 'nonSymmetrical', label: 'Non-Symmetrical' },
 ];
 
+export const steelFinish = [
+  { id: 'NC', label: 'Standard Enamel Color' },
+  { id: 'CM', label: 'Custom Enamel Color' },
+  { id: 'GZ', label: 'Hot Dip Galvanized' },
+  { id: 'PC', label: 'Powder Coat' },
+  { id: 'PL', label: 'Unfinished Steel' },
+  { id: 'BK', label: 'Black', optionGroup: 'Standard Enamel Colors' },
+  { id: 'GN', label: 'Green', optionGroup: 'Standard Enamel Colors' },
+  { id: 'GY', label: 'Gray', optionGroup: 'Standard Enamel Colors' },
+  { id: 'RD', label: 'Red', optionGroup: 'Standard Enamel Colors' },
+  { id: 'WH', label: 'White', optionGroup: 'Standard Enamel Colors' },
+];
+
 export const frames = [
   { id: 'rigidFrame', label: 'Rigid Frame' },
   { id: 'multiSpan', label: 'Multi Span' },

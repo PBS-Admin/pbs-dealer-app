@@ -101,7 +101,6 @@ export const initialState = {
   otherBulkStorage: false,
   otherLoadsByOthers: false,
   // Building Project Page
-  steelFinish: 'GZ',
   boltFinish: '',
   buildings: [
     {
@@ -112,6 +111,7 @@ export const initialState = {
       rotation: 0,
       commonWall: '',
       // Building - Layout
+      steelFinish: 'NC',
       shape: 'symmetrical',
       backPeakOffset: '',
       backEaveHeight: '',

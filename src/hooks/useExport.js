@@ -371,7 +371,7 @@ export function useExport() {
       create: true,
     });
 
-    const { length, roofBreakPoints } = building;
+    const { length, roofBreakPoints, steelFinish } = building;
 
     let draftCost, foundCost, farmBureau;
 
@@ -453,7 +453,7 @@ export function useExport() {
     await writable.write(`\n`);
     await writable.write(`\n`);
     await writable.write(`\n`);
-    await writable.write(`${values.steelFinish == 'GZ' ? 'GZ' : 'ST'}\n`); // todo: create var
+    await writable.write(`${steelFinish == 'GZ' ? 'GZ' : 'ST'}\n`); // todo: create var
     await writable.write(`${roofBreakPoints == 'left' ? 'N' : 'Y'}\n`);
     await writable.write(
       `${values.projectState == 'OR' || values.projectState == 'WA' ? 'Y' : 'N'}\n`

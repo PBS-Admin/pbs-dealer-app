@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCalculator,
   faMagnifyingGlass,
+  faCircleInfo,
 } from '@fortawesome/free-solid-svg-icons';
 
 const formatDouble = (value, decimalPlaces) => {
@@ -30,6 +31,7 @@ const ReusableDouble = ({
   icon = '',
   iconClass = '',
   iconOnClick = null,
+  tooltip,
   disabled = false,
   placeholder,
   decimalPlaces = 2,
@@ -39,6 +41,7 @@ const ReusableDouble = ({
   const iconMap = {
     calculator: faCalculator,
     lookup: faMagnifyingGlass,
+    info: faCircleInfo,
   };
 
   useEffect(() => {
@@ -85,9 +88,10 @@ const ReusableDouble = ({
           <button
             type="button"
             onClick={iconOnClick}
-            className={`icon ${iconClass}`}
+            className={`icon ${iconClass} ${tooltip ? 'tooltip' : ''}`}
           >
             <FontAwesomeIcon icon={iconMap[icon]} />
+            {tooltip && <p>{tooltip}</p>}
           </button>
         )}
       </label>
