@@ -548,7 +548,8 @@ button.accent:hover {
 }
 
 button.success,
-.button.success {
+.button.success,
+.success {
   background-color: var(--green);
 }
 
@@ -558,7 +559,8 @@ button.success:hover {
 }
 
 button.reject,
-.button.reject {
+.button.reject,
+.reject {
   background-color: var(--red);
 }
 
