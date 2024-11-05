@@ -657,10 +657,10 @@ const BuildingWallOptions = ({
         )}
       </section>
 
-      {/* Liner Panel Options */}
+      {/* Wall Liner Panel Options */}
       <section className="card">
         <header>
-          <h3>Liner Panels</h3>
+          <h3>Wall Liner Panels</h3>
         </header>
         {values.buildings[activeBuilding].frontGirtType != 'open' ||
         values.buildings[activeBuilding].backGirtType != 'open' ||

@@ -291,6 +291,8 @@ export const wallsOuterBoth = [
   { id: 'outerRight', label: 'Outer Right Endwall' },
 ];
 
+export const roof = [{ id: 'roof', label: 'Roof' }];
+
 export const roofs = [
   { id: 'back', label: 'Back Roof' },
   { id: 'front', label: 'Front Roof' },

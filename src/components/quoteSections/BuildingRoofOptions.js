@@ -12,16 +12,72 @@ import {
   roofInsulation,
   polycarbRoofSize,
   polycarbRoofColor,
+  roof,
 } from '../../util/dropdownOptions';
 
 const BuildingRoofOptions = ({
   values,
   activeBuilding,
   handleNestedChange,
+  handleRoofLinerPanelChange,
   handleRoofReliteChange,
   setValues,
 }) => {
+  const [activeRoofLinerPanel, setActiveRoofLinerPanel] = useState(0);
   const [activeRoofRelite, setActiveRoofRelite] = useState(0);
+
+  const addRoofLinerPanel = (buildingIndex) => {
+    setValues((prev) => ({
+      ...prev,
+      buildings: prev.buildings.map((building, index) =>
+        index === buildingIndex
+          ? {
+              ...building,
+              roofLinerPanels: [
+                ...building.roofLinerPanels,
+                {
+                  wall: 'roof',
+                  start: '',
+                  end: '',
+                  height: '',
+                  roofLinerPanelType: 'pbr',
+                  roofLinerPanelGauge: '26',
+                  roofLinerPanelFinish: 'painted',
+                },
+              ],
+            }
+          : building
+      ),
+    }));
+  };
+
+  const removeRoofLinerPanel = (buildingIndex, roofLinerPanelIndex) => {
+    setValues((prev) => {
+      const newBuildings = prev.buildings.map((building, bIndex) =>
+        bIndex === buildingIndex
+          ? {
+              ...building,
+              roofLinerPanels: building.roofLinerPanels.filter(
+                (_, lpIndex) => lpIndex !== roofLinerPanelIndex
+              ),
+            }
+          : building
+      );
+
+      const remainingRoofLinerPanels =
+        newBuildings[buildingIndex].roofLinerPanels.length;
+      if (
+        roofLinerPanelIndex <= activeRoofLinerPanel &&
+        activeRoofLinerPanel > 0
+      ) {
+        setActiveRoofLinerPanel(
+          Math.min(activeRoofLinerPanel - 1, remainingRoofLinerPanels - 1)
+        );
+      }
+
+      return { ...prev, buildings: newBuildings };
+    });
+  };
 
   const addRoofRelite = (buildingIndex) => {
     setValues((prev) => ({
@@ -364,6 +420,186 @@ const BuildingRoofOptions = ({
             }
           />
         </div>
+      </section>
+
+      {/* Roof Liner Panel Options */}
+      <section className="card">
+        <header>
+          <h3>Roof Liner Panels</h3>
+        </header>
+        <>
+          {values.buildings[activeBuilding].roofLinerPanels?.length > 0 && (
+            <div className="onTablet">
+              <div className="tableGrid5">
+                <h5>Location</h5>
+                <h5>
+                  Start <small>(Left to Right)</small>
+                </h5>
+                <h5>
+                  End <small>(Left to Right)</small>
+                </h5>
+                <h5>Height</h5>
+                <h5></h5>
+                <h5></h5>
+              </div>
+            </div>
+          )}
+          {values.buildings[activeBuilding].roofLinerPanels?.map(
+            (roofLinerPanel, roofLinerPanelIndex) => (
+              <Fragment
+                key={`building-${activeBuilding}-roofLinerPanel-${roofLinerPanelIndex}`}
+              >
+                <div
+                  className={`tableGrid5 ${roofLinerPanelIndex == activeRoofLinerPanel ? 'activeRow' : ''}`}
+                >
+                  <ReusableSelect
+                    name={`building-${activeBuilding}-roofLinerPanelWall-${roofLinerPanelIndex}`}
+                    labelClass="offOnTablet"
+                    value={roofLinerPanel.wall}
+                    onChange={(e) =>
+                      handleRoofLinerPanelChange(
+                        activeBuilding,
+                        roofLinerPanelIndex,
+                        'wall',
+                        e.target.value
+                      )
+                    }
+                    onFocus={() => {
+                      if (activeRoofLinerPanel !== roofLinerPanelIndex) {
+                        setActiveRoofLinerPanel(roofLinerPanelIndex);
+                      }
+                    }}
+                    options={roof}
+                    label="Location:"
+                  />
+                  <FeetInchesInput
+                    name={`building-${activeBuilding}-roofLinerPanelStart-${roofLinerPanelIndex}`}
+                    label={
+                      <>
+                        <span>
+                          Start: <small>(Left to Right)</small>
+                        </span>
+                      </>
+                    }
+                    labelClass="offOnTablet"
+                    value={roofLinerPanel.start}
+                    allowBlankValue={true}
+                    allowZero={true}
+                    onChange={(e) =>
+                      handleRoofLinerPanelChange(
+                        activeBuilding,
+                        roofLinerPanelIndex,
+                        'start',
+                        e.target.value
+                      )
+                    }
+                    onFocus={() => {
+                      if (activeRoofLinerPanel !== roofLinerPanelIndex) {
+                        setActiveRoofLinerPanel(roofLinerPanelIndex);
+                      }
+                    }}
+                  />
+                  <FeetInchesInput
+                    name={`building-${activeBuilding}-roofLinerPanelEnd-${roofLinerPanelIndex}`}
+                    label={
+                      <>
+                        <span>
+                          End: <small>(Left to Right)</small>
+                        </span>
+                      </>
+                    }
+                    labelClass="offOnTablet"
+                    value={roofLinerPanel.end}
+                    allowBlankValue={true}
+                    onChange={(e) =>
+                      handleRoofLinerPanelChange(
+                        activeBuilding,
+                        roofLinerPanelIndex,
+                        'end',
+                        e.target.value
+                      )
+                    }
+                    onFocus={() => {
+                      if (activeRoofLinerPanel !== roofLinerPanelIndex) {
+                        setActiveRoofLinerPanel(roofLinerPanelIndex);
+                      }
+                    }}
+                  />
+                  <FeetInchesInput
+                    name={`building-${activeBuilding}-roofLinerPanelEnd-${roofLinerPanelIndex}`}
+                    label="Height:"
+                    labelClass="offOnTablet"
+                    value={roofLinerPanel.height}
+                    allowBlankValue={true}
+                    onChange={(e) =>
+                      handleRoofLinerPanelChange(
+                        activeBuilding,
+                        roofLinerPanelIndex,
+                        'height',
+                        e.target.value
+                      )
+                    }
+                    onFocus={() => {
+                      if (activeRoofLinerPanel !== roofLinerPanelIndex) {
+                        setActiveRoofLinerPanel(roofLinerPanelIndex);
+                      }
+                    }}
+                    placeholder="Leave Blank for Full Ht"
+                  />
+                  <button
+                    type="button"
+                    className="icon reject deleteRow"
+                    onClick={() =>
+                      removeRoofLinerPanel(activeBuilding, roofLinerPanelIndex)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                </div>
+                <div className="divider offOnTablet"></div>
+              </Fragment>
+            )
+          )}
+
+          {values.buildings[activeBuilding].roofLinerPanels?.length > 0 && (
+            <>
+              <div className="divider onDesktop"></div>
+              <div className="grid2">
+                <div className="onLaptop"></div>
+                <ReusablePanel
+                  name="RoofLiner"
+                  valueKey="roofLiner"
+                  label="Liner"
+                  bldg={activeBuilding}
+                  idx={activeRoofLinerPanel}
+                  value={
+                    values.buildings[activeBuilding].roofLinerPanels[
+                      activeRoofLinerPanel
+                    ]
+                  }
+                  onChange={(e, keyString) =>
+                    handleRoofLinerPanelChange(
+                      activeBuilding,
+                      activeRoofLinerPanel,
+                      keyString,
+                      e.target.value
+                    )
+                  }
+                />
+              </div>
+            </>
+          )}
+          <div className="divider"></div>
+          <div className="buttonFooter">
+            <button
+              type="button"
+              className="addButton"
+              onClick={() => addRoofLinerPanel(activeBuilding)}
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </button>
+          </div>
+        </>
       </section>
 
       {/* Point Loads */}

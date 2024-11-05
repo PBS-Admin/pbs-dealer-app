@@ -329,11 +329,17 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
     let user = session.user;
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       const response = await fetch('/api/auth/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentQuote, user, values }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = await response.json();
@@ -355,7 +361,11 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         setError(data.message || 'Something went wrong');
       }
     } catch (error) {
-      setError('An error occurred. Please try again.');
+      if (error.name === 'AbortError') {
+        setError('Request timed out. Please try again.');
+      } else {
+        setError('An error occurred. Please try again.');
+      }
     }
   };
 
@@ -920,6 +930,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               values={values}
               activeBuilding={activeBuilding}
               handleNestedChange={handleNestedChange}
+              handleRoofLinerPanelChange={handleRoofLinerPanelChange}
               handleRoofReliteChange={handleRoofReliteChange}
               setValues={setValues}
               isDesktop={isDesktop}
@@ -934,7 +945,6 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               activeBuilding={activeBuilding}
               handleNestedChange={handleNestedChange}
               handleWallLinerPanelChange={handleWallLinerPanelChange}
-              handleRoofLinerPanelChange={handleRoofLinerPanelChange}
               handleWainscotChange={handleWainscotChange}
               handlePartialWallChange={handlePartialWallChange}
               handleWallSkirtChange={handleWallSkirtChange}
