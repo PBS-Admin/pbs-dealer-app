@@ -2,7 +2,6 @@ import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { compare } from 'bcrypt';
 import { query, getPoolStatus } from '../../../../lib/db';
-import jwt from 'jsonwebtoken';
 
 export const authOptions = {
   providers: [
@@ -45,7 +44,6 @@ export const authOptions = {
 
         const status = await getPoolStatus();
 
-        console.log('Authorization successful');
         return {
           id: user[0].ID,
           email: user[0].Username,
@@ -57,7 +55,7 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
@@ -65,27 +63,33 @@ export const authOptions = {
         token.company = user.company;
         token.permission = user.permission;
       }
-      // Sign the token
-      const encodedToken = jwt.sign(token, process.env.NEXTAUTH_SECRET);
-      token.accessToken = encodedToken;
+
+      if (trigger === 'update' && session?.user?.company) {
+        token.company = session.user.company;
+      }
+
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id;
-      session.user.email = token.email;
-      session.user.fullName = token.fullName;
-      session.user.company = token.company;
-      session.user.permission = token.permission;
-      session.user.accessToken = token.accessToken;
+      session.user = {
+        id: token.id,
+        email: token.email,
+        fullName: token.fullName,
+        company: token.company,
+        permission: token.permission,
+      };
       return session;
     },
   },
   pages: {
     signIn: '/login',
   },
+  session: {
+    strategy: 'jwt',
+    maxAge: 24 * 60 * 60, // 24 hours
+  },
   secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };

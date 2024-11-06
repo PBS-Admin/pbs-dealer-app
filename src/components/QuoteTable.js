@@ -1,7 +1,8 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DeleteDialog from './DeleteDialog';
 import styles from './QuoteTable.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -19,18 +20,99 @@ import {
   faComment,
 } from '@fortawesome/free-regular-svg-icons';
 import CopyDialog from './CopyDialog';
+import { getQuotes, getQuote } from '../util/quoteUtils';
+import { redirect } from 'next/navigation';
 
-export default function QuoteTable({
-  initialQuotes,
-  onCopyQuote,
-  companies,
-  permission,
-}) {
-  const [quotes, setQuotes] = useState(initialQuotes);
+export default function QuoteTable() {
+  const { data: session, update: updateSession } = useSession();
+  const [quotes, setQuotes] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentCompany, setCurrentCompany] = useState(session?.user?.company);
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [quoteToDelete, setQuoteToDelete] = useState(null);
   const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
   const [quoteToCopy, setQuoteToCopy] = useState(null);
+
+  const handleCompanyChange = async (event) => {
+    const newCompany = parseInt(event.target.value);
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Get new token with updated company
+      const response = await fetch('/api/auth/change-company', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ newCompany }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update company');
+      }
+
+      await updateSession({
+        ...session,
+        user: {
+          ...session?.user,
+          company: newCompany,
+        },
+      });
+
+      setCurrentCompany(newCompany);
+
+      const quotesResponse = await fetch(
+        `/api/auth/open?company=${newCompany}`
+      );
+      if (!quotesResponse.ok) {
+        throw new Error('Failed to fetch quotes');
+      }
+      const quotesData = await quotesResponse.json();
+      setQuotes(quotesData.quotes);
+      setCompanies(quotesData.companies);
+    } catch (err) {
+      console.error('Error changing company:', err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!session) {
+      console.log('No session, redirecting to login');
+      redirect('/login');
+      return;
+    }
+
+    const fetchQuotes = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(
+          `/api/auth/open?company=${session.user.company}`
+        );
+        if (!response.ok) {
+          throw new Error('Failed to fetch quotes');
+        }
+        const data = await response.json();
+        setQuotes(data.quotes);
+        setCompanies(data.companies);
+      } catch (err) {
+        console.error('Error fetching quotes:', err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchQuotes();
+  }, [session]);
 
   const openDeleteDialog = (quoteId) => {
     setQuoteToDelete(quoteId);
@@ -86,7 +168,7 @@ export default function QuoteTable({
     if (!quoteToCopy) return;
 
     try {
-      const quote = await onCopyQuote(quoteToCopy);
+      const quote = await getQuote(quoteToCopy, session?.user?.accessToken);
 
       const currentQuote = 0;
       const company = quote.Company;
@@ -126,14 +208,15 @@ export default function QuoteTable({
 
   return (
     <div className={styles.quoteContainer}>
-      {permission > 4 && (
+      {/* Permission for a Super user who can view multiple companies jobs */}
+      {session.user.permission >= 3 && (
         <div className={styles.companyList}>
           <select
             className="selectInput"
             id="companyList"
             name="companyList"
-            value={1}
-            // onChange={onChange}
+            value={currentCompany}
+            onChange={handleCompanyChange}
           >
             {companies.map((option) => (
               <option key={option.ID} value={option.ID}>

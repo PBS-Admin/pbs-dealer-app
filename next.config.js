@@ -8,6 +8,19 @@ const nextConfig = {
   env: {
     APP_VERSION: process.env.npm_package_version,
   },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Large-Allocation',
+            value: 'true',
+          },
+        ],
+      },
+    ];
+  },
   async rewrites() {
     return [
       {
