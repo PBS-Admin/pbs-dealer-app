@@ -3,6 +3,10 @@ export async function getQuotes(company, sessionToken) {
   const url = new URL('/api/auth/open', baseUrl);
   url.searchParams.append('company', company);
 
+  console.log('company: ', company);
+  console.log('session: ', sessionToken);
+  console.log('url: ', url);
+
   const res = await fetch(url.toString(), {
     method: 'GET',
     headers: {

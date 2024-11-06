@@ -1,25 +1,21 @@
 import { NextResponse } from 'next/server';
 import { query, getPoolStatus } from '../../../../lib/db';
-import jwt from 'jsonwebtoken';
+import { getToken } from 'next-auth/jwt';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '../[...nextauth]/route';
 
 export async function GET(req) {
   try {
-    const authHeader = req.headers.get('authorization');
+    // Use NextAuth's getToken instead of manual JWT verification
+    const session = await getServerSession(authOptions);
+    const token = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      console.log('No bearer token found, returning Unauthorized');
+    if (!session || !token) {
+      console.log('No valid session or token found, returning Unauthorized');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const token = authHeader.split(' ')[1];
-
-    let decodedToken;
-    try {
-      decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET);
-      // console.log('decode: ', decodedToken);
-    } catch (error) {
-      console.error('Token verification failed:', error);
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
     const { searchParams } = new URL(req.url);
@@ -33,7 +29,11 @@ export async function GET(req) {
       );
     }
 
-    if (decodedToken.company !== parseInt(company)) {
+    const currentCompany = session.user.company;
+    console.log('Session company:', currentCompany);
+    console.log('Request company:', parseInt(company));
+
+    if (currentCompany != parseInt(company)) {
       console.log('Company mismatch, returning 403');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }

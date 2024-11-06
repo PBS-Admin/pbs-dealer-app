@@ -1,7 +1,8 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DeleteDialog from './DeleteDialog';
 import styles from './QuoteTable.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -19,18 +20,52 @@ import {
   faComment,
 } from '@fortawesome/free-regular-svg-icons';
 import CopyDialog from './CopyDialog';
+import { getQuotes, getQuote } from '../util/quoteUtils';
+import { redirect } from 'next/navigation';
 
-export default function QuoteTable({
-  initialQuotes,
-  onCopyQuote,
-  companies,
-  permission,
-}) {
-  const [quotes, setQuotes] = useState(initialQuotes);
+export default function QuoteTable() {
+  const { data: session } = useSession();
+  const [quotes, setQuotes] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [quoteToDelete, setQuoteToDelete] = useState(null);
   const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
   const [quoteToCopy, setQuoteToCopy] = useState(null);
+
+  useEffect(() => {
+    if (!session) {
+      console.log('No session, redirecting to login');
+      redirect('/login');
+      return;
+    }
+
+    const fetchQuotes = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(
+          `/api/auth/open?company=${session.user.company}`
+        );
+        if (!response.ok) {
+          throw new Error('Failed to fetch quotes');
+        }
+        const data = await response.json();
+        setQuotes(data.quotes);
+        setCompanies(data.companies);
+      } catch (err) {
+        console.error('Error fetching quotes:', err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchQuotes();
+  }, [session]);
 
   const openDeleteDialog = (quoteId) => {
     setQuoteToDelete(quoteId);
@@ -86,7 +121,7 @@ export default function QuoteTable({
     if (!quoteToCopy) return;
 
     try {
-      const quote = await onCopyQuote(quoteToCopy);
+      const quote = await getQuote(quoteToCopy, session?.user?.accessToken);
 
       const currentQuote = 0;
       const company = quote.Company;
@@ -126,23 +161,6 @@ export default function QuoteTable({
 
   return (
     <div className={styles.quoteContainer}>
-      {permission > 4 && (
-        <div className={styles.companyList}>
-          <select
-            className="selectInput"
-            id="companyList"
-            name="companyList"
-            value={1}
-            // onChange={onChange}
-          >
-            {companies.map((option) => (
-              <option key={option.ID} value={option.ID}>
-                {option.Name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
       <div className={styles.quoteTable}>
         {quotes.length > 0 ? (
           <table>
