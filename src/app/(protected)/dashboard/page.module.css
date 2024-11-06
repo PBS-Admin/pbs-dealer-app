@@ -1,61 +1,84 @@
-.dashMain {    
-    display: grid;    
-    grid-template-columns: 1fr;
-    min-height: 100vh;
-    background-color: var(--dark-blue);
+.dashMain {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100vh;
+  background-color: var(--dark-blue);
 }
 
 .dashCard {
-    background-color: var(--background-white);
-    border-radius: 1em;
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    align-self: center;
-    justify-self: center;
-    padding: .75em;
-    gap: .75em;
+  background-color: var(--background-white);
+  border-radius: 1em;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  align-self: center;
+  justify-self: center;
+  padding: 0.75em;
+  gap: 0.75em;
 }
 
 .dashCard a {
-    text-decoration: none;
-    text-align: center;
-    transition: all .3s ease;
-    width: 250px;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease;
+  width: 250px;
 }
 
 .dashCard a .cardBody {
-    padding: .75em;
-    border: 1px solid var(--light-gray);
-    border-top: none;
-    border-radius: 0 0 .5em .5em;
+  padding: 0.75em;
+  border: 1px solid var(--light-gray);
+  border-top: none;
+  border-radius: 0 0 0.5em 0.5em;
 }
 
 .dashCard a .cardBody div {
-    border-radius: 50%;
-    width: 200px;
-    height: 200px;
-    margin: auto;
-    text-decoration: none;
-    text-align: center;
-    transition: all .3s ease;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  margin: auto;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease;
 }
 
 .dashCard img {
-    max-width: 200px;
-    max-height: 200px;
+  max-width: 200px;
+  max-height: 200px;
 }
 
 .dashCard h3 {
-    background-color: var(--dark-blue);
-    width: 100%;
-    border-radius: .5em .5em 0 0;
-    padding: .25em;
-    text-align: center;
-    max-height: 31px;
-    color: var(--background-white);
+  background-color: var(--dark-blue);
+  width: 100%;
+  border-radius: 0.5em 0.5em 0 0;
+  padding: 0.25em;
+  text-align: center;
+  max-height: 31px;
+  color: var(--background-white);
 }
 
 .dashCard a:hover .cardBody div {
-    background-color: var(--dark-blue);
+  background-color: var(--dark-blue);
+}
+
+.dashContainer {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 3em;
+  margin-top: 2em;
+}
+
+.companyList select {
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--blue);
+  color: var(--background-white);
+  font-size: 20px;
+  text-align: center;
+}
+
+.companyList select option {
+  background-color: var(--background-white);
+  color: var(--black);
 }

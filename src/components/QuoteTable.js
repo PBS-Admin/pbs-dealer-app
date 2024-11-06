@@ -24,63 +24,16 @@ import { getQuotes, getQuote } from '../util/quoteUtils';
 import { redirect } from 'next/navigation';
 
 export default function QuoteTable() {
-  const { data: session, update: updateSession } = useSession();
+  const { data: session } = useSession();
   const [quotes, setQuotes] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentCompany, setCurrentCompany] = useState(session?.user?.company);
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [quoteToDelete, setQuoteToDelete] = useState(null);
   const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
   const [quoteToCopy, setQuoteToCopy] = useState(null);
-
-  const handleCompanyChange = async (event) => {
-    const newCompany = parseInt(event.target.value);
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Get new token with updated company
-      const response = await fetch('/api/auth/change-company', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ newCompany }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update company');
-      }
-
-      await updateSession({
-        ...session,
-        user: {
-          ...session?.user,
-          company: newCompany,
-        },
-      });
-
-      setCurrentCompany(newCompany);
-
-      const quotesResponse = await fetch(
-        `/api/auth/open?company=${newCompany}`
-      );
-      if (!quotesResponse.ok) {
-        throw new Error('Failed to fetch quotes');
-      }
-      const quotesData = await quotesResponse.json();
-      setQuotes(quotesData.quotes);
-      setCompanies(quotesData.companies);
-    } catch (err) {
-      console.error('Error changing company:', err);
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
     if (!session) {
@@ -208,24 +161,6 @@ export default function QuoteTable() {
 
   return (
     <div className={styles.quoteContainer}>
-      {/* Permission for a Super user who can view multiple companies jobs */}
-      {session.user.permission >= 3 && (
-        <div className={styles.companyList}>
-          <select
-            className="selectInput"
-            id="companyList"
-            name="companyList"
-            value={currentCompany}
-            onChange={handleCompanyChange}
-          >
-            {companies.map((option) => (
-              <option key={option.ID} value={option.ID}>
-                {option.Name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
       <div className={styles.quoteTable}>
         {quotes.length > 0 ? (
           <table>
