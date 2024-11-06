@@ -4,6 +4,7 @@ import {
   faCalculator,
   faMagnifyingGlass,
   faCircleInfo,
+  faCopy,
 } from '@fortawesome/free-solid-svg-icons';
 
 const ReusableSelect = ({
@@ -31,6 +32,7 @@ const ReusableSelect = ({
     calculator: faCalculator,
     lookup: faMagnifyingGlass,
     info: faCircleInfo,
+    copy: faCopy,
   };
 
   //Option Groups

@@ -665,6 +665,10 @@ const BuildingLayout = ({
                   e.target.value
                 )
               }
+              icon={'copy'}
+              iconClass={'prim'}
+              // iconOnClick={}
+              tooltip="Copy to all Walls"
               options={girtTypes}
               label="Front Sidewall Girt Type:"
             />

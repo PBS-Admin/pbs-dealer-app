@@ -14,7 +14,7 @@ export default function Home() {
       </Link>
       <section className={styles.splashCard}>
         <Image alt="PBS Buildings Logo" src={logo} className="image" />
-        <h1>Welcome to the PBS Dealer Application</h1>
+        <h1>Welcome to the Dealer Application</h1>
         <Link href="/login" className="button prim">
           Login
         </Link>
