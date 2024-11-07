@@ -36,6 +36,13 @@ export async function POST(req) {
             user.id,
           ]
         );
+
+        const logRes = await conn.query(
+          'INSERT INTO Save_Log (QuoteId, SavedBy, DateSaved) VALUES (?, ?, ?, Now())',
+          [quoteNumber, user.id]
+        );
+
+        console.log('logRes: ', logRes);
       });
 
       const quoteId = Number(result.insertId);
@@ -48,18 +55,26 @@ export async function POST(req) {
 
       return NextResponse.json({ message }, { status: 201 });
     } else if (currentQuote > 0) {
-      // Store the new user in the database
-      result = await query(
-        'UPDATE Dealer_Quotes SET QuoteData = ?, Customer = ?, ProjectName = ?, LastSaved = Now(), SavedBy = ? WHERE id = ?',
-        [
-          JSON.stringify(values),
-          values.customerName,
-          values.projectName,
-          user.id,
-          currentQuote,
-        ]
-      );
+      await transaction(async (conn) => {
+        // Store the new user in the database
+        result = await query(
+          'UPDATE Dealer_Quotes SET QuoteData = ?, Customer = ?, ProjectName = ?, LastSaved = Now(), SavedBy = ? WHERE id = ?',
+          [
+            JSON.stringify(values),
+            values.customerName,
+            values.projectName,
+            user.id,
+            currentQuote,
+          ]
+        );
 
+        const logRes = await conn.query(
+          'INSERT INTO Save_Log (QuoteId, SavedBy, DateSaved) VALUES (?, ?, Now())',
+          [currentQuote, user.id]
+        );
+
+        console.log('logRes: ', logRes);
+      });
       return NextResponse.json(
         { message: `Quote updated`, updatedValues: values },
         { status: 201 }
