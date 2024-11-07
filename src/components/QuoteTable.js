@@ -20,7 +20,6 @@ import {
   faComment,
 } from '@fortawesome/free-regular-svg-icons';
 import CopyDialog from './CopyDialog';
-import { getQuotes, getQuote } from '../util/quoteUtils';
 import { redirect } from 'next/navigation';
 
 export default function QuoteTable() {
@@ -121,35 +120,48 @@ export default function QuoteTable() {
     if (!quoteToCopy) return;
 
     try {
-      const quote = await getQuote(quoteToCopy, session?.user?.accessToken);
-
-      const currentQuote = 0;
-      const company = quote.Company;
-      const values = JSON.parse(quote.QuoteData);
+      setIsLoading(true);
+      setError(null);
 
       try {
-        const response = await fetch('/api/auth/save', {
+        const response = await fetch(`/api/auth/quote/${quoteToCopy}`);
+        if (!response.ok) {
+          throw new Error('Failed to copy quote');
+        }
+        const data = await response.json();
+
+        const currentQuote = 0;
+        const company = data.quote.Company;
+        const user = {
+          company: company,
+          id: session.user.id,
+        };
+        const values = JSON.parse(data.quote.QuoteData);
+
+        const saveResponse = await fetch('/api/auth/save', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ currentQuote, company, values }),
+          body: JSON.stringify({ currentQuote, user, values }),
         });
 
-        if (response.ok) {
-          const data = await response.json();
+        if (saveResponse.ok) {
+          const saveData = await saveResponse.json();
 
-          if (isNaN(data.message.quoteId)) {
+          if (isNaN(saveData.message.quoteId)) {
             console.log("Couldn't find a quote id");
           } else {
-            quote.ID = data.message.quoteId;
-            quote.Quote = data.message.quoteNum;
-            setQuotes([...quotes, quote]);
+            data.quote.ID = saveData.message.quoteId;
+            data.quote.Quote = saveData.message.quoteNum;
+            setQuotes([...quotes, data.quote]);
           }
         } else {
           console.log('Response was not ok');
         }
-      } catch (error) {
-        console.log('Errored out');
-        alert('Failed to copy quote. Please try again.');
+      } catch (err) {
+        console.error('Error fetching quotes:', err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
       }
 
       closeCopyDialog();

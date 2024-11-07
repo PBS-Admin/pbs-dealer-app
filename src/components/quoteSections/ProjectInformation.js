@@ -72,7 +72,6 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
 
   const clearAddress = useCallback(
     (addressType) => {
-      console.log('Clear address clicked');
       const fields =
         addressType === 'project'
           ? [

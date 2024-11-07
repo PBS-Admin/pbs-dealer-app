@@ -10,7 +10,6 @@ export async function POST(request) {
     }
 
     const { newCompany } = await request.json();
-    console.log('change newCompany: ', newCompany);
 
     return NextResponse.json({
       success: true,

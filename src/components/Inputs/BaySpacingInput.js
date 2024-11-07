@@ -13,13 +13,13 @@ const parseFeetInput = (input) => {
   if (multiplierMatch) {
     const count = parseInt(multiplierMatch[1], 10);
     const value = parseFloat(multiplierMatch[2]);
-    return Array(count).fill(value);
+    return Array(count).fill(Number(value.toFixed(2)));
   }
 
   // First, try to parse as a decimal number
-  const parsed = parseFloat(input);
-  if (!isNaN(parsed)) {
-    return parsed;
+  if (!isNaN(input)) {
+    const parsed = parseFloat(input);
+    return Number(parsed.toFixed(2));
   }
 
   // If not a simple number, try to parse feet and inches
@@ -28,7 +28,7 @@ const parseFeetInput = (input) => {
   if (match) {
     const feet = parseInt(match[1], 10);
     const inches = match[2] ? parseFloat(match[2]) : 0;
-    return feet + inches / 12;
+    return Number((feet + inches / 12).toFixed(2));
   }
 
   // If all else fails, return NaN
@@ -69,7 +69,11 @@ const BaySpacingInput = ({
 
     const spacings = inputValue
       .split(',')
-      .flatMap((s) => parseFeetInput(s.trim()));
+      .map((s) => s.trim())
+      .flatMap((s) => {
+        const parsed = parseFeetInput(s);
+        return Array.isArray(parsed) ? parsed : [parsed];
+      });
 
     if (spacings.some(isNaN)) {
       setError(
@@ -93,7 +97,7 @@ const BaySpacingInput = ({
 
   const suggestDistribution = () => {
     if (inputValue === '') {
-      const optimalBaySize = 25; // Midpoint of 20-30 range
+      const optimalBaySize = 25;
       const numBays = Math.round(compareValue / optimalBaySize);
       const baySize = compareValue / numBays;
       const suggestion = Array(numBays).fill(baySize);

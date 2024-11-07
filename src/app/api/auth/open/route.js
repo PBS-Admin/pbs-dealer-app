@@ -6,7 +6,6 @@ import { authOptions } from '../[...nextauth]/route';
 
 export async function GET(req) {
   try {
-    // Use NextAuth's getToken instead of manual JWT verification
     const session = await getServerSession(authOptions);
     const token = await getToken({
       req,

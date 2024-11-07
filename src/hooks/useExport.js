@@ -4182,8 +4182,6 @@ export function useExport() {
     for (let i = 0; i < itemTotal; i++) {
       itemNum++;
 
-      console.log('testing gets: ', linerPanels[i]);
-
       liner += `Use${itemNum}=${useId[linerPanels[i].wall]}\n`;
       liner += `Loc_Id${itemNum}=${wallId[linerPanels[i].wall]}\n`;
       liner += `Loc_Start${itemNum}=${linerPanels[i].start || 0}\n`;
@@ -4249,162 +4247,6 @@ export function useExport() {
 
     return returnValue;
   }
-
-  // function setLinerPanels(building) {
-  //   let returnValue = '';
-  //   const { width, length, wallLinerPanels, roofLinerPanels } = building;
-  //   let itemTotal = linerPanels.length;
-  //   let itemNum = 0;
-  //   let liners = { left: '', front: '', right: '', back: '', roof: '' };
-  //   let wallId = { left: 1, front: 2, right: 3, back: 4, roof: 0 };
-  //   let useId = { left: 'W', front: 'W', right: 'W', back: 'W', roof: 'R' };
-  //   let liner = '';
-  //   let wallNum = ['left', 'front', 'right', 'back'];
-
-  //   console.log('before wall');
-  //   if (hasBandedLiner(building, 'wall')) {
-  //     for (let i = 0; i < 4; i++) {
-  //       liners[wallNum[i]] += `Use=Y\n`;
-  //       liners[wallNum[i]] += `Loc_Start=0.0000\n`;
-  //       if (i % 2 == 0) {
-  //         liners[wallNum[i]] += `Loc_End=${width}\n`;
-  //       } else {
-  //         liners[wallNum[i]] += `Loc_End=${length}\n`;
-  //       }
-  //       liners[wallNum[i]] += `Height=0.0000\n`;
-  //       liners[wallNum[i]] += `Part=B-LINER\n`;
-  //       liners[wallNum[i]] += `Type=BLS\n`;
-  //       liners[wallNum[i]] += `Gage=29.0000\n`;
-  //       liners[wallNum[i]] += `Yield=80.0000\n`;
-  //       liners[wallNum[i]] += `Color=--\n`;
-  //       liners[wallNum[i]] += `Style=--\n`;
-  //       liners[wallNum[i]] += `Trim=Y\n`;
-  //       liners[wallNum[i]] += `Trim_Color=--\n`;
-  //       liners[wallNum[i]] += `Trim_Style=--\n`;
-
-  //       itemNum++;
-  //       liner += `Use${itemNum}=W\n`;
-  //       liner += `Loc_Id${itemNum}=${wallId[wallNum[i]]}\n`;
-  //       liner += `Loc_Start${itemNum}=0.0000\n`;
-  //       if (i % 2 == 0) {
-  //         liner += `Loc_End${itemNum}=${width}\n`;
-  //       } else {
-  //         liner += `Loc_End${itemNum}=${length}`;
-  //       }
-  //       liner += `Height${itemNum}=0.0000\n`;
-  //       liner += `Part${itemNum}=B-LINER\n`;
-  //       liner += `Type${itemNum}=BLS\n`;
-  //       liner += `Gage${itemNum}=29.0000\n`;
-  //       liner += `Yield${itemNum}=80.0000\n`;
-  //       liner += `Color${itemNum}=--\n`;
-  //       liner += `Style${itemNum}=--\n`;
-  //       liner += `Trim${itemNum}=Y\n`;
-  //       liner += `Trim_Color${itemNum}=--\n`;
-  //       liner += `Trim_Style${itemNum}=--\n`;
-  //     }
-  //   }
-
-  //   console.log('before roof');
-  //   if (hasBandedLiner(building, 'roof')) {
-  //     liners['roof'] += `Use=Y\n`;
-  //     liners['roof'] += `Loc_Start=0.0000\n`;
-  //     liners['roof'] += `Loc_End=${length}\n`;
-  //     liners['roof'] += `Height=0.0000\n`;
-  //     liners['roof'] += `Part=B-LINER\n`;
-  //     liners['roof'] += `Type=BLS\n`;
-  //     liners['roof'] += `Gage=29.0000\n`;
-  //     liners['roof'] += `Yield=80.0000\n`;
-  //     liners['roof'] += `Color=--\n`;
-  //     liners['roof'] += `Style=--\n`;
-  //     liners['roof'] += `Trim=Y\n`;
-  //     liners['roof'] += `Trim_Color=--\n`;
-  //     liners['roof'] += `Trim_Style=--\n`;
-
-  //     itemNum++;
-  //     liner += `Use${itemNum}=R\n`;
-  //     liner += `Loc_Id${itemNum}=0\n`;
-  //     liner += `Loc_Start${itemNum}=0.0000\n`;
-  //     liner += `Loc_End${itemNum}=${length}\n`;
-  //     liner += `Height${itemNum}=0.0000\n`;
-  //     liner += `Part${itemNum}=B-LINER\n`;
-  //     liner += `Type${itemNum}=BLS\n`;
-  //     liner += `Gage${itemNum}=29.0000\n`;
-  //     liner += `Yield${itemNum}=80.0000\n`;
-  //     liner += `Color${itemNum}=--\n`;
-  //     liner += `Style${itemNum}=--\n`;
-  //     liner += `Trim${itemNum}=Y\n`;
-  //     liner += `Trim_Color${itemNum}=--\n`;
-  //     liner += `Trim_Style${itemNum}=--\n`;
-  //   }
-
-  //   console.log('before sum');
-  //   for (let i = 0; i < itemTotal; i++) {
-  //     itemNum++;
-
-  //     liner += `Use${itemNum}=${useId[linerPanels[i].wall]}\n`;
-  //     liner += `Loc_Id${itemNum}=${wallId[linerPanels[i].wall]}\n`;
-  //     liner += `Loc_Start${itemNum}=${linerPanels[i].start}\n`;
-  //     liner += `Loc_End${itemNum}=${linerPanels[i].end}\n`;
-  //     liner += `Height${itemNum}=${linerPanels[i].height}\n`;
-  //     liner += `Part${itemNum}=${getPanelPart(linerPanels[i], 'liner')}\n`;
-  //     liner += `Type${itemNum}=${getPanelType(linerPanels[i], 'liner')}\n`;
-  //     liner += `Gage${itemNum}=${getPanelGauge(linerPanels[i], 'liner')}\n`;
-  //     liner += `Yield${itemNum}=${getPanelYield(linerPanels[i], 'liner')}\n`;
-  //     liner += `Color${itemNum}=${getPanelColor(linerPanels[i], 'liner')}\n`;
-  //     liner += `Style${itemNum}=--\n`;
-  //     liner += `Trim${itemNum}=Y\n`;
-  //     liner += `Trim_Color${itemNum}=${getPanelColor(linerPanels[i], 'liner')}\n`;
-  //     liner += `Trim_Style${itemNum}=--\n`;
-
-  //     if (linerPanels[i].wall != '') {
-  //       liners[linerPanels[i].wall] += `Use=Y\n`;
-  //       liners[linerPanels[i].wall] += `Loc_Start=${linerPanels[i].start}\n`;
-  //       liners[linerPanels[i].wall] += `Loc_End=${linerPanels[i].end}\n`;
-  //       liners[linerPanels[i].wall] += `Height=${linerPanels[i].height}\n`;
-  //       liners[linerPanels[i].wall] +=
-  //         `Part=${getPanelPart(linerPanels[i], 'liner')}\n`;
-  //       liners[linerPanels[i].wall] +=
-  //         `Type=${getPanelType(linerPanels[i], 'liner')}\n`;
-  //       liners[linerPanels[i].wall] +=
-  //         `Gage=${getPanelGauge(linerPanels[i], 'liner')}\n`;
-  //       liners[linerPanels[i].wall] +=
-  //         `Yield=${getPanelYield(linerPanels[i], 'liner')}\n`;
-  //       liners[linerPanels[i].wall] +=
-  //         `Color=${getPanelColor(linerPanels[i], 'liner')}\n`;
-  //       liners[linerPanels[i].wall] += `Style=--\n`;
-  //       liners[linerPanels[i].wall] += `Trim=Y\n`;
-  //       liners[linerPanels[i].wall] +=
-  //         `Trim_Color=${getPanelColor(linerPanels[i], 'liner')}\n`;
-  //       liners[linerPanels[i].wall] += `Trim_Style=--\n`;
-  //     }
-  //   }
-
-  //   returnValue +=
-  //     liners['left'] == ''
-  //       ? `[LINER_PANELS_WALL1]\n` + `Use=N\n\n`
-  //       : `[LINER_PANELS_WALL1]\n` + `${liners['left']}\n`;
-  //   returnValue +=
-  //     liners['front'] == ''
-  //       ? `[LINER_PANELS_WALL2]\n` + `Use=N\n\n`
-  //       : `[LINER_PANELS_WALL2]\n` + `${liners['front']}\n`;
-  //   returnValue +=
-  //     liners['right'] == ''
-  //       ? `[LINER_PANELS_WALL3]\n` + `Use=N\n\n`
-  //       : `[LINER_PANELS_WALL3]\n` + `${liners['right']}\n`;
-  //   returnValue +=
-  //     liners['back'] == ''
-  //       ? `[LINER_PANELS_WALL4]\n` + `Use=N\n\n`
-  //       : `[LINER_PANELS_WALL4]\n` + `${liners['back']}\n`;
-  //   returnValue +=
-  //     liners['roof'] == ''
-  //       ? `[LINER_PANELS_ROOF]\n` + `Use=N\n\n`
-  //       : `[LINER_PANELS_ROOF]\n` + `${liners['roof']}\n`;
-
-  //   returnValue += `[LINER_PANELS]\n`;
-  //   returnValue += `No_Liners=${itemNum}\n` + liner;
-
-  //   return returnValue;
-  // }
 
   function hasBandedLiner(building, loc) {
     let roofValue, wallValue;
@@ -5260,7 +5102,6 @@ export function useExport() {
         if (start < bays[i]) {
           startBay = 1;
           startOffset = start;
-          console.log('hit 1st: ', startOffset);
         }
         if (end <= bays[i]) {
           endBay = 1;
@@ -5271,7 +5112,6 @@ export function useExport() {
         if (start < bays[i] && start >= bays[i - 1]) {
           startBay = i + 1;
           startOffset = start - bays[i - 1];
-          console.log('hit 2nd: ', startOffset);
         }
         if (end <= totalWidth && end > prevWidth) {
           endBay = i + 1;
@@ -5280,7 +5120,6 @@ export function useExport() {
       }
     }
 
-    console.log('hit final: ', startOffset);
     return [startBay, endBay, startOffset, endOffset];
   }
 
