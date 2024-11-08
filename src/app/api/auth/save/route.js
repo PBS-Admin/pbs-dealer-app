@@ -26,7 +26,7 @@ export async function POST(req) {
         const updatedValues = { ...values, quoteNumber: quoteNumber };
 
         result = await conn.query(
-          'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, Active, DateStarted, LastSaved, SavedBy) VALUES (?, ?, ?, ?, ?, 1, Now(), Now(), ?)',
+          'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, Active, DateStarted) VALUES (?, ?, ?, ?, ?, 1, Now())',
           [
             quoteNumber,
             values.customerName,
@@ -37,12 +37,10 @@ export async function POST(req) {
           ]
         );
 
-        const logRes = await conn.query(
-          'INSERT INTO Save_Log (QuoteId, SavedBy, DateSaved) VALUES (?, ?, ?, Now())',
-          [quoteNumber, user.id]
+        await conn.query(
+          'INSERT INTO Save_Log (QuoteId, SavedBy, DateSaved) VALUES (?, ?, Now())',
+          [result.insertId, user.id]
         );
-
-        console.log('logRes: ', logRes);
       });
 
       const quoteId = Number(result.insertId);
@@ -58,12 +56,11 @@ export async function POST(req) {
       await transaction(async (conn) => {
         // Store the new user in the database
         result = await query(
-          'UPDATE Dealer_Quotes SET QuoteData = ?, Customer = ?, ProjectName = ?, LastSaved = Now(), SavedBy = ? WHERE id = ?',
+          'UPDATE Dealer_Quotes SET QuoteData = ?, Customer = ?, ProjectName = ?, WHERE id = ?',
           [
             JSON.stringify(values),
             values.customerName,
             values.projectName,
-            user.id,
             currentQuote,
           ]
         );
