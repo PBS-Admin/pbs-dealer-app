@@ -26,7 +26,7 @@ export async function POST(req) {
         const updatedValues = { ...values, quoteNumber: quoteNumber };
 
         result = await conn.query(
-          'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, Active, DateStarted) VALUES (?, ?, ?, ?, ?, 1, Now())',
+          'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, Status, DateStarted) VALUES (?, ?, ?, ?, ?, 1, Now())',
           [
             quoteNumber,
             values.customerName,
