@@ -6,7 +6,15 @@ import useValidation from '@/hooks/useValidation';
 import useSeismic from '@/hooks/useSeismic';
 import ReusableToast from '../ReusableToast';
 
-const FinalizeQuote = ({ values, setValues, handleChange }) => {
+const FinalizeQuote = ({
+  values,
+  setValues,
+  handleChange,
+  onSubmitted,
+  quoteProgress,
+  quoteStatus,
+  locked,
+}) => {
   const memoizedSetValues = useCallback(setValues, []);
 
   const { createFolderAndFiles, status, isExporting } = useExport();
@@ -200,20 +208,18 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
         </header>
         <div className="grid4 alignTop">
           <div className="cardButton">
-            <button type="submit" className="success">
-              Save Quote
-            </button>
-            <button
-              type="button"
-              className="accent"
-              onClick={() => {
-                // handleSave();
-                // showToastExport();
-                console.log('Current values:', values);
-              }}
-            >
-              Submit Quote
-            </button>
+            {!locked && (
+              <button type="submit" className="success">
+                Save Quote
+              </button>
+            )}
+            {quoteProgress & 0b100 ? (
+              <div></div>
+            ) : (
+              <button type="button" className="accent" onClick={onSubmitted}>
+                Submit Quote
+              </button>
+            )}
             <button
               type="button"
               className="prim"
@@ -245,29 +251,36 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
             </button>
           </div>
           <div className="divider showWithSidebar span2"></div>
-          <div className="cardButton">
-            <button
-              type="button"
-              className="nuetral"
-              onClick={() => {
-                console.log(values);
-              }}
-            >
-              Archive Quote
-            </button>
-          </div>
-          <div className="divider offOnPhone"></div>
-          <div className="cardButton">
-            <button
-              type="button"
-              className="reject"
-              onClick={() => {
-                console.log(values);
-              }}
-            >
-              Delete Quote
-            </button>
-          </div>
+          {!locked && (
+            <div className="cardButton">
+              <button
+                type="button"
+                className="nuetral"
+                onClick={() => {
+                  console.log(values);
+                }}
+              >
+                Archive Quote
+              </button>
+            </div>
+          )}
+
+          {!locked && (
+            <>
+              <div className="divider offOnPhone"></div>
+              <div className="cardButton">
+                <button
+                  type="button"
+                  className="reject"
+                  onClick={() => {
+                    console.log(values);
+                  }}
+                >
+                  Delete Quote
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </section>
       <ReusableLoader isOpen={isExporting} title="Loading" message={status} />

@@ -12,6 +12,7 @@ const BuildingPartitions = ({
   activeBuilding,
   handlePartitionChange,
   setValues,
+  locked,
 }) => {
   const [activePartition, setActivePartition] = useState(0);
 
@@ -153,6 +154,7 @@ const BuildingPartitions = ({
                   }}
                   options={orientations}
                   label="Orientation:"
+                  disabled={locked}
                 />
                 <FeetInchesInput
                   name={`building-${activeBuilding}-partitionStart-${partitionIndex}`}
@@ -178,6 +180,7 @@ const BuildingPartitions = ({
                       setActivePartition(partitionIndex);
                     }
                   }}
+                  disabled={locked}
                 />
                 <FeetInchesInput
                   name={`building-${activeBuilding}-partitionEnd-${partitionIndex}`}
@@ -202,6 +205,7 @@ const BuildingPartitions = ({
                       setActivePartition(partitionIndex);
                     }
                   }}
+                  disabled={locked}
                 />
                 <FeetInchesInput
                   name={`building-${activeBuilding}-partitionOffset-${partitionIndex}`}
@@ -227,6 +231,7 @@ const BuildingPartitions = ({
                       setActivePartition(partitionIndex);
                     }
                   }}
+                  disabled={locked}
                 />
                 <FeetInchesInput
                   name={`building-${activeBuilding}-partitionHeight-${partitionIndex}`}
@@ -248,6 +253,7 @@ const BuildingPartitions = ({
                     }
                   }}
                   placeholder="Leave Blank for Full Ht"
+                  disabled={locked}
                 />
                 <BaySpacingInput
                   name={`building-${activeBuilding}-partitionBaySpacing-${partitionIndex}`}
@@ -269,6 +275,7 @@ const BuildingPartitions = ({
                   }}
                   compareLabel="partition length"
                   compareValue={partition.end - partition.start}
+                  disabled={locked}
                 />
                 <ReusableSelect
                   name={`building-${activeBuilding}-partitionInsulation-${partitionIndex}`}
@@ -289,6 +296,7 @@ const BuildingPartitions = ({
                   }}
                   options={wallInsulation}
                   label="Insuation:"
+                  disabled={locked}
                 />
                 <button
                   type="button"
@@ -296,6 +304,7 @@ const BuildingPartitions = ({
                   onClick={() =>
                     removePartition(activeBuilding, partitionIndex)
                   }
+                  disabled={locked}
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -326,6 +335,7 @@ const BuildingPartitions = ({
                     e.target.value
                   )
                 }
+                disabled={locked}
               />
               <div className="divider offOnLaptop"></div>
               <ReusablePanel
@@ -345,12 +355,13 @@ const BuildingPartitions = ({
                     e.target.value
                   )
                 }
+                disabled={locked}
               />
             </div>
           </>
         )}
 
-        {values.buildings[activeBuilding].partitions.length < 6 && (
+        {values.buildings[activeBuilding].partitions.length < 6 && !locked && (
           <>
             <div className="divider"></div>
             <div className="buttonFooter">

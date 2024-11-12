@@ -11,8 +11,12 @@ export default async function Quote({ params }) {
     redirect('/login');
   }
 
+  console.log('params', params);
+
   const quoteId = params.id;
   let quoteData = null;
+  let progress = null;
+  let status = null;
   let error = null;
   if (quoteId != 0 && quoteId != null) {
     try {
@@ -23,6 +27,8 @@ export default async function Quote({ params }) {
 
       if (results.length > 0) {
         quoteData = results[0].QuoteData;
+        progress = results[0].Progress;
+        status = results[0].Status;
       } else {
         error = 'Quote not found';
       }
@@ -41,6 +47,8 @@ export default async function Quote({ params }) {
       session={session}
       quoteId={quoteId}
       initialQuoteData={JSON.parse(quoteData)}
+      progress={progress}
+      status={status}
     />
   );
 }

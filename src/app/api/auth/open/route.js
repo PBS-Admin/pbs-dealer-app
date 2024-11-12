@@ -39,7 +39,7 @@ export async function GET(req) {
 
     // Only select the columns we need
     const result = await query(
-      'SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, DateStarted FROM Dealer_Quotes WHERE Company = ? AND Status = 1',
+      'SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, DateStarted FROM Dealer_Quotes WHERE Company = ? AND Status & 1',
       [company]
     );
 

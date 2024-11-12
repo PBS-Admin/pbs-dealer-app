@@ -45,7 +45,13 @@ import { updateStateStructure } from '@/components/StateUpdater';
 
 import { shapes } from '../../../util/dropdownOptions';
 
-export default function ClientQuote({ session, quoteId, initialQuoteData }) {
+export default function ClientQuote({
+  session,
+  quoteId,
+  initialQuoteData,
+  progress,
+  status,
+}) {
   // State variables
   const [isDesktop, setDesktop] = useState(false);
   const [activeBuilding, setActiveBuilding] = useState(0);
@@ -62,6 +68,9 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
   const [error, setError] = useState('');
   const initialRender = useRef(true);
   const router = useRouter();
+  const submitted = !!(progress & 0b00000100);
+  const inChecking = !!(progress & 0b00010000);
+  const locked = submitted || inChecking;
 
   // Hooks
   const {
@@ -369,6 +378,54 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
     }
   };
 
+  const handleSubmitted = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSaveStatus(true);
+
+    let user = session.user;
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const response = await fetch('/api/auth/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentQuote, user, values, progress: 6 }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        if (isNaN(data.message.quoteId)) {
+          console.log(data.message);
+        } else {
+          setCurrentQuote(data.message.quoteId);
+          setValues({ ...values, quoteNumber: data.message.quoteNum });
+        }
+
+        setSaveSuccess(true);
+        setSaveStatus(false);
+        // Reset saveSuccess after 3 seconds
+        setTimeout(() => {
+          setSaveSuccess(false);
+        }, 3000);
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Something went wrong');
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        setError('Request timed out. Please try again.');
+      } else {
+        setError('An error occurred. Please try again.');
+      }
+    }
+  };
+
   const openQuoteDeleteDialog = () => {
     setIsQuoteDeleteDialogOpen(true);
   };
@@ -463,22 +520,26 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                   <FontAwesomeIcon icon={faComment} />
                   <div className={styles.noteQty}>3</div>
                 </button>
-                <button
-                  type="button"
-                  className={styles.deleteTab}
-                  onClick={openQuoteDeleteDialog}
-                >
-                  <FontAwesomeIcon icon={faTrash} />
-                </button>
+                {!locked && (
+                  <button
+                    type="button"
+                    className={styles.deleteTab}
+                    onClick={openQuoteDeleteDialog}
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                )}
               </>
             )}
-            <button
-              type="button"
-              className={styles.saveTab}
-              onClick={handleSubmit}
-            >
-              <FontAwesomeIcon icon={saveSuccess ? faCheck : faSave} />
-            </button>
+            {!locked && (
+              <button
+                type="button"
+                className={styles.saveTab}
+                onClick={handleSubmit}
+              >
+                <FontAwesomeIcon icon={saveSuccess ? faCheck : faSave} />
+              </button>
+            )}
           </div>
           <nav className={styles.sidebar}>
             <button
@@ -573,6 +634,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
             values={values}
             handleChange={handleChange}
             setValues={setValues}
+            locked={locked}
           />
         )}
         {/* Design Code Page */}
@@ -588,13 +650,15 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                 <div key={index} className={styles.buildingContainer}>
                   <div className={styles.buildingTitleContainer}>
                     <h3>Building {String.fromCharCode(index + 65)}</h3>
-                    <button
-                      type="button"
-                      className="icon actionButton sec"
-                      onClick={() => openCopyDialog(index)}
-                    >
-                      <FontAwesomeIcon icon={faCopy} />
-                    </button>
+                    {!locked && (
+                      <button
+                        type="button"
+                        className="icon actionButton sec"
+                        onClick={() => openCopyDialog(index)}
+                      >
+                        <FontAwesomeIcon icon={faCopy} />
+                      </button>
+                    )}
                   </div>
 
                   <div className="grid4">
@@ -612,7 +676,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                             onChange={(e) =>
                               handleNestedChange(index, 'shape', e.target.value)
                             }
-                            disabled={index != activeBuilding}
+                            disabled={index != activeBuilding || locked}
                           />
                           <label htmlFor={`${id}-${index}`}>{label}</label>
                         </div>
@@ -631,7 +695,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                             e.target.value
                           )
                         }
-                        disabled={index != activeBuilding}
+                        disabled={index != activeBuilding || locked}
                       />
                     )}
                   </div>
@@ -644,7 +708,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       onChange={(e) =>
                         handleNestedChange(index, 'width', e.target.value)
                       }
-                      disabled={index != activeBuilding}
+                      disabled={index != activeBuilding || locked}
                     />
                     <FeetInchesInput
                       name={`buildingLength-${index}`}
@@ -654,7 +718,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                       onChange={(e) =>
                         handleNestedChange(index, 'length', e.target.value)
                       }
-                      disabled={index != activeBuilding}
+                      disabled={index != activeBuilding || locked}
                     />
                     {building.shape == 'symmetrical' && (
                       <>
@@ -670,7 +734,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                               e.target.value
                             )
                           }
-                          disabled={index != activeBuilding}
+                          disabled={index != activeBuilding || locked}
                         />
                         <div className="onDesktop"></div>
                         <RoofPitchInput
@@ -681,7 +745,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           onChange={(name, value) =>
                             handleNestedChange(index, 'backRoofPitch', value)
                           }
-                          disabled={index != activeBuilding}
+                          disabled={index != activeBuilding || locked}
                         />
                       </>
                     )}
@@ -700,7 +764,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                               e.target.value
                             )
                           }
-                          disabled={index != activeBuilding}
+                          disabled={index != activeBuilding || locked}
                         />
                         <FeetInchesInput
                           name={`buildingFrontEaveHeight-${index}`}
@@ -714,7 +778,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                               e.target.value
                             )
                           }
-                          disabled={index != activeBuilding}
+                          disabled={index != activeBuilding || locked}
                         />
                         <RoofPitchInput
                           name={`buildingBackRoofPitch-${index}`}
@@ -723,7 +787,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           onChange={(name, value) =>
                             handleNestedChange(index, 'backRoofPitch', value)
                           }
-                          disabled={index != activeBuilding}
+                          disabled={index != activeBuilding || locked}
                         />
                       </>
                     )}
@@ -741,7 +805,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                               e.target.value
                             )
                           }
-                          disabled={index != activeBuilding}
+                          disabled={index != activeBuilding || locked}
                         />
                         <FeetInchesInput
                           name={`buildingFrontEaveHeight-${index}`}
@@ -755,7 +819,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                               e.target.value
                             )
                           }
-                          disabled={index != activeBuilding}
+                          disabled={index != activeBuilding || locked}
                         />
                         <RoofPitchInput
                           name={`buildingBackRoofPitch-${index}`}
@@ -764,7 +828,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           onChange={(name, value) =>
                             handleNestedChange(index, 'backRoofPitch', value)
                           }
-                          disabled={index != activeBuilding}
+                          disabled={index != activeBuilding || locked}
                         />
                         <RoofPitchInput
                           name={`buildingFrontRoofPitch-${index}`}
@@ -773,7 +837,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           onChange={(name, value) =>
                             handleNestedChange(index, 'frontRoofPitch', value)
                           }
-                          disabled={index != activeBuilding}
+                          disabled={index != activeBuilding || locked}
                         />
                       </>
                     )}
@@ -796,7 +860,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           onChange={(e) =>
                             handleNestedChange(index, 'offsetX', e.target.value)
                           }
-                          disabled={index != activeBuilding}
+                          disabled={index != activeBuilding || locked}
                         />
                         <ReusableSlider
                           className="blue"
@@ -811,7 +875,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                           onChange={(e) =>
                             handleNestedChange(index, 'offsetY', e.target.value)
                           }
-                          disabled={index != activeBuilding}
+                          disabled={index != activeBuilding || locked}
                         />
                         <ReusableSlider
                           className="blue"
@@ -830,7 +894,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                               e.target.value
                             )
                           }
-                          disabled={index != activeBuilding}
+                          disabled={index != activeBuilding || locked}
                         />
                         <div className="cardInput">
                           <div className="center">
@@ -845,7 +909,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                             onChange={(name, value) =>
                               handleNestedChange(index, 'commonWall', value)
                             }
-                            disabled={index != activeBuilding}
+                            disabled={index != activeBuilding || locked}
                           >
                             <option value="">Select a building</option>
                             {values.buildings.map(
@@ -878,7 +942,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                     </button>
 
                     {/* Delete Button */}
-                    {values.buildings.length > 1 && index !== 0 && (
+                    {values.buildings.length > 1 && index !== 0 && !locked && (
                       <button
                         type="button"
                         className="icon actionButton reject"
@@ -890,7 +954,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
                   </div>
                 </div>
               ))}
-              {values.buildings.length < 9 && (
+              {values.buildings.length < 9 && !locked && (
                 <button
                   type="button"
                   className="addButton"
@@ -909,6 +973,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
             activeBuilding={activeBuilding}
             handleNestedChange={handleNestedChange}
             handleCalcChange={handleCalcChange}
+            locked={locked}
           />
         )}
         {/* Building Partitions Page */}
@@ -920,6 +985,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               handlePartitionChange={handlePartitionChange}
               setValues={setValues}
               isDesktop={isDesktop}
+              locked={locked}
             />
           </>
         )}
@@ -934,6 +1000,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               handleRoofReliteChange={handleRoofReliteChange}
               setValues={setValues}
               isDesktop={isDesktop}
+              locked={locked}
             />
           </>
         )}
@@ -952,6 +1019,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               handleWallReliteChange={handleWallReliteChange}
               setValues={setValues}
               isDesktop={isDesktop}
+              locked={locked}
             />
           </>
         )}
@@ -964,6 +1032,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               handleOpeningChange={handleOpeningChange}
               setValues={setValues}
               isDesktop={isDesktop}
+              locked={locked}
             />
           </>
         )}
@@ -973,6 +1042,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
             handleChange={handleChange}
             handleMandoorChange={handleMandoorChange}
             setValues={setValues}
+            locked={locked}
           />
         )}
         {activeCard == 'finalize-quote' && (
@@ -980,6 +1050,10 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
             values={values}
             setValues={setValues}
             handleChange={handleChange}
+            onSubmitted={handleSubmitted}
+            quoteProgress={progress}
+            quoteStatus={status}
+            locked={locked}
           />
         )}
         {!isDesktop &&

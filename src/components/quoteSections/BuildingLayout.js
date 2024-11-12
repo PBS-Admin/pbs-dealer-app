@@ -26,6 +26,7 @@ const BuildingLayout = ({
   activeBuilding,
   handleNestedChange,
   handleCalcChange,
+  locked,
 }) => {
   return (
     <>
@@ -54,7 +55,7 @@ const BuildingLayout = ({
                 Collateral Load: <small>(psf)</small>
               </>
             }
-            disabled={false}
+            disabled={locked}
             placeholder={'psf'}
             decimalPlaces={2}
           />
@@ -70,7 +71,7 @@ const BuildingLayout = ({
                 Live Load: <small>(psf)</small>
               </>
             }
-            disabled={false}
+            disabled={locked}
             placeholder={'psf'}
             decimalPlaces={2}
           />
@@ -86,7 +87,7 @@ const BuildingLayout = ({
                 Dead Load: <small>(psf)</small>
               </>
             }
-            disabled={false}
+            disabled={locked}
             placeholder={'psf'}
             decimalPlaces={2}
           />
@@ -106,6 +107,7 @@ const BuildingLayout = ({
             options={enclosure}
             label="Enclosure:"
             defaultValue="C"
+            disabled={locked}
           />
         </div>
         <h4>Snow Load</h4>
@@ -122,7 +124,7 @@ const BuildingLayout = ({
                 Roof Load: <small>(psf)</small>
               </>
             }
-            disabled={false}
+            disabled={locked}
             placeholder={'psf'}
             decimalPlaces={2}
           />
@@ -139,6 +141,7 @@ const BuildingLayout = ({
             options={thermalFactor}
             label="Thermal Factor:"
             defaultValue={1}
+            disabled={locked}
           />
         </div>
       </section>
@@ -165,6 +168,7 @@ const BuildingLayout = ({
                       e.target.value
                     )
                   }
+                  disabled={locked}
                 />
                 <label htmlFor={id}>{label}</label>
               </div>
@@ -180,6 +184,7 @@ const BuildingLayout = ({
               }
               compareLabel="building width"
               compareValue={values.buildings[activeBuilding].width}
+              disabled={locked}
             />
           )}
           <div className="checkboxGroup center">
@@ -196,6 +201,7 @@ const BuildingLayout = ({
                     e.target.checked
                   )
                 }
+                disabled={locked}
               />
               <label htmlFor={`buildingStraightExtColumns-${activeBuilding}`}>
                 Straight Exterior Columns
@@ -214,6 +220,7 @@ const BuildingLayout = ({
                     e.target.checked
                   )
                 }
+                disabled={locked}
               />
               <label htmlFor={`buildingNoFlangeBraces-${activeBuilding}`}>
                 No Flange Braces On Columns
@@ -228,6 +235,7 @@ const BuildingLayout = ({
             }
             options={steelFinish}
             label="Steel Finish:"
+            disabled={locked}
           />
         </div>
 
@@ -242,6 +250,7 @@ const BuildingLayout = ({
               }
               options={FrameOptions}
               label="Left Endwall Frame:"
+              disabled={locked}
             />
             {values.buildings[activeBuilding].leftFrame == 'postAndBeam' && (
               <div></div>
@@ -256,6 +265,7 @@ const BuildingLayout = ({
                 }
                 compareLabel="building width"
                 compareValue={values.buildings[activeBuilding].width}
+                disabled={locked}
               />
             )}
             {values.buildings[activeBuilding].leftFrame == 'insetRF' && (
@@ -269,6 +279,7 @@ const BuildingLayout = ({
                 }
                 baySpacing={values.buildings[activeBuilding].roofBaySpacing}
                 multiSelect={false}
+                disabled={locked}
               />
             )}
           </div>
@@ -282,6 +293,7 @@ const BuildingLayout = ({
               }
               options={FrameOptions}
               label="Right Endwall Frame:"
+              disabled={locked}
             />
             {values.buildings[activeBuilding].rightFrame == 'postAndBeam' && (
               <div></div>
@@ -300,6 +312,7 @@ const BuildingLayout = ({
                 }
                 compareLabel="building width"
                 compareValue={values.buildings[activeBuilding].width}
+                disabled={locked}
               />
             )}
             {values.buildings[activeBuilding].rightFrame == 'insetRF' && (
@@ -313,6 +326,7 @@ const BuildingLayout = ({
                 }
                 baySpacing={values.buildings[activeBuilding].roofBaySpacing}
                 multiSelect={false}
+                disabled={locked}
               />
             )}
           </div>
@@ -343,6 +357,7 @@ const BuildingLayout = ({
             }}
             compareLabel="building length"
             compareValue={values.buildings[activeBuilding].length}
+            disabled={locked}
           />
           <BaySpacingInput
             name={`buildingLeftBaySpacing-${activeBuilding}`}
@@ -353,6 +368,7 @@ const BuildingLayout = ({
             }
             compareLabel="building width"
             compareValue={values.buildings[activeBuilding].width}
+            disabled={locked}
           />
           <BaySpacingInput
             name={`buildingRightBaySpacing-${activeBuilding}`}
@@ -363,6 +379,7 @@ const BuildingLayout = ({
             }
             compareLabel="building width"
             compareValue={values.buildings[activeBuilding].width}
+            disabled={locked}
           />
           <BaySpacingInput
             className="hidden"
@@ -374,6 +391,7 @@ const BuildingLayout = ({
             }
             compareLabel="building length"
             compareValue={values.buildings[activeBuilding].length}
+            disabled={locked}
           />
           <BaySpacingInput
             className="hidden"
@@ -385,6 +403,7 @@ const BuildingLayout = ({
             }
             compareLabel="building length"
             compareValue={values.buildings[activeBuilding].length}
+            disabled={locked}
           />
         </div>
       </section>
@@ -408,6 +427,7 @@ const BuildingLayout = ({
               }
               options={SidewallBracingType}
               label="Front Sidewall Bracing Type:"
+              disabled={locked}
             />
             {values.buildings[activeBuilding].frontBracingType == 'tier' && (
               <>
@@ -422,6 +442,7 @@ const BuildingLayout = ({
                       e.target.value
                     )
                   }
+                  disabled={locked}
                 />
                 <div className="divider offOnPhone"></div>
               </>
@@ -440,6 +461,7 @@ const BuildingLayout = ({
               }
               options={SidewallBracingType}
               label="Back Sidewall Bracing Type:"
+              disabled={locked}
             />
             {values.buildings[activeBuilding].backBracingType == 'tier' && (
               <>
@@ -454,6 +476,7 @@ const BuildingLayout = ({
                       e.target.value
                     )
                   }
+                  disabled={locked}
                 />
                 <div className="divider offOnPhone"></div>
               </>
@@ -477,7 +500,8 @@ const BuildingLayout = ({
               options={EndwallBracingType}
               label="Left Endwall Bracing Type:"
               disabled={
-                values.buildings[activeBuilding].leftFrame != 'postAndBeam'
+                values.buildings[activeBuilding].leftFrame != 'postAndBeam' ||
+                locked
               }
             />
           </div>
@@ -498,7 +522,8 @@ const BuildingLayout = ({
             options={EndwallBracingType}
             label="Right Endwall Bracing Type:"
             disabled={
-              values.buildings[activeBuilding].rightFrame != 'postAndBeam'
+              values.buildings[activeBuilding].rightFrame != 'postAndBeam' ||
+              locked
             }
           />
         </div>
@@ -517,6 +542,7 @@ const BuildingLayout = ({
                 }
                 options={SidewallBracingType}
                 label="Interior Bracing Type:"
+                disabled={locked}
               />
               {values.buildings[activeBuilding].interiorBracingType ==
                 'tier' && (
@@ -534,6 +560,7 @@ const BuildingLayout = ({
                         e.target.value
                       )
                     }
+                    disabled={locked}
                   />
                   <div className="divider offOnPhone"></div>
                 </>
@@ -556,7 +583,8 @@ const BuildingLayout = ({
             baySpacing={values.buildings[activeBuilding].frontBaySpacing}
             multiSelect={true}
             disabled={
-              values.buildings[activeBuilding].frontBracingType == 'torsional'
+              values.buildings[activeBuilding].frontBracingType ==
+                'torsional' || locked
             }
           />
           <BaySelectionInput
@@ -569,7 +597,8 @@ const BuildingLayout = ({
             baySpacing={values.buildings[activeBuilding].backBaySpacing}
             multiSelect={true}
             disabled={
-              values.buildings[activeBuilding].backBracingType == 'torsional'
+              values.buildings[activeBuilding].backBracingType == 'torsional' ||
+              locked
             }
           />
           <BaySelectionInput
@@ -582,7 +611,8 @@ const BuildingLayout = ({
             baySpacing={values.buildings[activeBuilding].leftBaySpacing}
             multiSelect={true}
             disabled={
-              values.buildings[activeBuilding].leftFrame != 'postAndBeam'
+              values.buildings[activeBuilding].leftFrame != 'postAndBeam' ||
+              locked
             }
           />
           <BaySelectionInput
@@ -595,7 +625,8 @@ const BuildingLayout = ({
             baySpacing={values.buildings[activeBuilding].rightBaySpacing}
             multiSelect={true}
             disabled={
-              values.buildings[activeBuilding].rightFrame != 'postAndBeam'
+              values.buildings[activeBuilding].rightFrame != 'postAndBeam' ||
+              locked
             }
           />
         </div>
@@ -611,6 +642,7 @@ const BuildingLayout = ({
             }
             baySpacing={values.buildings[activeBuilding].roofBaySpacing}
             multiSelect={true}
+            disabled={locked}
           />
           <div>
             <h5>Break Points to Match</h5>
@@ -632,6 +664,7 @@ const BuildingLayout = ({
                         e.target.value
                       )
                     }
+                    disabled={locked}
                   />
                   <label htmlFor={id}>{label}</label>
                 </div>
@@ -665,12 +698,13 @@ const BuildingLayout = ({
                   e.target.value
                 )
               }
-              icon={'copy'}
+              icon={!locked && 'copy'}
               iconClass={'prim'}
               // iconOnClick={}
               tooltip="Copy to all Walls"
               options={girtTypes}
               label="Front Sidewall Girt Type:"
+              disabled={locked}
             />
             {values.buildings[activeBuilding].frontGirtType != 'open' && (
               <>
@@ -686,6 +720,7 @@ const BuildingLayout = ({
                   }
                   options={girtSpacing}
                   label="Front Sidewall Girt Spacing:"
+                  disabled={locked}
                 />
                 <ReusableSelect
                   name={`buildingFrontBaseCondition-${activeBuilding}`}
@@ -699,6 +734,7 @@ const BuildingLayout = ({
                   }
                   options={baseCondition}
                   label="Front Sidewall Base Condition:"
+                  disabled={locked}
                 />
               </>
             )}
@@ -724,6 +760,7 @@ const BuildingLayout = ({
               }
               options={girtTypes}
               label="Back Sidewall Girt Type:"
+              disabled={locked}
             />
             {values.buildings[activeBuilding].backGirtType != 'open' && (
               <>
@@ -739,6 +776,7 @@ const BuildingLayout = ({
                   }
                   options={girtSpacing}
                   label="Back Sidewall Girt Spacing:"
+                  disabled={locked}
                 />
                 <ReusableSelect
                   name={`buildingBackBaseCondition-${activeBuilding}`}
@@ -752,6 +790,7 @@ const BuildingLayout = ({
                   }
                   options={baseCondition}
                   label="Back Sidewall Base Condition:"
+                  disabled={locked}
                 />
               </>
             )}
@@ -779,6 +818,7 @@ const BuildingLayout = ({
                   }
                   options={girtTypes}
                   label="Outer Left Endwall Girt Type:"
+                  disabled={locked}
                 />
                 {values.buildings[activeBuilding].outerLeftGirtType !=
                   'open' && (
@@ -797,6 +837,7 @@ const BuildingLayout = ({
                       }
                       options={girtSpacing}
                       label="Outer Left Endwall Girt Spacing:"
+                      disabled={locked}
                     />
                     <ReusableSelect
                       name={`buildingOuterLeftBaseCondition-${activeBuilding}`}
@@ -812,6 +853,7 @@ const BuildingLayout = ({
                       }
                       options={baseCondition}
                       label="Outer Left Endwall Base Condition:"
+                      disabled={locked}
                     />
                   </>
                 )}
@@ -836,6 +878,7 @@ const BuildingLayout = ({
               }
               options={girtTypes}
               label="Left Endwall Girt Type:"
+              disabled={locked}
             />
             {values.buildings[activeBuilding].leftGirtType != 'open' && (
               <>
@@ -851,6 +894,7 @@ const BuildingLayout = ({
                   }
                   options={girtSpacing}
                   label="Left Endwall Girt Spacing:"
+                  disabled={locked}
                 />
                 <ReusableSelect
                   name={`buildingLeftBaseCondition-${activeBuilding}`}
@@ -864,6 +908,7 @@ const BuildingLayout = ({
                   }
                   options={baseCondition}
                   label="Left Endwall Base Condition:"
+                  disabled={locked}
                 />
               </>
             )}
@@ -887,6 +932,7 @@ const BuildingLayout = ({
               }
               options={girtTypes}
               label="Right Endwall Girt Type:"
+              disabled={locked}
             />
             {values.buildings[activeBuilding].rightGirtType != 'open' && (
               <>
@@ -902,6 +948,7 @@ const BuildingLayout = ({
                   }
                   options={girtSpacing}
                   label="Right Endwall Girt Spacing:"
+                  disabled={locked}
                 />
                 <ReusableSelect
                   name={`buildingRightBaseCondition-${activeBuilding}`}
@@ -915,6 +962,7 @@ const BuildingLayout = ({
                   }
                   options={baseCondition}
                   label="Right Endwall Base Condition:"
+                  disabled={locked}
                 />
               </>
             )}
@@ -935,6 +983,7 @@ const BuildingLayout = ({
                   }
                   options={girtTypes}
                   label="Outer Right Endwall Girt Type:"
+                  disabled={locked}
                 />
                 {values.buildings[activeBuilding].outerRightGirtType !=
                   'open' && (
@@ -953,6 +1002,7 @@ const BuildingLayout = ({
                       }
                       options={girtSpacing}
                       label="Outer Right Endwall Girt Spacing:"
+                      disabled={locked}
                     />
                     <ReusableSelect
                       name={`buildingOuterRightBaseCondition-${activeBuilding}`}
@@ -968,6 +1018,7 @@ const BuildingLayout = ({
                       }
                       options={baseCondition}
                       label="Outer Right Endwall Base Condition:"
+                      disabled={locked}
                     />
                   </>
                 )}
@@ -991,6 +1042,7 @@ const BuildingLayout = ({
             }
             options={purlinSpacing}
             label="Purlin Spacing:"
+            disabled={locked}
           />
         </div>
       </section>

@@ -30,7 +30,7 @@ export async function GET(req, { params }) {
     }
 
     const result = await query(
-      'SELECT * FROM Dealer_Quotes WHERE ID = ? AND Status = 1',
+      'SELECT * FROM Dealer_Quotes WHERE ID = ? AND Status & 1',
       [id]
     );
 

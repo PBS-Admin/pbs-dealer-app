@@ -28,6 +28,7 @@ const BuildingWallOptions = ({
   handleWallReliteChange,
   setValues,
   isDesktop,
+  locked,
 }) => {
   const [activeWallLinerPanel, setActiveWallLinerPanel] = useState(0);
   const [activeWainscot, setActiveWainscot] = useState(0);
@@ -357,7 +358,9 @@ const BuildingWallOptions = ({
                 )
               }
               options={wallInsulation}
-              disabled={!values.buildings[activeBuilding].allWallsSame}
+              disabled={
+                !values.buildings[activeBuilding].allWallsSame || locked
+              }
               label="Wall Insulation:"
             />
             <div className="checkboxGroup">
@@ -376,6 +379,7 @@ const BuildingWallOptions = ({
                       e.target.checked
                     )
                   }
+                  disabled={locked}
                 />
                 <label
                   htmlFor={`buildingWallInsulationOthers-${activeBuilding}`}
@@ -403,6 +407,7 @@ const BuildingWallOptions = ({
                       e.target.checked
                     )
                   }
+                  disabled={locked}
                 />
                 <label htmlFor={`buildingAllWallsSame-${activeBuilding}`}>
                   All Walls Same
@@ -421,7 +426,7 @@ const BuildingWallOptions = ({
             onChange={(e, keyString) =>
               handleNestedChange(activeBuilding, keyString, e.target.value)
             }
-            disabled={!values.buildings[activeBuilding].allWallsSame}
+            disabled={!values.buildings[activeBuilding].allWallsSame || locked}
           />
         </div>
 
@@ -451,6 +456,7 @@ const BuildingWallOptions = ({
                       e.target.value
                     )
                   }
+                  disabled={locked}
                 />
                 <ReusableSelect
                   name={`buildingFrontWallInsulation-${activeBuilding}`}
@@ -464,6 +470,7 @@ const BuildingWallOptions = ({
                   }
                   options={wallInsulation}
                   label="Front Sidewall Insulation:"
+                  disabled={locked}
                 />
               </div>
               <div className="divider offOnTablet"></div>
@@ -488,6 +495,7 @@ const BuildingWallOptions = ({
                       e.target.value
                     )
                   }
+                  disabled={locked}
                 />
                 <ReusableSelect
                   name={`buildingBackWallInsulation-${activeBuilding}`}
@@ -501,6 +509,7 @@ const BuildingWallOptions = ({
                   }
                   options={wallInsulation}
                   label="Back Sidewall Insulation:"
+                  disabled={locked}
                 />
               </div>
               <div
@@ -527,6 +536,7 @@ const BuildingWallOptions = ({
                           e.target.value
                         )
                       }
+                      disabled={locked}
                     />
                     <ReusableSelect
                       name={`buildingOuterLeftWallInsulation-${activeBuilding}`}
@@ -542,6 +552,7 @@ const BuildingWallOptions = ({
                       }
                       options={wallInsulation}
                       label="OuterLeft Left Endwall Insulation:"
+                      disabled={locked}
                     />
                   </div>
                   <div className="divider offOnTablet"></div>
@@ -565,6 +576,7 @@ const BuildingWallOptions = ({
                       e.target.value
                     )
                   }
+                  disabled={locked}
                 />
                 <ReusableSelect
                   name={`buildingLeftWallInsulation-${activeBuilding}`}
@@ -578,6 +590,7 @@ const BuildingWallOptions = ({
                   }
                   options={wallInsulation}
                   label="Left Endwall Insulation:"
+                  disabled={locked}
                 />
               </div>
               {values.buildings[activeBuilding].leftFrame == 'insetRF' ||
@@ -600,6 +613,7 @@ const BuildingWallOptions = ({
                       e.target.value
                     )
                   }
+                  disabled={locked}
                 />
                 <ReusableSelect
                   name={`buildingRightWallInsulation-${activeBuilding}`}
@@ -613,6 +627,7 @@ const BuildingWallOptions = ({
                   }
                   options={wallInsulation}
                   label="Right Endwall Insulation:"
+                  disabled={locked}
                 />
               </div>
               {values.buildings[activeBuilding].rightFrame == 'insetRF' && (
@@ -632,6 +647,7 @@ const BuildingWallOptions = ({
                           e.target.value
                         )
                       }
+                      disabled={locked}
                     />
                     <ReusableSelect
                       name={`buildingOuterRightWallInsulation-${activeBuilding}`}
@@ -648,6 +664,7 @@ const BuildingWallOptions = ({
                       }
                       options={wallInsulation}
                       label="Outer Right Endwall Insulation:"
+                      disabled={locked}
                     />
                   </div>
                 </>
@@ -710,6 +727,7 @@ const BuildingWallOptions = ({
                       }}
                       options={walls}
                       label="Wall:"
+                      disabled={locked}
                     />
                     <FeetInchesInput
                       name={`building-${activeBuilding}-wallLinerPanelStart-${wallLinerPanelIndex}`}
@@ -737,6 +755,7 @@ const BuildingWallOptions = ({
                           setActiveWallLinerPanel(wallLinerPanelIndex);
                         }
                       }}
+                      disabled={locked}
                     />
                     <FeetInchesInput
                       name={`building-${activeBuilding}-wallLinerPanelEnd-${wallLinerPanelIndex}`}
@@ -763,6 +782,7 @@ const BuildingWallOptions = ({
                           setActiveWallLinerPanel(wallLinerPanelIndex);
                         }
                       }}
+                      disabled={locked}
                     />
                     <FeetInchesInput
                       name={`building-${activeBuilding}-wallLinerPanelHeight-${wallLinerPanelIndex}`}
@@ -784,6 +804,7 @@ const BuildingWallOptions = ({
                         }
                       }}
                       placeholder="Leave Blank for Full Ht"
+                      disabled={locked}
                     />
                     <button
                       type="button"
@@ -794,6 +815,7 @@ const BuildingWallOptions = ({
                           wallLinerPanelIndex
                         )
                       }
+                      disabled={locked}
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
@@ -827,20 +849,25 @@ const BuildingWallOptions = ({
                         e.target.value
                       )
                     }
+                    disabled={locked}
                   />
                 </div>
               </>
             )}
-            <div className="divider"></div>
-            <div className="buttonFooter">
-              <button
-                type="button"
-                className="addButton"
-                onClick={() => addWallLinerPanel(activeBuilding)}
-              >
-                <FontAwesomeIcon icon={faPlus} />
-              </button>
-            </div>
+            {!locked && (
+              <>
+                <div className="divider"></div>
+                <div className="buttonFooter">
+                  <button
+                    type="button"
+                    className="addButton"
+                    onClick={() => addWallLinerPanel(activeBuilding)}
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                  </button>
+                </div>
+              </>
+            )}
           </>
         ) : (
           <h4 className="openWallNote">
@@ -904,6 +931,7 @@ const BuildingWallOptions = ({
                       }}
                       options={walls}
                       label="Wall:"
+                      disabled={locked}
                     />
                     <FeetInchesInput
                       name={`building-${activeBuilding}-wainscotStart-${wainscotIndex}`}
@@ -931,6 +959,7 @@ const BuildingWallOptions = ({
                           setActiveWainscot(wainscotIndex);
                         }
                       }}
+                      disabled={locked}
                     />
                     <FeetInchesInput
                       name={`building-${activeBuilding}-wainscotEnd-${wainscotIndex}`}
@@ -957,6 +986,7 @@ const BuildingWallOptions = ({
                           setActiveWainscot(wainscotIndex);
                         }
                       }}
+                      disabled={locked}
                     />
                     <FeetInchesInput
                       name={`building-${activeBuilding}-wainscotHeight-${wainscotIndex}`}
@@ -977,6 +1007,7 @@ const BuildingWallOptions = ({
                           setActiveWainscot(wainscotIndex);
                         }
                       }}
+                      disabled={locked}
                     />
                     <ReusableSelect
                       name={`building-${activeBuilding}-wainscotPanelOption-${wainscotIndex}`}
@@ -997,6 +1028,7 @@ const BuildingWallOptions = ({
                       }}
                       options={panelOptions}
                       label="Panel Option:"
+                      disabled={locked}
                     />
                     <button
                       type="button"
@@ -1004,6 +1036,7 @@ const BuildingWallOptions = ({
                       onClick={() =>
                         removeWainscot(activeBuilding, wainscotIndex)
                       }
+                      disabled={locked}
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
@@ -1035,20 +1068,25 @@ const BuildingWallOptions = ({
                         e.target.value
                       )
                     }
+                    disabled={locked}
                   />
                 </div>
               </>
             )}
-            <div className="divider"></div>
-            <div className="buttonFooter">
-              <button
-                type="button"
-                className="addButton"
-                onClick={() => addWainscot(activeBuilding)}
-              >
-                <FontAwesomeIcon icon={faPlus} />
-              </button>
-            </div>
+            {!locked && (
+              <>
+                <div className="divider"></div>
+                <div className="buttonFooter">
+                  <button
+                    type="button"
+                    className="addButton"
+                    onClick={() => addWainscot(activeBuilding)}
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                  </button>
+                </div>
+              </>
+            )}
           </>
         ) : (
           <h4 className="openWallNote">
@@ -1112,6 +1150,7 @@ const BuildingWallOptions = ({
                       }}
                       options={walls}
                       label="Wall:"
+                      disabled={locked}
                     />
                     <FeetInchesInput
                       name={`building-${activeBuilding}-partialWallStart-${partialWallIndex}`}
@@ -1139,6 +1178,7 @@ const BuildingWallOptions = ({
                           setActivePartialWall(partialWallIndex);
                         }
                       }}
+                      disabled={locked}
                     />
                     <FeetInchesInput
                       name={`building-${activeBuilding}-partialWallEnd-${partialWallIndex}`}
@@ -1165,6 +1205,7 @@ const BuildingWallOptions = ({
                           setActivePartialWall(partialWallIndex);
                         }
                       }}
+                      disabled={locked}
                     />
                     <FeetInchesInput
                       name={`building-${activeBuilding}-partialWallHeight-${partialWallIndex}`}
@@ -1185,6 +1226,7 @@ const BuildingWallOptions = ({
                           setActivePartialWall(partialWallIndex);
                         }
                       }}
+                      disabled={locked}
                     />
                     <ReusableSelect
                       name={`building-${activeBuilding}-partialWallTopWall-${partialWallIndex}`}
@@ -1205,6 +1247,7 @@ const BuildingWallOptions = ({
                       }}
                       options={topOfWall}
                       label="Top of Wall:"
+                      disabled={locked}
                     />
                     <button
                       type="button"
@@ -1212,6 +1255,7 @@ const BuildingWallOptions = ({
                       onClick={() =>
                         removePartialWall(activeBuilding, partialWallIndex)
                       }
+                      disabled={locked}
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
@@ -1223,16 +1267,20 @@ const BuildingWallOptions = ({
                 </Fragment>
               )
             )}
-            <div className="divider"></div>
-            <div className="buttonFooter">
-              <button
-                type="button"
-                className="addButton"
-                onClick={() => addPartialWall(activeBuilding)}
-              >
-                <FontAwesomeIcon icon={faPlus} />
-              </button>
-            </div>
+            {!locked && (
+              <>
+                <div className="divider"></div>
+                <div className="buttonFooter">
+                  <button
+                    type="button"
+                    className="addButton"
+                    onClick={() => addPartialWall(activeBuilding)}
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                  </button>
+                </div>
+              </>
+            )}
           </>
         ) : (
           <h4 className="openWallNote">
@@ -1292,6 +1340,7 @@ const BuildingWallOptions = ({
                       }}
                       options={walls}
                       label="Wall:"
+                      disabled={locked}
                     />
                     <ReusableInteger
                       name={`building-${activeBuilding}-wallSkirtStartBay-${wallSkirtIndex}`}
@@ -1315,6 +1364,7 @@ const BuildingWallOptions = ({
                         }
                       }}
                       placeholder="Bay#"
+                      disabled={locked}
                     />
                     <ReusableInteger
                       name={`building-${activeBuilding}-wallSkirtEndBay-${wallSkirtIndex}`}
@@ -1337,6 +1387,7 @@ const BuildingWallOptions = ({
                         }
                       }}
                       placeholder="Bay#"
+                      disabled={locked}
                     />
                     <FeetInchesInput
                       name={`building-${activeBuilding}-wallSkirtHeight-${wallSkirtIndex}`}
@@ -1357,6 +1408,7 @@ const BuildingWallOptions = ({
                           setActiveWallSkirt(wallSkirtIndex);
                         }
                       }}
+                      disabled={locked}
                     />
                     <div className="checkboxGroup">
                       <div className="checkRow">
@@ -1373,6 +1425,7 @@ const BuildingWallOptions = ({
                               e.target.checked
                             )
                           }
+                          disabled={locked}
                         />
                         <label
                           htmlFor={`building-${activeBuilding}-wallSkirtCutColumns-${wallSkirtIndex}`}
@@ -1387,6 +1440,7 @@ const BuildingWallOptions = ({
                       onClick={() =>
                         removeWallSkirt(activeBuilding, wallSkirtIndex)
                       }
+                      disabled={locked}
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
@@ -1398,16 +1452,20 @@ const BuildingWallOptions = ({
                 </Fragment>
               )
             )}
-            <div className="divider"></div>
-            <div className="buttonFooter">
-              <button
-                type="button"
-                className="addButton"
-                onClick={() => addWallSkirt(activeBuilding)}
-              >
-                <FontAwesomeIcon icon={faPlus} />
-              </button>
-            </div>
+            {!locked && (
+              <>
+                <div className="divider"></div>
+                <div className="buttonFooter">
+                  <button
+                    type="button"
+                    className="addButton"
+                    onClick={() => addWallSkirt(activeBuilding)}
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                  </button>
+                </div>
+              </>
+            )}
           </>
         ) : (
           <h4 className="openWallNote">
@@ -1462,6 +1520,7 @@ const BuildingWallOptions = ({
                   }}
                   options={walls}
                   label="Wall:"
+                  disabled={locked}
                 />
                 <FeetInchesInput
                   name={`building-${activeBuilding}-canopyWidth-${canopyIndex}`}
@@ -1482,6 +1541,7 @@ const BuildingWallOptions = ({
                       setActiveCanopy(canopyIndex);
                     }
                   }}
+                  disabled={locked}
                 />
                 <RoofPitchInput
                   name={`building-${activeBuilding}-canopySlope-${canopyIndex}`}
@@ -1501,6 +1561,7 @@ const BuildingWallOptions = ({
                       setActiveCanopy(canopyIndex);
                     }
                   }}
+                  disabled={locked}
                 />
                 <ReusableInteger
                   name={`building-${activeBuilding}-canopyStartBay-${canopyIndex}`}
@@ -1524,6 +1585,7 @@ const BuildingWallOptions = ({
                     }
                   }}
                   placeholder="Bay#"
+                  disabled={locked}
                 />
                 <ReusableInteger
                   name={`building-${activeBuilding}-canopyEndBay-${canopyIndex}`}
@@ -1546,6 +1608,7 @@ const BuildingWallOptions = ({
                     }
                   }}
                   placeholder="Bay#"
+                  disabled={locked}
                 />
                 <FeetInchesInput
                   name={`building-${activeBuilding}-canopyElevation-${canopyIndex}`}
@@ -1566,6 +1629,7 @@ const BuildingWallOptions = ({
                       setActiveCanopy(canopyIndex);
                     }
                   }}
+                  disabled={locked}
                 />
                 <div className="checkboxGroup">
                   <div className="checkRow">
@@ -1587,6 +1651,7 @@ const BuildingWallOptions = ({
                           setActiveCanopy(canopyIndex);
                         }
                       }}
+                      disabled={locked}
                     />
                     <label
                       htmlFor={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
@@ -1599,6 +1664,7 @@ const BuildingWallOptions = ({
                   type="button"
                   className="icon reject deleteRow"
                   onClick={() => removeCanopy(activeBuilding, canopyIndex)}
+                  disabled={locked}
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -1627,6 +1693,7 @@ const BuildingWallOptions = ({
                     e.target.value
                   )
                 }
+                disabled={locked}
               />
               <div className="divider offOnLaptop"></div>
               <ReusablePanel
@@ -1644,21 +1711,25 @@ const BuildingWallOptions = ({
                     e.target.value
                   )
                 }
+                disabled={locked}
               />
             </div>
           </>
         )}
-
-        <div className="divider"></div>
-        <div className="buttonFooter">
-          <button
-            type="button"
-            className="addButton"
-            onClick={() => addCanopy(activeBuilding)}
-          >
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
-        </div>
+        {!locked && (
+          <>
+            <div className="divider"></div>
+            <div className="buttonFooter">
+              <button
+                type="button"
+                className="addButton"
+                onClick={() => addCanopy(activeBuilding)}
+              >
+                <FontAwesomeIcon icon={faPlus} />
+              </button>
+            </div>
+          </>
+        )}
       </section>
 
       {/* Facias */}
@@ -1733,6 +1804,7 @@ const BuildingWallOptions = ({
                         }
                       }}
                       options={walls}
+                      disabled={locked}
                     />
                     <ReusableSelect
                       name={`building-${activeBuilding}-wallReliteSize-${wallReliteIndex}`}
@@ -1753,6 +1825,7 @@ const BuildingWallOptions = ({
                         }
                       }}
                       options={polycarbWallSize}
+                      disabled={locked}
                     />
                     <ReusableSelect
                       name={`building-${activeBuilding}-wallReliteColor-${wallReliteIndex}`}
@@ -1773,6 +1846,7 @@ const BuildingWallOptions = ({
                         }
                       }}
                       options={polycarbWallColor}
+                      disabled={locked}
                     />
                     <ReusableInteger
                       name={`building-${activeBuilding}-wallReliteQty-${wallReliteIndex}`}
@@ -1805,6 +1879,7 @@ const BuildingWallOptions = ({
                         }
                       }}
                       placeholder="Qty"
+                      disabled={locked}
                     />
                     <ReusableLocation
                       name={`building-${activeBuilding}-wallReliteLocation-${wallReliteIndex}`}
@@ -1835,6 +1910,7 @@ const BuildingWallOptions = ({
                           : values.buildings[activeBuilding].width
                       }
                       placeholder=""
+                      disabled={locked}
                     />
                     <FeetInchesInput
                       name={`building-${activeBuilding}-wallReliteOffset-${wallReliteIndex}`}
@@ -1855,6 +1931,7 @@ const BuildingWallOptions = ({
                           setActiveWallRelite(wallReliteIndex);
                         }
                       }}
+                      disabled={locked}
                     />
                     <div className="checkboxGroup">
                       <div className="checkRow">
@@ -1876,8 +1953,9 @@ const BuildingWallOptions = ({
                             )
                           }
                           disabled={
-                            wallRelite.wall != 'front' &&
-                            wallRelite.wall != 'back'
+                            (wallRelite.wall != 'front' &&
+                              wallRelite.wall != 'back') ||
+                            locked
                               ? 'disabled'
                               : ''
                           }
@@ -1895,6 +1973,7 @@ const BuildingWallOptions = ({
                       onClick={() =>
                         removeWallRelites(activeBuilding, wallReliteIndex)
                       }
+                      disabled={locked}
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
@@ -1906,16 +1985,20 @@ const BuildingWallOptions = ({
                 </Fragment>
               )
             )}
-            <div className="divider"></div>
-            <div className="buttonFooter">
-              <button
-                type="button"
-                className="addButton"
-                onClick={() => addWallRelite(activeBuilding)}
-              >
-                <FontAwesomeIcon icon={faPlus} />
-              </button>
-            </div>
+            {!locked && (
+              <>
+                <div className="divider"></div>
+                <div className="buttonFooter">
+                  <button
+                    type="button"
+                    className="addButton"
+                    onClick={() => addWallRelite(activeBuilding)}
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                  </button>
+                </div>
+              </>
+            )}
           </>
         ) : (
           <h4 className="openWallNote">

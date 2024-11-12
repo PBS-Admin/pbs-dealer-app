@@ -195,7 +195,7 @@ export default function QuoteTable() {
                       href={`/quote/${quote.ID}`}
                       className={styles.quoteLink}
                     >
-                      {quote.Progress > 0 ? (
+                      {quote.Progress & 0b100 ? (
                         <FontAwesomeIcon
                           icon={faCircleCheck}
                           style={{ color: 'var(--green)' }}
