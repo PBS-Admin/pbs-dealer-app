@@ -1,6 +1,13 @@
 import React from 'react';
 
-const ReusableDialog = ({ isOpen, onClose, onConfirm, title, message }) => {
+const ReusableDialog = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  message,
+  onlyConfirm,
+}) => {
   if (!isOpen) return null;
 
   return (
@@ -9,11 +16,20 @@ const ReusableDialog = ({ isOpen, onClose, onConfirm, title, message }) => {
         <div className="dialog-title">
           <h4>{title}</h4>
         </div>
-        <p className="center">{message}</p>
+        <p className="center">
+          {message.split('\n').map((line, i) => (
+            <React.Fragment key={i}>
+              {line}
+              <br />
+            </React.Fragment>
+          ))}
+        </p>
         <div className="dialog-buttons">
-          <button type="button" className="nuetral" onClick={onClose}>
-            Cancel
-          </button>
+          {!onlyConfirm && (
+            <button type="button" className="nuetral" onClick={onClose}>
+              Cancel
+            </button>
+          )}
           <button type="button" className="prim" onClick={onConfirm}>
             Confirm
           </button>

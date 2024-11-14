@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { query, getPoolStatus } from '../../../../lib/db';
+import { query } from '../../../../lib/db';
 import { getToken } from 'next-auth/jwt';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../[...nextauth]/route';
@@ -29,47 +29,110 @@ export async function GET(req) {
     }
 
     const currentCompany = session.user.company;
-    console.log('Session company:', currentCompany);
-    console.log('Request company:', parseInt(company));
-
     if (currentCompany != parseInt(company)) {
       console.log('Company mismatch, returning 403');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    // Only select the columns we need
-    const result = await query(
-      'SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, DateStarted FROM Dealer_Quotes WHERE Company = ? AND Status = 1',
-      [company]
+    let quotesQuery;
+    let queryParams = [];
+
+    if (session.user.permission > 6) {
+      quotesQuery = `
+        SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, 
+               SalesPerson, DateStarted 
+        FROM Dealer_Quotes 
+        WHERE Status & 1`;
+    } else if (session.user.permission > 1) {
+      quotesQuery = `
+        SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, 
+               SalesPerson, DateStarted 
+        FROM Dealer_Quotes 
+        WHERE Company = ? AND Status & 1`;
+      queryParams = [company];
+    } else if (session.user.estimator == 0) {
+      quotesQuery = `
+        SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, 
+               SalesPerson, DateStarted 
+        FROM Dealer_Quotes 
+        WHERE Company = ? AND Status & 1 AND SalesPerson = ?`;
+      queryParams = [company, session.user.id];
+    } else {
+      quotesQuery = `
+        SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, 
+               SalesPerson, DateStarted 
+        FROM Dealer_Quotes 
+        WHERE Company = ? AND Status & 1 AND Estimator = ?`;
+      queryParams = [company, session.user.id];
+    }
+
+    let rsmQuery;
+    let rsmParams = [];
+    if (session.user.permission < 3) {
+      rsmQuery = `
+      SELECT ID, FullName 
+      FROM Dealer_Users 
+      WHERE Active = 1 AND Company = ?`;
+      rsmParams = [company];
+    } else {
+      rsmQuery = `
+      SELECT ID, FullName 
+      FROM Dealer_Users 
+      WHERE Active = 1`;
+    }
+
+    const companyQuery = `
+      SELECT ID, Name 
+      FROM Dealer_Company`;
+
+    // Execute all queries in parallel
+    const [quotesResult, rsmResult, companyResult] = await Promise.all([
+      query(quotesQuery, queryParams),
+      query(rsmQuery, rsmParams),
+      query(companyQuery),
+    ]);
+
+    // Transform results
+    const parsedQuotes = quotesResult.map(
+      ({
+        ID,
+        Progress,
+        Quote,
+        Rev,
+        Complexity,
+        Customer,
+        SalesPerson,
+        ProjectName,
+        DateStarted,
+      }) => ({
+        ID,
+        Progress,
+        Quote,
+        Rev,
+        Complexity,
+        Customer,
+        SalesPerson,
+        ProjectName,
+        DateStarted,
+      })
     );
 
-    // Parse QuoteData for each quote
-    const parsedQuotes = result.map((quote) => ({
-      ...quote,
-      ID: quote.ID,
-      Progress: quote.Progress,
-      Quote: quote.Quote,
-      Rev: quote.Rev,
-      Complexity: quote.Complexity,
-      Customer: quote.Customer,
-      ProjectName: quote.ProjectName,
-      DateStarted: quote.DateStarted,
+    const parsedRsms = rsmResult.map(({ ID, FullName }) => ({
+      ID,
+      Name: FullName,
     }));
 
-    // Get List of all Companies
-    const compResult = await query('SELECT ID, Name FROM Dealer_Company');
-
-    const parsedCompanies = compResult.map((companies) => ({
-      ...companies,
-      ID: companies.ID,
-      Name: companies.Name,
+    const parsedCompanies = companyResult.map(({ ID, Name }) => ({
+      ID,
+      Name,
     }));
-
-    const status = await getPoolStatus();
 
     return NextResponse.json(
-      // { quotes: parsedQuotes },
-      { quotes: parsedQuotes, companies: parsedCompanies },
+      {
+        quotes: parsedQuotes,
+        companies: parsedCompanies,
+        rsms: parsedRsms,
+      },
       { status: 200 }
     );
   } catch (error) {

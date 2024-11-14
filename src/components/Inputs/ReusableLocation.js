@@ -46,6 +46,7 @@ const ReusableLocation = ({
   placeholder = `25'-0", 25'-0" or 4x20`,
   compareLabel,
   compareValue,
+  disabled,
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [error, setError] = useState('');
@@ -111,6 +112,7 @@ const ReusableLocation = ({
           }
         }}
         placeholder={placeholder}
+        disabled={disabled}
         className={error ? 'error' : ''}
       />
       {error && (

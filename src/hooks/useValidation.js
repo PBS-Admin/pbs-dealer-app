@@ -1,20 +1,28 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
 function useValidation(initialFormValues, setFormValues) {
-  if (!initialFormValues || typeof setFormValues !== 'function') {
-    throw new Error('useValidation: Invalid parameters provided');
-  }
-
   const [validationPrompts, setValidationPrompts] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [autoResolveMessage, setAutoResolveMessage] = useState('');
+  const [isValidating, setIsValidating] = useState(false);
   const changesRef = useRef({});
+  const resolutionRef = useRef(null);
 
   const setFormValuesRef = useRef(setFormValues);
   useEffect(() => {
     setFormValuesRef.current = setFormValues;
   }, [setFormValues]);
+
+  const resetValidation = useCallback(() => {
+    setValidationPrompts([]);
+    setCurrentIndex(0);
+    setIsDialogOpen(false);
+    setAutoResolveMessage('');
+    setIsValidating(false);
+    changesRef.current = {};
+    resolutionRef.current = null;
+  }, []);
 
   const updateFormValues = useCallback(async (newValues) => {
     if (typeof setFormValuesRef.current !== 'function') {
@@ -23,13 +31,10 @@ function useValidation(initialFormValues, setFormValues) {
     }
 
     try {
-      setFormValuesRef.current((prevValues) => {
-        const updatedValues = {
-          ...prevValues,
-          ...newValues,
-        };
-        return updatedValues;
-      });
+      setFormValuesRef.current((prevValues) => ({
+        ...prevValues,
+        ...newValues,
+      }));
     } catch (error) {
       console.error('Error in updateFormValues:', error);
       throw error;
@@ -73,25 +78,9 @@ function useValidation(initialFormValues, setFormValues) {
                   console.error('Rule condition is not a function:', rule);
                   continue;
                 }
-                let conditionResult;
-                try {
-                  conditionResult = rule.condition(building);
-                } catch (conditionError) {
-                  console.error('Error executing condition:', conditionError);
-                  continue;
-                }
 
-                if (conditionResult) {
-                  // Execute setValue with try/catch
-                  let newValue;
-                  try {
-                    newValue = rule.setValue(building);
-                  } catch (setValueError) {
-                    console.error('Error executing setValue:', setValueError);
-                    continue;
-                  }
-
-                  // Safe comparison
+                if (rule.condition(building)) {
+                  const newValue = rule.setValue(building);
                   const currentValue = building[rule.field];
 
                   if (newValue !== currentValue) {
@@ -102,22 +91,12 @@ function useValidation(initialFormValues, setFormValues) {
                 }
               } catch (error) {
                 console.error('Error processing rule:', error);
-                console.error('Error context:', {
-                  rule,
-                  building,
-                  buildingChanges,
-                  updatedBuilding,
-                });
                 continue;
               }
             }
 
             if (Object.keys(buildingChanges).length > 0) {
-              try {
-                autoFilledChanges.buildings[index] = buildingChanges;
-              } catch (error) {
-                console.error('Error setting autoFilledChanges:', error);
-              }
+              autoFilledChanges.buildings[index] = buildingChanges;
             }
 
             return updatedBuilding;
@@ -125,42 +104,35 @@ function useValidation(initialFormValues, setFormValues) {
         );
 
         if (hasChanges) {
-          try {
-            await updateFormValues({ buildings: updatedBuildings });
-          } catch (error) {
-            console.error('Error in updateFormValues:', error);
-            throw error;
-          }
+          await updateFormValues({ buildings: updatedBuildings });
 
-          try {
-            const changeMessage = generateChangeMessage(autoFilledChanges);
+          const changeMessage = generateChangeMessage(autoFilledChanges);
 
-            setAutoResolveMessage(
-              'The following changes were made to ensure compatibility:\n\n' +
-                changeMessage
-            );
+          setAutoResolveMessage(
+            'The following changes were made to ensure compatibility:\n' +
+              changeMessage
+          );
 
-            setIsDialogOpen(true);
-          } catch (error) {
-            console.error('Error in message generation/dialog:', error);
-            throw error;
-          }
+          setIsDialogOpen(true);
+
+          return new Promise((resolve) => {
+            resolutionRef.current = resolve;
+          });
         }
       }
-      return hasChanges;
+      return false;
     },
-    [
-      initialFormValues,
-      updateFormValues,
-      setAutoResolveMessage,
-      setIsDialogOpen,
-    ]
+    [initialFormValues, updateFormValues]
   );
 
   const validateFields = useCallback(
     async (fieldsToValidate, autoFillRules = []) => {
       try {
+        setIsValidating(true);
         const hasAutoResolved = await autoResolveFields(autoFillRules);
+        if (hasAutoResolved instanceof Promise) {
+          await hasAutoResolved;
+        }
 
         const newValidationPrompts = [];
 
@@ -189,15 +161,15 @@ function useValidation(initialFormValues, setFormValues) {
         if (newValidationPrompts.length > 0) {
           setValidationPrompts(newValidationPrompts);
           setCurrentIndex(0);
-          if (!hasAutoResolved) {
-            setIsDialogOpen(true);
-          }
+          setIsDialogOpen(true);
           return false;
         }
 
+        setIsValidating(false);
         return true;
       } catch (error) {
         console.error('Validation error:', error);
+        setIsValidating(false);
         throw error;
       }
     },
@@ -207,9 +179,13 @@ function useValidation(initialFormValues, setFormValues) {
   const handleResponse = useCallback(
     (response) => {
       if (autoResolveMessage) {
-        // If we're showing an auto-resolve message, just close the dialog
         setAutoResolveMessage('');
         setIsDialogOpen(false);
+        if (resolutionRef.current) {
+          resolutionRef.current(response);
+          resolutionRef.current = null;
+        }
+
         return;
       }
 
@@ -224,6 +200,7 @@ function useValidation(initialFormValues, setFormValues) {
         setCurrentIndex(nextIndex);
       } else {
         setIsDialogOpen(false);
+        setIsValidating(false);
         if (Object.keys(changesRef.current).length > 0) {
           updateFormValues(changesRef.current);
         }
@@ -239,6 +216,8 @@ function useValidation(initialFormValues, setFormValues) {
     handleResponse,
     autoResolveMessage,
     updateFormValues,
+    isValidating,
+    resetValidation,
   };
 }
 

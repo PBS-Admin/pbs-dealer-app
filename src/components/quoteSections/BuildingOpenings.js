@@ -12,6 +12,7 @@ const BuildingOpenings = ({
   handleOpeningChange,
   setValues,
   isDesktop,
+  locked,
 }) => {
   const [activeOpening, setActiveOpening] = useState(0);
 
@@ -148,6 +149,7 @@ const BuildingOpenings = ({
             }
           }}
           placeholder="Bay"
+          disabled={locked}
         />
         <ReusableSelect
           name={`building-${activeBuilding}-openingType-${openingIndex}`}
@@ -169,6 +171,7 @@ const BuildingOpenings = ({
             }
           }}
           options={openingTypes}
+          disabled={locked}
         />
         <FeetInchesInput
           name={`building-${activeBuilding}-openingWidth-${openingIndex}`}
@@ -190,6 +193,7 @@ const BuildingOpenings = ({
               setActiveOpening(openingIndex);
             }
           }}
+          disabled={locked}
         />
         <FeetInchesInput
           name={`building-${activeBuilding}-openingHeight-${openingIndex}`}
@@ -211,6 +215,7 @@ const BuildingOpenings = ({
               setActiveOpening(openingIndex);
             }
           }}
+          disabled={locked}
         />
         <FeetInchesInput
           name={`building-${activeBuilding}-openingSill-${openingIndex}`}
@@ -233,6 +238,7 @@ const BuildingOpenings = ({
               setActiveOpening(openingIndex);
             }
           }}
+          disabled={locked}
         />
         <FeetInchesInput
           name={`building-${activeBuilding}-openingOffset-${openingIndex}`}
@@ -255,6 +261,7 @@ const BuildingOpenings = ({
               setActiveOpening(openingIndex);
             }
           }}
+          disabled={locked}
         />
         <button
           type="button"
@@ -262,6 +269,7 @@ const BuildingOpenings = ({
           onClick={() =>
             removeOpening(activeBuilding, activeWallKey, openingIndex)
           }
+          disabled={locked}
         >
           <FontAwesomeIcon icon={faTrash} />
         </button>
@@ -314,17 +322,21 @@ const BuildingOpenings = ({
             </Fragment>
           )
         )}
-        {values.buildings[activeBuilding].openings[activeWallKey]?.length >
-          0 && <div className="divider onTablet"></div>}
-        <div className="buttonFooter">
-          <button
-            type="button"
-            className="addButton"
-            onClick={() => addOpening(activeBuilding, activeWallKey)}
-          >
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
-        </div>
+        {!locked && (
+          <>
+            {values.buildings[activeBuilding].openings[activeWallKey]?.length >
+              0 && <div className="divider onTablet"></div>}
+            <div className="buttonFooter">
+              <button
+                type="button"
+                className="addButton"
+                onClick={() => addOpening(activeBuilding, activeWallKey)}
+              >
+                <FontAwesomeIcon icon={faPlus} />
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

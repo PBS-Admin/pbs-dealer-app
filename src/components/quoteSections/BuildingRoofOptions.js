@@ -22,6 +22,7 @@ const BuildingRoofOptions = ({
   handleRoofLinerPanelChange,
   handleRoofReliteChange,
   setValues,
+  locked,
 }) => {
   const [activeRoofLinerPanel, setActiveRoofLinerPanel] = useState(0);
   const [activeRoofRelite, setActiveRoofRelite] = useState(0);
@@ -151,6 +152,7 @@ const BuildingRoofOptions = ({
               }
               options={roofInsulation}
               label="Roof Insulation:"
+              disabled={locked}
             />
             <div className="checkboxGroup">
               <div className="checkRow">
@@ -168,6 +170,7 @@ const BuildingRoofOptions = ({
                       e.target.checked
                     )
                   }
+                  disabled={locked}
                 />
                 <label
                   htmlFor={`buildingRoofInsulationOthers-${activeBuilding}`}
@@ -187,6 +190,7 @@ const BuildingRoofOptions = ({
             onChange={(e, keyString) =>
               handleNestedChange(activeBuilding, keyString, e.target.value)
             }
+            disabled={locked}
           />
         </div>
 
@@ -208,6 +212,7 @@ const BuildingRoofOptions = ({
                     e.target.checked
                   )
                 }
+                disabled={locked}
               />
               <label htmlFor={`buildingIncludeGutters-${activeBuilding}`}>
                 Include Gutters and Downspouts
@@ -237,6 +242,7 @@ const BuildingRoofOptions = ({
                 )
               }
               allowZero={true}
+              disabled={locked}
             />
             <div className="checkboxGroup">
               <div className="checkRow">
@@ -254,6 +260,7 @@ const BuildingRoofOptions = ({
                       e.target.checked
                     )
                   }
+                  disabled={locked}
                 />
                 <label
                   htmlFor={`buildingFrontExtensionColumns-${activeBuilding}`}
@@ -279,6 +286,7 @@ const BuildingRoofOptions = ({
                   )
                 }
                 placeholder="Separate Bays with Space"
+                disabled={locked}
               />
             </div>
           </div>
@@ -296,6 +304,7 @@ const BuildingRoofOptions = ({
                 )
               }
               allowZero={true}
+              disabled={locked}
             />
             <div className="checkboxGroup">
               <div className="checkRow">
@@ -313,6 +322,7 @@ const BuildingRoofOptions = ({
                       e.target.checked
                     )
                   }
+                  disabled={locked}
                 />
                 <label
                   htmlFor={`buildingBackExtensionColumns-${activeBuilding}`}
@@ -338,6 +348,7 @@ const BuildingRoofOptions = ({
                   )
                 }
                 placeholder="Separate Bays with Space"
+                disabled={locked}
               />
             </div>
           </div>
@@ -354,6 +365,7 @@ const BuildingRoofOptions = ({
               )
             }
             allowZero={true}
+            disabled={locked}
           />
           <FeetInchesInput
             name={`buildingrightExtensionWidth-${activeBuilding}`}
@@ -368,6 +380,7 @@ const BuildingRoofOptions = ({
               )
             }
             allowZero={true}
+            disabled={locked}
           />
         </div>
         <div className="divider"></div>
@@ -387,6 +400,7 @@ const BuildingRoofOptions = ({
                     e.target.checked
                   )
                 }
+                disabled={locked}
               />
               <label htmlFor={`buildingExtensionInsulation-${activeBuilding}`}>
                 Insulation In Extension
@@ -418,6 +432,7 @@ const BuildingRoofOptions = ({
             onChange={(e, keyString) =>
               handleNestedChange(activeBuilding, keyString, e.target.value)
             }
+            disabled={locked}
           />
         </div>
       </section>
@@ -471,6 +486,7 @@ const BuildingRoofOptions = ({
                     }}
                     options={roof}
                     label="Location:"
+                    disabled={locked}
                   />
                   <FeetInchesInput
                     name={`building-${activeBuilding}-roofLinerPanelStart-${roofLinerPanelIndex}`}
@@ -498,6 +514,7 @@ const BuildingRoofOptions = ({
                         setActiveRoofLinerPanel(roofLinerPanelIndex);
                       }
                     }}
+                    disabled={locked}
                   />
                   <FeetInchesInput
                     name={`building-${activeBuilding}-roofLinerPanelEnd-${roofLinerPanelIndex}`}
@@ -524,6 +541,7 @@ const BuildingRoofOptions = ({
                         setActiveRoofLinerPanel(roofLinerPanelIndex);
                       }
                     }}
+                    disabled={locked}
                   />
                   <FeetInchesInput
                     name={`building-${activeBuilding}-roofLinerPanelEnd-${roofLinerPanelIndex}`}
@@ -545,6 +563,7 @@ const BuildingRoofOptions = ({
                       }
                     }}
                     placeholder="Leave Blank for Full Ht"
+                    disabled={locked}
                   />
                   <button
                     type="button"
@@ -552,6 +571,7 @@ const BuildingRoofOptions = ({
                     onClick={() =>
                       removeRoofLinerPanel(activeBuilding, roofLinerPanelIndex)
                     }
+                    disabled={locked}
                   >
                     <FontAwesomeIcon icon={faTrash} />
                   </button>
@@ -585,20 +605,25 @@ const BuildingRoofOptions = ({
                       e.target.value
                     )
                   }
+                  disabled={locked}
                 />
               </div>
             </>
           )}
-          <div className="divider"></div>
-          <div className="buttonFooter">
-            <button
-              type="button"
-              className="addButton"
-              onClick={() => addRoofLinerPanel(activeBuilding)}
-            >
-              <FontAwesomeIcon icon={faPlus} />
-            </button>
-          </div>
+          {!locked && (
+            <>
+              <div className="divider"></div>
+              <div className="buttonFooter">
+                <button
+                  type="button"
+                  className="addButton"
+                  onClick={() => addRoofLinerPanel(activeBuilding)}
+                >
+                  <FontAwesomeIcon icon={faPlus} />
+                </button>
+              </div>
+            </>
+          )}
         </>
       </section>
 
@@ -655,6 +680,7 @@ const BuildingRoofOptions = ({
                     }
                   }}
                   options={roofs}
+                  disabled={locked}
                 />
                 <ReusableSelect
                   name={`building-${activeBuilding}-roofReliteSize-${roofReliteIndex}`}
@@ -675,6 +701,7 @@ const BuildingRoofOptions = ({
                     }
                   }}
                   options={polycarbRoofSize}
+                  disabled={locked}
                 />
                 <ReusableSelect
                   name={`building-${activeBuilding}-roofReliteColor-${roofReliteIndex}`}
@@ -695,6 +722,7 @@ const BuildingRoofOptions = ({
                     }
                   }}
                   options={polycarbRoofColor}
+                  disabled={locked}
                 />
                 <ReusableInteger
                   name={`building-${activeBuilding}-roofReliteQty-${roofReliteIndex}`}
@@ -721,6 +749,7 @@ const BuildingRoofOptions = ({
                     }
                   }}
                   placeholder="Qty"
+                  disabled={locked}
                 />
                 <ReusableLocation
                   name={`building-${activeBuilding}-roofReliteLocation-${roofReliteIndex}`}
@@ -743,6 +772,7 @@ const BuildingRoofOptions = ({
                   compareLabel="building length"
                   compareValue={values.buildings[activeBuilding].length}
                   placeholder=""
+                  disabled={locked}
                 />
                 <FeetInchesInput
                   name={`building-${activeBuilding}-roofReliteOffset-${roofReliteIndex}`}
@@ -763,6 +793,7 @@ const BuildingRoofOptions = ({
                       setActiveRoofRelite(roofReliteIndex);
                     }
                   }}
+                  disabled={locked}
                 />
                 <div className="checkboxGroup">
                   <div className="checkRow">
@@ -779,6 +810,7 @@ const BuildingRoofOptions = ({
                           e.target.checked
                         )
                       }
+                      disabled={locked}
                     />
                     <label
                       htmlFor={`building-${activeBuilding}-roofReliteCutPanels-${roofReliteIndex}`}
@@ -793,6 +825,7 @@ const BuildingRoofOptions = ({
                   onClick={() =>
                     removeRoofRelites(activeBuilding, roofReliteIndex)
                   }
+                  disabled={locked}
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -804,16 +837,20 @@ const BuildingRoofOptions = ({
             </Fragment>
           )
         )}
-        <div className="divider"></div>
-        <div className="buttonFooter">
-          <button
-            type="button"
-            className="addButton"
-            onClick={() => addRoofRelite(activeBuilding)}
-          >
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
-        </div>
+        {!locked && (
+          <>
+            <div className="divider"></div>
+            <div className="buttonFooter">
+              <button
+                type="button"
+                className="addButton"
+                onClick={() => addRoofRelite(activeBuilding)}
+              >
+                <FontAwesomeIcon icon={faPlus} />
+              </button>
+            </div>
+          </>
+        )}
       </section>
     </>
   );
