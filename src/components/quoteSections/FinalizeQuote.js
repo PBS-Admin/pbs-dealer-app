@@ -1,22 +1,36 @@
-import React, { useEffect, useCallback, useRef, useMemo } from 'react';
+import React, {
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+  useState,
+} from 'react';
 import { useExport } from '@/hooks/useExport';
+import { useSession } from 'next-auth/react';
 import ReusableLoader from '../ReusableLoader';
 import ReusableDialog from '../ReusableDialog';
 import useValidation from '@/hooks/useValidation';
 import useSeismic from '@/hooks/useSeismic';
 import ReusableToast from '../ReusableToast';
+import ReusableSelect from '../Inputs/ReusableSelect';
 
 const FinalizeQuote = ({
   values,
   setValues,
   handleChange,
+  handleAssign,
   onSubmitted,
   quoteProgress,
   quoteStatus,
   locked,
+  rsms,
+  salesPerson,
+  projectManager,
+  estimator,
+  checker,
 }) => {
+  const { data: session } = useSession();
   const memoizedSetValues = useCallback(setValues, []);
-
   const { createFolderAndFiles, status, isExporting } = useExport();
   const {
     validateFields,
@@ -24,9 +38,16 @@ const FinalizeQuote = ({
     isDialogOpen,
     handleResponse,
     autoResolveMessage,
+    isValidating,
+    resetValidation,
   } = useValidation(values, memoizedSetValues);
   const { getSeismicLoad, seismicData, getSmsLoad, smsData } =
     useSeismic(values);
+
+  useEffect(() => {
+    console.log('Finalize Quote rebuilt');
+    console.log(projectManager);
+  }, []);
 
   useEffect(() => {
     getSeismicLoad();
@@ -34,6 +55,7 @@ const FinalizeQuote = ({
   }, [getSeismicLoad, getSmsLoad]);
 
   const toastRef = useRef();
+  const exportPendingRef = useRef(false);
 
   const fieldsToValidate = [
     {
@@ -102,6 +124,10 @@ const FinalizeQuote = ({
     []
   );
 
+  const hasPermission = (requiredLevel) => {
+    return session.user.permission >= requiredLevel;
+  };
+
   const handleSave = useCallback(async () => {
     const isValid = await validateFields([], autoFillRules);
     if (isValid) {
@@ -109,26 +135,59 @@ const FinalizeQuote = ({
     }
   }, [validateFields, autoFillRules]);
 
+  const handleSubmit = useCallback(
+    async (e) => {
+      try {
+        exportPendingRef.current = true;
+        const isValid = await validateFields(fieldsToValidate, autoFillRules);
+
+        if (isValidating) {
+          return;
+        }
+
+        if (!isValid) {
+          return;
+        }
+
+        exportPendingRef.current = false;
+        onSubmitted(e);
+      } catch (error) {
+        console.error('Export error: ', error);
+        showRejectExport();
+        exportPendingRef.current = false;
+      }
+    },
+    [validateFields, fieldsToValidate, autoFillRules]
+  );
+
   const handleExport = useCallback(async () => {
     try {
+      exportPendingRef.current = true;
       const isValid = await validateFields(fieldsToValidate, autoFillRules);
 
-      if (isValid) {
-        const result = await createFolderAndFiles(values);
+      if (isValidating) {
+        return;
+      }
 
-        if (result.success) {
-          await createImportBAT(result.folder);
-          showSuccessExport();
-        } else {
-          showRejectExport();
-          console.log('Export failed');
-        }
+      if (!isValid) {
+        return;
+      }
+
+      exportPendingRef.current = false;
+
+      const result = await createFolderAndFiles(values);
+
+      if (result.success) {
+        await createImportBAT(result.folder);
+        showSuccessExport();
       } else {
-        console.log(`Couldn't validate all fields`);
+        showRejectExport();
+        console.log('Export failed');
       }
     } catch (error) {
       console.error('Export error: ', error);
       showRejectExport();
+      exportPendingRef.current = false;
     }
   }, [
     validateFields,
@@ -137,6 +196,18 @@ const FinalizeQuote = ({
     createFolderAndFiles,
     values,
   ]);
+
+  const handleValidationResponse = useCallback(
+    async (response) => {
+      handleResponse(response);
+
+      // If this was the last validation and export is pending, trigger export
+      if (exportPendingRef.current && !isValidating) {
+        handleExport();
+      }
+    },
+    [handleResponse, isValidating, handleExport]
+  );
 
   const createImportBAT = async (folder) => {
     if (typeof window === 'undefined' || !('showDirectoryPicker' in window)) {
@@ -200,6 +271,16 @@ const FinalizeQuote = ({
     });
   };
 
+  const rsmOptions = useMemo(
+    () => Object.entries(rsms).map(([id, name]) => name),
+    [rsms]
+  );
+
+  const pmOptions = useMemo(
+    () => Object.entries(rsms).map(([id, name]) => name),
+    [rsms]
+  );
+
   return (
     <>
       <section className="card">
@@ -216,7 +297,11 @@ const FinalizeQuote = ({
             {quoteProgress & 0b100 ? (
               <div></div>
             ) : (
-              <button type="button" className="accent" onClick={onSubmitted}>
+              <button
+                type="button"
+                className="accent"
+                onClick={(e) => handleSubmit(e)}
+              >
                 Submit Quote
               </button>
             )}
@@ -224,9 +309,13 @@ const FinalizeQuote = ({
               type="button"
               className="prim"
               onClick={handleExport}
-              disabled={isExporting}
+              disabled={isExporting || isValidating}
             >
-              {isExporting ? status : 'Export To MBS'}
+              {isExporting
+                ? status
+                : isValidating
+                  ? 'Validating...'
+                  : 'Export To MBS'}
             </button>
           </div>
           <div className="divider offOnPhone"></div>
@@ -283,13 +372,58 @@ const FinalizeQuote = ({
           )}
         </div>
       </section>
+
+      {hasPermission(2) && (
+        <section className="card">
+          <header className="cardHeader">
+            <h3>Assignments</h3>
+          </header>
+
+          <div className="grid4 alignTop">
+            <ReusableSelect
+              name={`salesPerson`}
+              value={salesPerson}
+              onChange={handleAssign}
+              options={rsmOptions}
+              label="Sales Person:"
+              disabled={locked}
+            />
+            <ReusableSelect
+              name={`projectManager`}
+              value={projectManager}
+              onChange={handleAssign}
+              options={pmOptions}
+              label="Project Manager:"
+              disabled={locked}
+            />
+            <ReusableSelect
+              name={`estimator`}
+              value={estimator}
+              onChange={handleAssign}
+              options={pmOptions}
+              label="Estimator:"
+              disabled={locked}
+            />
+            <ReusableSelect
+              name={`checker`}
+              value={checker}
+              onChange={handleAssign}
+              options={pmOptions}
+              label="Checker:"
+              disabled={locked}
+            />
+          </div>
+        </section>
+      )}
+
       <ReusableLoader isOpen={isExporting} title="Loading" message={status} />
       <ReusableDialog
         isOpen={isDialogOpen}
-        onClose={() => handleResponse(false)}
+        onClose={() => handleValidationResponse(false)}
         title={autoResolveMessage ? 'Automatic Updates' : 'Field Validation'}
         message={autoResolveMessage || currentPrompt?.message}
-        onConfirm={() => handleResponse(true)}
+        onConfirm={() => handleValidationResponse(true)}
+        onlyConfirm={autoResolveMessage ? true : false}
       />
       <ReusableToast ref={toastRef} />
     </>

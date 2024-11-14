@@ -51,6 +51,11 @@ export default function ClientQuote({
   initialQuoteData,
   progress,
   status,
+  rsms,
+  salesPerson,
+  projectManager,
+  estimator,
+  checker,
 }) {
   // State variables
   const [isDesktop, setDesktop] = useState(false);
@@ -58,6 +63,12 @@ export default function ClientQuote({
   const [currentQuote, setCurrentQuote] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [buildingToDelete, setBuildingToDelete] = useState(null);
+
+  const [selectedSalesPerson, setSelectedSalesPerson] = useState(salesPerson);
+  const [selectedProjectManager, setSelectedProjectManager] =
+    useState(projectManager);
+  const [selectedEstimator, setSelectedEstimator] = useState(estimator);
+  const [selectedChecker, setSelectedChecker] = useState(checker);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [sourceBuildingIndex, setSourceBuildingIndex] = useState(0);
@@ -68,9 +79,10 @@ export default function ClientQuote({
   const [error, setError] = useState('');
   const initialRender = useRef(true);
   const router = useRouter();
+  const permission = session.user.permission;
   const submitted = !!(progress & 0b00000100);
   const inChecking = !!(progress & 0b00010000);
-  const locked = submitted || inChecking;
+  const locked = (submitted || inChecking) && permission < 4;
 
   // Hooks
   const {
@@ -344,7 +356,15 @@ export default function ClientQuote({
       const response = await fetch('/api/auth/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currentQuote, user, values }),
+        body: JSON.stringify({
+          currentQuote,
+          user,
+          values,
+          salesPerson: selectedSalesPerson,
+          projectManager: selectedProjectManager,
+          estimator: selectedEstimator,
+          checker: selectedChecker,
+        }),
         signal: controller.signal,
       });
 
@@ -399,20 +419,7 @@ export default function ClientQuote({
       clearTimeout(timeoutId);
 
       if (response.ok) {
-        const data = await response.json();
-        if (isNaN(data.message.quoteId)) {
-          console.log(data.message);
-        } else {
-          setCurrentQuote(data.message.quoteId);
-          setValues({ ...values, quoteNumber: data.message.quoteNum });
-        }
-
-        setSaveSuccess(true);
-        setSaveStatus(false);
-        // Reset saveSuccess after 3 seconds
-        setTimeout(() => {
-          setSaveSuccess(false);
-        }, 3000);
+        await router.replace('/tracker');
       } else {
         const data = await response.json();
         setError(data.message || 'Something went wrong');
@@ -423,6 +430,26 @@ export default function ClientQuote({
       } else {
         setError('An error occurred. Please try again.');
       }
+    }
+  };
+
+  const handleAssign = async (e) => {
+    switch (e.target.name) {
+      case 'salesPerson':
+        setSelectedSalesPerson(e.target.value);
+        break;
+      case 'projectManager':
+        setSelectedProjectManager(e.target.value);
+        break;
+      case 'estimator':
+        setSelectedEstimator(e.target.value);
+        break;
+      case 'checker':
+        setSelectedChecker(e.target.value);
+        break;
+      default:
+        setSelectedSalesPerson(e.target.value);
+        break;
     }
   };
 
@@ -1050,10 +1077,16 @@ export default function ClientQuote({
             values={values}
             setValues={setValues}
             handleChange={handleChange}
+            handleAssign={handleAssign}
             onSubmitted={handleSubmitted}
             quoteProgress={progress}
             quoteStatus={status}
             locked={locked}
+            rsms={rsms}
+            salesPerson={selectedSalesPerson}
+            projectManager={selectedProjectManager}
+            estimator={selectedEstimator}
+            checker={selectedChecker}
           />
         )}
         {!isDesktop &&

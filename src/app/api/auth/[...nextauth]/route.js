@@ -50,6 +50,7 @@ export const authOptions = {
           fullName: user[0].FullName,
           company: user[0].Company,
           permission: user[0].Permission,
+          estimator: user[0].Estimator,
         };
       },
     }),
@@ -62,6 +63,7 @@ export const authOptions = {
         token.fullName = user.fullName;
         token.company = user.company;
         token.permission = user.permission;
+        token.estimator = user.estimator;
       }
 
       if (trigger === 'update' && session?.user?.company) {
@@ -77,6 +79,7 @@ export const authOptions = {
         fullName: token.fullName,
         company: token.company,
         permission: token.permission,
+        estimator: token.estimator,
       };
       return session;
     },

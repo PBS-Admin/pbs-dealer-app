@@ -4,7 +4,16 @@ import { query, transaction, getPoolStatus } from '../../../../lib/db';
 export async function POST(req) {
   try {
     let result, quoteNum, quoteNumber, nextQuoteNum;
-    const { currentQuote, user, values, progress } = await req.json();
+    const {
+      currentQuote,
+      user,
+      values,
+      progress,
+      salesPerson,
+      projectManager,
+      estimator,
+      checker,
+    } = await req.json();
     if (currentQuote == 0) {
       await transaction(async (conn) => {
         quoteNum = await conn.query(
@@ -26,13 +35,14 @@ export async function POST(req) {
         const updatedValues = { ...values, quoteNumber: quoteNumber };
 
         result = await conn.query(
-          'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, DateStarted) VALUES (?, ?, ?, ?, ?, Now())',
+          'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, SalesPerson, DateStarted) VALUES (?, ?, ?, ?, ?, ?, Now())',
           [
             quoteNumber,
             values.customerName,
             values.projectName,
             user.company,
             JSON.stringify(updatedValues),
+            user.id,
           ]
         );
 
@@ -54,12 +64,16 @@ export async function POST(req) {
     } else if (currentQuote > 0) {
       await transaction(async (conn) => {
         result = await query(
-          'UPDATE Dealer_Quotes SET QuoteData = ?, Customer = ?, ProjectName = ?, Progress = Progress ^ ? WHERE id = ?',
+          'UPDATE Dealer_Quotes SET QuoteData = ?, Customer = ?, ProjectName = ?, Progress = Progress ^ ?, SalesPerson = ?, ProjectManager = ?, Estimator = ?, Checker = ? WHERE id = ?',
           [
             JSON.stringify(values),
             values.customerName,
             values.projectName,
             progress || 0,
+            salesPerson,
+            projectManager,
+            estimator,
+            checker,
             currentQuote,
           ]
         );
