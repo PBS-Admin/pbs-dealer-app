@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useRef, useMemo } from 'react';
 import { useExport } from '@/hooks/useExport';
+import { usePDF } from '@/hooks/usePDF';
 import ReusableLoader from '../ReusableLoader';
 import ReusableDialog from '../ReusableDialog';
 import useValidation from '@/hooks/useValidation';
@@ -10,6 +11,7 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
   const memoizedSetValues = useCallback(setValues, []);
 
   const { createFolderAndFiles, status, isExporting } = useExport();
+  const { createContract } = usePDF();
   const {
     validateFields,
     currentPrompt,
@@ -192,6 +194,33 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
     });
   };
 
+  const handleContract = useCallback(async () => {
+    // try {
+    // const isValid = await validateFields(fieldsToValidate, autoFillRules);
+
+    // if (isValid) {
+    const pdfBytes = await createContract(values);
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+
+    window.open(url);
+
+    // if (pdfBytes.success) {
+    //   // tasks here
+    //   showSuccessExport();
+    // } else {
+    //   showRejectExport();
+    //   console.log('Export failed');
+    // }
+    //   } else {
+    //     console.log(`Couldn't validate all fields`);
+    //   }
+    // } catch (error) {
+    //   console.error('Contract error: ', error);
+    //   showRejectExport();
+    // }
+  }, [validateFields, fieldsToValidate, autoFillRules, createContract, values]);
+
   return (
     <>
       <section className="card">
@@ -234,13 +263,7 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
             >
               Notes for Estimator
             </button>
-            <button
-              type="button"
-              className="nuetral"
-              onClick={() => {
-                console.log(values);
-              }}
-            >
+            <button type="button" className="nuetral" onClick={handleContract}>
               Open Contract
             </button>
           </div>
