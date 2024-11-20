@@ -5,6 +5,7 @@ import {
   faMagnifyingGlass,
   faCircleInfo,
   faCopy,
+  faPaintBrush,
 } from '@fortawesome/free-solid-svg-icons';
 
 const ReusableSelect = ({
@@ -33,6 +34,7 @@ const ReusableSelect = ({
     lookup: faMagnifyingGlass,
     info: faCircleInfo,
     copy: faCopy,
+    color: faPaintBrush,
   };
 
   //Option Groups

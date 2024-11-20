@@ -44,6 +44,7 @@ import Accessories from '@/components/quoteSections/Accessories';
 import { updateStateStructure } from '@/components/StateUpdater';
 
 import { shapes } from '../../../util/dropdownOptions';
+import ReusableColorSelect from '@/components/Inputs/ReusableColorSelect';
 
 export default function ClientQuote({ session, quoteId, initialQuoteData }) {
   // State variables
@@ -52,6 +53,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
   const [currentQuote, setCurrentQuote] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [buildingToDelete, setBuildingToDelete] = useState(null);
+  const [isColorOpen, setIsColorOpen] = useState(false);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [sourceBuildingIndex, setSourceBuildingIndex] = useState(0);
@@ -130,10 +132,10 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           noFlangeBraces: false,
           leftFrame: 'postAndBeam',
           leftEndwallInset: '',
-          outerLeftBaySpacing: '',
+          leftIntColSpacing: '',
           rightFrame: 'postAndBeam',
           rightEndwallInset: '',
-          outerRightBaySpacing: '',
+          rightIntColSpacing: '',
           frontBracingType: 'xBrace',
           frontBracingHeight: '',
           backBracingType: 'xBrace',
@@ -168,32 +170,40 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
           outerLeftBaseCondition: 'angle',
           rightBaseCondition: 'angle',
           outerRightBaseCondition: 'angle',
-          purlinSpacing: '',
+          purlinSpacing: 'default',
           roofPanelType: 'pbr',
           roofPanelGauge: '26',
           roofPanelFinish: 'painted',
+          roofPanelColor: 'NC',
           wallPanelType: 'pbr',
           wallPanelGauge: '26',
           wallPanelFinish: 'painted',
+          wallPanelColor: 'NC',
           allWallsSame: true,
           frontWallPanelType: 'pbr',
           frontWallPanelGauge: '26',
           frontWallPanelFinish: 'painted',
+          frontWallPanelColor: 'NC',
           backWallPanelType: 'pbr',
           backWallPanelGauge: '26',
           backWallPanelFinish: 'painted',
+          backWallPanelColor: 'NC',
           outerLeftWallPanelType: 'pbr',
           outerLeftWallPanelGauge: '26',
           outerLeftWallPanelFinish: 'painted',
+          outerLeftWallPanelColor: 'NC',
           leftWallPanelType: 'pbr',
           leftWallPanelGauge: '26',
           leftWallPanelFinish: 'painted',
+          leftWallPanelColor: 'NC',
           rightWallPanelType: 'pbr',
           rightWallPanelGauge: '26',
           rightWallPanelFinish: 'painted',
+          rightWallPanelColor: 'NC',
           outerRightWallPanelType: 'pbr',
           outerRightWallPanelGauge: '26',
           outerRightWallPanelFinish: 'painted',
+          outerRightWallPanelColor: 'NC',
           includeGutters: true,
           roofInsulation: 'none',
           roofInsulationOthers: false,
@@ -401,6 +411,14 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
       console.error('Error deleting quote:', error);
       alert('Failed to delete quote. Please try again.');
     }
+  };
+
+  const openColorDialog = () => {
+    setIsColorOpen(true);
+  };
+
+  const closeColorDialog = () => {
+    setIsColorOpen(false);
   };
 
   // Checking for screen width to conditionally render DOM elements
@@ -920,6 +938,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               handlePartitionChange={handlePartitionChange}
               setValues={setValues}
               isDesktop={isDesktop}
+              colorClicked={openColorDialog}
             />
           </>
         )}
@@ -934,6 +953,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               handleRoofReliteChange={handleRoofReliteChange}
               setValues={setValues}
               isDesktop={isDesktop}
+              colorClicked={openColorDialog}
             />
           </>
         )}
@@ -952,6 +972,7 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
               handleWallReliteChange={handleWallReliteChange}
               setValues={setValues}
               isDesktop={isDesktop}
+              colorClicked={openColorDialog}
             />
           </>
         )}
@@ -1053,6 +1074,14 @@ export default function ClientQuote({ session, quoteId, initialQuoteData }) {
         onDelete={handleDeleteQuote}
         title="Confirm Deletion"
         message={`Are you sure you want to delete this whole quote?`}
+      />
+      <ReusableColorSelect
+        isOpen={isColorOpen}
+        onClose={closeColorDialog}
+        // onClick={}
+        // panel={}
+        // gauge={}
+        // value={}
       />
       <ReusableLoader
         isOpen={saveStatus}

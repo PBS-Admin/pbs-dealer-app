@@ -21,6 +21,7 @@ const BuildingRoofOptions = ({
   handleNestedChange,
   handleRoofLinerPanelChange,
   handleRoofReliteChange,
+  colorClicked,
   setValues,
 }) => {
   const [activeRoofLinerPanel, setActiveRoofLinerPanel] = useState(0);
@@ -43,6 +44,7 @@ const BuildingRoofOptions = ({
                   roofLinerPanelType: 'pbr',
                   roofLinerPanelGauge: '26',
                   roofLinerPanelFinish: 'painted',
+                  roofLinerPanelColor: 'NC',
                 },
               ],
             }
@@ -187,6 +189,7 @@ const BuildingRoofOptions = ({
             onChange={(e, keyString) =>
               handleNestedChange(activeBuilding, keyString, e.target.value)
             }
+            colorClicked={colorClicked}
           />
         </div>
 
@@ -418,6 +421,7 @@ const BuildingRoofOptions = ({
             onChange={(e, keyString) =>
               handleNestedChange(activeBuilding, keyString, e.target.value)
             }
+            colorClicked={colorClicked}
           />
         </div>
       </section>
@@ -545,6 +549,7 @@ const BuildingRoofOptions = ({
                       }
                     }}
                     placeholder="Leave Blank for Full Ht"
+                    disabled={true}
                   />
                   <button
                     type="button"
@@ -585,6 +590,7 @@ const BuildingRoofOptions = ({
                       e.target.value
                     )
                   }
+                  colorClicked={colorClicked}
                 />
               </div>
             </>

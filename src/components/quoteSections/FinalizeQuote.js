@@ -263,9 +263,18 @@ const FinalizeQuote = ({ values, setValues, handleChange }) => {
             >
               Notes for Estimator
             </button>
-            <button type="button" className="nuetral" onClick={handleContract}>
-              Open Contract
+            {/* <button type="button" className="nuetral" onClick={handleContract}>
+              Create Contract
             </button>
+            <button
+              type="button"
+              className="nuetral"
+              onClick={() => {
+                console.log(values);
+              }}
+            >
+              Open Contract
+            </button> */}
           </div>
           <div className="divider showWithSidebar span2"></div>
           <div className="cardButton">

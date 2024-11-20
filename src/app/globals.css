@@ -673,9 +673,9 @@ label:has(.tooltip.left) {
   right: 30px;
   visibility: hidden;
   font-size: 0.8em;
-  border: 1px solid var(--gray);
+  border: 1px solid var(--light-gray);
   border-radius: 0.5em;
-  background-color: var(--light-gray);
+  background-color: rgba(204, 204, 204, 0.75);
   white-space: nowrap;
   padding: 0.5em;
   z-index: 99;
@@ -807,6 +807,111 @@ label:has(.tooltip.left) {
   display: flex;
   width: 100%;
   justify-content: space-around;
+}
+
+.dialog-content:has(.buttonGroup) {
+  align-items: flex-start;
+  padding: 1em 3em;
+}
+
+.dialog-content:has(.buttonGroup) h3 {
+  color: var(--dark-blue);
+  align-self: center;
+}
+
+.dialog-content .buttonGroup {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  max-width: 500px;
+}
+
+.dialog-content .buttonWrapper {
+  padding: 4px;
+}
+
+.dialog-content .buttonWrapper.selected {
+  padding: 2px;
+  border: 2px solid var(--dark-blue);
+  border-radius: 8px;
+}
+
+.dialog-content .buttonGroup button {
+  min-width: 40px;
+  min-height: 40px;
+  border: 1px solid var(--gray);
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+/* Global Toggle Styles */
+
+.toggle {
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+}
+
+.toggle .wrapper {
+  display: flex;
+  background-color: var(--light-gray);
+  border: 1px solid var(--gray);
+  position: relative;
+  width: 48px;
+  height: 24px;
+  border-radius: 12px;
+}
+
+.toggle label {
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.toggle input {
+  visibility: hidden;
+}
+
+.toggle input + .toggleButton {
+  background-color: var(--gray);
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  transition: 300ms;
+}
+
+.toggle input:checked + .toggleButton {
+  background-color: var(--dark-blue);
+  left: 26px;
+  transition: 300ms;
+}
+
+.toggle input:checked + .toggleButton.prim {
+  background-color: var(--dark-blue);
+}
+
+.toggle input:checked + .toggleButton.sec {
+  background-color: var(--blue);
+}
+
+.toggle input:checked + .toggleButton.accent {
+  background-color: var(--orange);
+}
+
+.toggle input:checked + .toggleButton.success {
+  background-color: var(--green);
+}
+
+.toggle input:checked + .toggleButton.reject {
+  background-color: var(--red);
+}
+
+.toggle input:checked + .toggleButton.nuetral {
+  background-color: var(--gray);
 }
 
 /* Global Card Styles */

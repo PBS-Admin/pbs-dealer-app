@@ -27,6 +27,7 @@ import {
   soffitGauge,
   soffitFinish,
   panelOptions,
+  panelColors,
   polycarbRoofSize,
   polycarbRoofColor,
   polycarbWallSize,
@@ -35,6 +36,8 @@ import {
   wallInsulation,
   hangarDoorInsulation,
   openingTypes,
+  roofs,
+  singleSlopeRoofs,
   walls,
   wallsOuterLeft,
   wallsOuterRight,
@@ -404,12 +407,12 @@ export function usePDF() {
     const companyText6 = '';
     const companyText7 = '';
 
-    page.drawImage(logoImage, {
-      x: 22,
-      y: 700,
-      width: 120,
-      height: 54,
-    });
+    // page.drawImage(logoImage, {
+    //   x: 22,
+    //   y: 700,
+    //   width: 120,
+    //   height: 54,
+    // });
     textCenter(page, companyText0, 202, 742.375, 118);
     textCenter(page, companyText1, 202, 729.875, 118);
     textCenter(page, companyText2, 202, 717.375, 118);
@@ -822,6 +825,444 @@ export function usePDF() {
           ? 'Building ' + String.fromCharCode(i + 65)
           : '';
 
+      /* Roof Sheet */
+      wallsInBldg =
+        values.buildings[i].shape == 'singleSlope' ||
+        values.buildings[i].shape == 'leanTo'
+          ? singleSlopeRoofs
+          : roofs;
+
+      page = addPage(pageTitle, 'Roof', 'BASIC INFORMATION:');
+      textLeft(page, 'Bay Spacing:', 22, currentY + textOffsetY);
+      textBoldLeft(
+        page,
+        formatBaySpacing(values.buildings[i].roofBaySpacing),
+        90,
+        currentY + textOffsetY,
+        504
+      );
+      lineThin(page, pageStartX, currentY, pageEndX, currentY);
+      currentY -= lineHt;
+
+      textLeft(page, 'Bracing Type:', 22, currentY + textOffsetY);
+      textBoldLeft(page, 'X-Bracing', 90, currentY + textOffsetY, 124);
+      textLeft(page, 'Braced Bays:', 216, currentY + textOffsetY);
+      textBoldLeft(
+        page,
+        formatBaySelected(values.buildings[i].roofBracedBays),
+        286,
+        currentY + textOffsetY,
+        306
+      );
+      lineThin(page, pageStartX, currentY, pageEndX, currentY);
+      currentY -= lineHt;
+
+      textLeft(page, 'Purlin Type:', 22, currentY + textOffsetY);
+      textLeft(page, 'Special Purlin Spacing:', 216, currentY + textOffsetY);
+      textBoldLeft(page, 'Bi-Pass', 90, currentY + textOffsetY, 124);
+      textBoldLeft(
+        page,
+        purlinSpacing.find(
+          (item) => item.id === values.buildings[i].purlinSpacing
+        ).label,
+        320,
+        currentY + textOffsetY,
+        124
+      );
+      lineThin(page, pageStartX, currentY, pageEndX, currentY);
+      currentY -= lineHt;
+
+      textLeft(page, 'Roof Panels:', 22, currentY + textOffsetY);
+      textLeft(page, 'Gauge:', 216, currentY + textOffsetY);
+      textLeft(page, 'Finish:', 316, currentY + textOffsetY);
+      textLeft(page, 'Color:', 446, currentY + textOffsetY);
+      textBoldLeft(
+        page,
+        roofPanels.find((item) => item.id === values.buildings[i].roofPanelType)
+          .label,
+        90,
+        currentY + textOffsetY,
+        124
+      );
+      textBoldLeft(
+        page,
+        roofGauge.find((item) => item.id === values.buildings[i].roofPanelGauge)
+          .label,
+        260,
+        currentY + textOffsetY,
+        54
+      );
+      textBoldLeft(
+        page,
+        roofFinish.find(
+          (item) => item.id === values.buildings[i].roofPanelFinish
+        ).label,
+        356,
+        currentY + textOffsetY,
+        88
+      );
+      textBoldLeft(
+        page,
+        panelColors.find(
+          (item) => item.id === values.buildings[i].roofPanelColor
+        ).label,
+        486,
+        currentY + textOffsetY,
+        106
+      );
+      if (
+        values.buildings[i].roofPanelType == 'ssq' ||
+        values.buildings[i].roofPanelType == 'ms200' ||
+        values.buildings[i].roofPanelType == 'doubleLok' ||
+        values.buildings[i].roofPanelType == 'battenLok'
+      ) {
+        currentY -= lineHt;
+        textSmallLeft(
+          page,
+          '***Standing Seam Note: Standing Seam panels require the rental of seaming equipment not included in price.',
+          100,
+          currentY + textOffsetY
+        );
+      }
+      lineThin(page, pageStartX, currentY, pageEndX, currentY);
+      currentY -= lineHt;
+
+      textLeft(page, 'Insulation:', 22, currentY + textOffsetY);
+      textBoldLeft(
+        page,
+        roofInsulation.find(
+          (item) => item.id === values.buildings[i].roofInsulation
+        ).label +
+          (values.buildings[i].roofInsulationOthers &&
+          values.buildings[i].roofInsulation != 'none'
+            ? ' - By Others'
+            : ''),
+        90,
+        currentY + textOffsetY,
+        502
+      );
+      lineThin(page, pageStartX, currentY, pageEndX, currentY);
+      currentY -= lineHt;
+
+      textLeft(page, 'Eave Trim:', 22, currentY + textOffsetY);
+      textBoldLeft(
+        page,
+        values.buildings[i].includeGutters
+          ? 'Gutters and Downspouts'
+          : 'Standard Eave Trim (No Gutters)',
+        90,
+        currentY + textOffsetY,
+        502
+      );
+
+      lineThick(page, pageStartX, currentY, pageEndX, currentY);
+      currentY -= lineHt;
+
+      /* Roof Extensions */
+      if (
+        values.buildings[i].frontExtensionWidth > 0 ||
+        values.buildings[i].backExtensionWidth > 0 ||
+        values.buildings[i].leftExtensionWidth > 0 ||
+        values.buildings[i].rightExtensionWidth > 0
+      ) {
+        addSection(page, currentY);
+        textBoldLeft(page, 'ROOF EXTENSIONS:', 22, currentY + textOffsetY);
+        line(page, pageStartX, currentY, pageEndX, currentY);
+        currentY -= lineHt;
+
+        wallsInBldg = walls;
+        for (j = 0; j < wallsInBldg.length; j++) {
+          if (values.buildings[i][`${wallsInBldg[j].id}ExtensionWidth`]) {
+            textLeft(page, 'Location:', 22, currentY + textOffsetY);
+            textLeft(page, 'Width:', 216, currentY + textOffsetY);
+            textBoldLeft(
+              page,
+              wallsInBldg[j].label,
+              70,
+              currentY + textOffsetY,
+              84
+            );
+            textBoldLeft(
+              page,
+              formatFeetInches(
+                values.buildings[i][`${wallsInBldg[j].id}ExtensionWidth`]
+              ),
+              260,
+              currentY + textOffsetY,
+              54
+            );
+            if (wallsInBldg[j].id == 'front' || wallsInBldg[j].id == 'back') {
+              textLeft(page, 'Bays:', 316, currentY + textOffsetY);
+              textLeft(page, 'Add Columns:', 446, currentY + textOffsetY);
+              textBoldLeft(
+                page,
+                values.buildings[i][
+                  `${wallsInBldg[j].id}ExtensionBays`
+                ].toString(),
+                356,
+                currentY + textOffsetY,
+                88
+              );
+              textBoldLeft(
+                page,
+                values.buildings[i][
+                  `${wallsInBldg[j].id}ExtensionColumns`
+                ].toString(),
+                512,
+                currentY + textOffsetY,
+                82
+              );
+            }
+
+            lineThin(page, pageStartX, currentY, pageEndX, currentY);
+            currentY -= lineHt;
+          }
+        }
+
+        textLeft(page, 'Soffit Panels:', 22, currentY + textOffsetY);
+        textLeft(page, 'Gauge:', 216, currentY + textOffsetY);
+        textLeft(page, 'Finish:', 316, currentY + textOffsetY);
+        textLeft(page, 'Color:', 446, currentY + textOffsetY);
+        textBoldLeft(
+          page,
+          soffitPanels.find(
+            (item) => item.id === values.buildings[i].soffitPanelType
+          ).label,
+          90,
+          currentY + textOffsetY,
+          124
+        );
+        textBoldLeft(
+          page,
+          soffitGauge.find(
+            (item) => item.id === values.buildings[i].soffitPanelGauge
+          ).label,
+          260,
+          currentY + textOffsetY,
+          54
+        );
+        textBoldLeft(
+          page,
+          soffitFinish.find(
+            (item) => item.id === values.buildings[i].soffitPanelFinish
+          ).label,
+          356,
+          currentY + textOffsetY,
+          88
+        );
+        textBoldLeft(
+          page,
+          panelColors.find(
+            (item) => item.id === values.buildings[i].soffitPanelColor
+          ).label,
+          486,
+          currentY + textOffsetY,
+          106
+        );
+        lineThick(page, pageStartX, currentY, pageEndX, currentY);
+        currentY -= lineHt;
+      }
+
+      /* Roof Liner Panels */
+      bldgItems = getItemsByWall(
+        values.buildings[i].roofLinerPanels,
+        'wall',
+        'roof'
+      );
+      if (bldgItems.length > 0) {
+        if (currentY < pageEndY + lineHt * 2) {
+          page = addPage(pageTitle, 'Roof' + ' (cont.)');
+        }
+
+        addSection(page, currentY);
+        textBoldLeft(page, 'LINER PANELS:', 22, currentY + textOffsetY);
+        line(page, pageStartX, currentY, pageEndX, currentY);
+        currentY -= lineHt;
+
+        for (k = 0; k < bldgItems.length; k++) {
+          textLeft(page, 'Start:', 22, currentY + textOffsetY);
+          textLeft(page, 'End:', 156, currentY + textOffsetY);
+          textBoldLeft(
+            page,
+            formatFeetInches(bldgItems[k].start),
+            70,
+            currentY + textOffsetY,
+            84
+          );
+          textBoldLeft(
+            page,
+            formatFeetInches(bldgItems[k].end),
+            200,
+            currentY + textOffsetY,
+            114
+          );
+
+          lineThin(page, pageStartX, currentY, pageEndX, currentY);
+          currentY -= lineHt;
+
+          textLeft(page, 'Liner Panels:', 22, currentY + textOffsetY);
+          textLeft(page, 'Gauge:', 216, currentY + textOffsetY);
+          textLeft(page, 'Finish:', 316, currentY + textOffsetY);
+          textLeft(page, 'Color:', 446, currentY + textOffsetY);
+          textBoldLeft(
+            page,
+            soffitPanels.find(
+              (item) => item.id === bldgItems[k].roofLinerPanelType
+            ).label,
+            90,
+            currentY + textOffsetY,
+            124
+          );
+          textBoldLeft(
+            page,
+            soffitGauge.find(
+              (item) => item.id === bldgItems[k].roofLinerPanelGauge
+            ).label,
+            260,
+            currentY + textOffsetY,
+            54
+          );
+          textBoldLeft(
+            page,
+            soffitFinish.find(
+              (item) => item.id === bldgItems[k].roofLinerPanelFinish
+            ).label,
+            356,
+            currentY + textOffsetY,
+            88
+          );
+          textBoldLeft(
+            page,
+            panelColors.find(
+              (item) => item.id === bldgItems[k].roofLinerPanelColor
+            ).label,
+            486,
+            currentY + textOffsetY,
+            106
+          );
+          if (k + 1 < bldgItems.length) {
+            line(page, pageStartX, currentY, pageEndX, currentY);
+            currentY -= lineHt;
+          }
+
+          if (currentY < pageEndY + lineHt * 1) {
+            page = addPage(pageTitle, 'Roof (cont.)', 'LINER PANELS: (cont.)');
+          }
+        }
+        lineThick(page, pageStartX, currentY, pageEndX, currentY);
+        currentY -= lineHt;
+      }
+
+      /* Roof Relite Panels */
+      if (values.buildings[i].roofRelites.length > 0) {
+        if (currentY < pageEndY + lineHt * 2) {
+          page = addPage(pageTitle, 'Roof (cont.)');
+        }
+
+        addSection(page, currentY);
+        textBoldLeft(page, 'ROOF RELITES:', 22, currentY + textOffsetY);
+        line(page, pageStartX, currentY, pageEndX, currentY);
+        currentY -= lineHt;
+
+        for (j = 0; j < wallsInBldg.length; j++) {
+          bldgItems = getItemsByWall(
+            values.buildings[i].roofRelites,
+            'roof',
+            wallsInBldg[j].id
+          );
+          if (bldgItems.length > 0) {
+            for (k = 0; k < bldgItems.length; k++) {
+              textLeft(page, 'Qty:', 22, currentY + textOffsetY);
+              textLeft(page, 'Size:', 156, currentY + textOffsetY);
+              textLeft(page, 'Color:', 316, currentY + textOffsetY);
+              textBoldLeft(
+                page,
+                bldgItems[k].qty.toString(),
+                70,
+                currentY + textOffsetY,
+                84
+              );
+              textBoldLeft(
+                page,
+                polycarbRoofSize.find((item) => item.id === bldgItems[k].size)
+                  .label,
+                200,
+                currentY + textOffsetY,
+                114
+              );
+              textBoldLeft(
+                page,
+                polycarbRoofColor.find((item) => item.id === bldgItems[k].color)
+                  .label,
+                356,
+                currentY + textOffsetY,
+                236
+              );
+              if (
+                values.buildings[i].shape != 'singleSlope' &&
+                values.buildings[i].shape != 'leanTo'
+              ) {
+                textLeft(page, 'Ridge Side:', 446, currentY + textOffsetY);
+                textBoldLeft(
+                  page,
+                  wallsInBldg[j].label,
+                  500,
+                  currentY + textOffsetY,
+                  92
+                );
+              }
+              lineThin(page, pageStartX, currentY, pageEndX, currentY);
+              currentY -= lineHt;
+
+              textLeft(page, 'Location:', 22, currentY + textOffsetY);
+              textLeft(page, 'Offset:', 316, currentY + textOffsetY);
+              textLeft(page, 'Cut Panels:', 446, currentY + textOffsetY);
+              textBoldLeft(
+                page,
+                formatBaySpacing(bldgItems[k].location),
+                70,
+                currentY + textOffsetY,
+                244
+              );
+              textBoldLeft(
+                page,
+                formatFeetInches(bldgItems[k].offset),
+                356,
+                currentY + textOffsetY,
+                88
+              );
+              textBoldLeft(
+                page,
+                bldgItems[k].cutPanels.toString(),
+                500,
+                currentY + textOffsetY,
+                92
+              );
+              if (k + 1 < bldgItems.length) {
+                line(page, pageStartX, currentY, pageEndX, currentY);
+                currentY -= lineHt;
+              }
+
+              if (currentY < pageEndY + lineHt * 1) {
+                page = addPage(
+                  pageTitle,
+                  'Roof (cont.)',
+                  'ROOF RELITES: (cont.)'
+                );
+              }
+            }
+            if (j + 1 < wallsInBldg.length) {
+              line(page, pageStartX, currentY, pageEndX, currentY);
+            } else {
+              lineThick(page, pageStartX, currentY, pageEndX, currentY);
+            }
+            currentY -= lineHt;
+          }
+        }
+      }
+
+      /* Roof Openings */
+
       /* Wall Sheets */
       wallsInBldg =
         values.buildings[i].leftFrame == 'insetRF' &&
@@ -856,15 +1297,22 @@ export function usePDF() {
         textLeft(page, 'Bracing Type:', 22, currentY + textOffsetY);
         textBoldLeft(
           page,
-          wallBracingType.find(
-            (item) =>
-              item.id === values.buildings[i][`${wallsInBldg[j].id}BracingType`]
-          ).label,
+          wallsInBldg[j].id == 'outerLeft' || wallsInBldg[j].id == 'outerRight'
+            ? 'None'
+            : wallBracingType.find(
+                (item) =>
+                  item.id ===
+                  values.buildings[i][`${wallsInBldg[j].id}BracingType`]
+              ).label,
           90,
           currentY + textOffsetY,
           124
         );
-        if (values.buildings[i][`${wallsInBldg[j].id}BracingType`] != 'none') {
+        if (
+          wallsInBldg[j].id != 'outerLeft' &&
+          wallsInBldg[j].id != 'outerRight' &&
+          values.buildings[i][`${wallsInBldg[j].id}BracingType`] != 'none'
+        ) {
           textLeft(page, 'Braced Bays:', 216, currentY + textOffsetY);
           textBoldLeft(
             page,
@@ -955,10 +1403,10 @@ export function usePDF() {
         );
         textBoldLeft(
           page,
-          wallFinish.find(
+          panelColors.find(
             (item) =>
               item.id ===
-              values.buildings[i][`${wallsInBldg[j].id}WallPanelFinish`]
+              values.buildings[i][`${wallsInBldg[j].id}WallPanelColor`]
           ).label,
           486,
           currentY + textOffsetY,
@@ -974,7 +1422,11 @@ export function usePDF() {
             (item) =>
               item.id ===
               values.buildings[i][`${wallsInBldg[j].id}WallInsulation`]
-          ).label,
+          ).label +
+            (values.buildings[i].wallInsulationOthers &&
+            values.buildings[i][`${wallsInBldg[j].id}WallInsulation`] != 'none'
+              ? ' - By Others'
+              : ''),
           90,
           currentY + textOffsetY,
           502
@@ -1062,8 +1514,8 @@ export function usePDF() {
             );
             textBoldLeft(
               page,
-              wallFinish.find(
-                (item) => item.id === bldgItems[k].wallLinerPanelFinish
+              panelColors.find(
+                (item) => item.id === bldgItems[k].wallLinerPanelColor
               ).label,
               486,
               currentY + textOffsetY,
@@ -1188,8 +1640,8 @@ export function usePDF() {
             );
             textBoldLeft(
               page,
-              roofFinish.find(
-                (item) => item.id === bldgItems[k].roofPanelFinish
+              panelColors.find(
+                (item) => item.id === bldgItems[k].roofPanelColor
               ).label,
               486,
               currentY + textOffsetY,
@@ -1231,8 +1683,8 @@ export function usePDF() {
             );
             textBoldLeft(
               page,
-              soffitFinish.find(
-                (item) => item.id === bldgItems[k].soffitPanelFinish
+              panelColors.find(
+                (item) => item.id === bldgItems[k].soffitPanelColor
               ).label,
               486,
               currentY + textOffsetY,
@@ -1476,8 +1928,8 @@ export function usePDF() {
             );
             textBoldLeft(
               page,
-              wallFinish.find(
-                (item) => item.id === bldgItems[k].wainscotPanelFinish
+              panelColors.find(
+                (item) => item.id === bldgItems[k].wainscotPanelColor
               ).label,
               486,
               currentY + textOffsetY,
@@ -1588,142 +2040,151 @@ export function usePDF() {
         }
 
         /* Openings */
-        if (values.buildings[i].openings[`${wallsInBldg[j].id}`].length > 0) {
-          if (currentY < pageEndY + lineHt * 2) {
-            page = addPage(pageTitle, wallsInBldg[j].label + ' (cont.)');
-          }
+        if (
+          wallsInBldg[j].id != 'outerLeft' &&
+          wallsInBldg[j].id != 'outerRight'
+        ) {
+          //THIS IS TEMP
+          if (values.buildings[i].openings[`${wallsInBldg[j].id}`].length > 0) {
+            if (currentY < pageEndY + lineHt * 2) {
+              page = addPage(pageTitle, wallsInBldg[j].label + ' (cont.)');
+            }
 
-          addSection(page, currentY);
-          textBoldLeft(page, 'FRAMED OPENINGS:', 22, currentY + textOffsetY);
-          line(page, pageStartX, currentY, pageEndX, currentY);
-          currentY -= lineHt;
+            addSection(page, currentY);
+            textBoldLeft(page, 'FRAMED OPENINGS:', 22, currentY + textOffsetY);
+            line(page, pageStartX, currentY, pageEndX, currentY);
+            currentY -= lineHt;
 
-          textLeft(page, 'Bay:', 32, currentY + textOffsetY);
-          textLeft(page, 'Type:', 80, currentY + textOffsetY);
-          textLeft(page, 'Offset:', 228, currentY + textOffsetY);
-          textLeft(page, 'Width:', 316, currentY + textOffsetY);
-          textLeft(page, 'Height:', 404, currentY + textOffsetY);
-          textLeft(page, 'Sill:', 492, currentY + textOffsetY);
-          lineThin(page, pageStartX + 12, currentY, pageEndX - 12, currentY);
-          currentY -= lineHt;
+            textLeft(page, 'Bay:', 32, currentY + textOffsetY);
+            textLeft(page, 'Type:', 80, currentY + textOffsetY);
+            textLeft(page, 'Offset:', 228, currentY + textOffsetY);
+            textLeft(page, 'Width:', 316, currentY + textOffsetY);
+            textLeft(page, 'Height:', 404, currentY + textOffsetY);
+            textLeft(page, 'Sill:', 492, currentY + textOffsetY);
+            lineThin(page, pageStartX + 12, currentY, pageEndX - 12, currentY);
+            currentY -= lineHt;
 
-          for (
-            k = 0;
-            k < values.buildings[i].openings[`${wallsInBldg[j].id}`].length;
-            k++
-          ) {
-            textBoldLeft(
-              page,
-              values.buildings[i].openings[`${wallsInBldg[j].id}`][
-                k
-              ].bay.toString(),
-              38,
-              currentY + textOffsetY,
-              40
-            );
-            textBoldLeft(
-              page,
-              openingTypes.find(
-                (item) =>
-                  item.id ===
-                  values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
-                    .openType
-              ).label,
-              80,
-              currentY + textOffsetY,
-              146
-            );
-            if (
-              values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
-                .openType != 'openbay'
+            for (
+              k = 0;
+              k < values.buildings[i].openings[`${wallsInBldg[j].id}`].length;
+              k++
             ) {
               textBoldLeft(
                 page,
-                formatFeetInches(
-                  values.buildings[i].openings[`${wallsInBldg[j].id}`][k].offset
-                ),
-                228,
+                values.buildings[i].openings[`${wallsInBldg[j].id}`][
+                  k
+                ].bay.toString(),
+                38,
                 currentY + textOffsetY,
-                86
+                40
               );
               textBoldLeft(
                 page,
-                formatFeetInches(
-                  values.buildings[i].openings[`${wallsInBldg[j].id}`][k].width
-                ),
-                316,
+                openingTypes.find(
+                  (item) =>
+                    item.id ===
+                    values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                      .openType
+                ).label,
+                80,
                 currentY + textOffsetY,
-                86
+                146
               );
-              textBoldLeft(
-                page,
-                formatFeetInches(
-                  values.buildings[i].openings[`${wallsInBldg[j].id}`][k].height
-                ),
-                404,
-                currentY + textOffsetY,
-                86
-              );
-              textBoldLeft(
-                page,
-                values.buildings[i].openings[`${wallsInBldg[j].id}`][k].sill >
-                  0 ||
-                  values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
-                    .openType == 'window' ||
-                  values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
-                    .openType == 'commericalwindow' ||
-                  values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
-                    .openType == 'louver'
-                  ? formatFeetInches(
-                      values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
-                        .sill
-                    )
-                  : '',
-                492,
-                currentY + textOffsetY,
-                86
-              );
-            }
-            if (
-              k + 1 <
-              values.buildings[i].openings[`${wallsInBldg[j].id}`].length
-            ) {
-              lineThin(
-                page,
-                pageStartX + 12,
-                currentY,
-                pageEndX - 12,
-                currentY
-              );
-              currentY -= lineHt;
-            }
+              if (
+                values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                  .openType != 'openbay'
+              ) {
+                textBoldLeft(
+                  page,
+                  formatFeetInches(
+                    values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                      .offset
+                  ),
+                  228,
+                  currentY + textOffsetY,
+                  86
+                );
+                textBoldLeft(
+                  page,
+                  formatFeetInches(
+                    values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                      .width
+                  ),
+                  316,
+                  currentY + textOffsetY,
+                  86
+                );
+                textBoldLeft(
+                  page,
+                  formatFeetInches(
+                    values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                      .height
+                  ),
+                  404,
+                  currentY + textOffsetY,
+                  86
+                );
+                textBoldLeft(
+                  page,
+                  values.buildings[i].openings[`${wallsInBldg[j].id}`][k].sill >
+                    0 ||
+                    values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                      .openType == 'window' ||
+                    values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                      .openType == 'commericalwindow' ||
+                    values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                      .openType == 'louver'
+                    ? formatFeetInches(
+                        values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                          .sill
+                      )
+                    : '',
+                  492,
+                  currentY + textOffsetY,
+                  86
+                );
+              }
+              if (
+                k + 1 <
+                values.buildings[i].openings[`${wallsInBldg[j].id}`].length
+              ) {
+                lineThin(
+                  page,
+                  pageStartX + 12,
+                  currentY,
+                  pageEndX - 12,
+                  currentY
+                );
+                currentY -= lineHt;
+              }
 
-            if (currentY < pageEndY + lineHt * 0) {
-              page = addPage(
-                pageTitle,
-                wallsInBldg[j].label + ' (cont.)',
-                'FRAMED OPENINGS: (cont.)'
-              );
+              if (currentY < pageEndY + lineHt * 0) {
+                page = addPage(
+                  pageTitle,
+                  wallsInBldg[j].label + ' (cont.)',
+                  'FRAMED OPENINGS: (cont.)'
+                );
 
-              textLeft(page, 'Bay:', 32, currentY + textOffsetY);
-              textLeft(page, 'Type:', 80, currentY + textOffsetY);
-              textLeft(page, 'Offset:', 228, currentY + textOffsetY);
-              textLeft(page, 'Width:', 316, currentY + textOffsetY);
-              textLeft(page, 'Height:', 404, currentY + textOffsetY);
-              textLeft(page, 'Sill:', 492, currentY + textOffsetY);
-              lineThin(
-                page,
-                pageStartX + 12,
-                currentY,
-                pageEndX - 12,
-                currentY
-              );
-              currentY -= lineHt;
+                textLeft(page, 'Bay:', 32, currentY + textOffsetY);
+                textLeft(page, 'Type:', 80, currentY + textOffsetY);
+                textLeft(page, 'Offset:', 228, currentY + textOffsetY);
+                textLeft(page, 'Width:', 316, currentY + textOffsetY);
+                textLeft(page, 'Height:', 404, currentY + textOffsetY);
+                textLeft(page, 'Sill:', 492, currentY + textOffsetY);
+                lineThin(
+                  page,
+                  pageStartX + 12,
+                  currentY,
+                  pageEndX - 12,
+                  currentY
+                );
+                currentY -= lineHt;
+              }
             }
+            lineThick(page, pageStartX, currentY, pageEndX, currentY);
+            currentY -= lineHt;
           }
-          lineThick(page, pageStartX, currentY, pageEndX, currentY);
-          currentY -= lineHt;
-        }
+        } //THIS IS TEMP
       }
 
       bldgPageNums[i].pageEnd = currentPage + 1; //On current page

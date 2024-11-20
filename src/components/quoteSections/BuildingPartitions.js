@@ -11,6 +11,7 @@ const BuildingPartitions = ({
   values,
   activeBuilding,
   handlePartitionChange,
+  colorClicked,
   setValues,
 }) => {
   const [activePartition, setActivePartition] = useState(0);
@@ -34,9 +35,11 @@ const BuildingPartitions = ({
           leftPanelType: 'pbr',
           leftPanelGauge: '26',
           leftPanelFinish: 'painted',
+          leftPanelColor: 'NC',
           rightPanelType: 'pbr',
           rightPanelGauge: '26',
           rightPanelFinish: 'painted',
+          rightPanelColor: 'NC',
         },
       ];
 
@@ -326,6 +329,7 @@ const BuildingPartitions = ({
                     e.target.value
                   )
                 }
+                colorClicked={colorClicked}
               />
               <div className="divider offOnLaptop"></div>
               <ReusablePanel
@@ -345,6 +349,7 @@ const BuildingPartitions = ({
                     e.target.value
                   )
                 }
+                colorClicked={colorClicked}
               />
             </div>
           </>
