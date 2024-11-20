@@ -72,7 +72,8 @@ const BaySelectionInput = ({
       <h5>{label}</h5>
       <div
         style={{
-          display: disabled ? 'none' : 'flex',
+          // display: disabled ? 'none' : 'flex',
+          display: 'flex',
           flexWrap: 'wrap',
           gap: '8px',
         }}
@@ -98,6 +99,7 @@ const BaySelectionInput = ({
                 justifyContent: 'center',
                 position: 'relative',
               }}
+              disabled={disabled}
             >
               {bayNumber}
               <label htmlFor={`${name}-insetBay${bayNumber}`}>
@@ -111,6 +113,7 @@ const BaySelectionInput = ({
                     opacity: 0,
                     cursor: 'pointer',
                   }}
+                  disabled={disabled}
                 />
               </label>
             </button>

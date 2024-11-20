@@ -45,6 +45,7 @@ const BaySpacingInput = ({
   placeholder = `25'-0", 25'-0" or 4x20`,
   compareLabel,
   compareValue,
+  disabled,
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [error, setError] = useState('');
@@ -120,6 +121,7 @@ const BaySpacingInput = ({
         // onFocus={suggestDistribution}
         placeholder={placeholder}
         onFocus={(e) => e.target.select()}
+        disabled={disabled}
       />
       {error && <div style={{ color: 'red', fontSize: '0.8em' }}>{error}</div>}
     </div>

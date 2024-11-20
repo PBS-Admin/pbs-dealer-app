@@ -11,6 +11,7 @@ const Accessories = ({
   handleChange,
   handleMandoorChange,
   setValues,
+  locked,
 }) => {
   const [activeMandoor, setActiveMandoor] = useState(0);
 
@@ -67,6 +68,7 @@ const Accessories = ({
                   name="monoSlabDesign"
                   checked={values.monoSlabDesign}
                   onChange={(e) => handleChange(e, 'monoSlabDesign')}
+                  disabled={locked}
                 />
                 <label htmlFor="monoSlabDesign">
                   Include Monolothic Slab Design
@@ -79,6 +81,7 @@ const Accessories = ({
                   name="pierFootingDesign"
                   checked={values.pierFootingDesign}
                   onChange={(e) => handleChange(e, 'pierFootingDesign')}
+                  disabled={locked}
                 />
                 <label htmlFor="pierFootingDesign">
                   Include Pier Footing Design
@@ -95,6 +98,7 @@ const Accessories = ({
                   name="standardWarranty"
                   checked={values.standardWarranty}
                   onChange={(e) => handleChange(e, 'standardWarranty')}
+                  disabled={locked}
                 />
                 <label htmlFor="standardWarranty">
                   Include Standard Warranty
@@ -107,6 +111,7 @@ const Accessories = ({
                   name="singleSourceWarranty"
                   checked={values.pierFootingDesign}
                   onChange={(e) => handleChange(e, 'singleSourceWarranty')}
+                  disabled={locked}
                 />
                 <label htmlFor="singleSourceWarranty">
                   Include Single Source Warranty
@@ -123,6 +128,7 @@ const Accessories = ({
                   name="willCall"
                   checked={values.willCall}
                   onChange={(e) => handleChange(e, 'willCall')}
+                  disabled={locked}
                 />
                 <label htmlFor="willCall">Will Call - Shipping By Others</label>
               </div>
@@ -141,6 +147,7 @@ const Accessories = ({
               label="4x4 Insulated Skylight with Curb"
               onChange={handleChange}
               row={true}
+              disabled={locked}
             />
             <ReusableSlider
               type="number"
@@ -153,6 +160,7 @@ const Accessories = ({
               label={`12"x10 ft Ridge Vent with Bird Screens and Dampers`}
               onChange={handleChange}
               row={true}
+              disabled={locked}
             />
             <ReusableSlider
               type="number"
@@ -165,6 +173,7 @@ const Accessories = ({
               label="2x2x6 Light Weight Canopy Kit"
               onChange={handleChange}
               row={true}
+              disabled={locked}
             />
             <ReusableSlider
               type="number"
@@ -177,6 +186,7 @@ const Accessories = ({
               label="2x2x9 Light Weight Canopy Kit"
               onChange={handleChange}
               row={true}
+              disabled={locked}
             />
           </div>
         </div>
@@ -219,6 +229,7 @@ const Accessories = ({
                     setActiveMandoor(mandoorIndex);
                   }
                 }}
+                disabled={locked}
               />
               <ReusableSelect
                 name={`building-mandoorSize-${mandoorIndex}`}
@@ -232,6 +243,7 @@ const Accessories = ({
                   }
                 }}
                 options={mandoors}
+                disabled={locked}
               />
               <ReusableSelect
                 name={`building-mandoorGlass-${mandoorIndex}`}
@@ -245,6 +257,7 @@ const Accessories = ({
                   }
                 }}
                 options={mandoorGlass}
+                disabled={locked}
               />
               <div className="spacer offOnLaptop span3"></div>
               <div className="checkRow">
@@ -258,7 +271,7 @@ const Accessories = ({
                     mandoor.size == '4070' ||
                     mandoor.size == '6070'
                   }
-                  disabled={true}
+                  disabled={locked || true}
                   onChange={(e) =>
                     handleMandoorChange(mandoorIndex, 'leverLockset', e)
                   }
@@ -286,7 +299,8 @@ const Accessories = ({
                   disabled={
                     mandoor.size == '3070' ||
                     mandoor.size == '4070' ||
-                    mandoor.size == '6070'
+                    mandoor.size == '6070' ||
+                    locked
                   }
                   onChange={(e) =>
                     handleMandoorChange(mandoorIndex, 'deadBolt', e)
@@ -315,7 +329,8 @@ const Accessories = ({
                   disabled={
                     mandoor.size == '3070' ||
                     mandoor.size == '4070' ||
-                    mandoor.size == '6070'
+                    mandoor.size == '6070' ||
+                    locked
                   }
                   onChange={(e) =>
                     handleMandoorChange(mandoorIndex, 'panic', e)
@@ -344,7 +359,8 @@ const Accessories = ({
                   disabled={
                     mandoor.size == '3070' ||
                     mandoor.size == '4070' ||
-                    mandoor.size == '6070'
+                    mandoor.size == '6070' ||
+                    locked
                   }
                   onChange={(e) =>
                     handleMandoorChange(mandoorIndex, 'closer', e)
@@ -373,7 +389,8 @@ const Accessories = ({
                   disabled={
                     mandoor.size == '3070' ||
                     mandoor.size == '4070' ||
-                    mandoor.size == '6070'
+                    mandoor.size == '6070' ||
+                    locked
                   }
                   onChange={(e) =>
                     handleMandoorChange(mandoorIndex, 'kickPlate', e)
@@ -394,7 +411,7 @@ const Accessories = ({
                   id={`building-mandoorMullion-${mandoorIndex}`}
                   name={`building-mandoorMullion-${mandoorIndex}`}
                   checked={mandoor.mullion && mandoor.size == '6070P'}
-                  disabled={mandoor.size != '6070P'}
+                  disabled={mandoor.size != '6070P' || locked}
                   onChange={(e) =>
                     handleMandoorChange(mandoorIndex, 'mullion', e)
                   }
@@ -412,6 +429,7 @@ const Accessories = ({
                 type="button"
                 className="icon reject deleteRow"
                 onClick={() => removeMandoor(mandoorIndex)}
+                disabled={locked}
               >
                 <FontAwesomeIcon icon={faTrash} />
               </button>
@@ -419,13 +437,15 @@ const Accessories = ({
             <div className="divider offOnTablet"></div>
           </Fragment>
         ))}
-        <button
-          type="button"
-          className="success addRow"
-          onClick={() => addMandoor()}
-        >
-          Add
-        </button>
+        {!locked && (
+          <button
+            type="button"
+            className="success addRow"
+            onClick={() => addMandoor()}
+          >
+            Add
+          </button>
+        )}
       </section>
 
       <section className="card">
@@ -443,6 +463,7 @@ const Accessories = ({
                   name="noteCMUWallByOthers"
                   checked={values.noteCMUWallByOthers}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="noteCMUWallByOthers">
                   CMU Walls - By Others
@@ -455,6 +476,7 @@ const Accessories = ({
                   name="notePlywoodLinerByOthers"
                   checked={values.notePlywoodLinerByOthers}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="notePlywoodLinerByOthers">
                   Plywood Liner - By Others
@@ -467,6 +489,7 @@ const Accessories = ({
                   name="noteMezzanineByOthers"
                   checked={values.noteMezzanineByOthers}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="noteMezzanineByOthers">
                   Mezzanine - By Others
@@ -479,6 +502,7 @@ const Accessories = ({
                   name="noteFirewallByOthers"
                   checked={values.noteFirewallByOthers}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="noteFirewallByOthers">
                   Firewall - By Others
@@ -495,6 +519,7 @@ const Accessories = ({
                   name="noteExtBldgDisclaimer"
                   checked={values.noteExtBldgDisclaimer}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="noteExtBldgDisclaimer">
                   Existing Buildings Disclaimer
@@ -507,6 +532,7 @@ const Accessories = ({
                   name="noteRoofPitchDisclaimer"
                   checked={values.noteRoofPitchDisclaimer}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="noteRoofPitchDisclaimer">
                   PBR Roofing with 1/2:12 Roof Pitch
@@ -519,6 +545,7 @@ const Accessories = ({
                   name="noteSeismicGapDisclaimer"
                   checked={values.noteSeismicGapDisclaimer}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="noteSeismicGapDisclaimer">
                   Seismic Gap Disclaimer
@@ -531,6 +558,7 @@ const Accessories = ({
                   name="noteWaterPondingDisclaimer"
                   checked={values.noteWaterPondingDisclaimer}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="noteWaterPondingDisclaimer">
                   Water Ponding Disclaimer
@@ -543,6 +571,7 @@ const Accessories = ({
                   name="noteBldgSpecsDisclaimer"
                   checked={values.addProjectInfo}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="noteBldgSpecsDisclaimer">
                   Building With Spec's
@@ -561,6 +590,7 @@ const Accessories = ({
                   name="addItemExtBldg"
                   checked={values.addItemExtBldg}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="addItemExtBldg">
                   Next to an Existing Building
@@ -573,6 +603,7 @@ const Accessories = ({
                   name="addItemPartWalls"
                   checked={values.addItemPartWalls}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="addItemPartWalls">
                   Has Partition Walls By Others
@@ -585,6 +616,7 @@ const Accessories = ({
                   name="addItemRoofOpenings"
                   checked={values.addItemRoofOpenings}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="addItemRoofOpenings">Has Roof Openings</label>
               </div>
@@ -595,6 +627,7 @@ const Accessories = ({
                   name="addItemStepElev"
                   checked={values.addItemStepElev}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="addItemStepElev">Has Step Elevations</label>
               </div>
@@ -605,6 +638,7 @@ const Accessories = ({
                   name="addItemHorizPanels"
                   checked={values.addItemHorizPanels}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="addItemHorizPanels">
                   Has Horizontal Panels
@@ -617,6 +651,7 @@ const Accessories = ({
                   name="addItemParapetWalls"
                   checked={values.addItemParapetWalls}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="addItemParapetWalls">Has Parapet Walls</label>
               </div>
@@ -627,6 +662,7 @@ const Accessories = ({
                   name="addItemFaciaWalls"
                   checked={values.addItemFaciaWalls}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="addItemFaciaWalls">Has Facia Walls</label>
               </div>
@@ -637,6 +673,7 @@ const Accessories = ({
                   name="addItemBumpoutWalls"
                   checked={values.addItemBumpoutWalls}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="addItemBumpoutWalls">Has Bump-out Walls</label>
               </div>
@@ -647,6 +684,7 @@ const Accessories = ({
                   name="addItemCupolas"
                   checked={values.addItemCupolas}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="addItemCupolas">Has Cupolas</label>
               </div>
@@ -657,6 +695,7 @@ const Accessories = ({
                   name="addItemClearstory"
                   checked={values.addItemClearstory}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="addItemClearstory">Has Clearstory</label>
               </div>
@@ -667,6 +706,7 @@ const Accessories = ({
                   name="addItemHipValley"
                   checked={values.addItemHipValley}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="addItemHipValley">
                   Has Hip/Valley Roof Condition
@@ -679,6 +719,7 @@ const Accessories = ({
                   name="addItemGambrelRoof"
                   checked={values.addItemGambrelRoof}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="addItemGambrelRoof">
                   Has Gable Roof (Special Shape Roof)
@@ -691,6 +732,7 @@ const Accessories = ({
                   name="addItemTiltUpWalls"
                   checked={values.addItemTiltUpWalls}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="addItemTiltUpWalls">
                   Has Concrete Tilt Up Walls (All Four Walls)
@@ -709,6 +751,7 @@ const Accessories = ({
                   name="mezzSimple"
                   checked={values.mezzSimple}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="mezzSimple">Has Simple Mezzanine</label>
               </div>
@@ -719,6 +762,7 @@ const Accessories = ({
                   name="mezzLShape"
                   checked={values.mezzLShape}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="mezzLShape">Has L-Shape Mezzanine</label>
               </div>
@@ -729,6 +773,7 @@ const Accessories = ({
                   name="mezzNotAligned"
                   checked={values.mezzNotAligned}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="mezzNotAligned">
                   Has Mezzanine Not Aligned with Frames
@@ -745,6 +790,7 @@ const Accessories = ({
                   name="craneStepCols"
                   checked={values.craneStepCols}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="craneStepCols">
                   Has Step Columns for Cranes over 20 tons
@@ -757,6 +803,7 @@ const Accessories = ({
                   name="craneJib"
                   checked={values.craneJib}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="craneJib">Has Jib Cranes</label>
               </div>
@@ -771,6 +818,7 @@ const Accessories = ({
                   name="tHangar"
                   checked={values.tHangar}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="tHangar">Is a T-Hangar</label>
               </div>
@@ -787,6 +835,7 @@ const Accessories = ({
                   name="otherBldgSpecs"
                   checked={values.otherBldgSpecs}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="otherBldgSpecs">Has Building Spec's</label>
               </div>
@@ -797,6 +846,7 @@ const Accessories = ({
                   name="otherNonStdSpecs"
                   checked={values.otherNonStdSpecs}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="otherNonStdSpecs">
                   Has Non-standard Spec's
@@ -809,6 +859,7 @@ const Accessories = ({
                   name="otherCarrierBms"
                   checked={values.otherCarrierBms}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="otherCarrierBms">Has Carrier Beams</label>
               </div>
@@ -819,6 +870,7 @@ const Accessories = ({
                   name="otherPortalCarrier"
                   checked={values.otherPortalCarrier}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="otherPortalCarrier">
                   Has Portal Carrier Beams
@@ -831,6 +883,7 @@ const Accessories = ({
                   name="otherNonStdCarrier"
                   checked={values.otherNonStdCarrier}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="otherNonStdCarrier">
                   Has Non-standard Carrier Beams
@@ -843,6 +896,7 @@ const Accessories = ({
                   name="otherBarJoists"
                   checked={values.otherBarJoists}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="otherBarJoists">Has Bar Joists</label>
               </div>
@@ -853,6 +907,7 @@ const Accessories = ({
                   name="otherWeakAxis"
                   checked={values.otherWeakAxis}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="otherWeakAxis">
                   Has Fixed Base Columns with Weak-axis Bending
@@ -865,6 +920,7 @@ const Accessories = ({
                   name="otherSkewedEndwall"
                   checked={values.otherSkewedEndwall}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="otherSkewedEndwall">
                   Has Skewed Wall at the Endwall
@@ -877,6 +933,7 @@ const Accessories = ({
                   name="otherSkewedSidewall"
                   checked={values.otherSkewedSidewall}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="otherSkewedSidewall">
                   Has Skewed Wall at the Sidewall
@@ -889,6 +946,7 @@ const Accessories = ({
                   name="otherBulkStorageSeeds"
                   checked={values.otherBulkStorageSeeds}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="otherBulkStorageSeeds">
                   Is Bulk Storage for Seeds
@@ -901,6 +959,7 @@ const Accessories = ({
                   name="otherBulkStorage"
                   checked={values.otherBulkStorage}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="otherBulkStorage">
                   Is Bulk Storage for Potatoes/Onions
@@ -913,6 +972,7 @@ const Accessories = ({
                   name="otherLoadsByOthers"
                   checked={values.otherLoadsByOthers}
                   onChange={handleChange}
+                  disabled={locked}
                 />
                 <label htmlFor="otherLoadsByOthers">
                   Has Loads By Others ono PBS Building

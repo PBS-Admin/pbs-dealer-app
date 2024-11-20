@@ -17,6 +17,9 @@ export const metadata = {
     apple: '/ios/192.png',
     android: '/android/android-launchericon-192-192.png',
   },
+};
+
+export const viewport = {
   themeColor: '#000000',
 };
 

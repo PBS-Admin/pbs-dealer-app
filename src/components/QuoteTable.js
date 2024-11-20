@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import DeleteDialog from './DeleteDialog';
 import styles from './QuoteTable.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -20,12 +20,14 @@ import {
   faComment,
 } from '@fortawesome/free-regular-svg-icons';
 import CopyDialog from './CopyDialog';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 
 export default function QuoteTable() {
+  const router = useRouter();
   const { data: session } = useSession();
   const [quotes, setQuotes] = useState([]);
   const [companies, setCompanies] = useState([]);
+  const [rsms, setRsms] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -55,6 +57,7 @@ export default function QuoteTable() {
         const data = await response.json();
         setQuotes(data.quotes);
         setCompanies(data.companies);
+        setRsms(data.rsms);
       } catch (err) {
         console.error('Error fetching quotes:', err);
         setError(err.message);
@@ -65,6 +68,12 @@ export default function QuoteTable() {
 
     fetchQuotes();
   }, [session]);
+
+  const handleQuoteClick = (e, quoteId) => {
+    e.preventDefault();
+    router.refresh();
+    router.push(`/quote/${quoteId}`);
+  };
 
   const openDeleteDialog = (quoteId) => {
     setQuoteToDelete(quoteId);
@@ -171,6 +180,11 @@ export default function QuoteTable() {
     }
   };
 
+  const rsmLookup = useMemo(
+    () => Object.fromEntries(rsms.map((rsm) => [rsm.ID, rsm.Name])),
+    [rsms]
+  );
+
   return (
     <div className={styles.quoteContainer}>
       <div className={styles.quoteTable}>
@@ -183,6 +197,7 @@ export default function QuoteTable() {
                 <th>Complex</th>
                 <th>Project</th>
                 <th>Customer</th>
+                <th>Sales Person</th>
                 <th>Date Started</th>
                 <th>Actions</th>
               </tr>
@@ -191,11 +206,12 @@ export default function QuoteTable() {
               {quotes.map((quote) => (
                 <tr key={quote.ID} className={styles.quoteRow}>
                   <td>
-                    <Link
+                    <a
                       href={`/quote/${quote.ID}`}
                       className={styles.quoteLink}
+                      onClick={(e) => handleQuoteClick(e, quote.ID)}
                     >
-                      {quote.Progress > 0 ? (
+                      {quote.Progress & 0b100 ? (
                         <FontAwesomeIcon
                           icon={faCircleCheck}
                           style={{ color: 'var(--green)' }}
@@ -203,53 +219,67 @@ export default function QuoteTable() {
                       ) : (
                         <FontAwesomeIcon icon={faCircle} color="var(--red)" />
                       )}
-                    </Link>
+                    </a>
                   </td>
                   <td>
-                    <Link
+                    <a
                       href={`/quote/${quote.ID}`}
                       className={styles.quoteLink}
+                      onClick={(e) => handleQuoteClick(e, quote.ID)}
                     >
                       {quote.Rev > 0
                         ? `${quote.Quote} R${quote.Rev}`
                         : `${quote.Quote}`}
-                    </Link>
+                    </a>
                   </td>
                   <td>
-                    <Link
+                    <a
                       href={`/quote/${quote.ID}`}
                       className={styles.quoteLink}
+                      onClick={(e) => handleQuoteClick(e, quote.ID)}
                     >
                       {quote.Complexity}
-                    </Link>
+                    </a>
                   </td>
                   <td>
-                    <Link
+                    <a
                       href={`/quote/${quote.ID}`}
                       className={styles.quoteLink}
+                      onClick={(e) => handleQuoteClick(e, quote.ID)}
                     >
                       {quote.ProjectName}
-                    </Link>
+                    </a>
                   </td>
                   <td>
-                    <Link
+                    <a
                       href={`/quote/${quote.ID}`}
                       className={styles.quoteLink}
+                      onClick={(e) => handleQuoteClick(e, quote.ID)}
                     >
                       {quote.Customer}
-                    </Link>
+                    </a>
                   </td>
                   <td>
-                    <Link
+                    <a
                       href={`/quote/${quote.ID}`}
                       className={styles.quoteLink}
+                      onClick={(e) => handleQuoteClick(e, quote.ID)}
+                    >
+                      {rsmLookup[quote.SalesPerson] || quote.SalesPerson}
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      href={`/quote/${quote.ID}`}
+                      className={styles.quoteLink}
+                      onClick={(e) => handleQuoteClick(e, quote.ID)}
                     >
                       {new Date(quote.DateStarted).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'numeric',
                         day: 'numeric',
                       })}
-                    </Link>
+                    </a>
                   </td>
                   <td>
                     <div>

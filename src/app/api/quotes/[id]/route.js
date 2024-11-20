@@ -13,7 +13,7 @@ export async function DELETE(req, { params }) {
 
   try {
     const result = await query(
-      'UPDATE Dealer_Quotes SET Status = 0 WHERE ID = ?',
+      'UPDATE Dealer_Quotes SET Status = Status & ~1 WHERE ID = ?',
       [id]
     );
 

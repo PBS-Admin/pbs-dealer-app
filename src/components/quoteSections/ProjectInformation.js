@@ -25,7 +25,7 @@ import {
   thermalFactor,
 } from '../../util/dropdownOptions';
 
-const ProjectInformation = ({ values, handleChange, setValues }) => {
+const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
   const { getWindLoad, currentPrompt, isDialogOpen, handleResponse } = useWind(
     values,
     setValues
@@ -227,6 +227,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.customerName}
               onChange={handleChange}
               placeholder="Customer Name"
+              disabled={locked}
             />
           </div>
           <div className="cardInput">
@@ -238,6 +239,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.contactName}
               onChange={handleChange}
               placeholder="Contact Name"
+              disabled={locked}
             />
           </div>
         </div>
@@ -251,7 +253,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
                 className="icon reject tooltip"
                 onClick={() => clearAddress('customer')}
               >
-                <FontAwesomeIcon icon={faEraser} />
+                {!locked && <FontAwesomeIcon icon={faEraser} />}
                 <p>Clear Address</p>
               </button>
             </label>
@@ -263,6 +265,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.customerAddress}
               onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="Street Address"
+              disabled={locked}
             />
           </div>
           <div className="cardInput span2">
@@ -274,6 +277,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.customerCity}
               onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="City"
+              disabled={locked}
             />
           </div>
           <div className="cardInput">
@@ -285,6 +289,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.customerState}
               onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="State"
+              disabled={locked}
             />
           </div>
           <div className="cardInput">
@@ -296,6 +301,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.customerZip}
               onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="Zip"
+              disabled={locked}
             />
           </div>
           <div className="cardInput span2">
@@ -307,6 +313,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.customerPhone}
               onChange={handleChange}
               placeholder="Phone"
+              disabled={locked}
             />
           </div>
           <div className="cardInput span2">
@@ -318,6 +325,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.customerFax}
               onChange={handleChange}
               placeholder="Fax"
+              disabled={locked}
             />
           </div>
           <div className="cardInput span2">
@@ -329,6 +337,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.customerCell}
               onChange={handleChange}
               placeholder="Cell"
+              disabled={locked}
             />
           </div>
           <div className="cardInput span2">
@@ -340,6 +349,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.customerEmail}
               onChange={handleChange}
               placeholder="Email"
+              disabled={locked}
             />
           </div>
         </div>
@@ -359,6 +369,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.projectName}
               onChange={handleChange}
               placeholder="Project Name"
+              disabled={locked}
             />
           </div>
           <div className="cardInput">
@@ -370,6 +381,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.projectFor}
               onChange={handleChange}
               placeholder="Project For"
+              disabled={locked}
             />
           </div>
         </div>
@@ -384,7 +396,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
                 className="icon reject tooltip"
                 onClick={() => clearAddress('project')}
               >
-                <FontAwesomeIcon icon={faEraser} />
+                {!locked && <FontAwesomeIcon icon={faEraser} />}
                 <p>Clear Address</p>
               </button>
             </label>
@@ -396,6 +408,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.projectAddress}
               onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="Address"
+              disabled={locked}
             />
           </div>
           <div className="cardInput span2">
@@ -407,6 +420,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.projectCity}
               onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="City"
+              disabled={locked}
             />
           </div>
           <div className="cardInput">
@@ -418,6 +432,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.projectState}
               onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="State"
+              disabled={locked}
             />
           </div>
           <div className="cardInput">
@@ -429,6 +444,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.projectZip}
               onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="Zip"
+              disabled={locked}
             />
           </div>
           <div className="span4 onDesktop"></div>
@@ -441,6 +457,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.projectCounty}
               onChange={handleChange}
               placeholder="County"
+              disabled={locked}
             />
           </div>
           <div className="cardInput span2">
@@ -452,6 +469,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
               value={values.buildingUse}
               onChange={handleChange}
               placeholder="Building Use"
+              disabled={locked}
             />
           </div>
         </div>
@@ -468,6 +486,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             onChange={handleChange}
             options={buildingCodes}
             label="Building Code:"
+            disabled={locked}
           />
           <ReusableSelect
             name={`riskCategory`}
@@ -475,6 +494,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             onChange={handleChange}
             options={riskCategories}
             label="Risk Category:"
+            disabled={locked}
           />
         </div>
         <h4>Roof Load</h4>
@@ -489,7 +509,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
                 Collateral Load: <small>(psf)</small>
               </>
             }
-            disabled={false}
+            disabled={locked}
             placeholder={'psf'}
           />
           <ReusableDouble
@@ -502,7 +522,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
                 Live Load: <small>(psf)</small>
               </>
             }
-            disabled={false}
+            disabled={locked}
             placeholder={'psf'}
           />
           <ReusableDouble
@@ -515,7 +535,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
                 Dead Load: <small>(psf)</small>
               </>
             }
-            disabled={false}
+            disabled={locked}
             placeholder={'psf'}
           />
         </div>
@@ -535,8 +555,8 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             iconClass={'prim'}
             iconOnClick={getWindLoad}
             tooltip="Lookup Wind Load"
-            disabled={false}
             placeholder={'mph'}
+            disabled={locked}
           />
           <ReusableSelect
             name={`windExposure`}
@@ -545,6 +565,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             options={exposure}
             label="Exposure:"
             defaultValue="C"
+            disabled={locked}
           />
           <ReusableSelect
             name={`windEnclosure`}
@@ -553,6 +574,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             options={enclosure}
             label="Enclosure:"
             defaultValue="C"
+            disabled={locked}
           />
         </div>
         <h4>Snow Load</h4>
@@ -571,8 +593,8 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             iconClass={'prim'}
             iconOnClick={getSnowLoad}
             tooltip="Lookup Snow Load"
-            disabled={false}
             placeholder={'psf'}
+            disabled={locked}
           />
           <ReusableDouble
             id={'roofSnowLoad'}
@@ -584,8 +606,8 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
                 Roof Load: <small>(psf)</small>
               </>
             }
-            disabled={false}
             placeholder={'psf'}
+            disabled={locked}
           />
           <ReusableSelect
             name={`thermalFactor`}
@@ -609,6 +631,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
                 Kept Below Freezing = 1.3
               </>
             }
+            disabled={locked}
           />
         </div>
         <h4>Seismic Load</h4>
@@ -625,6 +648,7 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             iconOnClick={getSeismicLoad}
             tooltip="Lookup Seismic Data"
             defaultValue="D"
+            disabled={locked}
           />
           <ReusableDouble
             id={'seismicSs'}
@@ -632,8 +656,8 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             onChange={handleChange}
             name={'seismicSs'}
             label={'Ss:'}
-            disabled={false}
             decimalPlaces={3}
+            disabled={locked}
           />
           <ReusableDouble
             id={'seismicS1'}
@@ -645,8 +669,8 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
                 S<small>1</small>:
               </>
             }
-            disabled={false}
             decimalPlaces={3}
+            disabled={locked}
           />
           <ReusableDouble
             id={'seismicSms'}
@@ -658,8 +682,8 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
             iconClass={'prim'}
             iconOnClick={getSmsLoad}
             tooltip="Calculate Sms & Sm1"
-            disabled={false}
             decimalPlaces={3}
+            disabled={locked}
           />
           <ReusableDouble
             id={'seismicSm1'}
@@ -671,8 +695,8 @@ const ProjectInformation = ({ values, handleChange, setValues }) => {
                 Sm<small>1</small>:
               </>
             }
-            disabled={false}
             decimalPlaces={3}
+            disabled={locked}
           />
         </div>
       </section>
