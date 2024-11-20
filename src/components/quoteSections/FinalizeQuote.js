@@ -353,18 +353,26 @@ const FinalizeQuote = ({
             >
               Notes for Estimator
             </button>
-            {/* <button type="button" className="nuetral" onClick={handleContract}>
-              Create Contract
-            </button>
-            <button
-              type="button"
-              className="nuetral"
-              onClick={() => {
-                console.log(values);
-              }}
-            >
-              Open Contract
-            </button> */}
+            {hasPermission(8) && (
+              <>
+                <button
+                  type="button"
+                  className="nuetral"
+                  onClick={handleContract}
+                >
+                  Create Contract
+                </button>
+                <button
+                  type="button"
+                  className="nuetral"
+                  onClick={() => {
+                    console.log(values);
+                  }}
+                >
+                  Open Contract
+                </button>
+              </>
+            )}
           </div>
           <div className="divider showWithSidebar span2"></div>
           {!locked && (
