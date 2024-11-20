@@ -42,8 +42,6 @@ export const authOptions = {
           return null;
         }
 
-        const status = await getPoolStatus();
-
         return {
           id: user[0].ID,
           email: user[0].Username,
@@ -73,6 +71,10 @@ export const authOptions = {
       return token;
     },
     async session({ session, token }) {
+      if (!token) {
+        return null;
+      }
+
       session.user = {
         id: token.id,
         email: token.email,
@@ -83,9 +85,37 @@ export const authOptions = {
       };
       return session;
     },
+    async signOut({ token, session }) {
+      try {
+        // Clear any custom session data
+        token = {};
+        session = null;
+
+        // You could add any additional cleanup here if needed
+        // For example, logging the signout in your database
+        await query('UPDATE Dealer_Users SET LastLogout = NOW() WHERE ID = ?', [
+          token?.id,
+        ]).catch(console.error);
+
+        return true;
+      } catch (error) {
+        console.error('SignOut error:', error);
+        return false;
+      }
+    },
+  },
+  events: {
+    async signOut(message) {
+      try {
+        console.log('User signed out:', message);
+      } catch (error) {
+        console.error('SignOut event error:', error);
+      }
+    },
   },
   pages: {
     signIn: '/login',
+    signOut: '/login',
   },
   session: {
     strategy: 'jwt',

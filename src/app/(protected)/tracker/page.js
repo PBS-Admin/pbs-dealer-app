@@ -1,9 +1,10 @@
+// page.js
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import styles from './page.module.css';
 import PageHeader from '@/components/PageHeader';
-import QuoteTable from '@/components/QuoteTable';
+import QuoteTrackerClient from './QuoteTrackerClient';
 
 export default async function Tracker() {
   const session = await getServerSession(authOptions);
@@ -13,11 +14,12 @@ export default async function Tracker() {
     redirect('/login');
   }
 
+  const isEstimator = session.user.estimator === 1;
+
   return (
     <main className={styles.dashMain}>
       <PageHeader session={session} title="Quote Tracker" isLogOut={false} />
-
-      <QuoteTable />
+      <QuoteTrackerClient isEstimator={isEstimator} />
     </main>
   );
 }

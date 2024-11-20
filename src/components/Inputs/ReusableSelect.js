@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCalculator,
@@ -108,9 +108,9 @@ const ReusableSelect = ({
         disabled={disabled}
       >
         {Object.keys(groupedOptions).map((optionGroupName) => (
-          <>
+          <Fragment key={optionGroupName}>
             {optionGroupName !== 'undefined' ? (
-              <optgroup key={optionGroupName} label={optionGroupName}>
+              <optgroup label={optionGroupName}>
                 {groupedOptions[optionGroupName].map(({ id, label }) => (
                   <option key={label} value={id}>
                     {label}
@@ -136,7 +136,7 @@ const ReusableSelect = ({
                 )}
               </>
             )}
-          </>
+          </Fragment>
         ))}
       </select>
     </div>

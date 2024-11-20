@@ -12,7 +12,12 @@ import openQuote from '../../../../public/images/quoteOpen.png';
 import PageHeader from '@/components/PageHeader';
 
 export default function Dashboard() {
-  const { data: session, update: updateSession } = useSession();
+  const { data: session, update: updateSession } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/login');
+    },
+  });
   const [companies, setCompanies] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);

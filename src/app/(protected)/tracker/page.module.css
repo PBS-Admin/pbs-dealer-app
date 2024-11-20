@@ -1,7 +1,15 @@
-.dashMain{    
-    grid-template-columns: 1fr;    
+.dashMain {
+  display: flex;
+  flex-flow: column nowrap;
 }
 
-.error{
-    color: red;
+.estBox {
+  background-color: var(--background-white);
+  padding: 1em;
+  align-self: flex-end;
+  border-radius: 0 0 0 0.5em;
+}
+
+.error {
+  color: red;
 }
