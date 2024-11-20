@@ -6,6 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { useExport } from '@/hooks/useExport';
+import { usePDF } from '@/hooks/usePDF';
 import { useSession } from 'next-auth/react';
 import ReusableLoader from '../ReusableLoader';
 import ReusableDialog from '../ReusableDialog';
@@ -32,6 +33,7 @@ const FinalizeQuote = ({
   const { data: session } = useSession();
   const memoizedSetValues = useCallback(setValues, []);
   const { createFolderAndFiles, status, isExporting } = useExport();
+  const { createContract } = usePDF();
   const {
     validateFields,
     currentPrompt,
@@ -266,6 +268,33 @@ const FinalizeQuote = ({
     });
   };
 
+  const handleContract = useCallback(async () => {
+    // try {
+    // const isValid = await validateFields(fieldsToValidate, autoFillRules);
+
+    // if (isValid) {
+    const pdfBytes = await createContract(values);
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+
+    window.open(url);
+
+    // if (pdfBytes.success) {
+    //   // tasks here
+    //   showSuccessExport();
+    // } else {
+    //   showRejectExport();
+    //   console.log('Export failed');
+    // }
+    //   } else {
+    //     console.log(`Couldn't validate all fields`);
+    //   }
+    // } catch (error) {
+    //   console.error('Contract error: ', error);
+    //   showRejectExport();
+    // }
+  }, [validateFields, fieldsToValidate, autoFillRules, createContract, values]);
+
   const rsmOptions = useMemo(
     () => Object.entries(rsms).map(([id, name]) => name),
     [rsms]
@@ -324,6 +353,9 @@ const FinalizeQuote = ({
             >
               Notes for Estimator
             </button>
+            {/* <button type="button" className="nuetral" onClick={handleContract}>
+              Create Contract
+            </button>
             <button
               type="button"
               className="nuetral"
@@ -332,7 +364,7 @@ const FinalizeQuote = ({
               }}
             >
               Open Contract
-            </button>
+            </button> */}
           </div>
           <div className="divider showWithSidebar span2"></div>
           {!locked && (

@@ -23,6 +23,7 @@ const ReusablePanel = ({
   className = '',
   onChange,
   disabled,
+  colorClicked,
 }) => {
   const panelKey = `${valueKey}PanelType`;
 
@@ -172,6 +173,10 @@ const ReusablePanel = ({
                 onChange={handleFinishChange}
                 options={finishMap[name]}
                 label="Finish:"
+                // icon={'color'}
+                // iconClass={'success'}
+                // iconOnClick={colorClicked}
+                // tooltip="Select Color"
                 disabled={disabled}
               />
               <div className="cardInput panelImage">

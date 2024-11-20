@@ -345,7 +345,14 @@ const BuildingLayout = ({
         <header>
           <h3>Bay Spacing</h3>
         </header>
-        <div className="grid3">
+        <div
+          className={
+            values.buildings[activeBuilding].leftFrame == 'insetRF' ||
+            values.buildings[activeBuilding].rightFrame == 'insetRF'
+              ? 'grid'
+              : 'grid3'
+          }
+        >
           <BaySpacingInput
             name={`buildingRoofBaySpacing-${activeBuilding}`}
             label="Sidewall Bay Spacing:"
@@ -357,28 +364,6 @@ const BuildingLayout = ({
             }}
             compareLabel="building length"
             compareValue={values.buildings[activeBuilding].length}
-            disabled={locked}
-          />
-          <BaySpacingInput
-            name={`buildingLeftBaySpacing-${activeBuilding}`}
-            label="Left Endwall Bay Spacing:"
-            value={values.buildings[activeBuilding].leftBaySpacing}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'leftBaySpacing', value)
-            }
-            compareLabel="building width"
-            compareValue={values.buildings[activeBuilding].width}
-            disabled={locked}
-          />
-          <BaySpacingInput
-            name={`buildingRightBaySpacing-${activeBuilding}`}
-            label="Right Endwall Bay Spacing:"
-            value={values.buildings[activeBuilding].rightBaySpacing}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'rightBaySpacing', value)
-            }
-            compareLabel="building width"
-            compareValue={values.buildings[activeBuilding].width}
             disabled={locked}
           />
           <BaySpacingInput
@@ -405,6 +390,75 @@ const BuildingLayout = ({
             compareValue={values.buildings[activeBuilding].length}
             disabled={locked}
           />
+          <div
+            className={
+              values.buildings[activeBuilding].leftFrame == 'insetRF' ||
+              values.buildings[activeBuilding].rightFrame == 'insetRF'
+                ? 'grid4'
+                : 'grid2 span2'
+            }
+          >
+            {values.buildings[activeBuilding].leftFrame == 'insetRF' && (
+              <BaySpacingInput
+                name={`buildingOuterLeftBaySpacing-${activeBuilding}`}
+                label="Outer Left Endwall Bay Spacing:"
+                value={values.buildings[activeBuilding].outerLeftBaySpacing}
+                onChange={(name, value) =>
+                  handleNestedChange(
+                    activeBuilding,
+                    'outerLeftBaySpacing',
+                    value
+                  )
+                }
+                compareLabel="building width"
+                compareValue={values.buildings[activeBuilding].width}
+                disabled={locked}
+              />
+            )}
+            {values.buildings[activeBuilding].leftFrame != 'insetRF' &&
+              values.buildings[activeBuilding].rightFrame == 'insetRF' && (
+                <div className="onPhone"></div>
+              )}
+            <BaySpacingInput
+              name={`buildingLeftBaySpacing-${activeBuilding}`}
+              label="Left Endwall Bay Spacing:"
+              value={values.buildings[activeBuilding].leftBaySpacing}
+              onChange={(name, value) =>
+                handleNestedChange(activeBuilding, 'leftBaySpacing', value)
+              }
+              compareLabel="building width"
+              compareValue={values.buildings[activeBuilding].width}
+              disabled={locked}
+            />
+            <BaySpacingInput
+              name={`buildingRightBaySpacing-${activeBuilding}`}
+              label="Right Endwall Bay Spacing:"
+              value={values.buildings[activeBuilding].rightBaySpacing}
+              onChange={(name, value) =>
+                handleNestedChange(activeBuilding, 'rightBaySpacing', value)
+              }
+              compareLabel="building width"
+              compareValue={values.buildings[activeBuilding].width}
+              disabled={locked}
+            />
+            {values.buildings[activeBuilding].rightFrame == 'insetRF' && (
+              <BaySpacingInput
+                name={`buildingOuterRightBaySpacing-${activeBuilding}`}
+                label="Outer Right Endwall Bay Spacing:"
+                value={values.buildings[activeBuilding].outerRightBaySpacing}
+                onChange={(name, value) =>
+                  handleNestedChange(
+                    activeBuilding,
+                    'outerRightBaySpacing',
+                    value
+                  )
+                }
+                compareLabel="building width"
+                compareValue={values.buildings[activeBuilding].width}
+                disabled={locked}
+              />
+            )}
+          </div>
         </div>
       </section>
 
@@ -1046,133 +1100,6 @@ const BuildingLayout = ({
           />
         </div>
       </section>
-
-      {/* Sheeting & Insulation */}
-      {/* <section className="card">
-        <header className="cardHeader">
-          <h3>Sheeting & Insulation</h3>
-        </header>
-
-        <div className="grid2 alignTop">
-          <ReusablePanel
-            name="Roof"
-            valueKey="roof"
-            label="Roof"
-            bldg={activeBuilding}
-            value={values.buildings[activeBuilding]}
-            onChange={(e, keyString) =>
-              handleNestedChange(activeBuilding, keyString, e.target.value)
-            }
-          />
-          <div className="divider offOnLaptop"></div>
-          <ReusablePanel
-            name="Wall"
-            valueKey="wall"
-            label="Wall"
-            bldg={activeBuilding}
-            value={values.buildings[activeBuilding]}
-            onChange={(e, keyString) =>
-              handleNestedChange(activeBuilding, keyString, e.target.value)
-            }
-          />
-        </div>
-
-        <div className="divider"></div>
-
-        <h4>Gutters and Downspouts</h4>
-        <div className="grid">
-          <div className="checkboxGroup">
-            <div className="checkRow">
-              <input
-                type="checkbox"
-                id={`buildingIncludeGutters-${activeBuilding}`}
-                name={`buildingIncludeGutters-${activeBuilding}`}
-                checked={values.buildings[activeBuilding].includeGutters}
-                onChange={(e) =>
-                  handleNestedChange(
-                    activeBuilding,
-                    'includeGutters',
-                    e.target.checked
-                  )
-                }
-              />
-              <label htmlFor={`buildingIncludeGutters-${activeBuilding}`}>
-                Include Gutters and Downspouts
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <h4>Building Insulation</h4>
-        <div className="grid4">
-          <ReusableSelect
-            name={`buildingRoofInsulation-${activeBuilding}`}
-            value={values.buildings[activeBuilding].roofInsulation}
-            onChange={(e) =>
-              handleNestedChange(
-                activeBuilding,
-                'roofInsulation',
-                e.target.value
-              )
-            }
-            options={roofInsulation}
-            label="Roof Insulation:"
-          />
-          <div className="checkboxGroup">
-            <div className="checkRow">
-              <input
-                type="checkbox"
-                id={`buildingRoofInsulationOthers-${activeBuilding}`}
-                name={`buildingRoofInsulationOthers-${activeBuilding}`}
-                checked={values.buildings[activeBuilding].roofInsulationOthers}
-                onChange={(e) =>
-                  handleNestedChange(
-                    activeBuilding,
-                    'roofInsulationOthers',
-                    e.target.checked
-                  )
-                }
-              />
-              <label htmlFor={`buildingRoofInsulationOthers-${activeBuilding}`}>
-                By Others (Roof Insulation)
-              </label>
-            </div>
-          </div>
-          <ReusableSelect
-            name={`buildingWallInsulation-${activeBuilding}`}
-            value={values.buildings[activeBuilding].wallInsulation}
-            onChange={(e) =>
-              handleNestedChange(
-                activeBuilding,
-                'wallInsulation',
-                e.target.value
-              )
-            }
-            options={wallInsulation}
-            label="Wall Insulation:"
-          />
-          <div className="checkboxGroup">
-            <div className="checkRow">
-              <input
-                type="checkbox"
-                id={`buildingWallInsulationOthers-${activeBuilding}`}
-                name={`buildingWallInsulationOthers-${activeBuilding}`}
-                checked={values.buildings[activeBuilding].wallInsulationOthers}
-                onChange={(e) =>
-                  handleNestedChange(
-                    activeBuilding,
-                    'wallInsulationOthers',
-                    e.target.checked
-                  )
-                }
-              />
-              <label htmlFor={`buildingWallInsulationOthers-${activeBuilding}`}>
-                By Others (Wall Insulation)
-              </label>
-            </div>
-          </div>
-        </div>
-      </section> */}
     </>
   );
 };

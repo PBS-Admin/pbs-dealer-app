@@ -26,6 +26,7 @@ const BuildingWallOptions = ({
   handleWallSkirtChange,
   handleCanopyChange,
   handleWallReliteChange,
+  colorClicked,
   setValues,
   isDesktop,
   locked,
@@ -54,6 +55,7 @@ const BuildingWallOptions = ({
                   wallLinerPanelType: 'pbr',
                   wallLinerPanelGauge: '26',
                   wallLinerPanelFinish: 'painted',
+                  wallLinerPanelColor: 'NC',
                 },
               ],
             }
@@ -80,6 +82,7 @@ const BuildingWallOptions = ({
                   wainscotPanelType: 'pbr',
                   wainscotPanelGauge: '26',
                   wainscotPanelFinish: 'painted',
+                  wainscotPanelColor: 'NC',
                 },
               ],
             }
@@ -102,7 +105,7 @@ const BuildingWallOptions = ({
                   start: '',
                   end: '',
                   height: '',
-                  topOfWall: 'bc',
+                  topOfWall: 'B',
                 },
               ],
             }
@@ -154,9 +157,11 @@ const BuildingWallOptions = ({
                   roofPanelType: 'pbr',
                   roofPanelGauge: '26',
                   roofPanelFinish: 'painted',
+                  roofPanelColor: 'NC',
                   soffitPanelType: 'pbr',
                   soffitPanelGauge: '26',
                   soffitPanelFinish: 'painted',
+                  soffitPanelColor: 'NC',
                 },
               ],
             }
@@ -426,6 +431,7 @@ const BuildingWallOptions = ({
             onChange={(e, keyString) =>
               handleNestedChange(activeBuilding, keyString, e.target.value)
             }
+            colorClicked={colorClicked}
             disabled={!values.buildings[activeBuilding].allWallsSame || locked}
           />
         </div>
@@ -456,6 +462,7 @@ const BuildingWallOptions = ({
                       e.target.value
                     )
                   }
+                  colorClicked={colorClicked}
                   disabled={locked}
                 />
                 <ReusableSelect
@@ -495,6 +502,7 @@ const BuildingWallOptions = ({
                       e.target.value
                     )
                   }
+                  colorClicked={colorClicked}
                   disabled={locked}
                 />
                 <ReusableSelect
@@ -536,6 +544,7 @@ const BuildingWallOptions = ({
                           e.target.value
                         )
                       }
+                      colorClicked={colorClicked}
                       disabled={locked}
                     />
                     <ReusableSelect
@@ -576,6 +585,7 @@ const BuildingWallOptions = ({
                       e.target.value
                     )
                   }
+                  colorClicked={colorClicked}
                   disabled={locked}
                 />
                 <ReusableSelect
@@ -613,6 +623,7 @@ const BuildingWallOptions = ({
                       e.target.value
                     )
                   }
+                  colorClicked={colorClicked}
                   disabled={locked}
                 />
                 <ReusableSelect
@@ -647,6 +658,7 @@ const BuildingWallOptions = ({
                           e.target.value
                         )
                       }
+                      colorClicked={colorClicked}
                       disabled={locked}
                     />
                     <ReusableSelect
@@ -849,6 +861,7 @@ const BuildingWallOptions = ({
                         e.target.value
                       )
                     }
+                    colorClicked={colorClicked}
                     disabled={locked}
                   />
                 </div>
@@ -1068,6 +1081,7 @@ const BuildingWallOptions = ({
                         e.target.value
                       )
                     }
+                    colorClicked={colorClicked}
                     disabled={locked}
                   />
                 </div>
@@ -1307,7 +1321,7 @@ const BuildingWallOptions = ({
                   <h5>Wall</h5>
                   <h5>Start Bay</h5>
                   <h5>End Bay</h5>
-                  <h5>Height</h5>
+                  <h5>Open Below</h5>
                   <h5>Column Option</h5>
                   <h5></h5>
                 </div>
@@ -1391,7 +1405,7 @@ const BuildingWallOptions = ({
                     />
                     <FeetInchesInput
                       name={`building-${activeBuilding}-wallSkirtHeight-${wallSkirtIndex}`}
-                      label="Height:"
+                      label="Open Below:"
                       labelClass="offOnTablet"
                       value={wallSkirt.height}
                       allowBlankValue={true}
@@ -1693,6 +1707,7 @@ const BuildingWallOptions = ({
                     e.target.value
                   )
                 }
+                colorClicked={colorClicked}
                 disabled={locked}
               />
               <div className="divider offOnLaptop"></div>
@@ -1711,6 +1726,7 @@ const BuildingWallOptions = ({
                     e.target.value
                   )
                 }
+                colorClicked={colorClicked}
                 disabled={locked}
               />
             </div>
