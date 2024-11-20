@@ -19,7 +19,7 @@ export default async function Quote({ params }) {
   let progress = null;
   let status = null;
   let error = null;
-  let rsms = null;
+  let rsms = [];
   let salesPerson = null;
   let projectManager = null;
   let estimator = null;

@@ -45,11 +45,6 @@ const FinalizeQuote = ({
     useSeismic(values);
 
   useEffect(() => {
-    console.log('Finalize Quote rebuilt');
-    console.log(projectManager);
-  }, []);
-
-  useEffect(() => {
     getSeismicLoad();
     getSmsLoad();
   }, [getSeismicLoad, getSmsLoad]);

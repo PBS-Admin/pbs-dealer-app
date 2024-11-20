@@ -351,7 +351,7 @@ export default function ClientQuote({
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
 
       const response = await fetch('/api/auth/save', {
         method: 'POST',
@@ -370,31 +370,34 @@ export default function ClientQuote({
 
       clearTimeout(timeoutId);
 
-      if (response.ok) {
-        const data = await response.json();
-        if (isNaN(data.message.quoteId)) {
-          console.log(data.message);
-        } else {
-          setCurrentQuote(data.message.quoteId);
-          setValues({ ...values, quoteNumber: data.message.quoteNum });
-        }
-
-        setSaveSuccess(true);
-        setSaveStatus(false);
-        // Reset saveSuccess after 3 seconds
-        setTimeout(() => {
-          setSaveSuccess(false);
-        }, 3000);
-      } else {
-        const data = await response.json();
-        setError(data.message || 'Something went wrong');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to save quote');
       }
+
+      const data = await response.json();
+
+      if (isNaN(data.message.quoteId)) {
+        console.log(data.message);
+      } else {
+        setCurrentQuote(data.message.quoteId);
+        setValues({ ...values, quoteNumber: data.message.quoteNum });
+      }
+
+      setSaveSuccess(true);
+      setSaveStatus(false);
+      // Reset saveSuccess after 3 seconds
+      setTimeout(() => {
+        setSaveSuccess(false);
+      }, 3000);
     } catch (error) {
+      setSaveStatus(false);
       if (error.name === 'AbortError') {
         setError('Request timed out. Please try again.');
       } else {
         setError('An error occurred. Please try again.');
       }
+      console.error('Save error:', error);
     }
   };
 
