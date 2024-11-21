@@ -3,6 +3,7 @@ import ReusablePanel from '../Inputs/ReusablePanel';
 import ReusableSelect from '../Inputs/ReusableSelect';
 import ReusableInteger from '../Inputs/ReusableInteger';
 import ReusableLocation from '../Inputs/ReusableLocation';
+import ReusableToggle from '../Inputs/ReusableToggle';
 import FeetInchesInput from '../Inputs/FeetInchesInput';
 import RoofPitchInput from '../Inputs/RoofPitchInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -203,7 +204,21 @@ const BuildingRoofOptions = ({
         <div className="grid">
           <div className="checkboxGroup">
             <div className="checkRow">
-              <input
+              <ReusableToggle
+                id={`buildingIncludeGutters-${activeBuilding}`}
+                checked={values.buildings[activeBuilding].includeGutters}
+                onChange={(e) =>
+                  handleNestedChange(
+                    activeBuilding,
+                    'includeGutters',
+                    e.target.checked
+                  )
+                }
+                label="Include Gutters and Downspouts"
+                className="prim"
+              />
+
+              {/* <input
                 type="checkbox"
                 id={`buildingIncludeGutters-${activeBuilding}`}
                 name={`buildingIncludeGutters-${activeBuilding}`}
@@ -219,7 +234,7 @@ const BuildingRoofOptions = ({
               />
               <label htmlFor={`buildingIncludeGutters-${activeBuilding}`}>
                 Include Gutters and Downspouts
-              </label>
+              </label> */}
             </div>
           </div>
         </div>

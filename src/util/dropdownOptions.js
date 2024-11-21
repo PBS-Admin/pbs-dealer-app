@@ -219,7 +219,7 @@ export const soffitPanels = [
 export const soffitGauge = [
   { id: '29', label: '29', validFor: ['tuff'] },
   { id: '26', label: '26', validFor: ['pbr', 'pbrRev', 'flat', 'hr34'] },
-  { id: '24', label: '24', validFor: ['pbr', 'pbrRev', 'flat', 'hr34'] },
+  { id: '24', label: '24', validFor: ['pbr', 'pbrRev', 'hr34'] },
 ];
 
 export const soffitFinish = [
@@ -412,13 +412,7 @@ export const mandoorGlass = [
   { id: 'narrow', label: 'With Narrow Lite' },
 ];
 
-export const panels_pbr_26 = [
-  // {
-  //   id: 'GV',
-  //   color: 'ada49b',
-  //   label: 'Galvalume',
-  //   optionGroup: 'Category Colors',
-  // },
+export const PBS_PBR = [
   {
     id: 'NC',
     color: 'ada49b',
@@ -431,123 +425,435 @@ export const panels_pbr_26 = [
     label: 'Premium Color',
     optionGroup: 'Category Colors',
   },
-  { id: 'AS', color: '808585', label: 'Ashland Gray' },
-  { id: 'BB', color: '33302d', label: 'Baker Brown' },
-  { id: 'BN', color: 'b09f8d', label: 'Benton Beige' },
-  { id: 'BT', color: '090a0b', label: 'Black Butte' },
-  { id: 'DE', color: '104a63', label: 'Deschutes Blue' },
-  { id: 'GG', color: '67795e', label: 'Gilliam Green' },
-  { id: 'GH', color: '4f4c52', label: 'Grays Harbor' },
-  { id: 'JC', color: '4b483e', label: 'Jackson Copper' },
+
   { id: 'MH', color: 'ebeeed', label: 'Mt Hood White' },
-  { id: 'OC', color: '5e413b', label: 'Ochoco Brown' },
   { id: 'PP', color: 'd5ddd2', label: 'Pasco Parchment' },
-  { id: 'RE', color: '882628', label: 'Redmond Red' },
   { id: 'SV', color: 'c9c8be', label: 'Silverton Stone' },
+  { id: 'BN', color: 'b09f8d', label: 'Benton Beige' },
   { id: 'SR', color: '9d9187', label: 'Smith Rock Hickory' },
-  { id: 'WA', color: '2a3c3b', label: 'Washington Evergreen' },
+  { id: 'JC', color: '4b483e', label: 'Jaskcon Copper' },
+  { id: 'OC', color: '5e413b', label: 'Ochoco Brown' },
+  { id: 'BB', color: '33302d', label: 'Baker Brown' },
+  { id: 'AS', color: '808585', label: 'Ashland Gray' },
+  { id: 'GH', color: '4f4c52', label: 'Grays Harbor' },
+  { id: 'GG', color: '67795e', label: 'Gilliam Green' },
   { id: 'WG', color: '254943', label: 'Willamette Green' },
-  {
-    id: 'DN',
-    color: '91886b',
-    label: 'Desert Brown',
-    optionGroup: 'Premium Colors',
-  },
-  { id: 'IV', color: 'd9d5b2', label: 'Ivory', optionGroup: 'Premium Colors' },
+  { id: 'WA', color: '2a3c3b', label: 'Washington Evergreen' },
+  { id: 'DE', color: '104a63', label: 'Deschutes Blue' },
+  { id: 'RE', color: '882628', label: 'Redmond Red' },
+  { id: 'BT', color: '090a0b', label: 'Black Butte' },
+
+  { id: 'IV', color: 'd8d0b5', label: 'Ivory', optionGroup: 'Premium Colors' },
   {
     id: 'SD',
-    color: 'af914f',
+    color: 'c0af84',
     label: 'Sand Gold',
     optionGroup: 'Premium Colors',
   },
   {
     id: 'TB',
-    color: '344455',
+    color: '3f6778',
     label: 'Tahoe Blue',
     optionGroup: 'Premium Colors',
   },
+  {
+    id: 'DN',
+    color: '695e4b',
+    label: 'Desert Brown',
+    optionGroup: 'Premium Colors',
+  },
 ];
 
-export const panels_flat_26 = [
-  { id: 'MH', color: 'ebeeed', label: 'Mt Hood White' },
-];
+export const PBS_SSQ = [
+  {
+    id: 'NC',
+    color: 'ada49b',
+    label: 'Standard Color',
+    optionGroup: 'Category Colors',
+  },
+  {
+    id: 'CM',
+    color: 'ada49b',
+    label: 'Premium Color',
+    optionGroup: 'Category Colors',
+  },
 
-export const panels_ssq_24 = [
-  { id: 'DK', color: '655845', label: 'Dark Bronze' },
   { id: 'MH', color: 'ebeeed', label: 'Mt Hood White' },
   { id: 'SL', color: '858f88', label: 'Slate Gray' },
-];
-
-export const panels_pbrDrip_26 = [
-  { id: 'CG', color: '424443', label: 'Charcoal Grey' },
-  { id: 'CA', color: '674b3e', label: 'Cocoa Brown' },
-  { id: 'DN', color: '91886b', label: 'Desert Brown' },
-  { id: 'FG', color: '2e3f35', label: 'Forest Green' },
-  { id: 'GW', color: 'd3d4ca', label: 'Glacier White' },
-  { id: 'HY', color: '89826e', label: 'Hickory' },
-  { id: 'IV', color: 'd9d5b2', label: 'Ivory' },
-  { id: 'KB', color: '535149', label: 'Kodiak Brown' },
-  { id: 'LS', color: 'cbc29e', label: 'Light Stone' },
-  { id: 'PB', color: '273b43', label: 'Pacific Blue' },
-  { id: 'PG', color: '2d3831', label: 'Pine Green' },
-  { id: 'SA', color: '7d8b68', label: 'Sage Green' },
-  { id: 'SD', color: 'af914f', label: 'Sand Gold' },
-  { id: 'SS', color: 'a09773', label: 'Sandstone' },
-  { id: 'SG', color: '7a7b74', label: 'Sterling Grey' },
-  { id: 'SE', color: 'bebfab', label: 'Stone White' },
-  { id: 'TB', color: '344455', label: 'Tahoe Blue' },
-  { id: 'TR', color: '723226', label: 'Tile Red' },
-  { id: 'WC', color: '5e5b4c', label: 'Weathered Copper' },
-];
-
-export const panels_pbrDrip_24 = [
-  { id: 'BK', color: '161719', label: 'Black' },
-  { id: 'BO', color: '888372', label: 'Bonderized' },
-  { id: 'CG', color: '424443', label: 'Charcoal Grey' },
-  { id: 'CD', color: '6f3f37', label: 'Colonial Red' },
   { id: 'DK', color: '655845', label: 'Dark Bronze' },
-  { id: 'FG', color: '2e3f35', label: 'Forest Green' },
-  { id: 'GW', color: 'd3d4ca', label: 'Glacier White' },
-  { id: 'HM', color: '5a6a5f', label: 'Hemlock Green' },
-  { id: 'MU', color: '241f1f', label: 'Musket' },
-  { id: 'PB', color: '273b43', label: 'Pacific Blue' },
-  { id: 'PA', color: '9c9680', label: 'Parchment' },
-  { id: 'PG', color: '2d3831', label: 'Pine Green' },
-  { id: 'RR', color: 'a53937', label: 'Retro Red' },
-  { id: 'ST', color: '4e4436', label: 'Saddle Tan' },
-  { id: 'SI', color: '9a8a71', label: 'Sierra Tan' },
-  { id: 'SG', color: '7a7b74', label: 'Sterling Grey' },
-  { id: 'TB', color: '344455', label: 'Tahoe Blue' },
-  { id: 'TR', color: '723226', label: 'Tile Red' },
-  { id: 'ZG', color: '6f6b62', label: 'Zinc Grey' },
+
   {
-    id: 'AP',
-    color: '615944',
-    label: 'Antique Patina',
+    id: 'PP',
+    color: 'd5ddd2',
+    label: 'Pasco Parchment',
     optionGroup: 'Premium Colors',
   },
   {
-    id: 'CH',
-    color: '988660',
-    label: 'Champagne',
+    id: 'SV',
+    color: 'c9c8be',
+    label: 'Silverton Stone',
     optionGroup: 'Premium Colors',
   },
   {
-    id: 'CP',
-    color: '9d693a',
-    label: 'Copper Penny',
+    id: 'BN',
+    color: 'b09f8d',
+    label: 'Benton Beige',
     optionGroup: 'Premium Colors',
   },
+  {
+    id: 'SR',
+    color: '9d9187',
+    label: 'Smith Rock Hickory',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'JC',
+    color: '4b483e',
+    label: 'Jaskcon Copper',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'OC',
+    color: '5e413b',
+    label: 'Ochoco Brown',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'BB',
+    color: '33302d',
+    label: 'Baker Brown',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'AS',
+    color: '808585',
+    label: 'Ashland Gray',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'GH',
+    color: '4f4c52',
+    label: 'Grays Harbor',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'GG',
+    color: '67795e',
+    label: 'Gilliam Green',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'WG',
+    color: '254943',
+    label: 'Willamette Green',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'WA',
+    color: '2a3c3b',
+    label: 'Washington Evergreen',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'DE',
+    color: '104a63',
+    label: 'Deschutes Blue',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'RE',
+    color: '882628',
+    label: 'Redmond Red',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'BT',
+    color: '090a0b',
+    label: 'Black Butte',
+    optionGroup: 'Premium Colors',
+  },
+];
+
+export const PBS_FWQ = [
+  {
+    id: 'NC',
+    color: 'ada49b',
+    label: 'Standard Color',
+    optionGroup: 'Category Colors',
+  },
+  {
+    id: 'CM',
+    color: 'ada49b',
+    label: 'Premium Color',
+    optionGroup: 'Category Colors',
+  },
+
+  { id: 'MH', color: 'ebeeed', label: 'Mt Hood White' },
+
+  {
+    id: 'PP',
+    color: 'd5ddd2',
+    label: 'Pasco Parchment',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'SV',
+    color: 'c9c8be',
+    label: 'Silverton Stone',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'BN',
+    color: 'b09f8d',
+    label: 'Benton Beige',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'SR',
+    color: '9d9187',
+    label: 'Smith Rock Hickory',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'JC',
+    color: '4b483e',
+    label: 'Jaskcon Copper',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'OC',
+    color: '5e413b',
+    label: 'Ochoco Brown',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'BB',
+    color: '33302d',
+    label: 'Baker Brown',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'AS',
+    color: '808585',
+    label: 'Ashland Gray',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'GH',
+    color: '4f4c52',
+    label: 'Grays Harbor',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'GG',
+    color: '67795e',
+    label: 'Gilliam Green',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'WG',
+    color: '254943',
+    label: 'Willamette Green',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'WA',
+    color: '2a3c3b',
+    label: 'Washington Evergreen',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'DE',
+    color: '104a63',
+    label: 'Deschutes Blue',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'RE',
+    color: '882628',
+    label: 'Redmond Red',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'BT',
+    color: '090a0b',
+    label: 'Black Butte',
+    optionGroup: 'Premium Colors',
+  },
+];
+
+export const TM_Armorteck = [
+  {
+    id: 'NC',
+    color: 'ada49b',
+    label: 'Standard Color',
+    optionGroup: 'Category Colors',
+  },
+  {
+    id: 'CM',
+    color: 'ada49b',
+    label: 'Premium Color',
+    optionGroup: 'Category Colors',
+  },
+
+  { id: 'PW', color: 'e2ecea', label: 'Polar White' },
+  { id: 'GW', color: 'd3dcd6', label: 'Glacier White' },
+  { id: 'SN', color: 'b9c4b7', label: 'Stone White' },
+  { id: 'IV', color: 'd8d0b5', label: 'Ivory' },
+  { id: 'LS', color: 'c0b49f', label: 'Light Stone' },
+  { id: 'SS', color: 'a59c85', label: 'Sandstone' },
+  { id: 'HY', color: '8f9180', label: 'Hickory' },
+  { id: 'SD', color: 'c0af84', label: 'Sand Gold' },
+  { id: 'AG', color: 'a1a59d', label: 'Ash Grey' },
+  { id: 'SG', color: '7c8c89', label: 'Sterling Grey' },
+  { id: 'CG', color: '49585a', label: 'Charcoal Grey' },
+  { id: 'TR', color: '823b3a', label: 'Tile Red' },
+  { id: 'TB', color: '3f6778', label: 'Tahoe Blue' },
+  { id: 'PB', color: '1e5365', label: 'Pacific Blue' },
+  { id: 'SA', color: '67846c', label: 'Sage Green' },
+  { id: 'FG', color: '3a5b51', label: 'Forest Green' },
+  { id: 'PG', color: '354b43', label: 'Pine Green' },
+  { id: 'DN', color: '695e4b', label: 'Desert Brown' },
+  { id: 'CA', color: '5c4a42', label: 'Cocoa Brown' },
+  { id: 'KB', color: '3d3d3c', label: 'Kodiak Brown' },
+  { id: 'WC', color: '4f5048', label: 'Weathered Copper' },
+
+  { id: 'CP', color: 'a2753d', label: 'Copper Penny' },
+];
+
+export const TM_Kynar500 = [
+  {
+    id: 'NC',
+    color: 'ada49b',
+    label: 'Standard Color',
+    optionGroup: 'Category Colors',
+  },
+  {
+    id: 'CM',
+    color: 'ada49b',
+    label: 'Premium Color',
+    optionGroup: 'Category Colors',
+  },
+
+  { id: 'GW', color: 'f8f7f5', label: 'Glacier White' },
+  { id: 'SI', color: 'ad9982', label: 'Sierra Tan' },
+  { id: 'PA', color: 'b7b096', label: 'Parchment' },
+  { id: 'SG', color: '888d87', label: 'Sterling Grey' },
+  { id: 'ZG', color: '78786e', label: 'Zinc Grey' },
+  { id: 'CG', color: '515a55', label: 'Charcoal Grey' },
+  { id: 'ST', color: '6a5e4e', label: 'Saddle Tan' },
+  { id: 'MD', color: '524a3f', label: 'Medium Bronze' },
+  { id: 'TB', color: '4e5f6f', label: 'Tahoe Blue' },
+  { id: 'PB', color: '2c4e58', label: 'Pacific Blue' },
+  { id: 'HM', color: '647768', label: 'Hemlock Green' },
+  { id: 'FG', color: '44594a', label: 'Forest Green' },
+  { id: 'GB', color: '2c2e35', label: 'Graphite Black' },
+  { id: 'DK', color: '24231f', label: 'Dark Bronze' },
+  { id: 'MU', color: '382610', label: 'Musket' },
+  { id: 'PG', color: '36483a', label: 'Pine Green' },
+  { id: 'TC', color: '935445', label: 'Terra Cotta' },
+  { id: 'TR', color: '8b3526', label: 'Tile Red' },
+  { id: 'CD', color: '712e1e', label: 'Colonial Red' },
+  { id: 'RR', color: 'c2372a', label: 'Retro Red' },
+  { id: 'MT', color: '090604', label: 'Matte Black' },
+
   {
     id: 'MS',
-    color: '8f9088',
+    color: 'b0b5b1',
     label: 'Metallic Silver',
     optionGroup: 'Premium Colors',
   },
   {
+    id: 'CH',
+    color: '9e8d79',
+    label: 'Champagne',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'AP',
+    color: '877d71',
+    label: 'Antique Patina',
+    optionGroup: 'Premium Colors',
+  },
+  {
     id: 'WZ',
-    color: '787b7a',
+    color: '7a7e81',
     label: 'Weathered Zinc',
+    optionGroup: 'Premium Colors',
+  },
+  {
+    id: 'CP',
+    color: 'a87351',
+    label: 'Copper Penny',
+    optionGroup: 'Premium Colors',
+  },
+];
+
+export const MBCI_Signature200 = [
+  {
+    id: 'NC',
+    color: 'ada49b',
+    label: 'Standard Color',
+    optionGroup: 'Category Colors',
+  },
+  {
+    id: 'CM',
+    color: 'ada49b',
+    label: 'Premium Color',
+    optionGroup: 'Category Colors',
+  },
+
+  { id: 'PW', color: 'cfcfdc', label: 'Polar White' },
+
+  { id: 'HI', color: '496d83', label: 'Hawaiian Blue' },
+  { id: 'CB', color: '26446a', label: 'Cobalt Blue' },
+  { id: 'LS', color: 'c9b6aa', label: 'Light Stone' },
+  { id: 'ST', color: 'b59480', label: 'Saddle Tan' },
+  { id: 'DS', color: '9f9181', label: 'Desert Sand' },
+
+  { id: 'BS', color: '504541', label: 'Burnished Slate' },
+  { id: 'AG', color: 'aca1a1', label: 'Ash Gray' },
+
+  { id: 'CG', color: '615b5d', label: 'Charcoal Gray' },
+  { id: 'EG', color: '324b40', label: 'Evergreen' },
+  { id: 'IG', color: '1a4339', label: 'Ivy Green' },
+
+  { id: 'RU', color: '873f39', label: 'Rustic Red' },
+];
+
+export const MBCI_Signature300 = [
+  {
+    id: 'NC',
+    color: 'ada49b',
+    label: 'Standard Color',
+    optionGroup: 'Category Colors',
+  },
+  {
+    id: 'CM',
+    color: 'ada49b',
+    label: 'Premium Color',
+    optionGroup: 'Category Colors',
+  },
+
+  { id: 'SN', color: 'ccd6d7', label: 'Snow White' },
+  { id: 'BW', color: 'dfe2db', label: 'Bone White' },
+  { id: 'PB', color: '385a6b', label: 'Pacific Blue' },
+  { id: 'HB', color: '1c4c61', label: 'Harbor Blue' },
+  { id: 'AL', color: 'd0c7b4', label: 'Almond' },
+  { id: 'BE', color: '94927e', label: 'Brownstone' },
+  { id: 'MD', color: '544a40', label: 'Medium Bronze' },
+  { id: 'MN', color: '3f3b38', label: 'Midnight Bronze' },
+  { id: 'TU', color: '989796', label: 'Tundra' },
+  { id: 'SL', color: '777571', label: 'Slate Gray' },
+
+  { id: 'CN', color: '30493c', label: 'Classic Green' },
+  { id: 'BR', color: '8a1a21', label: 'Brite Red' },
+  { id: 'CD', color: '6b3a33', label: 'Colonial Red' },
+
+  {
+    id: 'CT',
+    color: 'ab6d4c',
+    label: 'Copper Metallic',
     optionGroup: 'Premium Colors',
   },
 ];

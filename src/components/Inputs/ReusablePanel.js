@@ -31,6 +31,8 @@ const ReusablePanel = ({
 
   const finishKey = `${valueKey}PanelFinish`;
 
+  const colorKey = `${valueKey}PanelColor`;
+
   const [internalPanelValue, setInternalPanelValue] = useState(
     value[panelKey] || ''
   );
@@ -41,6 +43,10 @@ const ReusablePanel = ({
 
   const [internalFinishValue, setInternalFinishValue] = useState(
     value[finishKey] || ''
+  );
+
+  const [internalColorValue, setInternalColorValue] = useState(
+    value[colorKey] || ''
   );
 
   const panelMap = {
@@ -122,6 +128,12 @@ const ReusablePanel = ({
     }
   }, [value[finishKey]]);
 
+  useEffect(() => {
+    if (value[colorKey] !== undefined && value[colorKey] != '') {
+      setInternalColorValue(value[colorKey]);
+    }
+  }, [value[colorKey]]);
+
   const handlePanelChange = (e) => {
     const newValue = e.target.value;
     setInternalPanelValue(newValue);
@@ -138,6 +150,12 @@ const ReusablePanel = ({
     const newValue = e.target.value;
     setInternalFinishValue(newValue);
     onChange(e, finishKey);
+  };
+
+  const handleColorChange = (e) => {
+    const newValue = e.target.value;
+    setInternalColorValue(newValue);
+    onChange(e, colorKey);
   };
 
   return (
@@ -173,10 +191,10 @@ const ReusablePanel = ({
                 onChange={handleFinishChange}
                 options={finishMap[name]}
                 label="Finish:"
-                // icon={'color'}
-                // iconClass={'success'}
-                // iconOnClick={colorClicked}
-                // tooltip="Select Color"
+                icon={internalFinishValue != 'galv' ? 'color' : ''}
+                iconClass={'success'}
+                iconOnClick={colorClicked}
+                tooltip="Select Color"
                 disabled={disabled}
               />
               <div className="cardInput panelImage">

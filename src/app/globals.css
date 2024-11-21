@@ -851,17 +851,20 @@ label:has(.tooltip.left) {
   justify-content: space-around;
   gap: 8px;
   align-items: center;
+  margin-left: 8px;
+}
+
+.toggle:has(.wrapper.right) {
   margin-left: auto;
 }
 
 .toggle .wrapper {
   display: flex;
-  background-color: var(--light-gray);
-  border: 1px solid var(--gray);
+  background-color: var(--gray);
   position: relative;
-  width: 48px;
-  height: 24px;
-  border-radius: 12px;
+  width: 40px;
+  height: 20px;
+  border-radius: 10px;
 }
 
 .toggle label {
@@ -874,44 +877,44 @@ label:has(.tooltip.left) {
 }
 
 .toggle input + .toggleButton {
-  background-color: var(--gray);
+  background-color: var(--background-white);
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 9px;
   transition: 300ms;
 }
 
 .toggle input:checked + .toggleButton {
-  background-color: var(--dark-blue);
-  left: 26px;
+  left: 22px;
   transition: 300ms;
 }
 
-.toggle input:checked + .toggleButton.prim {
+.toggle .wrapper:has(input:checked),
+.toggle .wrapper.prim:has(input:checked) {
   background-color: var(--dark-blue);
 }
 
-.toggle input:checked + .toggleButton.sec {
+.toggle .wrapper.sec:has(input:checked) {
   background-color: var(--blue);
 }
 
-.toggle input:checked + .toggleButton.accent {
+.toggle .wrapper.accent:has(input:checked) {
   background-color: var(--orange);
 }
 
-.toggle input:checked + .toggleButton.success {
+.toggle .wrapper.success:has(input:checked) {
   background-color: var(--green);
 }
 
-.toggle input:checked + .toggleButton.reject {
+.toggle .wrapper.reject:has(input:checked) {
   background-color: var(--red);
 }
 
-.toggle input:checked + .toggleButton.nuetral {
-  background-color: var(--gray);
+.toggle .wrapper.nuetral:has(input:checked) {
+  background-color: var(--dark-gray);
 }
 
 /* Global Card Styles */

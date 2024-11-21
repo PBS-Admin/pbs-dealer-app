@@ -76,6 +76,8 @@ export default function ClientQuote({
   const [sourceBuildingIndex, setSourceBuildingIndex] = useState(0);
   const [isQuoteDeleteDialogOpen, setIsQuoteDeleteDialogOpen] = useState(false);
 
+  const [activeColor, setActiveColor] = useState('NC');
+
   const [saveStatus, setSaveStatus] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -1188,6 +1190,7 @@ export default function ClientQuote({
       <ReusableColorSelect
         isOpen={isColorOpen}
         onClose={closeColorDialog}
+
         // onClick={}
         // panel={}
         // gauge={}
