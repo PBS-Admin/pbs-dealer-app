@@ -88,6 +88,30 @@ export default function ClientQuote({
   const inChecking = !!(progress & 0b00010000);
   const locked = (submitted || inChecking) && permission < 4;
 
+  /*
+  Progress Bits:
+    00 00 00 00
+    ││ ││ ││ │└─ Started     -Quote was started and saved
+    ││ ││ ││ └── InHouse     -Quote was price from MBS, never submitted to PBS
+    ││ ││ │└──── Submitted   -Quote was submitted to PBS for estimating ──────┐
+    ││ ││ └───── Rejected    -Quote was returned to dealer with fixes needed ─┴── When turning on Rejected need to turn off Submitted but leave Rejected on when resubmitting
+    ││ │└─────── InChecking  -Quote was estimated and is being checked
+    ││ └──────── Returned    -Quote was finished by estimating and returned to dealer
+    │└────────── Completed   -Quote was Closed Out
+    └─────────── OPEN
+
+  Status Bits:
+    00 00 00 00
+    ││ ││ ││ │└─ Active      -Quote is active and not deleted
+    ││ ││ ││ └── Canceled    -Quote is canceled
+    ││ ││ │└──── OnHold      -Quote is on hold
+    ││ ││ └───── Archived    -Quote is archived
+    ││ │└─────── Sold        -Quote is sold and now a job
+    ││ └──────── OPEN
+    │└────────── OPEN
+    └─────────── OPEN
+  */
+
   // Hooks
   const {
     values,
@@ -251,6 +275,16 @@ export default function ClientQuote({
           soffitPanelType: 'pbr',
           soffitPanelGauge: '26',
           soffitPanelFinish: 'painted',
+          soffitPanelColor: 'NC',
+          buildingTrim: {
+            gable: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            eave: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            gutter: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            corner: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            jamb: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            downspout: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            base: { vendor: 'PBS', gauge: 26, color: 'NC' },
+          },
           canopies: [],
           partitions: [],
           wallLinerPanels: [],

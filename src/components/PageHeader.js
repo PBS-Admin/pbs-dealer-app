@@ -58,10 +58,10 @@ const PageHeader = ({ session, title, subtitle, isLogOut }) => {
         {session?.user && (
           <>
             <div className="avatar">
-              {/* <Image alt="PBS Buildings Logo" src={logo} className="avatar" /> */}
+              {/* <Image alt="Logo" src={logo} className="avatar" /> */}
               <Image
                 src={`/api/auth/logos?filename=${encodeURIComponent('contract-logo.png')}&company=${session.user.company}`}
-                alt={'PBS-Logo'}
+                alt={'Logo'}
                 width={200}
                 height={75}
               />

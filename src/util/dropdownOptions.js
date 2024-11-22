@@ -464,6 +464,30 @@ export const PBS_PBR = [
   },
 ];
 
+// export const PBS_PBR = {
+//   categoryColors: ['NC', 'CM'],
+//   standardColors: [
+//     'MH',
+//     'PP',
+//     'SV',
+//     'BN',
+//     'SR',
+//     'JC',
+//     'OC',
+//     'BB',
+//     'AS',
+//     'GH',
+//     'GG',
+//     'WG',
+//     'WA',
+//     'DE',
+//     'RE',
+//     'BT',
+//   ],
+//   specialOrderColor: [],
+//   premiumColor: ['IV', 'SD', 'TB', 'DN'],
+// };
+
 export const PBS_SSQ = [
   {
     id: 'NC',
@@ -858,7 +882,7 @@ export const MBCI_Signature300 = [
   },
 ];
 
-export const panelColors = [
+export const masterColorList = [
   { id: 'GV', color: 'ada49b', label: 'Galvalume' },
   { id: 'NC', color: 'ada49b', label: 'Standard Color' },
   { id: 'CM', color: 'ada49b', label: 'Premium Color' },

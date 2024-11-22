@@ -37,10 +37,22 @@ const BuildingPartitions = ({
           leftPanelGauge: '26',
           leftPanelFinish: 'painted',
           leftPanelColor: 'NC',
+          leftTrim: {
+            corner: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            jamb: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            top: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            base: { vendor: 'PBS', gauge: 26, color: 'NC' },
+          },
           rightPanelType: 'pbr',
           rightPanelGauge: '26',
           rightPanelFinish: 'painted',
           rightPanelColor: 'NC',
+          rightTrim: {
+            corner: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            jamb: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            top: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            base: { vendor: 'PBS', gauge: 26, color: 'NC' },
+          },
         },
       ];
 

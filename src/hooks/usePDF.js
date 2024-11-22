@@ -27,7 +27,7 @@ import {
   soffitGauge,
   soffitFinish,
   panelOptions,
-  panelColors,
+  masterColorList,
   polycarbRoofSize,
   polycarbRoofColor,
   polycarbWallSize,
@@ -144,7 +144,50 @@ export function usePDF() {
     return foundItems ? foundItems : null;
   };
 
-  const createContract = useCallback(async (values) => {
+  function wrapText(text, width, font, fontSize) {
+    const lines = [];
+    let currentLine = '';
+
+    if (text.includes('\n')) {
+      text.split('\n').forEach((line) => {
+        // lines.push(line);
+        lines.push(...wrapText(line, width, font, fontSize));
+      });
+    } else {
+      text.split(' ').forEach((word) => {
+        const testLine = currentLine + word + ' ';
+        const testWidth = font.widthOfTextAtSize(testLine, fontSize);
+
+        if (testWidth > width) {
+          lines.push(currentLine);
+          currentLine = word + ' ';
+        } else {
+          currentLine = testLine;
+        }
+      });
+
+      lines.push(currentLine);
+    }
+    return lines;
+  }
+
+  // const createContract = useCallback(async (values) => {
+  const createContract = useCallback(async (contractData) => {
+    const {
+      companyId,
+      companyName,
+      terms,
+      initials,
+      line1,
+      line2,
+      line3,
+      line4,
+      line5,
+      line6,
+      line7,
+      line8,
+      ...values
+    } = contractData;
     const pdfDoc = await PDFDocument.create();
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     const italicFont = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
@@ -165,6 +208,7 @@ export function usePDF() {
     const thickLine = 1.44;
 
     const lineHt = 12.5;
+    const termsLineHt = 9.375;
     const textOffsetY = 2.625;
     const pageStartX = 18; //left margin
     const pageEndX = 594; //right margin
@@ -371,10 +415,16 @@ export function usePDF() {
       if (
         bldg.openings.front.length > 0 ||
         bldg.openings.back.length > 0 ||
+        bldg.openings.outerLeft?.length > 0 ||
         bldg.openings.left.length > 0 ||
-        bldg.openings.right.length > 0
+        bldg.openings.right.length > 0 ||
+        bldg.openings.outerRight?.length > 0 ||
+        bldg.openings.partition?.length > 0
       ) {
         items.push('Framed Openings');
+      }
+      if (bldg.openings.roof?.length > 0) {
+        items.push('Roof Framed Openings');
       }
 
       return items;
@@ -382,46 +432,102 @@ export function usePDF() {
 
     // Add Main Page
     let page = addPage('QUOTE / CONTRACT', '');
-
     const quoteNum =
       values.quoteNumber +
       (values.revNumber > 0 ? ' R' + values.revNumber : '');
 
     /* Company Information */
-    const logoUrl = 'https://pdf-lib.js.org/assets/cat_riding_unicorn.jpg';
-    // const logoUrl = 'https://tools.pbsbuildings.com/files/PBS-Logo.jpg';
+
+    const companyTerms = [
+      {
+        Title: '1. DEFINITIONS:',
+        Term: 'These terms and conditions and the Quote/Contract, along with all attachments, prepared by Seller for Purchaser are together referred to as the "Agreement." As used in Agreement, "Seller" shall mean Pacific Building Systems Inc., an Oregon corporation, and "Purchaser" shall mean the person or entity identified as customer in the Quote/Contract. Purchaser represents that they are the owner of the project site or an agent of the property owner authorized to enter into this Agreement for the benefit of the property owner.',
+      },
+      {
+        Title: '2. PRODUCT:',
+        Term: "This Agreement covers only the Seller's standard metal building system components and related accessories identified in the Quote for Purchaser and does not include any construction or installation services. The terms and specifications set forth on Seller's Contract/Quote shall control, notwithstanding any specifications or instructions provided by Purchaser. Any deviation from the Seller's standard specifications will be specified in the Notes section of the Contract/Quote. Seller reserves the right to substitute materials as it sees fit without notice to Purchaser to meet Seller's standards specifications.",
+      },
+      {
+        Title: '3. COMMON INDUSTRY PRACTICES:',
+        Term: '"The Common Industry Practices" in the current edition of the Metal Building Manufacturer\'s Association ("MBMA") Building Systems Manual, are incorporated into this Agreement by reference. The "Common Industry Practices" apply to this transaction unless the terms thereof conflict with the express terms of this Agreement in which event the terms of this Agreement shall govern.',
+      },
+      {
+        Title: '4. TERMS OF PAYMENT:',
+        Term: '',
+        // Term: '  4.1   If the total amount of this Agreement is less than $250,000.00 then 20% is due at the time Seller accepts this Agreement, the remaining balance to be paid prior to shipment of the first load of materials and/or components.\n  4.2   If the total amount of this Agreement is greater than $250,000.00, then 20% is due at time Seller accepts Agreement and 40% of the contract price is due prior to any fabrication process and/or purchasing of materials and the remaining balance to be paid prior to shipment of the first load of materials and/or components.\n  4.3   If this Agreement contains hangar door(s), in addition to the payment terms stated above, Purchaser shall pay 50% of the total cost of the door at time that Seller accepts this Agreement and 50% prior to the fabrication of the hangar door by the manufacturer.\n  4.4   Payments which are not paid when due shall accrue late fees of one and one-half per cent (1.5 %) per month on the unpaid balance until paid. Purchaser will pay all Seller\'s costs of collecting or securing any amount due hereunder, including lien expenses, reasonable attorney's fees, and litigation expenses. No retainage by Purchaser is permitted. If Purchaser fails to make the payments required by this Agreement, Seller may terminate this Agreement or suspend performance to include, without limitation, design, fabrication, or delivery of Products until payment is made, including any and all added costs related to unpaid payment. Purchaser shall pay Seller's costs of engineering, work orders, purchase of out-sourced materials or services, processing, detailing, and production of all approval, permit, erection, or similar drawings and work completed.'
+      },
+      {
+        Title: '5. TAXES:',
+        Term: 'Unless otherwise specified, taxes are not included in the sales price and will be paid by the Purchaser. Applicable taxes will be charged unless appropriate documentation (resale certificate) is submitted to Seller authorizing exemption from payment of taxes prior to acceptance of this Agreement.',
+      },
+      {
+        Title: '6. DELIVERY:',
+        Term: 'Delivery will be scheduled by Seller after fabrication of the Products and/or when engineered drawings have been completed for the location identified in this Agreement. Seller may adjust the delivery schedule due to product or design changes, credit hold, Purchaser or End Customer design or fabrication holds or any other delay caused by Purchaser or End Customer ("Purchaser Delays"). If at any given time the Seller experiences Purchaser Delays or delays out of Seller\'s control, the price provided in this Agreement may be increased by Seller until date of shipment by any additional costs incurred by Seller, including lost engineering and detailing hours, rescheduling fees, and increased material costs. Purchaser agrees to make available a safe location for unloading. If, in the opinion of the Seller\'s driver or carrier service the delivery of materials and/or components is deemed as unsafe or impractical to reach the site to off-load, delivery shall be that place where off-loading may reasonably proceed. Each load shall be unloaded by the Purchaser at the time and date of scheduled delivery with a maximum unload time of 2 hours per load. If this does not occur, the Purchaser agrees to pay additional fees of $75 per hour per load. Purchaser also agrees to off load and reload material destined for other sites at no cost to Seller. If, for any reason, Purchaser fails to accept delivery of the Product or requests rescheduling of delivery, Purchaser shall be responsible for any additional costs incurred by Seller to deliver the Products, including but not limited to, handling, transportation, and storage fees.',
+      },
+      {
+        Title: '7. ACCEPTANCE AND INSPECTION PERIOD:',
+        Term: 'Purchaser shall have fifteen (15) business days to inspect the product after delivery by Seller\'s driver or Carrier Service. If Purchaser does not deliver to Seller written notice objecting to any defects or non-conformity of the product in accordance with this Agreement within the fifteen-day inspection period, then Purchaser will be deemed to have accepted delivery of the product and limit Purchaser to the remedies provided for under this Agreement. WARNING: This material is subject to severe water damage if moisture is allowed to get between the parts; therefore, it MUST BE STORED UNDER COVER and one end elevated to allow for drainage until erected. If moisture is allowed to get between the parts "RUST" or "PAINT LIFT OFF" may occur. Seller shall have no responsibility or liability for damage resulting from improperly stored product and Purchaser assumes full responsibility for the condition of the Product following delivery.',
+      },
+      {
+        Title: '8. SHORTAGES & BACK CHARGES:',
+        Term: "Seller shall not be responsible for loss or damage to Products after delivery. Seller will not pay any claims or accept any back-charges from the Purchaser related to correction of errors and repairs unless the following procedure is followed: (1) Purchaser, prior to any correction or repair, must provide Seller with a written notice describing the problem; (2) Purchaser must provide Seller with sufficient information to allow Seller to evaluate the problem; determine the estimated amount of man-hours needed and Products required and determine the direct cost to the Purchaser to correct the problem; and (3) if Seller determines that correction is necessary, Seller will authorize the corrective process by issuing the Purchaser a written authorization. After receiving the authorization, the Purchaser can make the corrections. The hourly labor rate for work to be approved by Seller prior to any commencement of work, only Seller approved labor rate will be charged. COST OF EQUIPMENT (RENTAL EXPENSE, VALUE OR DEPRECIATION), TOOLS, SUPERVISION, OVERHEAD AND PROFIT, DELAY CHARGES OR CONSEQUENTIAL, LIQUIDATED, OR INCIDENTAL DAMAGES ARE EXCLUDED. SELLER WILL NOT BE LIABLE FOR ANY CLAIMS OR BACK CHARGES PERFORMED WITHOUT SELLER'S PRIOR AUTHORIZATION. FREIGHT DAMAGE MUST BE NOTED ON SHIPPING DOCUMENTS AND NOTICE MUST BE GIVEN TO SELLER PRIOR TO THE CARRIER LEAVING THE DELIVERY SITE. SHORTAGES MUST BE REPORTED WITHIN FIFTEEN (15) BUSINESS DAYS FOLLOWING SHIPMENT. ALL OTHER CLAIMS MUST BE SUBMITTED WITHIN THREE (3) MONTHS OF DELIVERY.",
+      },
+      {
+        Title: '9. PURCHASER DELAYS:',
+        Term: "If, at Purchaser's request, Seller agrees to delay release to fabrication or delivery schedule after approval drawings are accepted, then Purchaser agrees to pay lost engineering, detailing hours, and rescheduling fees. If, at Purchaser's request, Seller agrees to delay delivery of Products after commencement of fabrication, then Purchaser shall make full payment at time of Seller invoice. Unless otherwise agreed to in writing by the parties, title and risk of loss pass to Purchaser upon notice that the Products are fabricated. Upon written request from Seller, Purchaser shall provide reasonable evidence of property insurance on the Products and designate Seller as loss payee. Seller may charge Purchaser a reasonable storage charge per day until actual shipment. Storage charges are due prior to delivery of the Product. Any storage shall occur outside of Seller's plant. In no event shall Seller be responsible for any damage or loss that occurs because of weather, theft, vandalism, fire, or acts of God during the storage period.",
+      },
+      {
+        Title: '10. LIMITED WARRANTY:',
+        Term: 'Seller warrants its products against defects in material and defects in fabrication of the products from that specified in the Quote/Contract for a period of one (1) year from date of delivery to Purchaser. Damage or failures due to faulty or improper handling, storage, or erection by Purchaser or others are not covered by this Warranty, including without limitation defects in paint and rust. This Warranty is further limited by the following: (1) The Products must be erected promptly after shipment to Purchaser; (2) Damages from outside sources, misuse and abuse, lack of proper maintenance (including removal of excessive loads such as snow and ice), unauthorized modification or alteration to the Products, addition of unspecified collateral loads, damages caused by negligence of others, or natural storms imposing loads beyond specified design loads, and normal wear and tear are excluded from and void this Warranty. This Warranty does not cover goods, materials, inventory, accessories, parts or attachments or other property which are not manufactured by Seller. Written notice of any claim under this limited warranty must be delivered to Seller within thirty (30) days of discovery of the alleged defect, and Seller must afford Purchaser a reasonable opportunity to inspect the Products in unaltered condition to evaluate the claims. This Warranty is non-assignable and non-transferable. THE WARRANTY SET FORTH ABOVE IS SUBJECT TO THE LIMITATIONS SPECIFIED, AND THIS AGREEMENT EXCLUDES ALL OTHER WARRANTIES, WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, WARRANTY OF MERCHANTABILITY OR WARRANTY OF FITNESS FOR A PARTICULAR PURPOSE. PURCHASER ACKNOWLEDGES THAT SELLER HAS NO CONTROL OVER INSTALLATION, ENGINEERING, CUSTOM SPECIFICATIONS, CONSTRUCTION METHODS, SITE CONDITIONS, OR OTHER CIRCUMSTANCES RELATED TO THE USE OF THE PRODUCTS. AS A RESULT, NO OTHER WARRANTIES OR GUARANTEES, EXPRESS OR IMPLIED, STATUTORY OR OTHERWISE, ARE GIVEN.',
+      },
+      { Title: '11. EXCLUSIVE REMEDIES:', Term: 'test' },
+      {
+        Title:
+          '12. LIMITATION OF LIABILITY; CONSEQUENTIAL, INCIDENTAL AND LIQUIDATED DAMAGES:',
+        Term: 'test',
+      },
+      { Title: '13. FORCE MAJEURE:', Term: 'test' },
+      { Title: '14. INDEMNIFICATION:', Term: 'test' },
+      { Title: '15. PURCHASE SPECIFICATIONS:', Term: 'test' },
+      {
+        Title: '16. MATCHING COLORS AND FINISHES NOT GUARANTEED:',
+        Term: 'test',
+      },
+      { Title: '17. ERECTION:', Term: 'test' },
+      { Title: '18. ACCEPTANCE, APPROVAL, CHANGE ORDERS:', Term: 'test' },
+      { Title: '19. TERMINATION:', Term: 'test' },
+      { Title: '20. INTELLECTUAL PROPERTY:', Term: 'test' },
+      { Title: '21. ASSIGNMENT AND BENEFICIARIES:', Term: 'test' },
+      { Title: '22. PROMOTIONAL MATERIALS:', Term: 'test' },
+      { Title: '23. ENTIRE AGREEMENT:', Term: 'test' },
+      { Title: '24. SEVERABILITY:', Term: 'test' },
+      { Title: '25. APPLICABLE LAW & JURISDICTION:', Term: 'test' },
+    ];
+
+    const logoUrl =
+      '/api/auth/logos?filename=' +
+      encodeURIComponent('contract-logo.png') +
+      '&company=' +
+      companyId;
     const logoBytes = await fetch(logoUrl).then((res) => res.arrayBuffer());
+    // const logoImage = await pdfDoc.embedJpg(logoBytes);
+    const logoImage = await pdfDoc.embedPng(logoBytes);
 
-    // const logoBytes = await fs.readFile(logo);
+    page.drawImage(logoImage, {
+      x: 22,
+      y: 700,
+      width: 120,
+      height: 54,
+    });
+    textCenter(page, line1, 202, 742.375, 118);
+    textCenter(page, line2, 202, 729.875, 118);
+    textCenter(page, line3, 202, 717.375, 118);
+    textCenter(page, line4, 202, 704.875, 118);
 
-    const logoImage = await pdfDoc.embedJpg(logoBytes);
-    // const logoImage = await pdfDoc.embedPng(logoBytes);
-
-    const companyName = 'Pacific Building Systems';
-    const companyText0 = '2100 N Pacific Hwy';
-    const companyText1 = 'Woodburn, OR 97071';
-    const companyText2 = 'www.pbsbuildings.com';
-    const companyText3 = '503-981-9581';
-    const companyText4 = '';
-    const companyText5 = '';
-    const companyText6 = '';
-    const companyText7 = '';
-
-    // page.drawImage(logoImage, {
-    //   x: 22,
-    //   y: 700,
-    //   width: 120,
-    //   height: 54,
-    // });
-    textCenter(page, companyText0, 202, 742.375, 118);
-    textCenter(page, companyText1, 202, 729.875, 118);
-    textCenter(page, companyText2, 202, 717.375, 118);
-    textCenter(page, companyText3, 202, 704.875, 118);
-
-    textCenter(page, companyText4, 326, 742.375, 118);
-    textCenter(page, companyText5, 326, 729.875, 118);
-    textCenter(page, companyText6, 326, 717.375, 118);
-    textCenter(page, companyText7, 326, 704.875, 118);
+    textCenter(page, line5, 326, 742.375, 118);
+    textCenter(page, line6, 326, 729.875, 118);
+    textCenter(page, line7, 326, 717.375, 118);
+    textCenter(page, line8, 326, 704.875, 118);
 
     textLargeLeft(page, 'Job Number:', 394, 736.125);
     textLeft(page, 'Quote Number:', 394, 720.5);
@@ -903,7 +1009,7 @@ export function usePDF() {
       );
       textBoldLeft(
         page,
-        panelColors.find(
+        masterColorList.find(
           (item) => item.id === values.buildings[i].roofPanelColor
         ).label,
         486,
@@ -1052,7 +1158,7 @@ export function usePDF() {
         );
         textBoldLeft(
           page,
-          panelColors.find(
+          masterColorList.find(
             (item) => item.id === values.buildings[i].soffitPanelColor
           ).label,
           486,
@@ -1133,7 +1239,7 @@ export function usePDF() {
           );
           textBoldLeft(
             page,
-            panelColors.find(
+            masterColorList.find(
               (item) => item.id === bldgItems[k].roofLinerPanelColor
             ).label,
             486,
@@ -1403,7 +1509,7 @@ export function usePDF() {
         );
         textBoldLeft(
           page,
-          panelColors.find(
+          masterColorList.find(
             (item) =>
               item.id ===
               values.buildings[i][`${wallsInBldg[j].id}WallPanelColor`]
@@ -1514,7 +1620,7 @@ export function usePDF() {
             );
             textBoldLeft(
               page,
-              panelColors.find(
+              masterColorList.find(
                 (item) => item.id === bldgItems[k].wallLinerPanelColor
               ).label,
               486,
@@ -1640,7 +1746,7 @@ export function usePDF() {
             );
             textBoldLeft(
               page,
-              panelColors.find(
+              masterColorList.find(
                 (item) => item.id === bldgItems[k].roofPanelColor
               ).label,
               486,
@@ -1683,7 +1789,7 @@ export function usePDF() {
             );
             textBoldLeft(
               page,
-              panelColors.find(
+              masterColorList.find(
                 (item) => item.id === bldgItems[k].soffitPanelColor
               ).label,
               486,
@@ -1928,7 +2034,7 @@ export function usePDF() {
             );
             textBoldLeft(
               page,
-              panelColors.find(
+              masterColorList.find(
                 (item) => item.id === bldgItems[k].wainscotPanelColor
               ).label,
               486,
@@ -2188,6 +2294,46 @@ export function usePDF() {
       }
 
       bldgPageNums[i].pageEnd = currentPage + 1; //On current page
+    }
+
+    /* Add Terms and Conditions */
+    if (terms?.length > 0) {
+      page = addPage('TERMS AND CONDITIONS', '');
+      terms.map((terms) => {
+        addSection(page, currentY);
+        textBoldLeft(page, terms.Title, 22, currentY + textOffsetY);
+        line(page, pageStartX, currentY, pageEndX, currentY);
+        currentY -= lineHt;
+
+        let lines = wrapText(terms.Term, 566, stdFont, smallFont);
+        let numLines = 0;
+        for (const line of lines) {
+          page.drawText(line, {
+            x: 22,
+            y: currentY + textOffsetY,
+            size: smallFont,
+            font: stdFont,
+          });
+          numLines++;
+          currentY -= termsLineHt;
+
+          if (currentY < pageEndY) {
+            page = addPage(
+              'TERMS AND CONDITIONS',
+              '',
+              terms.Title + ' (cont.)'
+            );
+            numLines = 0;
+          }
+        }
+
+        currentY +=
+          Math.ceil((numLines * (lineHt - termsLineHt)) / lineHt) * lineHt -
+          numLines * (lineHt - termsLineHt);
+
+        lineThick(page, pageStartX, currentY, pageEndX, currentY);
+        currentY -= lineHt;
+      });
     }
 
     /* Add Date, Footer, & Page Numbers to each page */

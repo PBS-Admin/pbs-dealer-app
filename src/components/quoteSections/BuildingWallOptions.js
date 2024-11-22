@@ -56,6 +56,9 @@ const BuildingWallOptions = ({
                   wallLinerPanelGauge: '26',
                   wallLinerPanelFinish: 'painted',
                   wallLinerPanelColor: 'NC',
+                  wallLinerTrim: {
+                    trim: { vendor: 'PBS', gauge: 26, color: 'NC' },
+                  },
                 },
               ],
             }
@@ -83,6 +86,13 @@ const BuildingWallOptions = ({
                   wainscotPanelGauge: '26',
                   wainscotPanelFinish: 'painted',
                   wainscotPanelColor: 'NC',
+                  wainscotTrim: {
+                    base: { vendor: 'PBS', gauge: 26, color: 'NC' },
+                    leftEnd: { vendor: 'PBS', gauge: 26, color: 'NC' },
+                    rightEnd: { vendor: 'PBS', gauge: 26, color: 'NC' },
+                    top: { vendor: 'PBS', gauge: 26, color: 'NC' },
+                    jamb: { vendor: 'PBS', gauge: 26, color: 'NC' },
+                  },
                 },
               ],
             }

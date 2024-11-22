@@ -9,96 +9,50 @@ const createPool = () => {
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      connectionLimit: 10, // Increased from 5
-      acquireTimeout: 60000, // Increased timeout
+      connectionLimit: 5,
+      acquireTimeout: 30000,
       idleTimeout: 60000,
-      connectTimeout: 20000, // Increased from 10000
+      connectTimeout: 10000,
       multipleStatements: true,
-      resetAfterUse: true, // Reset connection state after use
-      trace: true, // Enable connection tracing
-      maxRetries: 3, // Add retry attempts
-      minDelayMs: 1000, // Minimum delay between retries
     });
   }
   return pool;
 };
 
-async function validatePool() {
-  try {
-    const conn = await pool.getConnection();
-    await conn.query('SELECT 1');
-    conn.release();
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function getConnectionWithRetry(retries = 3) {
-  const pool = createPool();
-  let lastError;
-
-  for (let i = 0; i < retries; i++) {
-    try {
-      const conn = await pool.getConnection();
-      return conn;
-    } catch (err) {
-      lastError = err;
-      console.log(`Connection attempt ${i + 1} failed, retrying...`);
-      await new Promise((resolve) => setTimeout(resolve, 1000 * (i + 1)));
-    }
-  }
-  throw lastError;
-}
-
 export async function query(sql, params) {
+  const pool = createPool();
   let conn;
   try {
-    if (!(await validatePool())) {
-      await endPool();
-      createPool();
-    }
-    conn = await getConnectionWithRetry();
+    conn = await pool.getConnection();
     const rows = await conn.query(sql, params);
     return rows;
   } catch (err) {
     console.error('Database query error:', err);
     throw err;
   } finally {
-    if (conn) await conn.release().catch(console.error);
+    if (conn) conn.release();
   }
 }
 
+export async function getConnection() {
+  const pool = createPool();
+  return pool.getConnection();
+}
 export async function transaction(callback) {
+  const pool = createPool();
   let conn;
   try {
-    if (!(await validatePool())) {
-      await endPool();
-      createPool();
-    }
-    conn = await getConnectionWithRetry();
+    conn = await pool.getConnection();
     await conn.beginTransaction();
     const result = await callback(conn);
     await conn.commit();
     return result;
   } catch (err) {
-    if (conn) {
-      try {
-        await conn.rollback();
-      } catch (rollbackErr) {
-        console.error('Rollback error:', rollbackErr);
-      }
-    }
+    if (conn) await conn.rollback();
     console.error('Transaction error:', err);
     throw err;
   } finally {
-    if (conn) {
-      try {
-        await conn.release();
-      } catch (err) {
-        console.error('Error releasing connection:', err);
-      }
-    }
+    if (conn) conn.release();
   }
 }
 

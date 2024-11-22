@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import ReusableToggle from './ReusableToggle';
 import {
+  masterColorList,
   PBS_PBR,
   PBS_SSQ,
   PBS_FWQ,
@@ -23,29 +24,35 @@ const ReusableColorSelect = ({
 
   const [showColorNames, setShowColorNames] = useState(false);
 
+  const [hoverColor, setHoverColor] = useState(
+    masterColorList
+      .filter((color) => color.id == value)
+      .map((color) => color.label)
+  );
+
   const colorTitleMap = {
-    pbr: { 26: '26 gauge PBR panels', 24: '24 gauge PBR panels' },
+    pbr: { 26: '26 gauge PBR Panels', 24: '24 gauge PBR Panels' },
     pbrRev: {
-      26: '26 gauge Reverse Rolled PBR panels',
-      24: '24 gauge Reverse Rolled PBR panels',
+      26: '26 gauge Reverse Rolled PBR Panels',
+      24: '24 gauge Reverse Rolled PBR Panels',
     },
-    ssq: { 24: '24 gauge SSQ-275 Standing Seam panels' },
-    flat: { 26: '26 gauge Flat Soffit panels' },
-    ms200: { 24: '24 gauge MS-200 Standing Seam panels' },
+    ssq: { 24: '24 gauge SSQ-275 Standing Seam Panels' },
+    flat: { 26: '26 gauge Flat Soffit Panels' },
+    ms200: { 24: '24 gauge MS-200 Standing Seam Panels' },
     pbrDrip: {
-      26: '26 gauge PBR panels with DripStop',
-      24: '24 gauge PBR panels with DripStop',
+      26: '26 gauge PBR Panels with DripStop',
+      24: '24 gauge PBR Panels with DripStop',
     },
-    hr34: { 26: '26 gauge HR-34 panels', 24: '24 gauge HR-34 panels' },
+    hr34: { 26: '26 gauge HR-34 panels', 24: '24 gauge HR-34 Panels' },
     corr: {
-      26: '26 gauge Classic 7/8" Corrugated panels',
-      24: '24 gauge Classic 7/8" Corrugated panels',
+      26: '26 gauge Classic 7/8" Corrugated Panels',
+      24: '24 gauge Classic 7/8" Corrugated Panels',
     },
-    tuff: { 29: '29 gauge Tuff Rib panels' },
-    doubleLok: { 24: '24 gauge Double-Lok Standing Seam panels' },
-    ultraDek: { 24: '24 gauge Ultra-Dek Standing Seam panels' },
-    battenLok: { 24: '24 gauge BattenLok Standing Seam panels' },
-    superLok: { 24: '24 gauge SuperLok Standing Seam panels' },
+    tuff: { 29: '29 gauge Tuff Rib Panels' },
+    doubleLok: { 24: '24 gauge Double-Lok Standing Seam Panels' },
+    ultraDek: { 24: '24 gauge Ultra-Dek Standing Seam Panels' },
+    battenLok: { 24: '24 gauge BattenLok Standing Seam Panels' },
+    superLok: { 24: '24 gauge SuperLok Standing Seam Panels' },
   };
 
   const colorMap = {
@@ -90,6 +97,14 @@ const ReusableColorSelect = ({
                     color: `${getTextContract(color.color)}`,
                   }}
                   onClick={onClick}
+                  onMouseEnter={() => setHoverColor(color.label)}
+                  onMouseLeave={() =>
+                    setHoverColor(
+                      masterColorList
+                        .filter((color) => color.id == value)
+                        .map((color) => color.label)
+                    )
+                  }
                 >
                   {color.label}
                 </button>
@@ -122,8 +137,14 @@ const ReusableColorSelect = ({
                     color: `${getTextContract(color.color)}`,
                   }}
                   onClick={onClick}
-                  //   onHouseEnter={() => console.log(color.label)}
-                  //   onHouseLeave={() => console.log(color.label)}
+                  onMouseEnter={() => setHoverColor(color.label)}
+                  onMouseLeave={() =>
+                    setHoverColor(
+                      masterColorList
+                        .filter((color) => color.id == value)
+                        .map((color) => color.label)
+                    )
+                  }
                 >
                   {showColorNames ? color.label : ''}
                 </button>
@@ -149,6 +170,14 @@ const ReusableColorSelect = ({
                         color: `${getTextContract(color.color)}`,
                       }}
                       onClick={onClick}
+                      onMouseEnter={() => setHoverColor(color.label)}
+                      onMouseLeave={() =>
+                        setHoverColor(
+                          masterColorList
+                            .filter((color) => color.id == value)
+                            .map((color) => color.label)
+                        )
+                      }
                     >
                       {showColorNames ? color.label : ''}
                     </button>
@@ -159,7 +188,7 @@ const ReusableColorSelect = ({
         )}
         <div className="divider" style={{ width: '100%' }}></div>
         <div className="dialog-buttons">
-          <div>Standard Color</div>
+          <div>{hoverColor}</div>
           <button
             type="button"
             className="prim"

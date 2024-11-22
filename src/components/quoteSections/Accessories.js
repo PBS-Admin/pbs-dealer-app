@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import ReusableSelect from '../Inputs/ReusableSelect';
 import ReusableSlider from '../Inputs/ReusableSlider';
+import ReusableToggle from '../Inputs/ReusableToggle';
 import ReusableInteger from '../Inputs/ReusableInteger';
 
 const Accessories = ({
@@ -60,80 +61,59 @@ const Accessories = ({
         <div className="grid2 alignTop">
           <div className="grid">
             <h4>Foundation Design</h4>
-            <div className="checkboxGroup grid2">
-              <div className="checkRow large">
-                <input
-                  type="checkbox"
-                  id="monoSlabDesign"
-                  name="monoSlabDesign"
-                  checked={values.monoSlabDesign}
-                  onChange={(e) => handleChange(e, 'monoSlabDesign')}
-                  disabled={locked}
-                />
-                <label htmlFor="monoSlabDesign">
-                  Include Monolothic Slab Design
-                </label>
-              </div>
-              <div className="checkRow large">
-                <input
-                  type="checkbox"
-                  id="pierFootingDesign"
-                  name="pierFootingDesign"
-                  checked={values.pierFootingDesign}
-                  onChange={(e) => handleChange(e, 'pierFootingDesign')}
-                  disabled={locked}
-                />
-                <label htmlFor="pierFootingDesign">
-                  Include Pier Footing Design
-                </label>
-              </div>
+            <div className="toggleGroup grid2 large">
+              <ReusableToggle
+                id="monoSlabDesign"
+                checked={values.monoSlabDesign}
+                onChange={(e) => {
+                  console.log('change e: ', e);
+                  handleChange(e, 'monoSlabDesign');
+                }}
+                label="Include Monolothic Slab Design"
+                className="prim"
+              />
+              <ReusableToggle
+                id="pierFootingDesign"
+                checked={values.pierFootingDesign}
+                onChange={(e) => handleChange(e, 'pierFootingDesign')}
+                label="Include Pier Footing Design"
+                className="prim"
+              />
             </div>
 
             <h4>Weather Tight Warranties</h4>
-            <div className="checkboxGroup grid2">
-              <div className="checkRow large">
-                <input
-                  type="checkbox"
-                  id="standardWarranty"
-                  name="standardWarranty"
-                  checked={values.standardWarranty}
-                  onChange={(e) => handleChange(e, 'standardWarranty')}
-                  disabled={locked}
-                />
-                <label htmlFor="standardWarranty">
-                  Include Standard Warranty
-                </label>
-              </div>
-              <div className="checkRow large">
-                <input
-                  type="checkbox"
-                  id="singleSourceWarranty"
-                  name="singleSourceWarranty"
-                  checked={values.pierFootingDesign}
-                  onChange={(e) => handleChange(e, 'singleSourceWarranty')}
-                  disabled={locked}
-                />
-                <label htmlFor="singleSourceWarranty">
-                  Include Single Source Warranty
-                </label>
-              </div>
+            <div className="toggleGroup grid2 large">
+              <ReusableToggle
+                id="standardWarranty"
+                checked={values.standardWarranty}
+                onChange={(e) => {
+                  console.log('change e: ', e);
+                  handleChange(e, 'standardWarranty');
+                }}
+                label="Include Standard Warranty"
+                className="prim"
+              />
+              <ReusableToggle
+                id="singleSourceWarranty"
+                checked={values.singleSourceWarranty}
+                onChange={(e) => handleChange(e, 'singleSourceWarranty')}
+                label="Include Single Source Warranty"
+                className="prim"
+              />
             </div>
 
             <h4>Shipping</h4>
-            <div className="checkboxGroup grid2">
-              <div className="checkRow large">
-                <input
-                  type="checkbox"
-                  id="willCall"
-                  name="willCall"
-                  checked={values.willCall}
-                  onChange={(e) => handleChange(e, 'willCall')}
-                  disabled={locked}
-                />
-                <label htmlFor="willCall">Will Call - Shipping By Others</label>
-              </div>
+            <div className="toggleGroup grid2 large">
+              <ReusableToggle
+                id="willCall"
+                checked={values.willCall}
+                onChange={(e) => handleChange(e, 'willCall')}
+                label="Will Call - Shipping By Others"
+                className="prim"
+              />
             </div>
           </div>
+
           <div className="grid">
             <h4>Accessories</h4>
             <ReusableSlider
