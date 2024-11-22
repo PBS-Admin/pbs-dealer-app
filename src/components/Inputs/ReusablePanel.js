@@ -152,10 +152,15 @@ const ReusablePanel = ({
     onChange(e, finishKey);
   };
 
-  const handleColorChange = (e) => {
-    const newValue = e.target.value;
-    setInternalColorValue(newValue);
-    onChange(e, colorKey);
+  const handleColorClick = () => {
+    colorClicked({
+      panelType: name.toLowerCase(),
+      panelLocation: idx,
+      buildingIndex: bldg,
+      gauge: internalGaugeValue,
+      panel: internalPanelValue,
+      color: internalColorValue,
+    });
   };
 
   return (
@@ -193,7 +198,7 @@ const ReusablePanel = ({
                 label="Finish:"
                 icon={internalFinishValue != 'galv' ? 'color' : ''}
                 iconClass={'success'}
-                iconOnClick={colorClicked}
+                iconOnClick={handleColorClick}
                 tooltip="Select Color"
                 disabled={disabled}
               />

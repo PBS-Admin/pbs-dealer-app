@@ -64,7 +64,6 @@ export default function ClientQuote({
   const [currentQuote, setCurrentQuote] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [buildingToDelete, setBuildingToDelete] = useState(null);
-  const [isColorOpen, setIsColorOpen] = useState(false);
 
   const [selectedSalesPerson, setSelectedSalesPerson] = useState(salesPerson);
   const [selectedProjectManager, setSelectedProjectManager] =
@@ -76,7 +75,17 @@ export default function ClientQuote({
   const [sourceBuildingIndex, setSourceBuildingIndex] = useState(0);
   const [isQuoteDeleteDialogOpen, setIsQuoteDeleteDialogOpen] = useState(false);
 
+  const [isColorOpen, setIsColorOpen] = useState(false);
   const [activeColor, setActiveColor] = useState('NC');
+  const [colorSelectInfo, setColorSelectInfo] = useState({
+    isOpen: false,
+    panelType: '',
+    panelLocation: '',
+    buildingIndex: 0,
+    gauge: '',
+    panel: '',
+    color: '',
+  });
 
   const [saveStatus, setSaveStatus] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -536,12 +545,61 @@ export default function ClientQuote({
     }
   };
 
-  const openColorDialog = () => {
-    setIsColorOpen(true);
+  const openColorDialog = (info) => {
+    setColorSelectInfo({
+      isOpen: true,
+      ...info,
+    });
   };
 
   const closeColorDialog = () => {
     setIsColorOpen(false);
+  };
+
+  const handleColorSelect = (colorInfo) => {
+    const { color, panelType, panelLocation, buildingIndex } = colorInfo;
+
+    console.log('cInfo: ', colorInfo);
+
+    switch (panelType) {
+      case 'roof':
+        handleNestedChange(buildingIndex, 'roofPanelColor', color);
+        break;
+      case 'wall':
+        if (panelLocation) {
+          handleNestedChange(
+            buildingIndex,
+            `${panelLocation}PanelColor`,
+            color
+          );
+        } else {
+          handleNestedChange(buildingIndex, 'wallPanelColor', color);
+        }
+        break;
+      case 'wainscot':
+        handleWainscotChange(buildingIndex, panelLocation, 'panelColor', color);
+        break;
+      case 'roofliner':
+        handleRoofLinerPanelChange(
+          buildingIndex,
+          panelLocation,
+          'roofLinerPanelColor',
+          color
+        );
+        break;
+      case 'wallLiner':
+        handleWallLinerPanelChange(
+          buildingIndex,
+          panelLocation,
+          'panelColor',
+          color
+        );
+        break;
+      case 'soffit':
+        handleNestedChange(buildingIndex, 'soffitPanelColor', color);
+        break;
+    }
+    setColorSelectInfo((prev) => ({ ...prev, isOpen: false }));
   };
 
   // Checking for screen width to conditionally render DOM elements
@@ -1222,13 +1280,17 @@ export default function ClientQuote({
         message={`Are you sure you want to delete this whole quote?`}
       />
       <ReusableColorSelect
-        isOpen={isColorOpen}
-        onClose={closeColorDialog}
-
-        // onClick={}
-        // panel={}
-        // gauge={}
-        // value={}
+        isOpen={colorSelectInfo.isOpen}
+        onClose={() =>
+          setColorSelectInfo((prev) => ({ ...prev, isOpen: false }))
+        }
+        onColorSelect={handleColorSelect}
+        panel={colorSelectInfo.panel}
+        gauge={colorSelectInfo.gauge}
+        panelType={colorSelectInfo.panelType}
+        panelLocation={colorSelectInfo.panelLocation}
+        buildingIndex={colorSelectInfo.buildingIndex}
+        value={colorSelectInfo.color}
       />
       <ReusableLoader
         isOpen={saveStatus}

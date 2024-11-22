@@ -464,29 +464,31 @@ export const PBS_PBR = [
   },
 ];
 
-// export const PBS_PBR = {
-//   categoryColors: ['NC', 'CM'],
-//   standardColors: [
-//     'MH',
-//     'PP',
-//     'SV',
-//     'BN',
-//     'SR',
-//     'JC',
-//     'OC',
-//     'BB',
-//     'AS',
-//     'GH',
-//     'GG',
-//     'WG',
-//     'WA',
-//     'DE',
-//     'RE',
-//     'BT',
-//   ],
-//   specialOrderColor: [],
-//   premiumColor: ['IV', 'SD', 'TB', 'DN'],
-// };
+export const PBS_26_PBR = {
+  panelLabel: '26 gauge PBR Panels',
+  trimLabel: '26 gauge Trim',
+  categoryColors: ['NC', 'CM'],
+  standardColors: [
+    'MH',
+    'PP',
+    'SV',
+    'BN',
+    'SR',
+    'JC',
+    'OC',
+    'BB',
+    'AS',
+    'GH',
+    'GG',
+    'WG',
+    'WA',
+    'DE',
+    'RE',
+    'BT',
+  ],
+  specialOrderColor: [],
+  premiumColor: ['IV', 'SD', 'TB', 'DN'],
+};
 
 export const PBS_SSQ = [
   {

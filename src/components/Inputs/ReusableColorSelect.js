@@ -3,6 +3,7 @@ import { useState } from 'react';
 import ReusableToggle from './ReusableToggle';
 import {
   masterColorList,
+  PBS_26_PBR,
   PBS_PBR,
   PBS_SSQ,
   PBS_FWQ,
@@ -15,10 +16,13 @@ import {
 const ReusableColorSelect = ({
   isOpen,
   onClose,
-  onClick,
+  onColorSelect,
   panel = 'pbr',
   gauge = 26,
   value = 'NC',
+  panelType,
+  panelLocation,
+  buildingIndex,
 }) => {
   if (!isOpen) return null;
 
@@ -71,6 +75,24 @@ const ReusableColorSelect = ({
     superLok: { 24: MBCI_Signature300 },
   };
 
+  const handleColorSelect = (colorId) => {
+    onColorSelect({
+      color: colorId,
+      panelType,
+      panelLocation,
+      buildingIndex,
+    });
+    onClose();
+  };
+
+  const testLog = (color) => {
+    console.log('colorInput: ', color);
+  };
+
+  const colorData = (id) => {
+    return masterColorList.filter((color) => color.id == id);
+  };
+
   const getTextContract = (color) => {
     const r = parseInt(color.substring(0, 2), 16);
     const g = parseInt(color.substring(2, 4), 16);
@@ -88,6 +110,7 @@ const ReusableColorSelect = ({
             .filter((color) => color.optionGroup == 'Category Colors')
             .map((color) => (
               <div
+                key={color.id}
                 className={`buttonWrapper ${value == color.id ? 'selected' : ''}`}
               >
                 <button
@@ -96,7 +119,7 @@ const ReusableColorSelect = ({
                     backgroundColor: `#${color.color}`,
                     color: `${getTextContract(color.color)}`,
                   }}
-                  onClick={onClick}
+                  onClick={() => handleColorSelect(color.id)}
                   onMouseEnter={() => setHoverColor(color.label)}
                   onMouseLeave={() =>
                     setHoverColor(
@@ -118,6 +141,7 @@ const ReusableColorSelect = ({
             className="prim right"
           />
         </div>
+
         <h4>Standard Colors</h4>
         <div className="buttonGroup">
           {colorMap[panel][gauge]
@@ -128,6 +152,7 @@ const ReusableColorSelect = ({
             )
             .map((color) => (
               <div
+                key={color.id}
                 className={`buttonWrapper ${value == color.id ? 'selected' : ''}`}
               >
                 <button
@@ -136,7 +161,7 @@ const ReusableColorSelect = ({
                     backgroundColor: `#${color.color}`,
                     color: `${getTextContract(color.color)}`,
                   }}
-                  onClick={onClick}
+                  onClick={() => handleColorSelect(color.id)}
                   onMouseEnter={() => setHoverColor(color.label)}
                   onMouseLeave={() =>
                     setHoverColor(
@@ -161,6 +186,7 @@ const ReusableColorSelect = ({
                 .filter((color) => color.optionGroup == 'Premium Colors')
                 .map((color) => (
                   <div
+                    key={color.id}
                     className={`buttonWrapper ${value == color.id ? 'selected' : ''}`}
                   >
                     <button
@@ -169,7 +195,7 @@ const ReusableColorSelect = ({
                         backgroundColor: `#${color.color}`,
                         color: `${getTextContract(color.color)}`,
                       }}
-                      onClick={onClick}
+                      onClick={() => handleColorSelect(color.id)}
                       onMouseEnter={() => setHoverColor(color.label)}
                       onMouseLeave={() =>
                         setHoverColor(
@@ -186,6 +212,7 @@ const ReusableColorSelect = ({
             </div>
           </>
         )}
+
         <div className="divider" style={{ width: '100%' }}></div>
         <div className="dialog-buttons">
           <div>{hoverColor}</div>
