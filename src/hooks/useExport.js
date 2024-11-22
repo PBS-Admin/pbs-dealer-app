@@ -650,7 +650,7 @@ export function useExport() {
     let taMoment = (0.028 * Math.pow(averagePeak, 0.8)).toFixed(4);
     let taBrace = (0.02 * Math.pow(averagePeak, 0.75)).toFixed(4);
 
-    const desLoadHandle = await newBuildingHandle.getFileHandle('DESLOAD.INI', {
+    const desLoadHandle = await newBuildingHandle.getFileHandle('desload.txt', {
       create: true,
     });
     const writable = await desLoadHandle.createWritable();
@@ -996,7 +996,7 @@ export function useExport() {
       }
     );
 
-    const desCtrlHandle = await newBuildingHandle.getFileHandle('DESCTRL.INI', {
+    const desCtrlHandle = await newBuildingHandle.getFileHandle('desctrl.txt', {
       create: true,
     });
     const writable = await desCtrlHandle.createWritable();

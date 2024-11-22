@@ -239,10 +239,18 @@ const FinalizeQuote = ({
       for (let i = 0; i < values.buildings.length; i++) {
         const newFolderName = values.quoteNumber + bldgAlpha[i].trim();
         await writable.write(
+          `rename ${newFolderName}\\desctrl.txt ${newFolderName}\\desctrl.ini\n`
+        );
+        await writable.write(
+          `rename ${newFolderName}\\desload.txt ${newFolderName}\\desload.ini\n`
+        );
+        await writable.write(
           `c:\\mbs\\util\\mbs_ini.exe 1 ${newFolderName}\\desctrl.in ${newFolderName}\\desctrl.ini\n`
         );
       }
     } else {
+      await writable.write(`rename desctrl.txt desctrl.ini\n`);
+      await writable.write(`rename desload.txt desload.ini\n`);
       await writable.write(
         'c:\\mbs\\util\\mbs_ini.exe 1 desctrl.in desctrl.ini\n'
       );
