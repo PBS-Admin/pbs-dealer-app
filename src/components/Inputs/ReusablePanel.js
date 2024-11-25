@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import ReusableSelect from '../Inputs/ReusableSelect';
 import {
+  masterColorList,
   roofPanels,
   roofGauge,
   roofFinish,
@@ -110,6 +111,25 @@ const ReusablePanel = ({
     (panel) => panel.id === internalPanelValue
   );
 
+  const colorData = (colorId) => {
+    return masterColorList.filter((color) => color.id == colorId)[0];
+  };
+
+  const overlayColor = (color) => {
+    const r = parseInt(color.substring(0, 2), 16);
+    const g = parseInt(color.substring(2, 4), 16);
+    const b = parseInt(color.substring(4, 6), 16);
+    return 'rgba(' + r + ', ' + g + ', ' + b + ', 0.5)';
+  };
+
+  const getTextContract = (color) => {
+    const r = parseInt(color.substring(0, 2), 16);
+    const g = parseInt(color.substring(2, 4), 16);
+    const b = parseInt(color.substring(4, 6), 16);
+    const brightness = Math.round((r * 299 + g * 587 + b * 114) / 1000);
+    return brightness > 125 ? '#181818' : '#fafafa';
+  };
+
   useEffect(() => {
     if (value[panelKey] !== undefined && value[panelKey] != '') {
       setInternalPanelValue(value[panelKey]);
@@ -125,6 +145,11 @@ const ReusablePanel = ({
   useEffect(() => {
     if (value[finishKey] !== undefined && value[finishKey] != '') {
       setInternalFinishValue(value[finishKey]);
+      if (value[finishKey] == 'galv') {
+        setInternalColorValue('GV');
+      } else if (value[finishKey] != 'galv' && internalColorValue == 'GV') {
+        setInternalColorValue('NC');
+      }
     }
   }, [value[finishKey]]);
 
@@ -210,6 +235,20 @@ const ReusablePanel = ({
                     className="panelImage"
                   />
                 )}
+                <div
+                  className="imageOverlay"
+                  style={{
+                    backgroundColor: overlayColor(
+                      colorData(internalColorValue).color
+                    ),
+                    // color: getTextContract(colorData(internalColorValue).color),
+                  }}
+                >
+                  {/* {masterColorList
+                    .filter((color) => color.id == internalColorValue)
+                    .map((color) => color.label)} */}
+                  {colorData(internalColorValue).label}
+                </div>
               </div>
             </>
           ) : (

@@ -85,14 +85,6 @@ const ReusableColorSelect = ({
     onClose();
   };
 
-  const testLog = (color) => {
-    console.log('colorInput: ', color);
-  };
-
-  const colorData = (id) => {
-    return masterColorList.filter((color) => color.id == id);
-  };
-
   const getTextContract = (color) => {
     const r = parseInt(color.substring(0, 2), 16);
     const g = parseInt(color.substring(2, 4), 16);

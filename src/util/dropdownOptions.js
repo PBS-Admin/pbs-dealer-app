@@ -486,8 +486,8 @@ export const PBS_26_PBR = {
     'RE',
     'BT',
   ],
-  specialOrderColor: [],
-  premiumColor: ['IV', 'SD', 'TB', 'DN'],
+  specialOrderColors: [],
+  premiumColors: ['IV', 'SD', 'TB', 'DN'],
 };
 
 export const PBS_SSQ = [
