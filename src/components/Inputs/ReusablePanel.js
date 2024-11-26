@@ -145,11 +145,11 @@ const ReusablePanel = ({
   useEffect(() => {
     if (value[finishKey] !== undefined && value[finishKey] != '') {
       setInternalFinishValue(value[finishKey]);
-      if (value[finishKey] == 'galv') {
-        setInternalColorValue('GV');
-      } else if (value[finishKey] != 'galv' && internalColorValue == 'GV') {
-        setInternalColorValue('NC');
-      }
+      // if (value[finishKey] == 'galv') {
+      //   setInternalColorValue('GV');
+      // } else if (value[finishKey] != 'galv' && internalColorValue == 'GV') {
+      //   setInternalColorValue('NC');
+      // }
     }
   }, [value[finishKey]]);
 

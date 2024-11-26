@@ -4,6 +4,14 @@ import ReusableToggle from './ReusableToggle';
 import {
   masterColorList,
   PBS_26_PBR,
+  PBS_24_SSQ,
+  PBS_26_FWQ,
+  TM_24_MS200,
+  TM_26_PBR,
+  TM_24_PBR,
+  TM_26_CORR,
+  TM_24_CORR,
+  MBCI_24_DLOK,
   PBS_PBR,
   PBS_SSQ,
   PBS_FWQ,
@@ -60,19 +68,19 @@ const ReusableColorSelect = ({
   };
 
   const colorMap = {
-    pbr: { 26: PBS_PBR, 24: TM_Kynar500 },
-    pbrRev: { 26: PBS_PBR, 24: TM_Kynar500 },
-    ssq: { 24: PBS_SSQ },
-    flat: { 26: PBS_FWQ },
-    ms200: { 24: TM_Kynar500 },
-    pbrDrip: { 26: TM_Armorteck, 24: TM_Kynar500 },
-    hr34: { 26: TM_Armorteck, 24: TM_Kynar500 },
-    corr: { 26: TM_Armorteck, 24: TM_Kynar500 },
-    tuff: { 29: TM_Armorteck },
-    doubleLok: { 24: MBCI_Signature300 },
-    ultraDek: { 24: MBCI_Signature300 },
-    battenLok: { 24: MBCI_Signature300 },
-    superLok: { 24: MBCI_Signature300 },
+    pbr: { 26: PBS_26_PBR, 24: TM_24_PBR },
+    pbrRev: { 26: PBS_26_PBR, 24: TM_24_PBR },
+    ssq: { 24: PBS_24_SSQ },
+    flat: { 26: PBS_26_FWQ },
+    ms200: { 24: TM_24_MS200 },
+    pbrDrip: { 26: TM_26_PBR, 24: TM_24_PBR },
+    hr34: { 26: TM_26_PBR, 24: TM_24_PBR },
+    corr: { 26: TM_26_CORR, 24: TM_24_CORR },
+    tuff: { 29: TM_26_PBR },
+    doubleLok: { 24: MBCI_24_DLOK },
+    ultraDek: { 24: MBCI_24_DLOK },
+    battenLok: { 24: MBCI_24_DLOK },
+    superLok: { 24: MBCI_24_DLOK },
   };
 
   const handleColorSelect = (colorId) => {
@@ -86,125 +94,96 @@ const ReusableColorSelect = ({
   };
 
   const getTextContract = (color) => {
-    const r = parseInt(color.substring(0, 2), 16);
-    const g = parseInt(color.substring(2, 4), 16);
-    const b = parseInt(color.substring(4, 6), 16);
+    const r = parseInt(color.toString().substring(0, 2), 16);
+    const g = parseInt(color.toString().substring(2, 4), 16);
+    const b = parseInt(color.toString().substring(4, 6), 16);
     const brightness = Math.round((r * 299 + g * 587 + b * 114) / 1000);
     return brightness > 125 ? '#181818' : '#fafafa';
+  };
+
+  const showColorGroups = (group) => {
+    const groupLabel =
+      group == 'premiumColors'
+        ? 'Premium Colors'
+        : group == 'specialOrderColors'
+          ? 'Specialty Colors*'
+          : group == 'standardColors'
+            ? 'Standard Colors'
+            : '';
+    const groupSubLabel =
+      group == 'specialOrderColors' ? ' (subject to availability)' : '';
+
+    return (
+      <>
+        {groupLabel != '' && colorMap[panel][gauge][group].length > 0 && (
+          <h4>
+            {groupLabel}
+            {groupSubLabel != '' && (
+              <small>
+                <em>{groupSubLabel}</em>
+              </small>
+            )}
+          </h4>
+        )}
+        {colorMap[panel][gauge][group].length > 0 && (
+          <div className="buttonGroup" style={{ width: '100%' }}>
+            {colorMap[panel][gauge][group].map((colorId, index) => (
+              <div
+                key={index}
+                className={`buttonWrapper ${value == colorId ? 'selected' : ''}`}
+              >
+                <button
+                  type="button"
+                  style={{
+                    backgroundColor: `#${masterColorList.filter((color) => color.id == colorId).map((color) => color.color)}`,
+                    color: `${getTextContract(masterColorList.filter((color) => color.id == colorId).map((color) => color.color))}`,
+                  }}
+                  onClick={() => handleColorSelect(colorId)}
+                  onMouseEnter={() =>
+                    setHoverColor(
+                      masterColorList
+                        .filter((color) => color.id == colorId)
+                        .map((color) => color.label)
+                    )
+                  }
+                  onMouseLeave={() =>
+                    setHoverColor(
+                      masterColorList
+                        .filter((color) => color.id == value)
+                        .map((color) => color.label)
+                    )
+                  }
+                >
+                  {(showColorNames || group == 'categoryColors') &&
+                    masterColorList
+                      .filter((color) => color.id == colorId)
+                      .map((color) => color.label)}
+                </button>
+              </div>
+            ))}
+            {group == 'categoryColors' && (
+              <ReusableToggle
+                id="colorNameToggle"
+                checked={showColorNames}
+                onChange={(e) => setShowColorNames(!showColorNames)}
+                label="Show Names"
+                className="prim right"
+              />
+            )}
+          </div>
+        )}
+      </>
+    );
   };
 
   return (
     <div className="dialog-overlay">
       <div className="dialog-content">
         <h3>{colorTitleMap[panel][gauge]}</h3>
-        <div className="buttonGroup" style={{ width: '100%' }}>
-          {colorMap[panel][gauge]
-            .filter((color) => color.optionGroup == 'Category Colors')
-            .map((color) => (
-              <div
-                key={color.id}
-                className={`buttonWrapper ${value == color.id ? 'selected' : ''}`}
-              >
-                <button
-                  type="button"
-                  style={{
-                    backgroundColor: `#${color.color}`,
-                    color: `${getTextContract(color.color)}`,
-                  }}
-                  onClick={() => handleColorSelect(color.id)}
-                  onMouseEnter={() => setHoverColor(color.label)}
-                  onMouseLeave={() =>
-                    setHoverColor(
-                      masterColorList
-                        .filter((color) => color.id == value)
-                        .map((color) => color.label)
-                    )
-                  }
-                >
-                  {color.label}
-                </button>
-              </div>
-            ))}
-          <ReusableToggle
-            id="colorNameToggle"
-            checked={showColorNames}
-            onChange={(e) => setShowColorNames(!showColorNames)}
-            label="Show Names"
-            className="prim right"
-          />
-        </div>
-
-        <h4>Standard Colors</h4>
-        <div className="buttonGroup">
-          {colorMap[panel][gauge]
-            .filter(
-              (color) =>
-                color.optionGroup != 'Category Colors' &&
-                color.optionGroup != 'Premium Colors'
-            )
-            .map((color) => (
-              <div
-                key={color.id}
-                className={`buttonWrapper ${value == color.id ? 'selected' : ''}`}
-              >
-                <button
-                  type="button"
-                  style={{
-                    backgroundColor: `#${color.color}`,
-                    color: `${getTextContract(color.color)}`,
-                  }}
-                  onClick={() => handleColorSelect(color.id)}
-                  onMouseEnter={() => setHoverColor(color.label)}
-                  onMouseLeave={() =>
-                    setHoverColor(
-                      masterColorList
-                        .filter((color) => color.id == value)
-                        .map((color) => color.label)
-                    )
-                  }
-                >
-                  {showColorNames ? color.label : ''}
-                </button>
-              </div>
-            ))}
-        </div>
-        {colorMap[panel][gauge].filter(
-          (color) => color.optionGroup == 'Premium Colors'
-        ).length > 0 && (
-          <>
-            <h4>Premium Colors</h4>
-            <div className="buttonGroup">
-              {colorMap[panel][gauge]
-                .filter((color) => color.optionGroup == 'Premium Colors')
-                .map((color) => (
-                  <div
-                    key={color.id}
-                    className={`buttonWrapper ${value == color.id ? 'selected' : ''}`}
-                  >
-                    <button
-                      type="button"
-                      style={{
-                        backgroundColor: `#${color.color}`,
-                        color: `${getTextContract(color.color)}`,
-                      }}
-                      onClick={() => handleColorSelect(color.id)}
-                      onMouseEnter={() => setHoverColor(color.label)}
-                      onMouseLeave={() =>
-                        setHoverColor(
-                          masterColorList
-                            .filter((color) => color.id == value)
-                            .map((color) => color.label)
-                        )
-                      }
-                    >
-                      {showColorNames ? color.label : ''}
-                    </button>
-                  </div>
-                ))}
-            </div>
-          </>
-        )}
-
+        {showColorGroups('categoryColors')}
+        {showColorGroups('standardColors')}
+        {showColorGroups('specialOrderColors')}
+        {showColorGroups('premiumColors')}
         <div className="divider" style={{ width: '100%' }}></div>
         <div className="dialog-buttons">
           <div>{hoverColor}</div>
