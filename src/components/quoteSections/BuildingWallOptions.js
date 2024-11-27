@@ -53,7 +53,7 @@ const BuildingWallOptions = ({
                   end: '',
                   height: '',
                   wallLinerPanelType: 'pbr',
-                  wallLinerPanelGauge: '26',
+                  wallLinerPanelGauge: 26,
                   wallLinerPanelFinish: 'painted',
                   wallLinerPanelColor: 'NC',
                   wallLinerTrim: {
@@ -83,7 +83,7 @@ const BuildingWallOptions = ({
                   height: '',
                   panelOption: 'break',
                   wainscotPanelType: 'pbr',
-                  wainscotPanelGauge: '26',
+                  wainscotPanelGauge: 26,
                   wainscotPanelFinish: 'painted',
                   wainscotPanelColor: 'NC',
                   wainscotTrim: {
@@ -164,14 +164,14 @@ const BuildingWallOptions = ({
                   endBay: '',
                   elevation: '',
                   addColumns: false,
-                  roofPanelType: 'pbr',
-                  roofPanelGauge: '26',
-                  roofPanelFinish: 'painted',
-                  roofPanelColor: 'NC',
-                  soffitPanelType: 'pbr',
-                  soffitPanelGauge: '26',
-                  soffitPanelFinish: 'painted',
-                  soffitPanelColor: 'NC',
+                  canopyRoofPanelType: 'pbr',
+                  canopyRoofPanelGauge: 26,
+                  canopyRoofPanelFinish: 'painted',
+                  canopyRoofPanelColor: 'NC',
+                  canopySoffitPanelType: 'pbr',
+                  canopySoffitPanelGauge: 26,
+                  canopySoffitPanelFinish: 'painted',
+                  canopySoffitPanelColor: 'NC',
                 },
               ],
             }
@@ -433,8 +433,7 @@ const BuildingWallOptions = ({
 
           <div className="divider offOnLaptop"></div>
           <ReusablePanel
-            name="Wall"
-            valueKey="wall"
+            name="wall"
             label="Wall"
             bldg={activeBuilding}
             value={values.buildings[activeBuilding]}
@@ -460,8 +459,7 @@ const BuildingWallOptions = ({
                 }
               >
                 <ReusablePanel
-                  name="FrontWall"
-                  valueKey="frontWall"
+                  name="frontWall"
                   label="Front Sidewall"
                   bldg={activeBuilding}
                   value={values.buildings[activeBuilding]}
@@ -500,8 +498,7 @@ const BuildingWallOptions = ({
                 }
               >
                 <ReusablePanel
-                  name="BackWall"
-                  valueKey="backWall"
+                  name="backWall"
                   label="Back Sidewall"
                   bldg={activeBuilding}
                   value={values.buildings[activeBuilding]}
@@ -542,8 +539,7 @@ const BuildingWallOptions = ({
                 <>
                   <div className="grid">
                     <ReusablePanel
-                      name="OuterLeftWall"
-                      valueKey="outerLeftWall"
+                      name="outerLeftWall"
                       label="Outer Left Endwall"
                       bldg={activeBuilding}
                       value={values.buildings[activeBuilding]}
@@ -583,8 +579,7 @@ const BuildingWallOptions = ({
                 )}
               <div className="grid">
                 <ReusablePanel
-                  name="LeftWall"
-                  valueKey="leftWall"
+                  name="leftWall"
                   label="Left Endwall"
                   bldg={activeBuilding}
                   value={values.buildings[activeBuilding]}
@@ -621,8 +616,7 @@ const BuildingWallOptions = ({
               )}
               <div className="grid">
                 <ReusablePanel
-                  name="RightWall"
-                  valueKey="rightWall"
+                  name="rightWall"
                   label="Right Endwall"
                   bldg={activeBuilding}
                   value={values.buildings[activeBuilding]}
@@ -656,8 +650,7 @@ const BuildingWallOptions = ({
                   <div className="divider offOnTablet"></div>
                   <div className="grid">
                     <ReusablePanel
-                      name="OuterRightWall"
-                      valueKey="outerRightWall"
+                      name="outerRightWall"
                       label="Outer Right Endwall"
                       bldg={activeBuilding}
                       value={values.buildings[activeBuilding]}
@@ -853,8 +846,7 @@ const BuildingWallOptions = ({
                 <div className="grid2">
                   <div className="onLaptop"></div>
                   <ReusablePanel
-                    name="WallLiner"
-                    valueKey="wallLiner"
+                    name="wallLiner"
                     label="Liner"
                     bldg={activeBuilding}
                     idx={activeWallLinerPanel}
@@ -1075,8 +1067,7 @@ const BuildingWallOptions = ({
                 <div className="grid2">
                   <div className="onLaptop"></div>
                   <ReusablePanel
-                    name="Wainscot"
-                    valueKey="wainscot"
+                    name="wainscot"
                     label="Wainscot"
                     bldg={activeBuilding}
                     idx={activeWainscot}
@@ -1703,8 +1694,7 @@ const BuildingWallOptions = ({
             <div className="divider onDesktop"></div>
             <div className="grid2 alignTop">
               <ReusablePanel
-                name="CanopyRoof"
-                valueKey="roof"
+                name="canopyRoof"
                 label="Roof"
                 bldg={activeBuilding}
                 idx={activeCanopy}
@@ -1722,8 +1712,7 @@ const BuildingWallOptions = ({
               />
               <div className="divider offOnLaptop"></div>
               <ReusablePanel
-                name="CanopySoffit"
-                valueKey="soffit"
+                name="canopySoffit"
                 label="Soffit"
                 bldg={activeBuilding}
                 idx={activeCanopy}

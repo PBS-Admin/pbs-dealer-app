@@ -809,34 +809,44 @@ label:has(.tooltip.left) {
   justify-content: space-around;
 }
 
-.dialog-content:has(.buttonGroup) {
+.dialog-content:has(.colorGroups) {
   align-items: flex-start;
-  padding: 1em 3em;
+  padding: 1em 1em 1em 3em;
 }
 
-.dialog-content:has(.buttonGroup) h3 {
+.dialog-content:has(.colorGroups) h3 {
   color: var(--dark-blue);
   align-self: center;
 }
 
-.dialog-content .buttonGroup {
+.colorGroups {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  gap: 0.75em;
+  padding: 0 2em 0 0;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.colorGroups .buttonGroup {
   display: flex;
   gap: 2px;
   flex-wrap: wrap;
   max-width: 500px;
 }
 
-.dialog-content .buttonWrapper {
+.colorGroups .buttonWrapper {
   padding: 4px;
 }
 
-.dialog-content .buttonWrapper.selected {
+.colorGroups .buttonWrapper.selected {
   padding: 2px;
   border: 2px solid var(--dark-blue);
   border-radius: 8px;
 }
 
-.dialog-content .buttonGroup button {
+.colorGroups .buttonGroup button {
   min-width: 40px;
   min-height: 40px;
   border: 1px solid var(--gray);

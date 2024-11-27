@@ -228,36 +228,36 @@ export default function ClientQuote({
           outerRightBaseCondition: 'angle',
           purlinSpacing: 'default',
           roofPanelType: 'pbr',
-          roofPanelGauge: '26',
+          roofPanelGauge: 26,
           roofPanelFinish: 'painted',
           roofPanelColor: 'NC',
           wallPanelType: 'pbr',
-          wallPanelGauge: '26',
+          wallPanelGauge: 26,
           wallPanelFinish: 'painted',
           wallPanelColor: 'NC',
           allWallsSame: true,
           frontWallPanelType: 'pbr',
-          frontWallPanelGauge: '26',
+          frontWallPanelGauge: 26,
           frontWallPanelFinish: 'painted',
           frontWallPanelColor: 'NC',
           backWallPanelType: 'pbr',
-          backWallPanelGauge: '26',
+          backWallPanelGauge: 26,
           backWallPanelFinish: 'painted',
           backWallPanelColor: 'NC',
           outerLeftWallPanelType: 'pbr',
-          outerLeftWallPanelGauge: '26',
+          outerLeftWallPanelGauge: 26,
           outerLeftWallPanelFinish: 'painted',
           outerLeftWallPanelColor: 'NC',
           leftWallPanelType: 'pbr',
-          leftWallPanelGauge: '26',
+          leftWallPanelGauge: 26,
           leftWallPanelFinish: 'painted',
           leftWallPanelColor: 'NC',
           rightWallPanelType: 'pbr',
-          rightWallPanelGauge: '26',
+          rightWallPanelGauge: 26,
           rightWallPanelFinish: 'painted',
           rightWallPanelColor: 'NC',
           outerRightWallPanelType: 'pbr',
-          outerRightWallPanelGauge: '26',
+          outerRightWallPanelGauge: 26,
           outerRightWallPanelFinish: 'painted',
           outerRightWallPanelColor: 'NC',
           includeGutters: true,
@@ -282,16 +282,18 @@ export default function ClientQuote({
           backExtensionColumns: false,
           extensionInsulation: true,
           soffitPanelType: 'pbr',
-          soffitPanelGauge: '26',
+          soffitPanelGauge: 26,
           soffitPanelFinish: 'painted',
           soffitPanelColor: 'NC',
-          buildingTrim: {
+          roofTrim: {
             gable: { vendor: 'PBS', gauge: 26, color: 'NC' },
             eave: { vendor: 'PBS', gauge: 26, color: 'NC' },
             gutter: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            downspout: { vendor: 'PBS', gauge: 26, color: 'NC' },
+          },
+          wallTrim: {
             corner: { vendor: 'PBS', gauge: 26, color: 'NC' },
             jamb: { vendor: 'PBS', gauge: 26, color: 'NC' },
-            downspout: { vendor: 'PBS', gauge: 26, color: 'NC' },
             base: { vendor: 'PBS', gauge: 26, color: 'NC' },
           },
           canopies: [],
@@ -559,31 +561,21 @@ export default function ClientQuote({
   const handleColorSelect = (colorInfo) => {
     const { color, panelType, panelLocation, buildingIndex } = colorInfo;
 
-    console.log('cInfo: ', colorInfo);
-
     switch (panelType) {
-      case 'roof':
-        handleNestedChange(buildingIndex, 'roofPanelColor', color);
+      case 'partitionLeft':
+      case 'partitionRight':
+        handlePartitionChange(
+          buildingIndex,
+          panelLocation,
+          `${panelType}PanelColor`,
+          color
+        );
         break;
-      case 'wall':
-        if (panelLocation) {
-          handleNestedChange(
-            buildingIndex,
-            `${panelLocation}PanelColor`,
-            color
-          );
-        } else {
-          handleNestedChange(buildingIndex, 'wallPanelColor', color);
-        }
-        break;
-      case 'wainscot':
-        handleWainscotChange(buildingIndex, panelLocation, 'panelColor', color);
-        break;
-      case 'roofliner':
+      case 'roofLiner':
         handleRoofLinerPanelChange(
           buildingIndex,
           panelLocation,
-          'roofLinerPanelColor',
+          `${panelType}PanelColor`,
           color
         );
         break;
@@ -591,13 +583,29 @@ export default function ClientQuote({
         handleWallLinerPanelChange(
           buildingIndex,
           panelLocation,
-          'panelColor',
+          `${panelType}PanelColor`,
           color
         );
         break;
-      case 'soffit':
-        handleNestedChange(buildingIndex, 'soffitPanelColor', color);
+      case 'wainscot':
+        handleWainscotChange(
+          buildingIndex,
+          panelLocation,
+          `${panelType}PanelColor`,
+          color
+        );
         break;
+      case 'canopyRoof':
+      case 'canopySoffit':
+        handleCanopyChange(
+          buildingIndex,
+          panelLocation,
+          `${panelType}PanelColor`,
+          color
+        );
+        break;
+      default:
+        handleNestedChange(buildingIndex, `${panelType}PanelColor`, color);
     }
     setColorSelectInfo((prev) => ({ ...prev, isOpen: false }));
   };

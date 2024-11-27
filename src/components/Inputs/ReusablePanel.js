@@ -16,7 +16,6 @@ import {
 
 const ReusablePanel = ({
   name,
-  valueKey = name,
   label,
   bldg = '0',
   idx = '',
@@ -26,13 +25,13 @@ const ReusablePanel = ({
   disabled,
   colorClicked,
 }) => {
-  const panelKey = `${valueKey}PanelType`;
+  const panelKey = `${name}PanelType`;
 
-  const gaugeKey = `${valueKey}PanelGauge`;
+  const gaugeKey = `${name}PanelGauge`;
 
-  const finishKey = `${valueKey}PanelFinish`;
+  const finishKey = `${name}PanelFinish`;
 
-  const colorKey = `${valueKey}PanelColor`;
+  const colorKey = `${name}PanelColor`;
 
   const [internalPanelValue, setInternalPanelValue] = useState(
     value[panelKey] || ''
@@ -51,60 +50,60 @@ const ReusablePanel = ({
   );
 
   const panelMap = {
-    Roof: roofPanels,
-    Wall: wallPanels,
-    FrontWall: wallPanels,
-    BackWall: wallPanels,
-    OuterLeftWall: wallPanels,
-    LeftWall: wallPanels,
-    RightWall: wallPanels,
-    OuterRightWall: wallPanels,
-    Soffit: soffitPanels,
-    CanopyRoof: roofPanels,
-    CanopySoffit: soffitPanels,
-    PartitionLeft: wallPanels,
-    PartitionRight: wallPanels,
-    WallLiner: wallPanels,
-    RoofLiner: soffitPanels,
-    Wainscot: wallPanels,
+    roof: roofPanels,
+    wall: wallPanels,
+    frontWall: wallPanels,
+    backWall: wallPanels,
+    outerLeftWall: wallPanels,
+    leftWall: wallPanels,
+    rightWall: wallPanels,
+    outerRightWall: wallPanels,
+    soffit: soffitPanels,
+    canopyRoof: roofPanels,
+    canopySoffit: soffitPanels,
+    partitionLeft: wallPanels,
+    partitionRight: wallPanels,
+    wallLiner: wallPanels,
+    roofLiner: soffitPanels,
+    wainscot: wallPanels,
   };
 
   const gaugeMap = {
-    Roof: roofGauge,
-    Wall: wallGauge,
-    FrontWall: wallGauge,
-    BackWall: wallGauge,
-    OuterLeftWall: wallGauge,
-    LeftWall: wallGauge,
-    RightWall: wallGauge,
-    OuterRightWall: wallGauge,
-    Soffit: soffitGauge,
-    CanopyRoof: roofGauge,
-    CanopySoffit: soffitGauge,
-    PartitionLeft: wallGauge,
-    PartitionRight: wallGauge,
-    WallLiner: wallGauge,
-    RoofLiner: soffitGauge,
-    Wainscot: wallGauge,
+    roof: roofGauge,
+    wall: wallGauge,
+    frontWall: wallGauge,
+    backWall: wallGauge,
+    outerLeftWall: wallGauge,
+    leftWall: wallGauge,
+    rightWall: wallGauge,
+    outerRightWall: wallGauge,
+    soffit: soffitGauge,
+    canopyRoof: roofGauge,
+    canopySoffit: soffitGauge,
+    partitionLeft: wallGauge,
+    partitionRight: wallGauge,
+    wallLiner: wallGauge,
+    roofLiner: soffitGauge,
+    wainscot: wallGauge,
   };
 
   const finishMap = {
-    Roof: roofFinish,
-    Wall: wallFinish,
-    FrontWall: wallFinish,
-    BackWall: wallFinish,
-    OuterLeftWall: wallFinish,
-    LeftWall: wallFinish,
-    RightWall: wallFinish,
-    OuterRightWall: wallFinish,
-    Soffit: soffitFinish,
-    CanopyRoof: roofFinish,
-    CanopySoffit: soffitFinish,
-    PartitionLeft: wallFinish,
-    PartitionRight: wallFinish,
-    WallLiner: wallFinish,
-    RoofLiner: soffitFinish,
-    Wainscot: wallFinish,
+    roof: roofFinish,
+    wall: wallFinish,
+    frontWall: wallFinish,
+    backWall: wallFinish,
+    outerLeftWall: wallFinish,
+    leftWall: wallFinish,
+    rightWall: wallFinish,
+    outerRightWall: wallFinish,
+    soffit: soffitFinish,
+    canopyRoof: roofFinish,
+    canopySoffit: soffitFinish,
+    partitionLeft: wallFinish,
+    partitionRight: wallFinish,
+    wallLiner: wallFinish,
+    roofLiner: soffitFinish,
+    wainscot: wallFinish,
   };
 
   const selectedPanel = panelMap[name].find(
@@ -122,13 +121,13 @@ const ReusablePanel = ({
     return 'rgba(' + r + ', ' + g + ', ' + b + ', 0.5)';
   };
 
-  const getTextContract = (color) => {
-    const r = parseInt(color.substring(0, 2), 16);
-    const g = parseInt(color.substring(2, 4), 16);
-    const b = parseInt(color.substring(4, 6), 16);
-    const brightness = Math.round((r * 299 + g * 587 + b * 114) / 1000);
-    return brightness > 125 ? '#181818' : '#fafafa';
-  };
+  // const getTextContract = (color) => {
+  //   const r = parseInt(color.substring(0, 2), 16);
+  //   const g = parseInt(color.substring(2, 4), 16);
+  //   const b = parseInt(color.substring(4, 6), 16);
+  //   const brightness = Math.round((r * 299 + g * 587 + b * 114) / 1000);
+  //   return brightness > 125 ? '#181818' : '#fafafa';
+  // };
 
   useEffect(() => {
     if (value[panelKey] !== undefined && value[panelKey] != '') {
@@ -145,11 +144,6 @@ const ReusablePanel = ({
   useEffect(() => {
     if (value[finishKey] !== undefined && value[finishKey] != '') {
       setInternalFinishValue(value[finishKey]);
-      // if (value[finishKey] == 'galv') {
-      //   setInternalColorValue('GV');
-      // } else if (value[finishKey] != 'galv' && internalColorValue == 'GV') {
-      //   setInternalColorValue('NC');
-      // }
     }
   }, [value[finishKey]]);
 
@@ -175,11 +169,19 @@ const ReusablePanel = ({
     const newValue = e.target.value;
     setInternalFinishValue(newValue);
     onChange(e, finishKey);
+    console.log(e);
+    // if (newValue == 'galv') {
+    //   setInternalColorValue('GV');
+    //   // onChange(e, colorKey);
+    // } else if (newValue != 'galv' && internalColorValue == 'GV') {
+    //   // setInternalColorValue(value[colorKey]);
+    //   setInternalColorValue('NC');
+    // }
   };
 
   const handleColorClick = () => {
     colorClicked({
-      panelType: name.toLowerCase(),
+      panelType: name,
       panelLocation: idx,
       buildingIndex: bldg,
       gauge: internalGaugeValue,
@@ -241,12 +243,8 @@ const ReusablePanel = ({
                     backgroundColor: overlayColor(
                       colorData(internalColorValue).color
                     ),
-                    // color: getTextContract(colorData(internalColorValue).color),
                   }}
                 >
-                  {/* {masterColorList
-                    .filter((color) => color.id == internalColorValue)
-                    .map((color) => color.label)} */}
                   {colorData(internalColorValue).label}
                 </div>
               </div>

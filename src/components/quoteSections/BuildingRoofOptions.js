@@ -44,7 +44,7 @@ const BuildingRoofOptions = ({
                   end: '',
                   height: '',
                   roofLinerPanelType: 'pbr',
-                  roofLinerPanelGauge: '26',
+                  roofLinerPanelGauge: 26,
                   roofLinerPanelFinish: 'painted',
                   roofLinerPanelColor: 'NC',
                   roofLinerTrim: {
@@ -188,8 +188,7 @@ const BuildingRoofOptions = ({
           </div>
           <div className="divider offOnLaptop"></div>
           <ReusablePanel
-            name="Roof"
-            valueKey="roof"
+            name="roof"
             label="Roof"
             bldg={activeBuilding}
             value={values.buildings[activeBuilding]}
@@ -405,8 +404,7 @@ const BuildingRoofOptions = ({
 
           <div className="divider offOnLaptop"></div>
           <ReusablePanel
-            name="Soffit"
-            valueKey="soffit"
+            name="soffit"
             label="Soffit"
             bldg={activeBuilding}
             value={values.buildings[activeBuilding]}
@@ -569,8 +567,7 @@ const BuildingRoofOptions = ({
               <div className="grid2">
                 <div className="onLaptop"></div>
                 <ReusablePanel
-                  name="RoofLiner"
-                  valueKey="roofLiner"
+                  name="roofLiner"
                   label="Liner"
                   bldg={activeBuilding}
                   idx={activeRoofLinerPanel}

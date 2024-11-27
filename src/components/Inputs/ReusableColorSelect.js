@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import ReusableToggle from './ReusableToggle';
 import {
   masterColorList,
@@ -101,89 +101,75 @@ const ReusableColorSelect = ({
     return brightness > 125 ? '#181818' : '#fafafa';
   };
 
-  const showColorGroups = (group) => {
-    const groupLabel =
-      group == 'premiumColors'
-        ? 'Premium Colors'
-        : group == 'specialOrderColors'
-          ? 'Specialty Colors*'
-          : group == 'standardColors'
-            ? 'Standard Colors'
-            : '';
-    const groupSubLabel =
-      group == 'specialOrderColors' ? ' (subject to availability)' : '';
-
-    return (
-      <>
-        {groupLabel != '' && colorMap[panel][gauge][group].length > 0 && (
-          <h4>
-            {groupLabel}
-            {groupSubLabel != '' && (
-              <small>
-                <em>{groupSubLabel}</em>
-              </small>
-            )}
-          </h4>
-        )}
-        {colorMap[panel][gauge][group].length > 0 && (
-          <div className="buttonGroup" style={{ width: '100%' }}>
-            {colorMap[panel][gauge][group].map((colorId, index) => (
-              <div
-                key={index}
-                className={`buttonWrapper ${value == colorId ? 'selected' : ''}`}
-              >
-                <button
-                  type="button"
-                  style={{
-                    backgroundColor: `#${masterColorList.filter((color) => color.id == colorId).map((color) => color.color)}`,
-                    color: `${getTextContract(masterColorList.filter((color) => color.id == colorId).map((color) => color.color))}`,
-                  }}
-                  onClick={() => handleColorSelect(colorId)}
-                  onMouseEnter={() =>
-                    setHoverColor(
-                      masterColorList
-                        .filter((color) => color.id == colorId)
-                        .map((color) => color.label)
-                    )
-                  }
-                  onMouseLeave={() =>
-                    setHoverColor(
-                      masterColorList
-                        .filter((color) => color.id == value)
-                        .map((color) => color.label)
-                    )
-                  }
-                >
-                  {(showColorNames || group == 'categoryColors') &&
-                    masterColorList
-                      .filter((color) => color.id == colorId)
-                      .map((color) => color.label)}
-                </button>
-              </div>
-            ))}
-            {group == 'categoryColors' && (
-              <ReusableToggle
-                id="colorNameToggle"
-                checked={showColorNames}
-                onChange={(e) => setShowColorNames(!showColorNames)}
-                label="Show Names"
-                className="prim right"
-              />
-            )}
-          </div>
-        )}
-      </>
-    );
-  };
-
   return (
     <div className="dialog-overlay">
       <div className="dialog-content">
         <h3>{colorTitleMap[panel][gauge]}</h3>
-        {showColorGroups('categoryColors')}
-        {showColorGroups('standardColors')}
-        {showColorGroups('specialOrderColors')}
-        {showColorGroups('premiumColors')}
+        <div className="colorGroups">
+          {colorMap[panel][gauge].map((group, groupIdx) => (
+            <Fragment key={groupIdx}>
+              {group.colors?.length > 0 && (
+                <>
+                  {group.label != '' && (
+                    <h4>
+                      {group.label}
+                      {group.label.includes('*') && (
+                        <small>
+                          <em> (subject to availability)</em>
+                        </small>
+                      )}
+                    </h4>
+                  )}
+                  <div className="buttonGroup" style={{ width: '100%' }}>
+                    {group.colors.map((colorId, colorIdx) => (
+                      <div
+                        key={colorIdx}
+                        className={`buttonWrapper ${value == colorId ? 'selected' : ''}`}
+                      >
+                        <button
+                          type="button"
+                          style={{
+                            backgroundColor: `#${masterColorList.filter((color) => color.id == colorId).map((color) => color.color)}`,
+                            color: `${getTextContract(masterColorList.filter((color) => color.id == colorId).map((color) => color.color))}`,
+                          }}
+                          onClick={() => handleColorSelect(colorId)}
+                          onMouseEnter={() =>
+                            setHoverColor(
+                              masterColorList
+                                .filter((color) => color.id == colorId)
+                                .map((color) => color.label)
+                            )
+                          }
+                          onMouseLeave={() =>
+                            setHoverColor(
+                              masterColorList
+                                .filter((color) => color.id == value)
+                                .map((color) => color.label)
+                            )
+                          }
+                        >
+                          {(showColorNames || group.id == 'categoryColors') &&
+                            masterColorList
+                              .filter((color) => color.id == colorId)
+                              .map((color) => color.label)}
+                        </button>
+                      </div>
+                    ))}
+                    {group.id == 'categoryColors' && (
+                      <ReusableToggle
+                        id="colorNameToggle"
+                        checked={showColorNames}
+                        onChange={(e) => setShowColorNames(!showColorNames)}
+                        label="Show Names"
+                        className="prim right"
+                      />
+                    )}
+                  </div>
+                </>
+              )}
+            </Fragment>
+          ))}
+        </div>
         <div className="divider" style={{ width: '100%' }}></div>
         <div className="dialog-buttons">
           <div>{hoverColor}</div>
