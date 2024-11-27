@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import logo from '../../../public/images/pbslogo.png';
+import ReusableToggle from '@/components/Inputs/ReusableToggle';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faArrowLeft,
@@ -260,6 +261,95 @@ export default async function Global() {
                 <FontAwesomeIcon icon={faPlus} />
               </button>
             </div>
+          </div>
+        </section>
+        <br />
+        <section className="card">
+          <header className="cardHeader">
+            <h3>Toggle Buttons</h3>
+          </header>
+          <div
+            className="cardBox"
+            style={{ display: 'flex', 'flex-flow': 'wrap', gap: '.5em' }}
+          >
+            <ReusableToggle
+              id="toggle"
+              checked={false}
+              label="Toggle Off"
+              className="prim"
+            />
+            &nbsp;
+            <ReusableToggle
+              id="toggle"
+              checked={true}
+              label="Toggle On"
+              className="prim"
+            />
+            <ReusableToggle
+              id="toggle"
+              checked={false}
+              label="Toggle Off"
+              className="sec"
+            />
+            &nbsp;
+            <ReusableToggle
+              id="toggle"
+              checked={true}
+              label="Toggle On"
+              className="sec"
+            />
+            <ReusableToggle
+              id="toggle"
+              checked={false}
+              label="Toggle Off"
+              className="accent"
+            />
+            &nbsp;
+            <ReusableToggle
+              id="toggle"
+              checked={true}
+              label="Toggle On"
+              className="accent"
+            />
+            <ReusableToggle
+              id="toggle"
+              checked={false}
+              label="Toggle Off"
+              className="success"
+            />
+            &nbsp;
+            <ReusableToggle
+              id="toggle"
+              checked={true}
+              label="Toggle On"
+              className="success"
+            />
+            <ReusableToggle
+              id="toggle"
+              checked={false}
+              label="Toggle Off"
+              className="reject"
+            />
+            &nbsp;
+            <ReusableToggle
+              id="toggle"
+              checked={true}
+              label="Toggle On"
+              className="reject"
+            />
+            <ReusableToggle
+              id="toggle"
+              checked={false}
+              label="Toggle Off"
+              className="nuetral"
+            />
+            &nbsp;
+            <ReusableToggle
+              id="toggle"
+              checked={true}
+              label="Toggle On"
+              className="nuetral"
+            />
           </div>
         </section>
       </div>

@@ -64,7 +64,6 @@ export default function ClientQuote({
   const [currentQuote, setCurrentQuote] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [buildingToDelete, setBuildingToDelete] = useState(null);
-  const [isColorOpen, setIsColorOpen] = useState(false);
 
   const [selectedSalesPerson, setSelectedSalesPerson] = useState(salesPerson);
   const [selectedProjectManager, setSelectedProjectManager] =
@@ -76,6 +75,18 @@ export default function ClientQuote({
   const [sourceBuildingIndex, setSourceBuildingIndex] = useState(0);
   const [isQuoteDeleteDialogOpen, setIsQuoteDeleteDialogOpen] = useState(false);
 
+  const [isColorOpen, setIsColorOpen] = useState(false);
+  const [activeColor, setActiveColor] = useState('NC');
+  const [colorSelectInfo, setColorSelectInfo] = useState({
+    isOpen: false,
+    panelType: '',
+    panelLocation: '',
+    buildingIndex: 0,
+    gauge: '',
+    panel: '',
+    color: '',
+  });
+
   const [saveStatus, setSaveStatus] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -85,6 +96,30 @@ export default function ClientQuote({
   const submitted = !!(progress & 0b00000100);
   const inChecking = !!(progress & 0b00010000);
   const locked = (submitted || inChecking) && permission < 4;
+
+  /*
+  Progress Bits:
+    00 00 00 00
+    ││ ││ ││ │└─ Started     -Quote was started and saved
+    ││ ││ ││ └── InHouse     -Quote was price from MBS, never submitted to PBS
+    ││ ││ │└──── Submitted   -Quote was submitted to PBS for estimating ──────┐
+    ││ ││ └───── Rejected    -Quote was returned to dealer with fixes needed ─┴── When turning on Rejected need to turn off Submitted but leave Rejected on when resubmitting
+    ││ │└─────── InChecking  -Quote was estimated and is being checked
+    ││ └──────── Returned    -Quote was finished by estimating and returned to dealer
+    │└────────── Completed   -Quote was Closed Out
+    └─────────── OPEN
+
+  Status Bits:
+    00 00 00 00
+    ││ ││ ││ │└─ Active      -Quote is active and not deleted
+    ││ ││ ││ └── Canceled    -Quote is canceled
+    ││ ││ │└──── OnHold      -Quote is on hold
+    ││ ││ └───── Archived    -Quote is archived
+    ││ │└─────── Sold        -Quote is sold and now a job
+    ││ └──────── OPEN
+    │└────────── OPEN
+    └─────────── OPEN
+  */
 
   // Hooks
   const {
@@ -193,36 +228,36 @@ export default function ClientQuote({
           outerRightBaseCondition: 'angle',
           purlinSpacing: 'default',
           roofPanelType: 'pbr',
-          roofPanelGauge: '26',
+          roofPanelGauge: 26,
           roofPanelFinish: 'painted',
           roofPanelColor: 'NC',
           wallPanelType: 'pbr',
-          wallPanelGauge: '26',
+          wallPanelGauge: 26,
           wallPanelFinish: 'painted',
           wallPanelColor: 'NC',
           allWallsSame: true,
           frontWallPanelType: 'pbr',
-          frontWallPanelGauge: '26',
+          frontWallPanelGauge: 26,
           frontWallPanelFinish: 'painted',
           frontWallPanelColor: 'NC',
           backWallPanelType: 'pbr',
-          backWallPanelGauge: '26',
+          backWallPanelGauge: 26,
           backWallPanelFinish: 'painted',
           backWallPanelColor: 'NC',
           outerLeftWallPanelType: 'pbr',
-          outerLeftWallPanelGauge: '26',
+          outerLeftWallPanelGauge: 26,
           outerLeftWallPanelFinish: 'painted',
           outerLeftWallPanelColor: 'NC',
           leftWallPanelType: 'pbr',
-          leftWallPanelGauge: '26',
+          leftWallPanelGauge: 26,
           leftWallPanelFinish: 'painted',
           leftWallPanelColor: 'NC',
           rightWallPanelType: 'pbr',
-          rightWallPanelGauge: '26',
+          rightWallPanelGauge: 26,
           rightWallPanelFinish: 'painted',
           rightWallPanelColor: 'NC',
           outerRightWallPanelType: 'pbr',
-          outerRightWallPanelGauge: '26',
+          outerRightWallPanelGauge: 26,
           outerRightWallPanelFinish: 'painted',
           outerRightWallPanelColor: 'NC',
           includeGutters: true,
@@ -247,8 +282,20 @@ export default function ClientQuote({
           backExtensionColumns: false,
           extensionInsulation: true,
           soffitPanelType: 'pbr',
-          soffitPanelGauge: '26',
+          soffitPanelGauge: 26,
           soffitPanelFinish: 'painted',
+          soffitPanelColor: 'NC',
+          roofTrim: {
+            gable: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            eave: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            gutter: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            downspout: { vendor: 'PBS', gauge: 26, color: 'NC' },
+          },
+          wallTrim: {
+            corner: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            jamb: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            base: { vendor: 'PBS', gauge: 26, color: 'NC' },
+          },
           canopies: [],
           partitions: [],
           wallLinerPanels: [],
@@ -500,12 +547,67 @@ export default function ClientQuote({
     }
   };
 
-  const openColorDialog = () => {
-    setIsColorOpen(true);
+  const openColorDialog = (info) => {
+    setColorSelectInfo({
+      isOpen: true,
+      ...info,
+    });
   };
 
   const closeColorDialog = () => {
     setIsColorOpen(false);
+  };
+
+  const handleColorSelect = (colorInfo) => {
+    const { color, panelType, panelLocation, buildingIndex } = colorInfo;
+
+    switch (panelType) {
+      case 'partitionLeft':
+      case 'partitionRight':
+        handlePartitionChange(
+          buildingIndex,
+          panelLocation,
+          `${panelType}PanelColor`,
+          color
+        );
+        break;
+      case 'roofLiner':
+        handleRoofLinerPanelChange(
+          buildingIndex,
+          panelLocation,
+          `${panelType}PanelColor`,
+          color
+        );
+        break;
+      case 'wallLiner':
+        handleWallLinerPanelChange(
+          buildingIndex,
+          panelLocation,
+          `${panelType}PanelColor`,
+          color
+        );
+        break;
+      case 'wainscot':
+        handleWainscotChange(
+          buildingIndex,
+          panelLocation,
+          `${panelType}PanelColor`,
+          color
+        );
+        break;
+      case 'canopyRoof':
+      case 'canopySoffit':
+        handleCanopyChange(
+          buildingIndex,
+          panelLocation,
+          `${panelType}PanelColor`,
+          color
+        );
+        break;
+      default:
+        handleNestedChange(buildingIndex, `${panelType}PanelColor`, color);
+    }
+    setColorSelectInfo((prev) => ({ ...prev, isOpen: false }));
   };
 
   // Checking for screen width to conditionally render DOM elements
@@ -1186,12 +1288,17 @@ export default function ClientQuote({
         message={`Are you sure you want to delete this whole quote?`}
       />
       <ReusableColorSelect
-        isOpen={isColorOpen}
-        onClose={closeColorDialog}
-        // onClick={}
-        // panel={}
-        // gauge={}
-        // value={}
+        isOpen={colorSelectInfo.isOpen}
+        onClose={() =>
+          setColorSelectInfo((prev) => ({ ...prev, isOpen: false }))
+        }
+        onColorSelect={handleColorSelect}
+        panel={colorSelectInfo.panel}
+        gauge={colorSelectInfo.gauge}
+        panelType={colorSelectInfo.panelType}
+        panelLocation={colorSelectInfo.panelLocation}
+        buildingIndex={colorSelectInfo.buildingIndex}
+        value={colorSelectInfo.color}
       />
       <ReusableLoader
         isOpen={saveStatus}

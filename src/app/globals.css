@@ -809,34 +809,48 @@ label:has(.tooltip.left) {
   justify-content: space-around;
 }
 
-.dialog-content:has(.buttonGroup) {
+.dialog-content:has(.colorGroups) {
   align-items: flex-start;
-  padding: 1em 3em;
+  padding: 1em 1em 1em 3em;
 }
 
-.dialog-content:has(.buttonGroup) h3 {
+.dialog-content:has(.colorGroups) h3 {
   color: var(--dark-blue);
   align-self: center;
 }
 
-.dialog-content .buttonGroup {
+.dialog-content:has(.colorGroups) .dialog-buttons div {
+  align-self: center;
+}
+
+.colorGroups {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  gap: 0.75em;
+  padding: 0 2em 0 0;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.colorGroups .buttonGroup {
   display: flex;
   gap: 2px;
   flex-wrap: wrap;
   max-width: 500px;
 }
 
-.dialog-content .buttonWrapper {
+.colorGroups .buttonWrapper {
   padding: 4px;
 }
 
-.dialog-content .buttonWrapper.selected {
+.colorGroups .buttonWrapper.selected {
   padding: 2px;
   border: 2px solid var(--dark-blue);
   border-radius: 8px;
 }
 
-.dialog-content .buttonGroup button {
+.colorGroups .buttonGroup button {
   min-width: 40px;
   min-height: 40px;
   border: 1px solid var(--gray);
@@ -846,27 +860,41 @@ label:has(.tooltip.left) {
 
 /* Global Toggle Styles */
 
+.toggleGroup {
+  margin: 10px 0 0 0;
+}
+
+.toggleGroup.large label {
+  font-size: 15px;
+  min-height: 20px;
+}
+
 .toggle {
   display: flex;
-  justify-content: space-around;
   gap: 8px;
   align-items: center;
+  margin-left: 8px;
+}
+
+.toggle:has(.wrapper.right) {
   margin-left: auto;
 }
 
 .toggle .wrapper {
   display: flex;
-  background-color: var(--light-gray);
-  border: 1px solid var(--gray);
+  background-color: var(--gray);
   position: relative;
-  width: 48px;
-  height: 24px;
-  border-radius: 12px;
+  width: 40px;
+  height: 20px;
+  min-height: 20px;
+  border-radius: 10px;
+  transition: 300ms;
 }
 
 .toggle label {
   cursor: pointer;
   font-size: 12px;
+  min-height: 15px;
 }
 
 .toggle input {
@@ -874,44 +902,45 @@ label:has(.tooltip.left) {
 }
 
 .toggle input + .toggleButton {
-  background-color: var(--gray);
+  background-color: var(--background-white);
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 9px;
   transition: 300ms;
 }
 
 .toggle input:checked + .toggleButton {
-  background-color: var(--dark-blue);
-  left: 26px;
+  left: 22px;
   transition: 300ms;
 }
 
-.toggle input:checked + .toggleButton.prim {
+.toggle .wrapper:has(input:checked),
+.toggle .wrapper.prim:has(input:checked) {
   background-color: var(--dark-blue);
+  transition: 300ms;
 }
 
-.toggle input:checked + .toggleButton.sec {
+.toggle .wrapper.sec:has(input:checked) {
   background-color: var(--blue);
 }
 
-.toggle input:checked + .toggleButton.accent {
+.toggle .wrapper.accent:has(input:checked) {
   background-color: var(--orange);
 }
 
-.toggle input:checked + .toggleButton.success {
+.toggle .wrapper.success:has(input:checked) {
   background-color: var(--green);
 }
 
-.toggle input:checked + .toggleButton.reject {
+.toggle .wrapper.reject:has(input:checked) {
   background-color: var(--red);
 }
 
-.toggle input:checked + .toggleButton.nuetral {
-  background-color: var(--gray);
+.toggle .wrapper.nuetral:has(input:checked) {
+  background-color: var(--dark-gray);
 }
 
 /* Global Card Styles */
@@ -935,6 +964,19 @@ label:has(.tooltip.left) {
   width: 90%;
   max-width: 280px;
   justify-self: center;
+  position: relative;
+}
+
+.imageOverlay {
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translate(-50%);
+  background-color: rgba(54, 101, 148, 0.5);
+  border-radius: 4px;
+  padding: 2px 8px;
+  color: var(--black);
+  white-space: nowrap;
 }
 
 /* Global Utility Styles */

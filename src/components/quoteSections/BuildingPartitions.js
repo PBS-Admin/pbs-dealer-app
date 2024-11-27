@@ -33,14 +33,26 @@ const BuildingPartitions = ({
           height: '',
           baySpacing: '',
           insulation: 'none',
-          leftPanelType: 'pbr',
-          leftPanelGauge: '26',
-          leftPanelFinish: 'painted',
-          leftPanelColor: 'NC',
-          rightPanelType: 'pbr',
-          rightPanelGauge: '26',
-          rightPanelFinish: 'painted',
-          rightPanelColor: 'NC',
+          partitionLeftPanelType: 'pbr',
+          partitionLeftPanelGauge: 26,
+          partitionLeftPanelFinish: 'painted',
+          partitionLeftPanelColor: 'NC',
+          partitionLeftTrim: {
+            corner: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            jamb: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            top: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            base: { vendor: 'PBS', gauge: 26, color: 'NC' },
+          },
+          partitionRightPanelType: 'pbr',
+          partitionRightPanelGauge: 26,
+          partitionRightPanelFinish: 'painted',
+          partitionRightPanelColor: 'NC',
+          partitionRightTrim: {
+            corner: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            jamb: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            top: { vendor: 'PBS', gauge: 26, color: 'NC' },
+            base: { vendor: 'PBS', gauge: 26, color: 'NC' },
+          },
         },
       ];
 
@@ -322,8 +334,7 @@ const BuildingPartitions = ({
             <div className="divider onDesktop"></div>
             <div className="grid2 alignTop">
               <ReusablePanel
-                name="PartitionLeft"
-                valueKey="left"
+                name="partitionLeft"
                 label="Left"
                 bldg={activeBuilding}
                 idx={activePartition}
@@ -343,8 +354,7 @@ const BuildingPartitions = ({
               />
               <div className="divider offOnLaptop"></div>
               <ReusablePanel
-                name="PartitionRight"
-                valueKey="right"
+                name="partitionRight"
                 label="Right"
                 bldg={activeBuilding}
                 idx={activePartition}

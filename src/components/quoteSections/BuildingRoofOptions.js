@@ -3,6 +3,7 @@ import ReusablePanel from '../Inputs/ReusablePanel';
 import ReusableSelect from '../Inputs/ReusableSelect';
 import ReusableInteger from '../Inputs/ReusableInteger';
 import ReusableLocation from '../Inputs/ReusableLocation';
+import ReusableToggle from '../Inputs/ReusableToggle';
 import FeetInchesInput from '../Inputs/FeetInchesInput';
 import RoofPitchInput from '../Inputs/RoofPitchInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -43,9 +44,12 @@ const BuildingRoofOptions = ({
                   end: '',
                   height: '',
                   roofLinerPanelType: 'pbr',
-                  roofLinerPanelGauge: '26',
+                  roofLinerPanelGauge: 26,
                   roofLinerPanelFinish: 'painted',
                   roofLinerPanelColor: 'NC',
+                  roofLinerTrim: {
+                    trim: { vendor: 'PBS', gauge: 26, color: 'NC' },
+                  },
                 },
               ],
             }
@@ -184,8 +188,7 @@ const BuildingRoofOptions = ({
           </div>
           <div className="divider offOnLaptop"></div>
           <ReusablePanel
-            name="Roof"
-            valueKey="roof"
+            name="roof"
             label="Roof"
             bldg={activeBuilding}
             value={values.buildings[activeBuilding]}
@@ -201,26 +204,20 @@ const BuildingRoofOptions = ({
 
         <h4>Gutters and Downspouts</h4>
         <div className="grid">
-          <div className="checkboxGroup">
-            <div className="checkRow">
-              <input
-                type="checkbox"
-                id={`buildingIncludeGutters-${activeBuilding}`}
-                name={`buildingIncludeGutters-${activeBuilding}`}
-                checked={values.buildings[activeBuilding].includeGutters}
-                onChange={(e) =>
-                  handleNestedChange(
-                    activeBuilding,
-                    'includeGutters',
-                    e.target.checked
-                  )
-                }
-                disabled={locked}
-              />
-              <label htmlFor={`buildingIncludeGutters-${activeBuilding}`}>
-                Include Gutters and Downspouts
-              </label>
-            </div>
+          <div className="toggleGroup">
+            <ReusableToggle
+              id={`buildingIncludeGutters-${activeBuilding}`}
+              checked={values.buildings[activeBuilding].includeGutters}
+              onChange={(e) =>
+                handleNestedChange(
+                  activeBuilding,
+                  'includeGutters',
+                  e.target.checked
+                )
+              }
+              label="Include Gutters and Downspouts"
+              className="prim"
+            />
           </div>
         </div>
       </section>
@@ -247,30 +244,20 @@ const BuildingRoofOptions = ({
               allowZero={true}
               disabled={locked}
             />
-            <div className="checkboxGroup">
-              <div className="checkRow">
-                <input
-                  type="checkbox"
-                  id={`buildingFrontExtensionColumns-${activeBuilding}`}
-                  name={`buildingFrontExtensionColumns-${activeBuilding}`}
-                  checked={
-                    values.buildings[activeBuilding].frontExtensionColumns
-                  }
-                  onChange={(e) =>
-                    handleNestedChange(
-                      activeBuilding,
-                      'frontExtensionColumns',
-                      e.target.checked
-                    )
-                  }
-                  disabled={locked}
-                />
-                <label
-                  htmlFor={`buildingFrontExtensionColumns-${activeBuilding}`}
-                >
-                  Add Columns
-                </label>
-              </div>
+            <div className="toggleGroup">
+              <ReusableToggle
+                id={`buildingFrontExtensionColumns-${activeBuilding}`}
+                checked={values.buildings[activeBuilding].frontExtensionColumns}
+                onChange={(e) =>
+                  handleNestedChange(
+                    activeBuilding,
+                    'frontExtensionColumns',
+                    e.target.checked
+                  )
+                }
+                label="Add Columns"
+                className="prim"
+              />
             </div>
             <div className="cardInput">
               <label htmlFor={`buildingFrontExtensionBays-${activeBuilding}`}>
@@ -309,30 +296,20 @@ const BuildingRoofOptions = ({
               allowZero={true}
               disabled={locked}
             />
-            <div className="checkboxGroup">
-              <div className="checkRow">
-                <input
-                  type="checkbox"
-                  id={`buildingBackExtensionColumns-${activeBuilding}`}
-                  name={`buildingBackExtensionColumns-${activeBuilding}`}
-                  checked={
-                    values.buildings[activeBuilding].backExtensionColumns
-                  }
-                  onChange={(e) =>
-                    handleNestedChange(
-                      activeBuilding,
-                      'backExtensionColumns',
-                      e.target.checked
-                    )
-                  }
-                  disabled={locked}
-                />
-                <label
-                  htmlFor={`buildingBackExtensionColumns-${activeBuilding}`}
-                >
-                  Add Columns
-                </label>
-              </div>
+            <div className="toggleGroup">
+              <ReusableToggle
+                id={`buildingBackExtensionColumns-${activeBuilding}`}
+                checked={values.buildings[activeBuilding].backExtensionColumns}
+                onChange={(e) =>
+                  handleNestedChange(
+                    activeBuilding,
+                    'backExtensionColumns',
+                    e.target.checked
+                  )
+                }
+                label="Add Columns"
+                className="prim"
+              />
             </div>
             <div className="cardInput">
               <label htmlFor={`buildingBackExtensionBays-${activeBuilding}`}>
@@ -427,8 +404,7 @@ const BuildingRoofOptions = ({
 
           <div className="divider offOnLaptop"></div>
           <ReusablePanel
-            name="Soffit"
-            valueKey="soffit"
+            name="soffit"
             label="Soffit"
             bldg={activeBuilding}
             value={values.buildings[activeBuilding]}
@@ -591,8 +567,7 @@ const BuildingRoofOptions = ({
               <div className="grid2">
                 <div className="onLaptop"></div>
                 <ReusablePanel
-                  name="RoofLiner"
-                  valueKey="roofLiner"
+                  name="roofLiner"
                   label="Liner"
                   bldg={activeBuilding}
                   idx={activeRoofLinerPanel}

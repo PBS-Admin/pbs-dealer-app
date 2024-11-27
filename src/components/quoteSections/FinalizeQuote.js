@@ -277,31 +277,66 @@ const FinalizeQuote = ({
   };
 
   const handleContract = useCallback(async () => {
-    // try {
-    // const isValid = await validateFields(fieldsToValidate, autoFillRules);
+    try {
+      // Fetch company data from database
+      const companyData = await fetch(
+        `/api/auth/company-data?company=${session.user.company}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-    // if (isValid) {
-    const pdfBytes = await createContract(values);
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
+      const response = await companyData.json();
+      const {
+        ID,
+        Name,
+        Terms,
+        Initials,
+        Line1,
+        Line2,
+        Line3,
+        Line4,
+        Line5,
+        Line6,
+        Line7,
+        Line8,
+      } = response.company;
 
-    window.open(url);
+      const contractData = {
+        ...values,
+        companyId: ID,
+        companyName: Name,
+        terms: Terms === null ? '' : JSON.parse(Terms),
+        initials: Initials === null ? '' : Initials,
+        line1: Line1 === null ? '' : Line1,
+        line2: Line2 === null ? '' : Line2,
+        line3: Line3 === null ? '' : Line3,
+        line4: Line4 === null ? '' : Line4,
+        line5: Line5 === null ? '' : Line5,
+        line6: Line6 === null ? '' : Line6,
+        line7: Line7 === null ? '' : Line7,
+        line8: Line8 === null ? '' : Line8,
+      };
 
-    // if (pdfBytes.success) {
-    //   // tasks here
-    //   showSuccessExport();
-    // } else {
-    //   showRejectExport();
-    //   console.log('Export failed');
-    // }
-    //   } else {
-    //     console.log(`Couldn't validate all fields`);
-    //   }
-    // } catch (error) {
-    //   console.error('Contract error: ', error);
-    //   showRejectExport();
-    // }
-  }, [validateFields, fieldsToValidate, autoFillRules, createContract, values]);
+      try {
+        const pdfBytes = await createContract(contractData);
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+
+        window.open(url);
+        showSuccessExport();
+      } catch (error) {
+        console.error('Contract create error: ', error);
+        showRejectExport();
+      }
+    } catch (error) {
+      console.error('Contract error: ', error);
+      showRejectExport();
+    }
+  }, [values, createContract]);
 
   const rsmOptions = useMemo(
     () => Object.entries(rsms).map(([id, name]) => name),
@@ -326,9 +361,7 @@ const FinalizeQuote = ({
                 Save Quote
               </button>
             )}
-            {quoteProgress & 0b100 ? (
-              <div></div>
-            ) : (
+            {!(quoteProgress & 0b100) && (
               <button
                 type="button"
                 className="accent"
