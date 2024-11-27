@@ -120,7 +120,10 @@ const ReusableColorSelect = ({
                       )}
                     </h4>
                   )}
-                  <div className="buttonGroup" style={{ width: '100%' }}>
+                  <div
+                    className="buttonGroup"
+                    style={{ width: '100%', marginBottom: '1px' }}
+                  >
                     {group.colors.map((colorId, colorIdx) => (
                       <div
                         key={colorIdx}

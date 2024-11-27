@@ -819,6 +819,10 @@ label:has(.tooltip.left) {
   align-self: center;
 }
 
+.dialog-content:has(.colorGroups) .dialog-buttons div {
+  align-self: center;
+}
+
 .colorGroups {
   display: flex;
   flex-flow: column nowrap;
