@@ -787,10 +787,6 @@ export default function ClientQuote({
             locked={locked}
           />
         )}
-        {/* Design Code Page */}
-        {/* {activeCard == 'design-code' && (
-          <DesignCodes values={values} handleChange={handleChange} />
-        )} */}
         {/* Building Project Page */}
         {activeCard == 'building-project' && (
           <section className="page">

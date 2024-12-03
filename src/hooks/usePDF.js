@@ -992,8 +992,9 @@ export function usePDF() {
       );
       textBoldLeft(
         page,
-        roofGauge.find((item) => item.id === values.buildings[i].roofPanelGauge)
-          .label,
+        roofGauge.find(
+          (item) => parseInt(item.id) === values.buildings[i].roofPanelGauge
+        ).label,
         260,
         currentY + textOffsetY,
         54
@@ -1141,7 +1142,7 @@ export function usePDF() {
         textBoldLeft(
           page,
           soffitGauge.find(
-            (item) => item.id === values.buildings[i].soffitPanelGauge
+            (item) => parseInt(item.id) === values.buildings[i].soffitPanelGauge
           ).label,
           260,
           currentY + textOffsetY,
@@ -1222,7 +1223,7 @@ export function usePDF() {
           textBoldLeft(
             page,
             soffitGauge.find(
-              (item) => item.id === bldgItems[k].roofLinerPanelGauge
+              (item) => parseInt(item.id) === bldgItems[k].roofLinerPanelGauge
             ).label,
             260,
             currentY + textOffsetY,
@@ -1489,7 +1490,7 @@ export function usePDF() {
           page,
           wallGauge.find(
             (item) =>
-              item.id ===
+              parseInt(item.id) ===
               values.buildings[i][`${wallsInBldg[j].id}WallPanelGauge`]
           ).label,
           260,
@@ -1603,7 +1604,7 @@ export function usePDF() {
             textBoldLeft(
               page,
               wallGauge.find(
-                (item) => item.id === bldgItems[k].wallLinerPanelGauge
+                (item) => parseInt(item.id) === bldgItems[k].wallLinerPanelGauge
               ).label,
               260,
               currentY + textOffsetY,
@@ -1721,16 +1722,19 @@ export function usePDF() {
             textLeft(page, 'Color:', 446, currentY + textOffsetY);
             textBoldLeft(
               page,
-              roofPanels.find((item) => item.id === bldgItems[k].roofPanelType)
-                .label,
+              roofPanels.find(
+                (item) => item.id === bldgItems[k].canopyRoofPanelType
+              ).label,
               90,
               currentY + textOffsetY,
               124
             );
             textBoldLeft(
               page,
-              roofGauge.find((item) => item.id === bldgItems[k].roofPanelGauge)
-                .label,
+              roofGauge.find(
+                (item) =>
+                  parseInt(item.id) === bldgItems[k].canopyRoofPanelGauge
+              ).label,
               260,
               currentY + textOffsetY,
               54
@@ -1738,7 +1742,7 @@ export function usePDF() {
             textBoldLeft(
               page,
               roofFinish.find(
-                (item) => item.id === bldgItems[k].roofPanelFinish
+                (item) => item.id === bldgItems[k].canopyRoofPanelFinish
               ).label,
               356,
               currentY + textOffsetY,
@@ -1747,7 +1751,7 @@ export function usePDF() {
             textBoldLeft(
               page,
               masterColorList.find(
-                (item) => item.id === bldgItems[k].roofPanelColor
+                (item) => item.id === bldgItems[k].canopyRoofPanelColor
               ).label,
               486,
               currentY + textOffsetY,
@@ -1763,7 +1767,7 @@ export function usePDF() {
             textBoldLeft(
               page,
               soffitPanels.find(
-                (item) => item.id === bldgItems[k].soffitPanelType
+                (item) => item.id === bldgItems[k].canopySoffitPanelType
               ).label,
               90,
               currentY + textOffsetY,
@@ -1772,7 +1776,8 @@ export function usePDF() {
             textBoldLeft(
               page,
               soffitGauge.find(
-                (item) => item.id === bldgItems[k].soffitPanelGauge
+                (item) =>
+                  parseInt(item.id) === bldgItems[k].canopySoffitPanelGauge
               ).label,
               260,
               currentY + textOffsetY,
@@ -1781,7 +1786,7 @@ export function usePDF() {
             textBoldLeft(
               page,
               soffitFinish.find(
-                (item) => item.id === bldgItems[k].soffitPanelFinish
+                (item) => item.id === bldgItems[k].canopySoffitPanelFinish
               ).label,
               356,
               currentY + textOffsetY,
@@ -1790,7 +1795,7 @@ export function usePDF() {
             textBoldLeft(
               page,
               masterColorList.find(
-                (item) => item.id === bldgItems[k].soffitPanelColor
+                (item) => item.id === bldgItems[k].canopySoffitPanelColor
               ).label,
               486,
               currentY + textOffsetY,
@@ -2017,7 +2022,7 @@ export function usePDF() {
             textBoldLeft(
               page,
               wallGauge.find(
-                (item) => item.id === bldgItems[k].wainscotPanelGauge
+                (item) => parseInt(item.id) === bldgItems[k].wainscotPanelGauge
               ).label,
               260,
               currentY + textOffsetY,

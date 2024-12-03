@@ -524,7 +524,7 @@ const BuildingRoofOptions = ({
                     disabled={locked}
                   />
                   <FeetInchesInput
-                    name={`building-${activeBuilding}-roofLinerPanelEnd-${roofLinerPanelIndex}`}
+                    name={`building-${activeBuilding}-roofLinerPanelHeight-${roofLinerPanelIndex}`}
                     label="Height:"
                     labelClass="offOnTablet"
                     value={roofLinerPanel.height}

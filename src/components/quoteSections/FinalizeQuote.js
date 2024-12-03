@@ -239,10 +239,10 @@ const FinalizeQuote = ({
       for (let i = 0; i < values.buildings.length; i++) {
         const newFolderName = values.quoteNumber + bldgAlpha[i].trim();
         await writable.write(
-          `rename ${newFolderName}\\desctrl.txt ${newFolderName}\\desctrl.ini\n`
+          `rename "${newFolderName}\\desctrl.txt" desctrl.ini\n`
         );
         await writable.write(
-          `rename ${newFolderName}\\desload.txt ${newFolderName}\\desload.ini\n`
+          `rename "${newFolderName}\\desload.txt" desload.ini\n`
         );
         await writable.write(
           `c:\\mbs\\util\\mbs_ini.exe 1 ${newFolderName}\\desctrl.in ${newFolderName}\\desctrl.ini\n`
@@ -322,6 +322,7 @@ const FinalizeQuote = ({
       };
 
       try {
+        console.log('got into try statement');
         const pdfBytes = await createContract(contractData);
         const blob = new Blob([pdfBytes], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
@@ -458,7 +459,7 @@ const FinalizeQuote = ({
           <div className="grid4 alignTop">
             <ReusableSelect
               name={`salesPerson`}
-              value={salesPerson}
+              value={salesPerson || ''}
               onChange={handleAssign}
               options={rsmOptions}
               label="Sales Person:"
@@ -466,7 +467,7 @@ const FinalizeQuote = ({
             />
             <ReusableSelect
               name={`projectManager`}
-              value={projectManager}
+              value={projectManager || ''}
               onChange={handleAssign}
               options={pmOptions}
               label="Project Manager:"
@@ -474,7 +475,7 @@ const FinalizeQuote = ({
             />
             <ReusableSelect
               name={`estimator`}
-              value={estimator}
+              value={estimator || ''}
               onChange={handleAssign}
               options={pmOptions}
               label="Estimator:"
@@ -482,7 +483,7 @@ const FinalizeQuote = ({
             />
             <ReusableSelect
               name={`checker`}
-              value={checker}
+              value={checker || ''}
               onChange={handleAssign}
               options={pmOptions}
               label="Checker:"

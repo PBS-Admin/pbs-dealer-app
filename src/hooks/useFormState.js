@@ -49,6 +49,7 @@ function useFormState(initialState) {
         'liveLoad',
         'deadLoad',
         'roofSnowLoad',
+        'groundSnowLoad',
       ].includes(name)
         ? parseFloat(value)
         : value;
@@ -78,7 +79,11 @@ function useFormState(initialState) {
       const updatedBuildings = prev.buildings.map((building, index) => {
         if (index === buildingIndex) {
           let updatedBuilding;
-          if (field.includes('Qty')) {
+          if (
+            field.includes('Qty') ||
+            field.includes('Gauge') ||
+            field.includes('gauge')
+          ) {
             updatedBuilding = { ...building, [field]: parseInt(value) };
           } else if (field.includes('thermalFactor')) {
             updatedBuilding = { ...building, [field]: parseFloat(value) };
@@ -280,9 +285,21 @@ function useFormState(initialState) {
         bIndex === buildingIndex
           ? {
               ...building,
-              canopies: building.canopies.map((canopy, cIndex) =>
-                cIndex === canopyIndex ? { ...canopy, [field]: value } : canopy
-              ),
+              canopies: building.canopies.map((canopy, cIndex) => {
+                if (cIndex === canopyIndex) {
+                  if (
+                    field.includes('Qty') ||
+                    field.includes('Gauge') ||
+                    field.includes('gauge')
+                  ) {
+                    return { ...canopy, [field]: parseInt(value) };
+                  } else {
+                    return { ...canopy, [field]: value };
+                  }
+                } else {
+                  return canopy;
+                }
+              }),
             }
           : building
       ),
@@ -325,10 +342,21 @@ function useFormState(initialState) {
           ? {
               ...building,
               wallLinerPanels: building.wallLinerPanels.map(
-                (wallLinerPanel, lpIndex) =>
-                  lpIndex === wallLinerPanelIndex
-                    ? { ...wallLinerPanel, [field]: value }
-                    : wallLinerPanel
+                (wallLinerPanel, lpIndex) => {
+                  if (lpIndex === wallLinerPanelIndex) {
+                    if (
+                      field.includes('Qty') ||
+                      field.includes('Gauge') ||
+                      field.includes('gauge')
+                    ) {
+                      return { ...wallLinerPanel, [field]: parseInt(value) };
+                    } else {
+                      return { ...wallLinerPanel, [field]: value };
+                    }
+                  } else {
+                    return wallLinerPanel;
+                  }
+                }
               ),
             }
           : building
@@ -349,10 +377,21 @@ function useFormState(initialState) {
           ? {
               ...building,
               roofLinerPanels: building.roofLinerPanels.map(
-                (roofLinerPanel, lpIndex) =>
-                  lpIndex === roofLinerPanelIndex
-                    ? { ...roofLinerPanel, [field]: value }
-                    : roofLinerPanel
+                (roofLinerPanel, lpIndex) => {
+                  if (lpIndex === roofLinerPanelIndex) {
+                    if (
+                      field.includes('Qty') ||
+                      field.includes('Gauge') ||
+                      field.includes('gauge')
+                    ) {
+                      return { ...roofLinerPanel, [field]: parseInt(value) };
+                    } else {
+                      return { ...roofLinerPanel, [field]: value };
+                    }
+                  } else {
+                    return roofLinerPanel;
+                  }
+                }
               ),
             }
           : building
