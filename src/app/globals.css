@@ -1028,6 +1028,24 @@ label:has(.tooltip.left) {
   height: 0px;
 }
 
+/* Notes Layout */
+.flexNotes {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.noteText {
+  margin-bottom: 0.3em;
+  font-size: 0.9em;
+  flex-grow: 1;
+}
+
+.noteAdd {
+  place-self: center;
+}
+
 /* Grid Layout */
 .grid,
 .grid2,

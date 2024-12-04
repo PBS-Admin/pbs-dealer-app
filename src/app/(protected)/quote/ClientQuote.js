@@ -27,6 +27,7 @@ import BuildingWallOptions from '../../../components/quoteSections/BuildingWallO
 import BuildingRoofOptions from '../../../components/quoteSections/BuildingRoofOptions';
 import BuildingPartitions from '../../../components/quoteSections/BuildingPartitions';
 import BuildingOpenings from '../../../components/quoteSections/BuildingOpenings';
+import Notes from '@/components/quoteSections/Notes';
 import FinalizeQuote from '../../../components/quoteSections/FinalizeQuote';
 
 import CopyBuildingDialog from '../../../components/CopyBuildingDialog';
@@ -753,6 +754,12 @@ export default function ClientQuote({
               Accessories
             </button>
             <button
+              className={`${activeCard == 'notes' ? styles.activeCard : ''}`}
+              onClick={() => setActiveCardDirectly('notes')}
+            >
+              Notes
+            </button>
+            <button
               className={`${activeCard == 'finalize-quote' ? styles.activeCard : ''}`}
               onClick={() => setActiveCardDirectly('finalize-quote')}
             >
@@ -1185,6 +1192,7 @@ export default function ClientQuote({
             />
           </>
         )}
+        {/* Accessories Page */}
         {activeCard == 'accessories' && (
           <Accessories
             values={values}
@@ -1194,6 +1202,11 @@ export default function ClientQuote({
             locked={locked}
           />
         )}
+        {/* Notes Page */}
+        {activeCard == 'notes' && (
+          <Notes values={values} setValues={setValues} />
+        )}
+        {/* Finalize Page */}
         {activeCard == 'finalize-quote' && (
           <FinalizeQuote
             values={values}

@@ -50,6 +50,7 @@ const useNavigation = (activeBuilding, initialIndex = 0) => {
         'Building ' + String.fromCharCode(activeBuilding + 65) + ' - Openings',
     },
     { id: 'accessories', label: 'Accessories' },
+    { id: 'notes', label: 'Notes' },
     {
       id: 'finalize-quote',
       label: 'Finalize Quote',

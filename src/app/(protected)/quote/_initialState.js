@@ -59,6 +59,7 @@ export const initialState = {
   ridgeVent10ft: 0,
   canopyKit2x2x6: 0,
   canopyKit2x2x9: 0,
+  notes: [],
   mandoors: [],
   noteCMUWallByOthers: false,
   notePlywoodLinerByOthers: false,
