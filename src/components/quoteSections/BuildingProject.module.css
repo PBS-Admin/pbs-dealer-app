@@ -1,0 +1,35 @@
+.buildingContainer {
+  position: relative;
+  background-color: var(--dark-blue);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  color: var(--background-white);
+  width: 100%;
+}
+
+.buildingTitleContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.buildingTitleContainer h3 {
+  margin: 0;
+  color: var(--background-white);
+}
+
+.whiteGroup {
+  background-color: var(--background-white);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  color: var(--black);
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  justify-content: space-between;
+}

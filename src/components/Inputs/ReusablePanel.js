@@ -169,7 +169,6 @@ const ReusablePanel = ({
     const newValue = e.target.value;
     setInternalFinishValue(newValue);
     onChange(e, finishKey);
-    console.log(e);
     // if (newValue == 'galv') {
     //   setInternalColorValue('GV');
     //   // onChange(e, colorKey);
