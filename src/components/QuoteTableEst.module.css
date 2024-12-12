@@ -6,6 +6,15 @@
   transition: all ease 0.5s;
 }
 
+.quoteLoadingContainer {
+  margin-top: 1em;
+  text-align: center;
+  overflow-x: auto;
+  align-self: center;
+  max-width: 50%;
+  transition: all ease 0.5s;
+}
+
 .quoteTableEst {
   justify-self: center;
   align-self: start;

@@ -101,16 +101,19 @@ export function UserProvider({ children }) {
     }
   };
 
-  const fetchQuotes = useCallback(async () => {
+  const fetchQuotes = useCallback(async (initialQuotes = null) => {
+    if (initialQuotes) {
+      dispatch({ type: USER_ACTIONS.SET_QUOTES, payload: initialQuotes });
+      return;
+    }
+
     if (!session?.user?.company) return;
 
     dispatch({ type: USER_ACTIONS.SET_LOADING, payload: true });
     dispatch({ type: USER_ACTIONS.SET_ERROR, payload: null });
 
     try {
-      const response = await fetch(
-        `/api/auth/open?company=${session.user.company}`
-      );
+      const response = await fetch(`/api/auth/open`);
       if (!response.ok) throw new Error('Failed to fetch quotes');
 
       const data = await response.json();
@@ -121,7 +124,7 @@ export function UserProvider({ children }) {
     } finally {
       dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
     }
-  }, [session?.user?.company]);
+  }, []);
 
   const deleteQuote = useCallback(async (quoteId) => {
     try {

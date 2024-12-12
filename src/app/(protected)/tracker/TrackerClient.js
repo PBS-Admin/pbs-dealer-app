@@ -7,7 +7,7 @@ import QuoteTableEst from '@/components/QuoteTableEst';
 import styles from './page.module.css';
 import { useSession } from 'next-auth/react';
 
-export default function QuoteTrackerClient() {
+export default function TrackerClient({ initialQuotes }) {
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
@@ -17,5 +17,13 @@ export default function QuoteTrackerClient() {
 
   const isEstimator = session?.user?.estimator === 1;
 
-  return <>{isEstimator ? <QuoteTableEst /> : <QuoteTable />}</>;
+  return (
+    <>
+      {isEstimator ? (
+        <QuoteTableEst initialQuotes={initialQuotes} />
+      ) : (
+        <QuoteTable initialQuotes={initialQuotes} />
+      )}
+    </>
+  );
 }

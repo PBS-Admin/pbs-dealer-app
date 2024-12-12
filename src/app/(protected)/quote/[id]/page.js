@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
-import ClientQuote from '../ClientQuote';
+import QuoteClient from '../QuoteClient';
 import { query } from '../../../../lib/db';
 import { BuildingProvider } from '@/contexts/BuildingContext';
 import { initialState as emptyInitialState } from '@/lib/initialState';
@@ -84,7 +84,7 @@ export default async function Quote({ params }) {
 
   return (
     <BuildingProvider initialState={initialQuoteData}>
-      <ClientQuote />
+      <QuoteClient />
     </BuildingProvider>
   );
 }

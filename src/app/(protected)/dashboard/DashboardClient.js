@@ -27,7 +27,7 @@ export default function DashboardClient({ initialCompanies }) {
 
   return (
     <main className={styles.dashMain}>
-      <PageHeader title="Dashboard" isLogOut={true} />
+      <PageHeader title="Dashboard" backPage={'logout'} />
       <div className={styles.dashContainer}>
         {hasPermission(5) && <CompanySelector companies={initialCompanies} />}
 

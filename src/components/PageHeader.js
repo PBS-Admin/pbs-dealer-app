@@ -2,12 +2,16 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouse, faDoorOpen } from '@fortawesome/free-solid-svg-icons';
+import {
+  faHouse,
+  faDoorOpen,
+  faRotateLeft,
+} from '@fortawesome/free-solid-svg-icons';
 import { signOut, useSession } from 'next-auth/react';
 import { useState, useCallback } from 'react';
 import { redirect } from 'next/navigation';
 
-const PageHeader = ({ title, subtitle, isLogOut }) => {
+const PageHeader = ({ title, subtitle, backPage }) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { data: session } = useSession({
     required: true,
@@ -39,9 +43,23 @@ const PageHeader = ({ title, subtitle, isLogOut }) => {
     }
   }, [isLoggingOut]);
 
+  let backIcon;
+
+  switch (backPage) {
+    case 'tracker':
+      backIcon = faRotateLeft;
+      break;
+    case 'logout':
+      backIcon = faDoorOpen;
+      break;
+    default:
+      backIcon = faHouse;
+      break;
+  }
+
   return (
     <header className="pageHeader">
-      {isLogOut ? (
+      {backPage == 'logout' ? (
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
@@ -50,8 +68,8 @@ const PageHeader = ({ title, subtitle, isLogOut }) => {
           <FontAwesomeIcon icon={faDoorOpen} />
         </button>
       ) : (
-        <Link href="/dashboard" className="button">
-          <FontAwesomeIcon icon={faHouse} />
+        <Link href={`/${backPage}`} className="button">
+          <FontAwesomeIcon icon={backIcon} />
         </Link>
       )}
       <div>

@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
 import { query } from '../../../../lib/db';
-import { getToken } from 'next-auth/jwt';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../[...nextauth]/route';
 
-export async function GET(req) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
@@ -13,21 +12,24 @@ export async function GET(req) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { searchParams } = new URL(req.url);
-    const company = searchParams.get('company');
+    // const { searchParams } = new URL(req.url);
+    // const company = searchParams.get('company');
 
+    // if (!company) {
+    //   console.log('No company provided, returning 400');
+    //   return NextResponse.json(
+    //     { error: 'Company parameter is required' },
+    //     { status: 400 }
+    //   );
+    // }
+
+    const company = session.user.company;
     if (!company) {
-      console.log('No company provided, returning 400');
+      console.log('Company not found, returning 400');
       return NextResponse.json(
-        { error: 'Company parameter is required' },
+        { error: 'Company is required' },
         { status: 400 }
       );
-    }
-
-    const currentCompany = session.user.company;
-    if (currentCompany != parseInt(company)) {
-      console.log('Company mismatch, returning 403');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     let quotesQuery;
@@ -55,14 +57,14 @@ export async function GET(req) {
         SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, 
                SalesPerson, DateStarted 
         FROM Dealer_Quotes 
-        WHERE Status & 84`; // 01010100 - check ClientQuote for status def
+        WHERE Status & 84`; // 01010100 - check QuoteClient for status def
     } else if (session.user.estimator == 1) {
       // Estimator 1
       quotesQuery = `
         SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, 
                SalesPerson, DateStarted 
         FROM Dealer_Quotes 
-        WHERE Company = ? AND Estimator = ? AND Status & 84 `; // 01010100 - check ClientQuote for status def
+        WHERE Company = ? AND Estimator = ? AND Status & 84 `; // 01010100 - check QuoteClient for status def
       queryParams = [company, session.user.id];
     } else {
       // RSM 1

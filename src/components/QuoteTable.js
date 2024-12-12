@@ -48,9 +48,7 @@ export default function QuoteTable() {
       setError(null);
 
       try {
-        const response = await fetch(
-          `/api/auth/open?company=${session.user.company}`
-        );
+        const response = await fetch(`/api/auth/open`);
         if (!response.ok) {
           throw new Error('Failed to fetch quotes');
         }

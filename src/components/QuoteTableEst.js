@@ -5,10 +5,13 @@ import Link from 'next/link';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import DeleteDialog from './DeleteDialog';
 import styles from './QuoteTableEst.module.css';
+import Image from 'next/image';
+import { logo } from '../../public/images';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faTrash,
   faCopy,
+  faCircleNotch,
   faExclamationTriangle,
   faCircleQuestion,
 } from '@fortawesome/free-solid-svg-icons';
@@ -24,7 +27,7 @@ import { redirect, useRouter } from 'next/navigation';
 import { useUserContext } from '@/contexts/UserContext';
 import { useUIContext } from '@/contexts/UIContext';
 
-export default function QuoteTableEst() {
+export default function QuoteTableEst({ initialQuotes }) {
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -55,7 +58,15 @@ export default function QuoteTableEst() {
   const activeTabRef = useRef(null);
 
   useEffect(() => {
-    fetchQuotes();
+    if (initialQuotes?.length > 0) {
+      fetchQuotes(initialQuotes);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!initialQuotes?.length) {
+      fetchQuotes();
+    }
   }, [fetchQuotes]);
 
   useEffect(() => {
@@ -141,12 +152,22 @@ export default function QuoteTableEst() {
   }, [quotes, activeTabKey]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className={styles.quoteLoadingContainer}>
+        <div className="loadingCard">
+          <div className="loadingMessage">
+            <h3>Building your Quote Table</h3>
+            <FontAwesomeIcon className="rotate" icon={faCircleNotch} />
+          </div>
+          <Image alt="PBS Buildings Logo" src={logo} className="loadingImage" />
+        </div>
+      </div>
+    );
   }
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  // if (error) {
+  //   return <div>Error: {error}</div>;
+  // }
 
   return (
     <div className={styles.quoteContainer}>

@@ -35,7 +35,7 @@ import { useBuildingContext } from '@/contexts/BuildingContext';
 import { useUserContext } from '@/contexts/UserContext';
 import { useSession } from 'next-auth/react';
 
-const ClientQuote = () => {
+const QuoteClient = () => {
   const router = useRouter();
 
   // Local State
@@ -211,7 +211,7 @@ const ClientQuote = () => {
               state.projectName
             : '')
         }
-        isLogOut={false}
+        backPage={'tracker'}
       />
       {/* Sidebar Navigation */}
       {isDesktop && (
@@ -391,4 +391,4 @@ const ClientQuote = () => {
   );
 };
 
-export default ClientQuote;
+export default QuoteClient;
