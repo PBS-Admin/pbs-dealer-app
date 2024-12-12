@@ -109,8 +109,8 @@ const ReusableSelect = ({
         }}
         disabled={disabled}
       >
-        {Object.keys(groupedOptions).map((optionGroupName) => (
-          <Fragment key={optionGroupName}>
+        {Object.keys(groupedOptions).map((optionGroupName, i) => (
+          <Fragment key={`${optionGroupName}${i}`}>
             {optionGroupName !== 'undefined' ? (
               <optgroup label={optionGroupName}>
                 {groupedOptions[optionGroupName].map(({ id, label }) => (
@@ -120,14 +120,16 @@ const ReusableSelect = ({
                 ))}
               </optgroup>
             ) : (
-              <>
+              <Fragment key={`${i}`}>
                 {groupedOptions[optionGroupName].map(
                   ({ id, label, validFor }) => (
                     <option
                       key={label}
                       value={id}
                       disabled={
-                        validFor && !validFor.includes(dependantOn)
+                        validFor &&
+                        !validFor.includes(dependantOn) &&
+                        !validFor.includes(dependantOn.toString())
                           ? 'disabled'
                           : ''
                       }
@@ -136,7 +138,7 @@ const ReusableSelect = ({
                     </option>
                   )
                 )}
-              </>
+              </Fragment>
             )}
           </Fragment>
         ))}

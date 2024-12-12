@@ -3,118 +3,43 @@ import ReusablePanel from '../Inputs/ReusablePanel';
 import ReusableSelect from '../Inputs/ReusableSelect';
 import BaySpacingInput from '../Inputs/BaySpacingInput';
 import FeetInchesInput from '../Inputs/FeetInchesInput';
+import ReusableColorSelect from '../Inputs/ReusableColorSelect';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { wallInsulation, orientations } from '../../util/dropdownOptions';
+import { useUIContext } from '@/contexts/UIContext';
+import { useBuildingContext } from '@/contexts/BuildingContext';
+import { useColorSelection } from '@/hooks/useColorSelection';
 
-const BuildingPartitions = ({
-  values,
-  activeBuilding,
-  handlePartitionChange,
-  colorClicked,
-  setValues,
-  locked,
-}) => {
+const BuildingPartitions = ({ locked }) => {
+  // Local State
   const [activePartition, setActivePartition] = useState(0);
 
-  const addPartition = (buildingIndex) => {
-    setValues((prev) => {
-      const newBuilding = { ...prev.buildings[buildingIndex] };
-      const newPartitionIndex = newBuilding.partitions.length;
+  // Contexts
+  const { activeBuilding } = useUIContext();
+  const { state, addPartition, removePartition, handlePartitionChange } =
+    useBuildingContext();
 
-      // Add new partition
-      newBuilding.partitions = [
-        ...newBuilding.partitions,
-        {
-          orientation: 't',
-          start: '',
-          end: '',
-          offset: '',
-          height: '',
-          baySpacing: '',
-          insulation: 'none',
-          partitionLeftPanelType: 'pbr',
-          partitionLeftPanelGauge: 26,
-          partitionLeftPanelFinish: 'painted',
-          partitionLeftPanelColor: 'NC',
-          partitionLeftTrim: {
-            corner: { vendor: 'PBS', gauge: 26, color: 'NC' },
-            jamb: { vendor: 'PBS', gauge: 26, color: 'NC' },
-            top: { vendor: 'PBS', gauge: 26, color: 'NC' },
-            base: { vendor: 'PBS', gauge: 26, color: 'NC' },
-          },
-          partitionRightPanelType: 'pbr',
-          partitionRightPanelGauge: 26,
-          partitionRightPanelFinish: 'painted',
-          partitionRightPanelColor: 'NC',
-          partitionRightTrim: {
-            corner: { vendor: 'PBS', gauge: 26, color: 'NC' },
-            jamb: { vendor: 'PBS', gauge: 26, color: 'NC' },
-            top: { vendor: 'PBS', gauge: 26, color: 'NC' },
-            base: { vendor: 'PBS', gauge: 26, color: 'NC' },
-          },
-        },
-      ];
+  // Hooks
+  const { colorSelectInfo, handleColorClick, handleColorSelect } =
+    useColorSelection();
 
-      // Add new wall to openings
-      const newWallKey = `partition${newPartitionIndex + 1}`;
-      newBuilding.openings = {
-        ...newBuilding.openings,
-        [newWallKey]: [],
-      };
-
-      return {
-        ...prev,
-        buildings: prev.buildings.map((building, index) =>
-          index === buildingIndex ? newBuilding : building
-        ),
-      };
-    });
+  // Local Functions
+  const handleAddPartition = () => {
+    addPartition(activeBuilding);
+    setActivePartition(state.buildings[activeBuilding].partitions.length);
   };
 
-  const removePartition = (buildingIndex, partitionIndex) => {
-    setValues((prev) => {
-      const newBuilding = { ...prev.buildings[buildingIndex] };
-
-      // Remove partition
-      newBuilding.partitions = newBuilding.partitions.filter(
-        (_, pIndex) => pIndex !== partitionIndex
-      );
-
-      // Remove corresponding wall from openings
-      const wallKeyToRemove = `partition${partitionIndex + 1}`;
-      const { [wallKeyToRemove]: _, ...remainingOpenings } =
-        newBuilding.openings;
-      newBuilding.openings = remainingOpenings;
-
-      // Rename remaining partition walls in openings
-      Object.keys(newBuilding.openings)
-        .filter((key) => key.startsWith('partition'))
-        .forEach((key, index) => {
-          const newKey = `partition${index + 1}`;
-          if (key !== newKey) {
-            newBuilding.openings[newKey] = newBuilding.openings[key];
-            delete newBuilding.openings[key];
-          }
-        });
-
-      // Update activePartition if necessary
-      const remainingPartitions = newBuilding.partitions.length;
-      if (partitionIndex <= prev.activePartition && prev.activePartition > 0) {
-        setActivePartition(
-          Math.min(prev.activePartition - 1, remainingPartitions - 1)
-        );
-      }
-
-      return {
-        ...prev,
-        buildings: prev.buildings.map((building, index) =>
-          index === buildingIndex ? newBuilding : building
-        ),
-      };
-    });
+  const handleRemovePartition = (partitionIndex) => {
+    removePartition(activeBuilding, partitionIndex);
+    if (partitionIndex === activePartition) {
+      setActivePartition(0);
+    } else if (partitionIndex < activePartition) {
+      setActivePartition((prev) => prev - 1);
+    }
   };
 
+  // JSX
   return (
     <>
       {/* Partition Walls */}
@@ -122,7 +47,7 @@ const BuildingPartitions = ({
         <header>
           <h3>Partition Walls</h3>
         </header>
-        {values.buildings[activeBuilding].partitions.length > 0 && (
+        {state.buildings[activeBuilding].partitions.length > 0 && (
           <div className="onDesktop">
             <div className="tableGrid8">
               <h5>Orientation</h5>
@@ -142,7 +67,7 @@ const BuildingPartitions = ({
             </div>
           </div>
         )}
-        {values.buildings[activeBuilding].partitions.map(
+        {state.buildings[activeBuilding].partitions.map(
           (partition, partitionIndex) => (
             <Fragment
               key={`building-${activeBuilding}-partition-${partitionIndex}`}
@@ -317,7 +242,7 @@ const BuildingPartitions = ({
                   type="button"
                   className="icon reject deleteRow"
                   onClick={() =>
-                    removePartition(activeBuilding, partitionIndex)
+                    handleRemovePartition(activeBuilding, partitionIndex)
                   }
                   disabled={locked}
                 >
@@ -329,7 +254,7 @@ const BuildingPartitions = ({
           )
         )}
 
-        {values.buildings[activeBuilding].partitions.length > 0 && (
+        {state.buildings[activeBuilding].partitions.length > 0 && (
           <>
             <div className="divider onDesktop"></div>
             <div className="grid2 alignTop">
@@ -339,7 +264,7 @@ const BuildingPartitions = ({
                 bldg={activeBuilding}
                 idx={activePartition}
                 value={
-                  values.buildings[activeBuilding].partitions[activePartition]
+                  state.buildings[activeBuilding].partitions[activePartition]
                 }
                 onChange={(e, keyString) =>
                   handlePartitionChange(
@@ -349,7 +274,7 @@ const BuildingPartitions = ({
                     e.target.value
                   )
                 }
-                colorClicked={colorClicked}
+                colorClicked={handleColorClick}
                 disabled={locked}
               />
               <div className="divider offOnLaptop"></div>
@@ -359,7 +284,7 @@ const BuildingPartitions = ({
                 bldg={activeBuilding}
                 idx={activePartition}
                 value={
-                  values.buildings[activeBuilding].partitions[activePartition]
+                  state.buildings[activeBuilding].partitions[activePartition]
                 }
                 onChange={(e, keyString) =>
                   handlePartitionChange(
@@ -369,21 +294,21 @@ const BuildingPartitions = ({
                     e.target.value
                   )
                 }
-                colorClicked={colorClicked}
+                colorClicked={handleColorClick}
                 disabled={locked}
               />
             </div>
           </>
         )}
 
-        {values.buildings[activeBuilding].partitions.length < 6 && !locked && (
+        {state.buildings[activeBuilding].partitions.length < 6 && !locked && (
           <>
             <div className="divider"></div>
             <div className="buttonFooter">
               <button
                 type="button"
                 className="addButton"
-                onClick={() => addPartition(activeBuilding)}
+                onClick={() => handleAddPartition(activeBuilding)}
               >
                 <FontAwesomeIcon icon={faPlus} />
               </button>
@@ -391,6 +316,13 @@ const BuildingPartitions = ({
           </>
         )}
       </section>
+
+      <ReusableColorSelect
+        isOpen={colorSelectInfo.isOpen}
+        onClose={() => handleColorClick({ ...colorSelectInfo, isOpen: false })}
+        onColorSelect={handleColorSelect}
+        {...colorSelectInfo}
+      />
     </>
   );
 };

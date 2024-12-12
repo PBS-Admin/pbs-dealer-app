@@ -1,61 +1,70 @@
 import { NextResponse } from 'next/server';
-import { query, getPoolStatus } from '../../../../../lib/db';
-import { getToken } from 'next-auth/jwt';
+import { query } from '@/lib/db';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../[...nextauth]/route';
 
 export async function GET(req, { params }) {
   try {
     const session = await getServerSession(authOptions);
-    const token = await getToken({
-      req,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
 
-    if (!session || !token) {
-      console.log('No valid session or token found, returning Unauthorized');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
     }
 
-    const { searchParams } = new URL(req.url);
-    console.log('search: ', searchParams);
-    const id = params.id;
+    const { id } = params;
 
     if (!id) {
-      console.log('Missing parameters, returning 400');
       return NextResponse.json(
-        { error: 'Company and ID parameters are required' },
+        { error: 'Quote ID is required' },
         { status: 400 }
       );
     }
 
-    const result = await query(
-      'SELECT * FROM Dealer_Quotes WHERE ID = ? AND Status & 1',
-      [id]
-    );
+    let quoteQuery = 'SELECT * FROM Dealer_Quotes WHERE ID = ? AND Status & 1';
+    let queryParams = [id];
 
-    if (result.length === 0) {
-      return NextResponse.json({ error: 'Quote not found' }, { status: 404 });
+    // If user has lower permission level, restrict to their company
+    if (session.user.permission < 3) {
+      quoteQuery += ' AND Company = ?';
+      queryParams.push(session.user.company);
     }
 
-    const quote = result[0];
-    // const quote = {
-    //   ...result[0],
-    //   ID: result[0].ID,
-    //   Submitted: result[0].Submitted,
-    //   Quote: result[0].Quote,
-    //   Rev: result[0].Rev,
-    //   Customer: result[0].Customer,
-    //   ProjectName: result[0].ProjectName,
-    //   DateStarted: result[0].DateStarted,
-    // };
+    const result = await query(quoteQuery, queryParams);
 
-    const status = await getPoolStatus();
-    console.log('Pool status:', status);
+    if (result.length === 0) {
+      // Check if quote exists at all (for better error messaging)
+      const quoteExists = await query(
+        'SELECT ID FROM Dealer_Quotes WHERE ID = ? AND Status & 1',
+        [id]
+      );
+
+      if (quoteExists.length === 0) {
+        return NextResponse.json({ error: 'Quote not found' }, { status: 404 });
+      } else {
+        return NextResponse.json(
+          { error: 'You do not have permission to view this quote' },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Add company information to the quote response
+    const companyInfo = await query(
+      'SELECT Name FROM Dealer_Company WHERE ID = ?',
+      [result[0].Company]
+    );
+
+    const quote = {
+      ...result[0],
+      companyName: companyInfo[0]?.Name || 'Unknown Company',
+    };
 
     return NextResponse.json({ quote }, { status: 200 });
   } catch (error) {
-    console.error('Error in GET function:', error);
+    console.error('Error in quote GET function:', error);
     return NextResponse.json(
       { error: 'An error occurred while fetching the quote' },
       { status: 500 }

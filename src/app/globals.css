@@ -365,6 +365,19 @@ select option:disabled {
   background-color: var(--light-gray);
 }
 
+.companyList .selectInput {
+  outline: none;
+  border-bottom: 1px solid var(--background-white);
+  border-radius: 0;
+  font-size: 1.5rem;
+  background-color: var(--dark-blue);
+  color: var(--background-white);
+}
+
+.companyList .selectInput option {
+  font-size: 0.75em;
+}
+
 .checkRow {
   font-size: 0.75em;
   display: flex;
@@ -958,6 +971,13 @@ label:has(.tooltip.left) {
   height: auto;
 }
 
+.loadingImage {
+  width: 25vw;
+  max-width: 140px;
+  min-width: 100px;
+  height: auto;
+}
+
 .panelImage {
   align-self: center;
   height: auto;
@@ -1026,6 +1046,24 @@ label:has(.tooltip.left) {
 .pac-container:after {
   background-image: none !important;
   height: 0px;
+}
+
+/* Notes Layout */
+.flexNotes {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.noteText {
+  margin-bottom: 0.3em;
+  font-size: 0.9em;
+  flex-grow: 1;
+}
+
+.noteAdd {
+  place-self: center;
 }
 
 /* Grid Layout */
@@ -1199,6 +1237,36 @@ label:has(.tooltip.left) {
   to {
     transform: rotate(360deg);
   }
+}
+
+.loadingPage {
+  background-color: var(--dark-blue);
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingCard {
+  display: grid;
+  background-color: var(--background-white);
+  border-radius: 1em;
+  padding: 0.75em;
+  place-content: center;
+  place-items: center;
+}
+
+.loadingMessage {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+  padding: 1em;
+  gap: 0.5em;
+}
+
+.loadingMessage h3 {
+  color: var(--dark-blue);
 }
 
 /* END */

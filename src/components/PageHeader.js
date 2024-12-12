@@ -2,15 +2,23 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouse, faDoorOpen } from '@fortawesome/free-solid-svg-icons';
-import { logo } from '../../public/images';
-import { signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import {
+  faHouse,
+  faDoorOpen,
+  faRotateLeft,
+} from '@fortawesome/free-solid-svg-icons';
+import { signOut, useSession } from 'next-auth/react';
 import { useState, useCallback } from 'react';
+import { redirect } from 'next/navigation';
 
-const PageHeader = ({ session, title, subtitle, isLogOut }) => {
-  const router = useRouter();
+const PageHeader = ({ title, subtitle, backPage }) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/login');
+    },
+  });
 
   const handleLogout = useCallback(async () => {
     try {
@@ -35,9 +43,23 @@ const PageHeader = ({ session, title, subtitle, isLogOut }) => {
     }
   }, [isLoggingOut]);
 
+  let backIcon;
+
+  switch (backPage) {
+    case 'tracker':
+      backIcon = faRotateLeft;
+      break;
+    case 'logout':
+      backIcon = faDoorOpen;
+      break;
+    default:
+      backIcon = faHouse;
+      break;
+  }
+
   return (
     <header className="pageHeader">
-      {isLogOut ? (
+      {backPage == 'logout' ? (
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
@@ -46,8 +68,8 @@ const PageHeader = ({ session, title, subtitle, isLogOut }) => {
           <FontAwesomeIcon icon={faDoorOpen} />
         </button>
       ) : (
-        <Link href="/dashboard" className="button">
-          <FontAwesomeIcon icon={faHouse} />
+        <Link href={`/${backPage}`} className="button">
+          <FontAwesomeIcon icon={backIcon} />
         </Link>
       )}
       <div>
@@ -58,7 +80,6 @@ const PageHeader = ({ session, title, subtitle, isLogOut }) => {
         {session?.user && (
           <>
             <div className="avatar">
-              {/* <Image alt="Logo" src={logo} className="avatar" /> */}
               <Image
                 src={`/api/auth/logos?filename=${encodeURIComponent('contract-logo.png')}&company=${session.user.company}`}
                 alt={'Logo'}

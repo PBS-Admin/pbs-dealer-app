@@ -137,7 +137,7 @@ const ReusablePanel = ({
 
   useEffect(() => {
     if (value[gaugeKey] !== undefined && value[gaugeKey] != '') {
-      setInternalGaugeValue(String.valueOf(value[gaugeKey]));
+      setInternalGaugeValue(value[gaugeKey]);
     }
   }, [value[gaugeKey]]);
 
@@ -169,7 +169,6 @@ const ReusablePanel = ({
     const newValue = e.target.value;
     setInternalFinishValue(newValue);
     onChange(e, finishKey);
-    console.log(e);
     // if (newValue == 'galv') {
     //   setInternalColorValue('GV');
     //   // onChange(e, colorKey);

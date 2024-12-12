@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { useEffect, useCallback, useMemo, useRef } from 'react';
 import ReusableSelect from '../Inputs/ReusableSelect';
 import ReusableDouble from '../Inputs/ReusableDouble';
 import ReusableDialog from '../ReusableDialog';
@@ -15,7 +9,7 @@ import useSnow from '@/hooks/useSnow';
 import useSeismic from '@/hooks/useSeismic';
 import useAddress from '@/hooks/useAddress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEraser, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import { faEraser } from '@fortawesome/free-solid-svg-icons';
 import {
   buildingCodes,
   enclosure,
@@ -24,39 +18,43 @@ import {
   seismicCategory,
   thermalFactor,
 } from '../../util/dropdownOptions';
+import { useBuildingContext } from '@/contexts/BuildingContext';
 
-const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
+const ProjectInformation = ({ locked }) => {
+  // Contexts
+  const { state, handleChange, setValues } = useBuildingContext();
+
+  // Hooks
   const { getWindLoad, currentPrompt, isDialogOpen, handleResponse } = useWind(
-    values,
+    state,
     setValues
   );
+  const { getSnowLoad, snowData } = useSnow(state);
+  const { getSeismicLoad, seismicData, getSmsLoad, smsData } =
+    useSeismic(state);
+  const { locationData, loading, error, fetchGeocodingData } = useGeocoding();
 
+  // References
+  const projectInputRef = useRef(null);
+  const customerInputRef = useRef(null);
+
+  // Local Functions
   const windIcon =
-    values.buildingCode == 'ossc22' && values.projectLatitude != ''
+    state.buildingCode == 'ossc22' && state.projectLatitude != ''
       ? 'lookup'
       : '';
   const snowIcon =
-    values.projectLatitude != '' && values.projectLongitude != ''
-      ? 'lookup'
-      : '';
+    state.projectLatitude != '' && state.projectLongitude != '' ? 'lookup' : '';
   const lookupIcon =
-    values.projectLatitude != '' &&
-    values.projectLongitude != '' &&
-    values.buildingCode != '' &&
-    values.seismicSite != ''
+    state.projectLatitude != '' &&
+    state.projectLongitude != '' &&
+    state.buildingCode != '' &&
+    state.seismicSite != ''
       ? 'lookup'
       : '';
 
   const calcIcon =
-    values.seismicSs > 0 && values.seismicS1 > 0 ? 'calculator' : '';
-
-  const { getSnowLoad, snowData } = useSnow(values);
-  const { getSeismicLoad, seismicData, getSmsLoad, smsData } =
-    useSeismic(values);
-  const { locationData, loading, error, fetchGeocodingData } = useGeocoding();
-
-  const projectInputRef = useRef(null);
-  const customerInputRef = useRef(null);
+    state.seismicSs > 0 && state.seismicS1 > 0 ? 'calculator' : '';
 
   const {
     addressDetails: projectAddressDetails,
@@ -119,8 +117,13 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
       'projectCity',
       'projectState',
       'projectZip',
-    ].every((field) => values[field].trim() !== '');
-  }, [values]);
+    ].every((field) => {
+      const fieldValue = state[field];
+      return (
+        fieldValue && typeof fieldValue === 'string' && fieldValue.trim() !== ''
+      );
+    });
+  }, [state]);
 
   useEffect(() => {
     if (projectAddressDetails) {
@@ -148,12 +151,12 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
 
   useEffect(() => {
     if (shouldGeocode) {
-      const { projectAddress, projectCity, projectState, projectZip } = values;
+      const { projectAddress, projectCity, projectState, projectZip } = state;
       const fullAddress = `${projectAddress}, ${projectCity}, ${projectState} ${projectZip}`;
 
       const timeoutId = setTimeout(() => {
         fetchGeocodingData(fullAddress);
-      }, 1000); // Wait for 1 second after the last change
+      }, 1000);
 
       return () => clearTimeout(timeoutId);
     }
@@ -161,16 +164,16 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
 
   useEffect(() => {
     if (locationData) {
-      setValues((prevValues) => ({
-        ...prevValues,
+      setValues({
+        ...state,
         projectLatitude: locationData.lat,
         projectLongitude: locationData.lng,
         projectCounty: locationData.county,
         projectElevation: locationData.elevation,
         projectMileage: locationData.mileage,
-      }));
+      });
     }
-  }, [locationData, setValues]);
+  }, [locationData, setValues, state]);
 
   useEffect(() => {
     if (snowData) {
@@ -211,6 +214,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
     }
   }, [smsData, setValues]);
 
+  // JSX
   return (
     <>
       <section className="card">
@@ -224,7 +228,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="customerName"
               name="customerName"
-              value={values.customerName}
+              value={state.customerName}
               onChange={handleChange}
               placeholder="Customer Name"
               disabled={locked}
@@ -236,7 +240,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="contactName"
               name="contactName"
-              value={values.contactName}
+              value={state.contactName}
               onChange={handleChange}
               placeholder="Contact Name"
               disabled={locked}
@@ -262,7 +266,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="customerAddress"
               name="customerAddress"
-              value={values.customerAddress}
+              value={state.customerAddress}
               onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="Street Address"
               disabled={locked}
@@ -274,7 +278,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="customerCity"
               name="customerCity"
-              value={values.customerCity}
+              value={state.customerCity}
               onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="City"
               disabled={locked}
@@ -286,7 +290,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="customerState"
               name="customerState"
-              value={values.customerState}
+              value={state.customerState}
               onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="State"
               disabled={locked}
@@ -298,7 +302,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="customerZip"
               name="customerZip"
-              value={values.customerZip}
+              value={state.customerZip}
               onChange={(e) => handleAddressChange(e, 'customer')}
               placeholder="Zip"
               disabled={locked}
@@ -310,7 +314,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="customerPhone"
               name="customerPhone"
-              value={values.customerPhone}
+              value={state.customerPhone}
               onChange={handleChange}
               placeholder="Phone"
               disabled={locked}
@@ -322,7 +326,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="customerFax"
               name="customerFax"
-              value={values.customerFax}
+              value={state.customerFax}
               onChange={handleChange}
               placeholder="Fax"
               disabled={locked}
@@ -334,7 +338,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="customerCell"
               name="customerCell"
-              value={values.customerCell}
+              value={state.customerCell}
               onChange={handleChange}
               placeholder="Cell"
               disabled={locked}
@@ -346,7 +350,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="customerEmail"
               name="customerEmail"
-              value={values.customerEmail}
+              value={state.customerEmail}
               onChange={handleChange}
               placeholder="Email"
               disabled={locked}
@@ -366,7 +370,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="projectName"
               name="projectName"
-              value={values.projectName}
+              value={state.projectName}
               onChange={handleChange}
               placeholder="Project Name"
               disabled={locked}
@@ -378,7 +382,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="projectFor"
               name="projectFor"
-              value={values.projectFor}
+              value={state.projectFor}
               onChange={handleChange}
               placeholder="Project For"
               disabled={locked}
@@ -405,7 +409,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="projectAddress"
               name="projectAddress"
-              value={values.projectAddress}
+              value={state.projectAddress}
               onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="Address"
               disabled={locked}
@@ -417,7 +421,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="projectCity"
               name="projectCity"
-              value={values.projectCity}
+              value={state.projectCity}
               onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="City"
               disabled={locked}
@@ -429,7 +433,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="projectState"
               name="projectState"
-              value={values.projectState}
+              value={state.projectState}
               onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="State"
               disabled={locked}
@@ -441,7 +445,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="projectZip"
               name="projectZip"
-              value={values.projectZip}
+              value={state.projectZip}
               onChange={(e) => handleAddressChange(e, 'project')}
               placeholder="Zip"
               disabled={locked}
@@ -454,7 +458,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="projectCounty"
               name="projectCounty"
-              value={values.projectCounty}
+              value={state.projectCounty}
               onChange={handleChange}
               placeholder="County"
               disabled={locked}
@@ -466,7 +470,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
               type="text"
               id="buildingUse"
               name="buildingUse"
-              value={values.buildingUse}
+              value={state.buildingUse}
               onChange={handleChange}
               placeholder="Building Use"
               disabled={locked}
@@ -482,7 +486,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
         <div className="grid2">
           <ReusableSelect
             name={`buildingCode`}
-            value={values.buildingCode}
+            value={state.buildingCode}
             onChange={handleChange}
             options={buildingCodes}
             label="Building Code:"
@@ -490,7 +494,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
           />
           <ReusableSelect
             name={`riskCategory`}
-            value={values.riskCategory}
+            value={state.riskCategory}
             onChange={handleChange}
             options={riskCategories}
             label="Risk Category:"
@@ -501,7 +505,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
         <div className="grid3">
           <ReusableDouble
             id={'collateralLoad'}
-            value={values.collateralLoad}
+            value={state.collateralLoad}
             onChange={handleChange}
             name={'collateralLoad'}
             label={
@@ -514,7 +518,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
           />
           <ReusableDouble
             id={'liveLoad'}
-            value={values.liveLoad}
+            value={state.liveLoad}
             onChange={handleChange}
             name={'liveLoad'}
             label={
@@ -527,7 +531,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
           />
           <ReusableDouble
             id={'deadLoad'}
-            value={values.deadLoad}
+            value={state.deadLoad}
             onChange={handleChange}
             name={'deadLoad'}
             label={
@@ -543,7 +547,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
         <div className="grid3">
           <ReusableDouble
             id={'windLoad'}
-            value={values.windLoad}
+            value={state.windLoad}
             onChange={handleChange}
             name={'windLoad'}
             label={
@@ -560,7 +564,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
           />
           <ReusableSelect
             name={`windExposure`}
-            value={values.windExposure}
+            value={state.windExposure}
             onChange={handleChange}
             options={exposure}
             label="Exposure:"
@@ -569,7 +573,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
           />
           <ReusableSelect
             name={`windEnclosure`}
-            value={values.windEnclosure}
+            value={state.windEnclosure}
             onChange={handleChange}
             options={enclosure}
             label="Enclosure:"
@@ -581,7 +585,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
         <div className="grid3">
           <ReusableDouble
             id={'groundSnowLoad'}
-            value={values.groundSnowLoad}
+            value={state.groundSnowLoad}
             onChange={handleChange}
             name={'groundSnowLoad'}
             label={
@@ -598,7 +602,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
           />
           <ReusableDouble
             id={'roofSnowLoad'}
-            value={values.roofSnowLoad}
+            value={state.roofSnowLoad}
             onChange={handleChange}
             name={'roofSnowLoad'}
             label={
@@ -611,7 +615,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
           />
           <ReusableSelect
             name={`thermalFactor`}
-            value={values.thermalFactor}
+            value={state.thermalFactor}
             onChange={handleChange}
             options={thermalFactor}
             label="Thermal Factor:"
@@ -639,7 +643,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
           <ReusableSelect
             name={`seismicCategory`}
             className="span2"
-            value={values.seismicCategory}
+            value={state.seismicCategory}
             onChange={handleChange}
             options={seismicCategory}
             label="Seismic Category:"
@@ -652,7 +656,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
           />
           <ReusableDouble
             id={'seismicSs'}
-            value={values.seismicSs}
+            value={state.seismicSs}
             onChange={handleChange}
             name={'seismicSs'}
             label={'Ss:'}
@@ -661,7 +665,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
           />
           <ReusableDouble
             id={'seismicS1'}
-            value={values.seismicS1}
+            value={state.seismicS1}
             onChange={handleChange}
             name={'seismicS1'}
             label={
@@ -674,7 +678,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
           />
           <ReusableDouble
             id={'seismicSms'}
-            value={values.seismicSms}
+            value={state.seismicSms}
             onChange={handleChange}
             name={'seismicSms'}
             label={'Sms:'}
@@ -687,7 +691,7 @@ const ProjectInformation = ({ values, handleChange, setValues, locked }) => {
           />
           <ReusableDouble
             id={'seismicSm1'}
-            value={values.seismicSm1}
+            value={state.seismicSm1}
             onChange={handleChange}
             name={'seismicSm1'}
             label={
