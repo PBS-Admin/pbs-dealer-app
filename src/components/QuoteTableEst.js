@@ -21,20 +21,26 @@ import {
 } from '@fortawesome/free-regular-svg-icons';
 import CopyDialog from './CopyDialog';
 import { redirect, useRouter } from 'next/navigation';
+import { useUserContext } from '@/contexts/UserContext';
+import { useUIContext } from '@/contexts/UIContext';
 
 export default function QuoteTableEst() {
   const router = useRouter();
   const { data: session } = useSession();
-  const [quotes, setQuotes] = useState([]);
-  const [companies, setCompanies] = useState([]);
-  const [rsms, setRsms] = useState([]);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [quoteToDelete, setQuoteToDelete] = useState(null);
-  const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
-  const [quoteToCopy, setQuoteToCopy] = useState(null);
+  // Contexts
+  const {
+    quotes,
+    rsms,
+    isLoading,
+    error,
+    fetchQuotes,
+    deleteQuote,
+    copyQuote,
+    getNameById,
+  } = useUserContext();
+
+  const { dialogs, updateDialog, showToast } = useUIContext();
 
   const tabs = [
     { key: 'all', name: 'All Quotes' },
@@ -49,6 +55,10 @@ export default function QuoteTableEst() {
   const activeTabRef = useRef(null);
 
   useEffect(() => {
+    fetchQuotes();
+  }, [fetchQuotes]);
+
+  useEffect(() => {
     if (activeTabRef.current && tabListRef.current) {
       const tabList = tabListRef.current;
       const activeTab = activeTabRef.current;
@@ -60,154 +70,67 @@ export default function QuoteTableEst() {
     }
   }, [activeTabKey]);
 
-  useEffect(() => {
-    if (!session) {
-      console.log('No session, redirecting to login');
-      redirect('/login');
-      return;
-    }
-
-    const fetchQuotes = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(
-          `/api/auth/open?company=${session.user.company}`
-        );
-        if (!response.ok) {
-          throw new Error('Failed to fetch quotes');
-        }
-        const data = await response.json();
-        setQuotes(data.quotes);
-        setCompanies(data.companies);
-        setRsms(data.rsms);
-      } catch (err) {
-        console.error('Error fetching quotes:', err);
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchQuotes();
-  }, [session]);
-
   const handleQuoteClick = (e, quoteId) => {
     e.preventDefault();
     router.refresh();
     router.push(`/quote/${quoteId}`);
   };
 
-  const openDeleteDialog = (quoteId) => {
-    setQuoteToDelete(quoteId);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const closeDeleteDialog = () => {
-    setIsDeleteDialogOpen(false);
-    setQuoteToDelete(null);
-  };
-
-  const openCopyDialog = (quoteId) => {
-    setQuoteToCopy(quoteId);
-    setIsCopyDialogOpen(true);
-  };
-
-  const closeCopyDialog = () => {
-    setIsCopyDialogOpen(false);
-    setQuoteToCopy(null);
-  };
-
   const handleDeleteQuote = async () => {
-    if (!quoteToDelete) return;
+    const quoteId = dialogs.deleteQuote.data;
+    const success = await deleteQuote(quoteId);
 
-    try {
-      const url = new URL(
-        `/api/quotes/${quoteToDelete}`,
-        window.location.origin
-      );
-
-      const response = await fetch(url.toString(), {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    if (success) {
+      showToast({
+        title: 'Success',
+        message: 'Quote deleted successfully',
+        type: 'success',
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete quote');
-      }
-
-      // Remove the deleted quote from the list
-      setQuotes(quotes.filter((quote) => quote.ID !== quoteToDelete));
-      closeDeleteDialog();
-    } catch (error) {
-      console.error('Error deleting quote:', error);
-      alert('Failed to delete quote. Please try again.');
+    } else {
+      showToast({
+        title: 'Error',
+        message: 'Failed to delete quote',
+        type: 'error',
+      });
     }
+
+    updateDialog('deleteQuote', { isOpen: false, data: null });
   };
 
   const handleCopyQuote = async () => {
-    if (!quoteToCopy) return;
+    const quoteId = dialogs.copyBuilding.data;
+    const success = await copyQuote(quoteId);
 
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(`/api/auth/quote/${quoteToCopy}`);
-        if (!response.ok) {
-          throw new Error('Failed to copy quote');
-        }
-        const data = await response.json();
-
-        const currentQuote = 0;
-        const company = data.quote.Company;
-        const user = {
-          company: company,
-          id: session.user.id,
-        };
-        const values = JSON.parse(data.quote.QuoteData);
-
-        const saveResponse = await fetch('/api/auth/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ currentQuote, user, values }),
-        });
-
-        if (saveResponse.ok) {
-          const saveData = await saveResponse.json();
-
-          if (isNaN(saveData.message.quoteId)) {
-            console.log("Couldn't find a quote id");
-          } else {
-            data.quote.ID = saveData.message.quoteId;
-            data.quote.Quote = saveData.message.quoteNum;
-            setQuotes([...quotes, data.quote]);
-          }
-        } else {
-          console.log('Response was not ok');
-        }
-      } catch (err) {
-        console.error('Error fetching quotes:', err);
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-
-      closeCopyDialog();
-    } catch (error) {
-      console.error('Error copying quote:', error);
-      alert('Failed to copy quote. Please try again.');
+    if (success) {
+      showToast({
+        title: 'Success',
+        message: 'Quote copied successfully',
+        type: 'success',
+      });
+    } else {
+      showToast({
+        title: 'Error',
+        message: 'Failed to copy quote',
+        type: 'error',
+      });
     }
+
+    updateDialog('copyBuilding', { isOpen: false, data: null });
   };
 
-  const rsmLookup = useMemo(
-    () => Object.fromEntries(rsms.map((rsm) => [rsm.ID, rsm.Name])),
-    [rsms]
-  );
+  const openDeleteDialog = (quoteId) => {
+    updateDialog('deleteQuote', {
+      isOpen: true,
+      data: quoteId,
+    });
+  };
+
+  const openCopyDialog = (quoteId) => {
+    updateDialog('copyBuilding', {
+      isOpen: true,
+      data: quoteId,
+    });
+  };
 
   const filteredQuotes = useMemo(() => {
     if (activeTabKey === 'all') return quotes;
@@ -216,6 +139,14 @@ export default function QuoteTableEst() {
     }
     return quotes.filter((quote) => quote.Progress.toString() & activeTabKey);
   }, [quotes, activeTabKey]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className={styles.quoteContainer}>
@@ -314,7 +245,8 @@ export default function QuoteTableEst() {
                         className={styles.quoteLink}
                         onClick={(e) => handleQuoteClick(e, quote.ID)}
                       >
-                        {rsmLookup[quote.SalesPerson] || quote.SalesPerson}
+                        {quote.SalesPerson}
+                        {/* {rsms[quote.SalesPerson].name || quote.SalesPerson} */}
                       </a>
                     </td>
                     <td>
@@ -356,22 +288,26 @@ export default function QuoteTableEst() {
           ) : (
             <h5 className={styles.message}>No quotes found</h5>
           )}
-          {isDeleteDialogOpen && (
+          {dialogs.deleteQuote.isOpen && (
             <DeleteDialog
-              isOpen={isDeleteDialogOpen}
+              isOpen={dialogs.deleteQuote.isOpen}
               onDelete={handleDeleteQuote}
-              onClose={closeDeleteDialog}
+              onClose={() =>
+                updateDialog('deleteQuote', { isOpen: false, data: null })
+              }
               title="Confirm Deletion"
               message="Are you sure you want to delete this quote?"
             />
           )}
-          {isCopyDialogOpen && (
+          {dialogs.copyBuilding.isOpen && (
             <CopyDialog
-              isOpen={isCopyDialogOpen}
+              isOpen={dialogs.copyBuilding.isOpen}
               onCopy={handleCopyQuote}
-              onClose={closeCopyDialog}
+              onClose={() =>
+                updateDialog('copyBuilding', { isOpen: false, data: null })
+              }
               title="Confirm Copy"
-              message="Do you want to copy this quote to a new building?"
+              message="Do you want to copy this quote to a new quote?"
             />
           )}
         </div>

@@ -14,12 +14,10 @@ export default async function Tracker() {
     redirect('/login');
   }
 
-  const isEstimator = session.user.estimator === 1;
-
   return (
     <main className={styles.dashMain}>
-      <PageHeader session={session} title="Quote Tracker" isLogOut={false} />
-      <QuoteTrackerClient isEstimator={isEstimator} />
+      <PageHeader title="Quote Tracker" isLogOut={false} />
+      <QuoteTrackerClient />
     </main>
   );
 }

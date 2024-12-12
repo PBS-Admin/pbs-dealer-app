@@ -4,7 +4,9 @@ config.autoAddCss = false;
 
 import './globals.css';
 import { Inter } from 'next/font/google';
-import { AuthProvider } from '../components/AuthProvider';
+import { AuthProvider } from '../contexts/AuthProvider';
+import { UserProvider } from '../contexts/UserContext';
+import { UIProvider } from '../contexts/UIContext';
 import VersionCheck from '../components/VersionCheck';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -28,8 +30,12 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <VersionCheck />
-          {children}
+          <UserProvider>
+            <UIProvider>
+              <VersionCheck />
+              {children}
+            </UIProvider>
+          </UserProvider>
         </AuthProvider>
       </body>
     </html>

@@ -15,22 +15,13 @@ import {
   polycarbWallSize,
   polycarbWallColor,
 } from '../../util/dropdownOptions';
+import { useColorSelection } from '@/hooks/useColorSelection';
+import { useUIContext } from '@/contexts/UIContext';
+import { useBuildingContext } from '@/contexts/BuildingContext';
+import ReusableColorSelect from '../Inputs/ReusableColorSelect';
 
-const BuildingWallOptions = ({
-  values,
-  activeBuilding,
-  handleNestedChange,
-  handleWallLinerPanelChange,
-  handleWainscotChange,
-  handlePartialWallChange,
-  handleWallSkirtChange,
-  handleCanopyChange,
-  handleWallReliteChange,
-  colorClicked,
-  setValues,
-  isDesktop,
-  locked,
-}) => {
+const BuildingWallOptions = ({ locked }) => {
+  // Local State
   const [activeWallLinerPanel, setActiveWallLinerPanel] = useState(0);
   const [activeWainscot, setActiveWainscot] = useState(0);
   const [activePartialWall, setActivePartialWall] = useState(0);
@@ -38,320 +29,123 @@ const BuildingWallOptions = ({
   const [activeCanopy, setActiveCanopy] = useState(0);
   const [activeWallRelite, setActiveWallRelite] = useState(0);
 
-  const addWallLinerPanel = (buildingIndex) => {
-    setValues((prev) => ({
-      ...prev,
-      buildings: prev.buildings.map((building, index) =>
-        index === buildingIndex
-          ? {
-              ...building,
-              wallLinerPanels: [
-                ...building.wallLinerPanels,
-                {
-                  wall: 'front',
-                  start: '',
-                  end: '',
-                  height: '',
-                  wallLinerPanelType: 'pbr',
-                  wallLinerPanelGauge: 26,
-                  wallLinerPanelFinish: 'painted',
-                  wallLinerPanelColor: 'NC',
-                  wallLinerTrim: {
-                    trim: { vendor: 'PBS', gauge: 26, color: 'NC' },
-                  },
-                },
-              ],
-            }
-          : building
-      ),
-    }));
+  // Contexts
+  const { activeBuilding } = useUIContext();
+  const {
+    state,
+    handleNestedChange,
+    addWallLinerPanel,
+    removeWallLinerPanel,
+    handleWallLinerPanelChange,
+    addWainscot,
+    removeWainscot,
+    handleWainscotChange,
+    addPartialWall,
+    removePartialWall,
+    handlePartialWallChange,
+    addWallSkirt,
+    removeWallSkirt,
+    handleWallSkirtChange,
+    addCanopy,
+    removeCanopy,
+    handleCanopyChange,
+    addWallRelite,
+    removeWallRelite,
+    handleWallReliteChange,
+  } = useBuildingContext();
+
+  // Hooks
+  const { colorSelectInfo, handleColorClick, handleColorSelect } =
+    useColorSelection();
+
+  // Local Functions
+  const handleAddWallLinerPanel = () => {
+    addWallLinerPanel(activeBuilding);
+    setActiveWallLinerPanel(
+      state.buildings[activeBuilding].wallLinerPanels.length
+    );
   };
 
-  const addWainscot = (buildingIndex) => {
-    setValues((prev) => ({
-      ...prev,
-      buildings: prev.buildings.map((building, index) =>
-        index === buildingIndex
-          ? {
-              ...building,
-              wainscots: [
-                ...building.wainscots,
-                {
-                  wall: 'front',
-                  start: '',
-                  end: '',
-                  height: '',
-                  panelOption: 'break',
-                  wainscotPanelType: 'pbr',
-                  wainscotPanelGauge: 26,
-                  wainscotPanelFinish: 'painted',
-                  wainscotPanelColor: 'NC',
-                  wainscotTrim: {
-                    base: { vendor: 'PBS', gauge: 26, color: 'NC' },
-                    leftEnd: { vendor: 'PBS', gauge: 26, color: 'NC' },
-                    rightEnd: { vendor: 'PBS', gauge: 26, color: 'NC' },
-                    top: { vendor: 'PBS', gauge: 26, color: 'NC' },
-                    jamb: { vendor: 'PBS', gauge: 26, color: 'NC' },
-                  },
-                },
-              ],
-            }
-          : building
-      ),
-    }));
+  const handleRemoveWallLinerPanel = (wallLinerPanelIndex) => {
+    removeWallLinerPanel(activeBuilding, wallLinerPanelIndex);
+    if (wallLinerPanelIndex === activeWallLinerPanel) {
+      setActiveWallLinerPanel(0);
+    } else if (wallLinerPanelIndex < activeWallLinerPanel) {
+      setActiveWallLinerPanel((prev) => prev - 1);
+    }
   };
 
-  const addPartialWall = (buildingIndex) => {
-    setValues((prev) => ({
-      ...prev,
-      buildings: prev.buildings.map((building, index) =>
-        index === buildingIndex
-          ? {
-              ...building,
-              partialWalls: [
-                ...building.partialWalls,
-                {
-                  wall: 'front',
-                  start: '',
-                  end: '',
-                  height: '',
-                  topOfWall: 'B',
-                },
-              ],
-            }
-          : building
-      ),
-    }));
+  const handleAddWainscot = () => {
+    addWainscot(activeBuilding);
+    setActiveWainscot(state.buildings[activeBuilding].wainscots.length);
   };
 
-  const addWallSkirt = (buildingIndex) => {
-    setValues((prev) => ({
-      ...prev,
-      buildings: prev.buildings.map((building, index) =>
-        index === buildingIndex
-          ? {
-              ...building,
-              wallSkirts: [
-                ...building.wallSkirts,
-                {
-                  wall: 'front',
-                  startBay: '',
-                  endBay: '',
-                  height: '',
-                  cutColumns: false,
-                },
-              ],
-            }
-          : building
-      ),
-    }));
+  const handleRemoveWainscot = (wainscotIndex) => {
+    removeWainscot(activeBuilding, wainscotIndex);
+    if (wainscotIndex === activeWainscot) {
+      setActiveWainscot(0);
+    } else if (wainscotIndex < activeWainscot) {
+      setActiveWainscot((prev) => prev - 1);
+    }
   };
 
-  const addCanopy = (buildingIndex) => {
-    setValues((prev) => ({
-      ...prev,
-      buildings: prev.buildings.map((building, index) =>
-        index === buildingIndex
-          ? {
-              ...building,
-              canopies: [
-                ...building.canopies,
-                {
-                  wall: 'front',
-                  width: '',
-                  slope: '',
-                  startBay: '',
-                  endBay: '',
-                  elevation: '',
-                  addColumns: false,
-                  canopyRoofPanelType: 'pbr',
-                  canopyRoofPanelGauge: 26,
-                  canopyRoofPanelFinish: 'painted',
-                  canopyRoofPanelColor: 'NC',
-                  canopySoffitPanelType: 'pbr',
-                  canopySoffitPanelGauge: 26,
-                  canopySoffitPanelFinish: 'painted',
-                  canopySoffitPanelColor: 'NC',
-                },
-              ],
-            }
-          : building
-      ),
-    }));
+  const handleAddPartialWall = () => {
+    addPartialWall(activeBuilding);
+    setActivePartialWall(state.buildings[activeBuilding].partialWalls.length);
   };
 
-  const addWallRelite = (buildingIndex) => {
-    setValues((prev) => ({
-      ...prev,
-      buildings: prev.buildings.map((building, index) =>
-        index === buildingIndex
-          ? {
-              ...building,
-              wallRelites: [
-                ...building.wallRelites,
-                {
-                  wall: 'front',
-                  size: '3',
-                  color: 'clear',
-                  qty: '',
-                  location: '',
-                  offset: '',
-                  cutPanels: false,
-                },
-              ],
-            }
-          : building
-      ),
-    }));
+  const handleRemovePartialWall = (partialWallIndex) => {
+    removePartialWall(activeBuilding, partialWallIndex);
+    if (partialWallIndex === activePartialWall) {
+      setActivePartialWall(0);
+    } else if (partialWallIndex < activePartialWall) {
+      setActivePartialWall((prev) => prev - 1);
+    }
   };
 
-  const removeWallLinerPanel = (buildingIndex, wallLinerPanelIndex) => {
-    setValues((prev) => {
-      const newBuildings = prev.buildings.map((building, bIndex) =>
-        bIndex === buildingIndex
-          ? {
-              ...building,
-              wallLinerPanels: building.wallLinerPanels.filter(
-                (_, lpIndex) => lpIndex !== wallLinerPanelIndex
-              ),
-            }
-          : building
-      );
-
-      const remainingWallLinerPanels =
-        newBuildings[buildingIndex].wallLinerPanels.length;
-      if (
-        wallLinerPanelIndex <= activeWallLinerPanel &&
-        activeWallLinerPanel > 0
-      ) {
-        setActiveWallLinerPanel(
-          Math.min(activeWallLinerPanel - 1, remainingWallLinerPanels - 1)
-        );
-      }
-
-      return { ...prev, buildings: newBuildings };
-    });
+  const handleAddWallSkirt = () => {
+    addWallSkirt(activeBuilding);
+    setActiveWallSkirt(state.buildings[activeBuilding].wallSkirts.length);
   };
 
-  const removeWainscot = (buildingIndex, wainscotIndex) => {
-    setValues((prev) => {
-      const newBuildings = prev.buildings.map((building, bIndex) =>
-        bIndex === buildingIndex
-          ? {
-              ...building,
-              wainscots: building.wainscots.filter(
-                (_, wIndex) => wIndex !== wainscotIndex
-              ),
-            }
-          : building
-      );
-
-      const remainingWainscots = newBuildings[buildingIndex].wainscots.length;
-      if (wainscotIndex <= activeWainscot && activeWainscot > 0) {
-        setActiveWainscot(Math.min(activeWainscot - 1, remainingWainscots - 1));
-      }
-
-      return { ...prev, buildings: newBuildings };
-    });
+  const handleRemoveWallSkirt = (wallSkirtIndex) => {
+    removeWallSkirt(activeBuilding, wallSkirtIndex);
+    if (wallSkirtIndex === activeWallSkirt) {
+      setActiveWallSkirt(0);
+    } else if (wallSkirtIndex < activeWallSkirt) {
+      setActiveWallSkirt((prev) => prev - 1);
+    }
   };
 
-  const removePartialWall = (buildingIndex, partialWallIndex) => {
-    setValues((prev) => {
-      const newBuildings = prev.buildings.map((building, bIndex) =>
-        bIndex === buildingIndex
-          ? {
-              ...building,
-              partialWalls: building.partialWalls.filter(
-                (_, pwIndex) => pwIndex !== partialWallIndex
-              ),
-            }
-          : building
-      );
-
-      const remainingPartialWalls =
-        newBuildings[buildingIndex].partialWalls.length;
-      if (partialWallIndex <= activePartialWall && activePartialWall > 0) {
-        setActivePartialWall(
-          Math.min(activePartialWall - 1, remainingPartialWalls - 1)
-        );
-      }
-
-      return { ...prev, buildings: newBuildings };
-    });
+  const handleAddCanopy = () => {
+    addCanopy(activeBuilding);
+    setActiveCanopy(state.buildings[activeBuilding].canopies.length);
   };
 
-  const removeWallSkirt = (buildingIndex, wallSkirtIndex) => {
-    setValues((prev) => {
-      const newBuildings = prev.buildings.map((building, bIndex) =>
-        bIndex === buildingIndex
-          ? {
-              ...building,
-              wallSkirts: building.wallSkirts.filter(
-                (_, wsIndex) => wsIndex !== wallSkirtIndex
-              ),
-            }
-          : building
-      );
-
-      const remainingWallSkirts = newBuildings[buildingIndex].wallSkirts.length;
-      if (wallSkirtIndex <= activeWallSkirt && activeWallSkirt > 0) {
-        setActiveWallSkirt(
-          Math.min(activeWallSkirt - 1, remainingWallSkirts - 1)
-        );
-      }
-
-      return { ...prev, buildings: newBuildings };
-    });
+  const handleRemoveCanopy = (canopyIndex) => {
+    removeCanopy(activeBuilding, canopyIndex);
+    if (canopyIndex === activeCanopy) {
+      setActiveCanopy(0);
+    } else if (canopyIndex < activeCanopy) {
+      setActiveCanopy((prev) => prev - 1);
+    }
   };
 
-  const removeCanopy = (buildingIndex, canopyIndex) => {
-    setValues((prev) => {
-      const newBuildings = prev.buildings.map((building, bIndex) =>
-        bIndex === buildingIndex
-          ? {
-              ...building,
-              canopies: building.canopies.filter(
-                (_, cIndex) => cIndex !== canopyIndex
-              ),
-            }
-          : building
-      );
-
-      // Update activeCanopy if necessary
-      const remainingCanopies = newBuildings[buildingIndex].canopies.length;
-      if (canopyIndex <= activeCanopy && activeCanopy > 0) {
-        setActiveCanopy(Math.min(activeCanopy - 1, remainingCanopies - 1));
-      }
-
-      return { ...prev, buildings: newBuildings };
-    });
+  const handleAddWallRelite = () => {
+    addWallRelite(activeBuilding);
+    setActiveWallRelite(state.buildings[activeBuilding].wallRelites.length);
   };
 
-  const removeWallRelites = (buildingIndex, wallReliteIndex) => {
-    setValues((prev) => {
-      const newBuildings = prev.buildings.map((building, bIndex) =>
-        bIndex === buildingIndex
-          ? {
-              ...building,
-              wallRelites: building.wallRelites.filter(
-                (_, wsIndex) => wsIndex !== wallReliteIndex
-              ),
-            }
-          : building
-      );
-
-      const remainingWallRelites =
-        newBuildings[buildingIndex].wallRelites.length;
-      if (wallReliteIndex <= activeWallRelite && activeWallRelite > 0) {
-        setActiveWallRelite(
-          Math.min(activeWallRelite - 1, remainingWallRelites - 1)
-        );
-      }
-
-      return { ...prev, buildings: newBuildings };
-    });
+  const handleRemoveWallRelite = (wallReliteIndex) => {
+    removeWallRelite(activeBuilding, wallReliteIndex);
+    if (wallReliteIndex === activeWallRelite) {
+      setActiveWallRelite(0);
+    } else if (wallReliteIndex < activeWallRelite) {
+      setActiveWallRelite((prev) => prev - 1);
+    }
   };
 
+  // JSX
   return (
     <>
       {/* Sheeting & Insulation */}
@@ -364,7 +158,7 @@ const BuildingWallOptions = ({
           <div className="grid2">
             <ReusableSelect
               name={`buildingWallInsulation-${activeBuilding}`}
-              value={values.buildings[activeBuilding].wallInsulation}
+              value={state.buildings[activeBuilding].wallInsulation}
               onChange={(e) =>
                 handleNestedChange(
                   activeBuilding,
@@ -373,9 +167,7 @@ const BuildingWallOptions = ({
                 )
               }
               options={wallInsulation}
-              disabled={
-                !values.buildings[activeBuilding].allWallsSame || locked
-              }
+              disabled={!state.buildings[activeBuilding].allWallsSame || locked}
               label="Wall Insulation:"
             />
             <div className="checkboxGroup">
@@ -384,9 +176,7 @@ const BuildingWallOptions = ({
                   type="checkbox"
                   id={`buildingWallInsulationOthers-${activeBuilding}`}
                   name={`buildingWallInsulationOthers-${activeBuilding}`}
-                  checked={
-                    values.buildings[activeBuilding].wallInsulationOthers
-                  }
+                  checked={state.buildings[activeBuilding].wallInsulationOthers}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
@@ -414,7 +204,7 @@ const BuildingWallOptions = ({
                   type="checkbox"
                   id={`buildingAllWallsSame-${activeBuilding}`}
                   name={`buildingAllWallsSame-${activeBuilding}`}
-                  checked={values.buildings[activeBuilding].allWallsSame}
+                  checked={state.buildings[activeBuilding].allWallsSame}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
@@ -436,24 +226,24 @@ const BuildingWallOptions = ({
             name="wall"
             label="Wall"
             bldg={activeBuilding}
-            value={values.buildings[activeBuilding]}
+            value={state.buildings[activeBuilding]}
             onChange={(e, keyString) =>
               handleNestedChange(activeBuilding, keyString, e.target.value)
             }
-            colorClicked={colorClicked}
-            disabled={!values.buildings[activeBuilding].allWallsSame || locked}
+            colorClicked={handleColorClick}
+            disabled={!state.buildings[activeBuilding].allWallsSame || locked}
           />
         </div>
 
-        {!values.buildings[activeBuilding].allWallsSame && (
+        {!state.buildings[activeBuilding].allWallsSame && (
           <>
             <div className="divider"></div>
 
             <div className="grid4 alignTop">
               <div
                 className={
-                  values.buildings[activeBuilding].leftFrame == 'insetRF' ||
-                  values.buildings[activeBuilding].rightFrame == 'insetRF'
+                  state.buildings[activeBuilding].leftFrame == 'insetRF' ||
+                  state.buildings[activeBuilding].rightFrame == 'insetRF'
                     ? 'span2'
                     : 'grid'
                 }
@@ -462,7 +252,7 @@ const BuildingWallOptions = ({
                   name="frontWall"
                   label="Front Sidewall"
                   bldg={activeBuilding}
-                  value={values.buildings[activeBuilding]}
+                  value={state.buildings[activeBuilding]}
                   onChange={(e, keyString) =>
                     handleNestedChange(
                       activeBuilding,
@@ -470,12 +260,12 @@ const BuildingWallOptions = ({
                       e.target.value
                     )
                   }
-                  colorClicked={colorClicked}
+                  colorClicked={handleColorClick}
                   disabled={locked}
                 />
                 <ReusableSelect
                   name={`buildingFrontWallInsulation-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].wallFrontInsulation}
+                  value={state.buildings[activeBuilding].wallFrontInsulation}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
@@ -491,8 +281,8 @@ const BuildingWallOptions = ({
               <div className="divider offOnTablet"></div>
               <div
                 className={
-                  values.buildings[activeBuilding].leftFrame == 'insetRF' ||
-                  values.buildings[activeBuilding].rightFrame == 'insetRF'
+                  state.buildings[activeBuilding].leftFrame == 'insetRF' ||
+                  state.buildings[activeBuilding].rightFrame == 'insetRF'
                     ? 'span2'
                     : 'grid'
                 }
@@ -501,7 +291,7 @@ const BuildingWallOptions = ({
                   name="backWall"
                   label="Back Sidewall"
                   bldg={activeBuilding}
-                  value={values.buildings[activeBuilding]}
+                  value={state.buildings[activeBuilding]}
                   onChange={(e, keyString) =>
                     handleNestedChange(
                       activeBuilding,
@@ -509,12 +299,12 @@ const BuildingWallOptions = ({
                       e.target.value
                     )
                   }
-                  colorClicked={colorClicked}
+                  colorClicked={handleColorClick}
                   disabled={locked}
                 />
                 <ReusableSelect
                   name={`buildingBackWallInsulation-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].wallBackInsulation}
+                  value={state.buildings[activeBuilding].wallBackInsulation}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
@@ -529,20 +319,20 @@ const BuildingWallOptions = ({
               </div>
               <div
                 className={
-                  values.buildings[activeBuilding].leftFrame == 'insetRF' ||
-                  values.buildings[activeBuilding].rightFrame == 'insetRF'
+                  state.buildings[activeBuilding].leftFrame == 'insetRF' ||
+                  state.buildings[activeBuilding].rightFrame == 'insetRF'
                     ? 'divider span4'
                     : 'divider offOnDesktop span2'
                 }
               ></div>
-              {values.buildings[activeBuilding].leftFrame == 'insetRF' && (
+              {state.buildings[activeBuilding].leftFrame == 'insetRF' && (
                 <>
                   <div className="grid">
                     <ReusablePanel
                       name="outerLeftWall"
                       label="Outer Left Endwall"
                       bldg={activeBuilding}
-                      value={values.buildings[activeBuilding]}
+                      value={state.buildings[activeBuilding]}
                       onChange={(e, keyString) =>
                         handleNestedChange(
                           activeBuilding,
@@ -550,13 +340,13 @@ const BuildingWallOptions = ({
                           e.target.value
                         )
                       }
-                      colorClicked={colorClicked}
+                      colorClicked={handleColorClick}
                       disabled={locked}
                     />
                     <ReusableSelect
                       name={`buildingOuterLeftWallInsulation-${activeBuilding}`}
                       value={
-                        values.buildings[activeBuilding].wallOuterLeftInsulation
+                        state.buildings[activeBuilding].wallOuterLeftInsulation
                       }
                       onChange={(e) =>
                         handleNestedChange(
@@ -573,8 +363,8 @@ const BuildingWallOptions = ({
                   <div className="divider offOnTablet"></div>
                 </>
               )}
-              {values.buildings[activeBuilding].leftFrame != 'insetRF' &&
-                values.buildings[activeBuilding].rightFrame == 'insetRF' && (
+              {state.buildings[activeBuilding].leftFrame != 'insetRF' &&
+                state.buildings[activeBuilding].rightFrame == 'insetRF' && (
                   <div className="onPhone"></div>
                 )}
               <div className="grid">
@@ -582,7 +372,7 @@ const BuildingWallOptions = ({
                   name="leftWall"
                   label="Left Endwall"
                   bldg={activeBuilding}
-                  value={values.buildings[activeBuilding]}
+                  value={state.buildings[activeBuilding]}
                   onChange={(e, keyString) =>
                     handleNestedChange(
                       activeBuilding,
@@ -590,12 +380,12 @@ const BuildingWallOptions = ({
                       e.target.value
                     )
                   }
-                  colorClicked={colorClicked}
+                  colorClicked={handleColorClick}
                   disabled={locked}
                 />
                 <ReusableSelect
                   name={`buildingLeftWallInsulation-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].wallLeftInsulation}
+                  value={state.buildings[activeBuilding].wallLeftInsulation}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
@@ -608,8 +398,8 @@ const BuildingWallOptions = ({
                   disabled={locked}
                 />
               </div>
-              {values.buildings[activeBuilding].leftFrame == 'insetRF' ||
-              values.buildings[activeBuilding].rightFrame == 'insetRF' ? (
+              {state.buildings[activeBuilding].leftFrame == 'insetRF' ||
+              state.buildings[activeBuilding].rightFrame == 'insetRF' ? (
                 <div className="divider offOnDesktop span2"></div>
               ) : (
                 <div className="divider offOnTablet"></div>
@@ -619,7 +409,7 @@ const BuildingWallOptions = ({
                   name="rightWall"
                   label="Right Endwall"
                   bldg={activeBuilding}
-                  value={values.buildings[activeBuilding]}
+                  value={state.buildings[activeBuilding]}
                   onChange={(e, keyString) =>
                     handleNestedChange(
                       activeBuilding,
@@ -627,12 +417,12 @@ const BuildingWallOptions = ({
                       e.target.value
                     )
                   }
-                  colorClicked={colorClicked}
+                  colorClicked={handleColorClick}
                   disabled={locked}
                 />
                 <ReusableSelect
                   name={`buildingRightWallInsulation-${activeBuilding}`}
-                  value={values.buildings[activeBuilding].wallRightInsulation}
+                  value={state.buildings[activeBuilding].wallRightInsulation}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
@@ -645,7 +435,7 @@ const BuildingWallOptions = ({
                   disabled={locked}
                 />
               </div>
-              {values.buildings[activeBuilding].rightFrame == 'insetRF' && (
+              {state.buildings[activeBuilding].rightFrame == 'insetRF' && (
                 <>
                   <div className="divider offOnTablet"></div>
                   <div className="grid">
@@ -653,7 +443,7 @@ const BuildingWallOptions = ({
                       name="outerRightWall"
                       label="Outer Right Endwall"
                       bldg={activeBuilding}
-                      value={values.buildings[activeBuilding]}
+                      value={state.buildings[activeBuilding]}
                       onChange={(e, keyString) =>
                         handleNestedChange(
                           activeBuilding,
@@ -661,14 +451,13 @@ const BuildingWallOptions = ({
                           e.target.value
                         )
                       }
-                      colorClicked={colorClicked}
+                      colorClicked={handleColorClick}
                       disabled={locked}
                     />
                     <ReusableSelect
                       name={`buildingOuterRightWallInsulation-${activeBuilding}`}
                       value={
-                        values.buildings[activeBuilding]
-                          .wallOuterRightInsulation
+                        state.buildings[activeBuilding].wallOuterRightInsulation
                       }
                       onChange={(e) =>
                         handleNestedChange(
@@ -694,12 +483,12 @@ const BuildingWallOptions = ({
         <header>
           <h3>Wall Liner Panels</h3>
         </header>
-        {values.buildings[activeBuilding].frontGirtType != 'open' ||
-        values.buildings[activeBuilding].backGirtType != 'open' ||
-        values.buildings[activeBuilding].leftGirtType != 'open' ||
-        values.buildings[activeBuilding].rightGirtType != 'open' ? (
+        {state.buildings[activeBuilding].frontGirtType != 'open' ||
+        state.buildings[activeBuilding].backGirtType != 'open' ||
+        state.buildings[activeBuilding].leftGirtType != 'open' ||
+        state.buildings[activeBuilding].rightGirtType != 'open' ? (
           <>
-            {values.buildings[activeBuilding].wallLinerPanels?.length > 0 && (
+            {state.buildings[activeBuilding].wallLinerPanels?.length > 0 && (
               <div className="onTablet">
                 <div className="tableGrid5">
                   <h5>Wall</h5>
@@ -715,7 +504,7 @@ const BuildingWallOptions = ({
                 </div>
               </div>
             )}
-            {values.buildings[activeBuilding].wallLinerPanels?.map(
+            {state.buildings[activeBuilding].wallLinerPanels?.map(
               (wallLinerPanel, wallLinerPanelIndex) => (
                 <Fragment
                   key={`building-${activeBuilding}-wallLinerPanel-${wallLinerPanelIndex}`}
@@ -825,7 +614,7 @@ const BuildingWallOptions = ({
                       type="button"
                       className="icon reject deleteRow"
                       onClick={() =>
-                        removeWallLinerPanel(
+                        handleRemoveWallLinerPanel(
                           activeBuilding,
                           wallLinerPanelIndex
                         )
@@ -840,7 +629,7 @@ const BuildingWallOptions = ({
               )
             )}
 
-            {values.buildings[activeBuilding].wallLinerPanels?.length > 0 && (
+            {state.buildings[activeBuilding].wallLinerPanels?.length > 0 && (
               <>
                 <div className="divider onDesktop"></div>
                 <div className="grid2">
@@ -851,7 +640,7 @@ const BuildingWallOptions = ({
                     bldg={activeBuilding}
                     idx={activeWallLinerPanel}
                     value={
-                      values.buildings[activeBuilding].wallLinerPanels[
+                      state.buildings[activeBuilding].wallLinerPanels[
                         activeWallLinerPanel
                       ]
                     }
@@ -863,7 +652,7 @@ const BuildingWallOptions = ({
                         e.target.value
                       )
                     }
-                    colorClicked={colorClicked}
+                    colorClicked={handleColorClick}
                     disabled={locked}
                   />
                 </div>
@@ -876,7 +665,12 @@ const BuildingWallOptions = ({
                   <button
                     type="button"
                     className="addButton"
-                    onClick={() => addWallLinerPanel(activeBuilding)}
+                    onClick={() => {
+                      handleAddWallLinerPanel(activeBuilding);
+                      setActiveWallLinerPanel(
+                        state.buildings[activeBuilding].wallLinerPanels.length
+                      );
+                    }}
                   >
                     <FontAwesomeIcon icon={faPlus} />
                   </button>
@@ -898,12 +692,12 @@ const BuildingWallOptions = ({
         <header>
           <h3>Wainscots</h3>
         </header>
-        {values.buildings[activeBuilding].frontGirtType != 'open' ||
-        values.buildings[activeBuilding].backGirtType != 'open' ||
-        values.buildings[activeBuilding].leftGirtType != 'open' ||
-        values.buildings[activeBuilding].rightGirtType != 'open' ? (
+        {state.buildings[activeBuilding].frontGirtType != 'open' ||
+        state.buildings[activeBuilding].backGirtType != 'open' ||
+        state.buildings[activeBuilding].leftGirtType != 'open' ||
+        state.buildings[activeBuilding].rightGirtType != 'open' ? (
           <>
-            {values.buildings[activeBuilding].wainscots.length > 0 && (
+            {state.buildings[activeBuilding].wainscots.length > 0 && (
               <div className="onTablet">
                 <div className="tableGrid6">
                   <h5>Wall</h5>
@@ -919,7 +713,7 @@ const BuildingWallOptions = ({
                 </div>
               </div>
             )}
-            {values.buildings[activeBuilding].wainscots.map(
+            {state.buildings[activeBuilding].wainscots.map(
               (wainscot, wainscotIndex) => (
                 <Fragment
                   key={`building-${activeBuilding}-wainscot-${wainscotIndex}`}
@@ -1049,7 +843,7 @@ const BuildingWallOptions = ({
                       type="button"
                       className="icon reject deleteRow"
                       onClick={() =>
-                        removeWainscot(activeBuilding, wainscotIndex)
+                        handleRemoveWainscot(activeBuilding, wainscotIndex)
                       }
                       disabled={locked}
                     >
@@ -1061,7 +855,7 @@ const BuildingWallOptions = ({
               )
             )}
 
-            {values.buildings[activeBuilding].wainscots.length > 0 && (
+            {state.buildings[activeBuilding].wainscots.length > 0 && (
               <>
                 <div className="divider onDesktop"></div>
                 <div className="grid2">
@@ -1072,7 +866,7 @@ const BuildingWallOptions = ({
                     bldg={activeBuilding}
                     idx={activeWainscot}
                     value={
-                      values.buildings[activeBuilding].wainscots[activeWainscot]
+                      state.buildings[activeBuilding].wainscots[activeWainscot]
                     }
                     onChange={(e, keyString) =>
                       handleWainscotChange(
@@ -1082,7 +876,7 @@ const BuildingWallOptions = ({
                         e.target.value
                       )
                     }
-                    colorClicked={colorClicked}
+                    colorClicked={handleColorClick}
                     disabled={locked}
                   />
                 </div>
@@ -1095,7 +889,7 @@ const BuildingWallOptions = ({
                   <button
                     type="button"
                     className="addButton"
-                    onClick={() => addWainscot(activeBuilding)}
+                    onClick={() => handleAddWainscot(activeBuilding)}
                   >
                     <FontAwesomeIcon icon={faPlus} />
                   </button>
@@ -1117,12 +911,12 @@ const BuildingWallOptions = ({
         <header>
           <h3>Partial Walls</h3>
         </header>
-        {values.buildings[activeBuilding].frontGirtType != 'open' ||
-        values.buildings[activeBuilding].backGirtType != 'open' ||
-        values.buildings[activeBuilding].leftGirtType != 'open' ||
-        values.buildings[activeBuilding].rightGirtType != 'open' ? (
+        {state.buildings[activeBuilding].frontGirtType != 'open' ||
+        state.buildings[activeBuilding].backGirtType != 'open' ||
+        state.buildings[activeBuilding].leftGirtType != 'open' ||
+        state.buildings[activeBuilding].rightGirtType != 'open' ? (
           <>
-            {values.buildings[activeBuilding].partialWalls.length > 0 && (
+            {state.buildings[activeBuilding].partialWalls.length > 0 && (
               <div className="onTablet">
                 <div className="tableGrid6">
                   <h5>Wall</h5>
@@ -1138,7 +932,7 @@ const BuildingWallOptions = ({
                 </div>
               </div>
             )}
-            {values.buildings[activeBuilding].partialWalls.map(
+            {state.buildings[activeBuilding].partialWalls.map(
               (partialWall, partialWallIndex) => (
                 <Fragment
                   key={`building-${activeBuilding}-partialWall-${partialWallIndex}`}
@@ -1268,7 +1062,10 @@ const BuildingWallOptions = ({
                       type="button"
                       className="icon reject deleteRow"
                       onClick={() =>
-                        removePartialWall(activeBuilding, partialWallIndex)
+                        handleRemovePartialWall(
+                          activeBuilding,
+                          partialWallIndex
+                        )
                       }
                       disabled={locked}
                     >
@@ -1276,7 +1073,7 @@ const BuildingWallOptions = ({
                     </button>
                   </div>
                   {partialWallIndex + 1 <
-                    values.buildings[activeBuilding].partialWalls.length && (
+                    state.buildings[activeBuilding].partialWalls.length && (
                     <div className="divider offOnTablet"></div>
                   )}
                 </Fragment>
@@ -1289,7 +1086,7 @@ const BuildingWallOptions = ({
                   <button
                     type="button"
                     className="addButton"
-                    onClick={() => addPartialWall(activeBuilding)}
+                    onClick={() => handleAddPartialWall(activeBuilding)}
                   >
                     <FontAwesomeIcon icon={faPlus} />
                   </button>
@@ -1311,12 +1108,12 @@ const BuildingWallOptions = ({
         <header>
           <h3>Wall Skirts</h3>
         </header>
-        {values.buildings[activeBuilding].frontGirtType != 'open' ||
-        values.buildings[activeBuilding].backGirtType != 'open' ||
-        values.buildings[activeBuilding].leftGirtType != 'open' ||
-        values.buildings[activeBuilding].rightGirtType != 'open' ? (
+        {state.buildings[activeBuilding].frontGirtType != 'open' ||
+        state.buildings[activeBuilding].backGirtType != 'open' ||
+        state.buildings[activeBuilding].leftGirtType != 'open' ||
+        state.buildings[activeBuilding].rightGirtType != 'open' ? (
           <>
-            {values.buildings[activeBuilding].wallSkirts.length > 0 && (
+            {state.buildings[activeBuilding].wallSkirts.length > 0 && (
               <div className="onTablet">
                 <div className="tableGrid6">
                   <h5>Wall</h5>
@@ -1328,7 +1125,7 @@ const BuildingWallOptions = ({
                 </div>
               </div>
             )}
-            {values.buildings[activeBuilding].wallSkirts.map(
+            {state.buildings[activeBuilding].wallSkirts.map(
               (wallSkirt, wallSkirtIndex) => (
                 <Fragment
                   key={`building-${activeBuilding}-wallSkirt-${wallSkirtIndex}`}
@@ -1453,7 +1250,7 @@ const BuildingWallOptions = ({
                       type="button"
                       className="icon reject deleteRow"
                       onClick={() =>
-                        removeWallSkirt(activeBuilding, wallSkirtIndex)
+                        handleRemoveWallSkirt(activeBuilding, wallSkirtIndex)
                       }
                       disabled={locked}
                     >
@@ -1461,7 +1258,7 @@ const BuildingWallOptions = ({
                     </button>
                   </div>
                   {wallSkirtIndex + 1 <
-                    values.buildings[activeBuilding].wallSkirts.length && (
+                    state.buildings[activeBuilding].wallSkirts.length && (
                     <div className="divider offOnTablet"></div>
                   )}
                 </Fragment>
@@ -1474,7 +1271,7 @@ const BuildingWallOptions = ({
                   <button
                     type="button"
                     className="addButton"
-                    onClick={() => addWallSkirt(activeBuilding)}
+                    onClick={() => handleAddWallSkirt(activeBuilding)}
                   >
                     <FontAwesomeIcon icon={faPlus} />
                   </button>
@@ -1496,7 +1293,7 @@ const BuildingWallOptions = ({
         <header>
           <h3>Canopies</h3>
         </header>
-        {values.buildings[activeBuilding].canopies.length > 0 && (
+        {state.buildings[activeBuilding].canopies.length > 0 && (
           <div className="onDesktop">
             <div className="tableGrid8">
               <h5>Wall</h5>
@@ -1510,186 +1307,184 @@ const BuildingWallOptions = ({
             </div>
           </div>
         )}
-        {values.buildings[activeBuilding].canopies.map(
-          (canopy, canopyIndex) => (
-            <Fragment key={`building-${activeBuilding}-canopy-${canopyIndex}`}>
-              <div
-                className={`tableGrid8 ${canopyIndex == activeCanopy ? 'activeRow' : ''}`}
-              >
-                <ReusableSelect
-                  name={`building-${activeBuilding}-canopyWall-${canopyIndex}`}
-                  labelClass="offOnDesktop"
-                  value={canopy.wall}
-                  onChange={(e) =>
-                    handleCanopyChange(
-                      activeBuilding,
-                      canopyIndex,
-                      'wall',
-                      e.target.value
-                    )
+        {state.buildings[activeBuilding].canopies.map((canopy, canopyIndex) => (
+          <Fragment key={`building-${activeBuilding}-canopy-${canopyIndex}`}>
+            <div
+              className={`tableGrid8 ${canopyIndex == activeCanopy ? 'activeRow' : ''}`}
+            >
+              <ReusableSelect
+                name={`building-${activeBuilding}-canopyWall-${canopyIndex}`}
+                labelClass="offOnDesktop"
+                value={canopy.wall}
+                onChange={(e) =>
+                  handleCanopyChange(
+                    activeBuilding,
+                    canopyIndex,
+                    'wall',
+                    e.target.value
+                  )
+                }
+                onFocus={() => {
+                  if (activeCanopy !== canopyIndex) {
+                    setActiveCanopy(canopyIndex);
                   }
-                  onFocus={() => {
-                    if (activeCanopy !== canopyIndex) {
-                      setActiveCanopy(canopyIndex);
-                    }
-                  }}
-                  options={walls}
-                  label="Wall:"
-                  disabled={locked}
-                />
-                <FeetInchesInput
-                  name={`building-${activeBuilding}-canopyWidth-${canopyIndex}`}
-                  label="Width:"
-                  labelClass="offOnDesktop"
-                  value={canopy.width}
-                  allowBlankValue={true}
-                  onChange={(e) =>
-                    handleCanopyChange(
-                      activeBuilding,
-                      canopyIndex,
-                      'width',
-                      e.target.value
-                    )
+                }}
+                options={walls}
+                label="Wall:"
+                disabled={locked}
+              />
+              <FeetInchesInput
+                name={`building-${activeBuilding}-canopyWidth-${canopyIndex}`}
+                label="Width:"
+                labelClass="offOnDesktop"
+                value={canopy.width}
+                allowBlankValue={true}
+                onChange={(e) =>
+                  handleCanopyChange(
+                    activeBuilding,
+                    canopyIndex,
+                    'width',
+                    e.target.value
+                  )
+                }
+                onFocus={() => {
+                  if (activeCanopy !== canopyIndex) {
+                    setActiveCanopy(canopyIndex);
                   }
-                  onFocus={() => {
-                    if (activeCanopy !== canopyIndex) {
-                      setActiveCanopy(canopyIndex);
-                    }
-                  }}
-                  disabled={locked}
-                />
-                <RoofPitchInput
-                  name={`building-${activeBuilding}-canopySlope-${canopyIndex}`}
-                  label="Slope:"
-                  labelClass="offOnDesktop"
-                  value={canopy.slope}
-                  onChange={(name, value) =>
-                    handleCanopyChange(
-                      activeBuilding,
-                      canopyIndex,
-                      'slope',
-                      value
-                    )
+                }}
+                disabled={locked}
+              />
+              <RoofPitchInput
+                name={`building-${activeBuilding}-canopySlope-${canopyIndex}`}
+                label="Slope:"
+                labelClass="offOnDesktop"
+                value={canopy.slope}
+                onChange={(name, value) =>
+                  handleCanopyChange(
+                    activeBuilding,
+                    canopyIndex,
+                    'slope',
+                    value
+                  )
+                }
+                onFocus={() => {
+                  if (activeCanopy !== canopyIndex) {
+                    setActiveCanopy(canopyIndex);
                   }
-                  onFocus={() => {
-                    if (activeCanopy !== canopyIndex) {
-                      setActiveCanopy(canopyIndex);
-                    }
-                  }}
-                  disabled={locked}
-                />
-                <ReusableInteger
-                  name={`building-${activeBuilding}-canopyStartBay-${canopyIndex}`}
-                  value={canopy.startBay}
-                  min={1}
-                  negative={false}
-                  allowBlankValue={true}
-                  label="Start Bay:"
-                  labelClass="offOnDesktop"
-                  onChange={(e) =>
-                    handleCanopyChange(
-                      activeBuilding,
-                      canopyIndex,
-                      'startBay',
-                      e.target.value
-                    )
+                }}
+                disabled={locked}
+              />
+              <ReusableInteger
+                name={`building-${activeBuilding}-canopyStartBay-${canopyIndex}`}
+                value={canopy.startBay}
+                min={1}
+                negative={false}
+                allowBlankValue={true}
+                label="Start Bay:"
+                labelClass="offOnDesktop"
+                onChange={(e) =>
+                  handleCanopyChange(
+                    activeBuilding,
+                    canopyIndex,
+                    'startBay',
+                    e.target.value
+                  )
+                }
+                onFocus={() => {
+                  if (activeCanopy !== canopyIndex) {
+                    setActiveCanopy(canopyIndex);
                   }
-                  onFocus={() => {
-                    if (activeCanopy !== canopyIndex) {
-                      setActiveCanopy(canopyIndex);
-                    }
-                  }}
-                  placeholder="Bay#"
-                  disabled={locked}
-                />
-                <ReusableInteger
-                  name={`building-${activeBuilding}-canopyEndBay-${canopyIndex}`}
-                  value={canopy.endBay}
-                  negative={false}
-                  allowBlankValue={true}
-                  label="End Bay:"
-                  labelClass="offOnDesktop"
-                  onChange={(e) =>
-                    handleCanopyChange(
-                      activeBuilding,
-                      canopyIndex,
-                      'endBay',
-                      e.target.value
-                    )
+                }}
+                placeholder="Bay#"
+                disabled={locked}
+              />
+              <ReusableInteger
+                name={`building-${activeBuilding}-canopyEndBay-${canopyIndex}`}
+                value={canopy.endBay}
+                negative={false}
+                allowBlankValue={true}
+                label="End Bay:"
+                labelClass="offOnDesktop"
+                onChange={(e) =>
+                  handleCanopyChange(
+                    activeBuilding,
+                    canopyIndex,
+                    'endBay',
+                    e.target.value
+                  )
+                }
+                onFocus={() => {
+                  if (activeCanopy !== canopyIndex) {
+                    setActiveCanopy(canopyIndex);
                   }
-                  onFocus={() => {
-                    if (activeCanopy !== canopyIndex) {
-                      setActiveCanopy(canopyIndex);
-                    }
-                  }}
-                  placeholder="Bay#"
-                  disabled={locked}
-                />
-                <FeetInchesInput
-                  name={`building-${activeBuilding}-canopyElevation-${canopyIndex}`}
-                  label="Elevation:"
-                  labelClass="offOnDesktop"
-                  value={canopy.elevation}
-                  allowBlankValue={true}
-                  onChange={(e) =>
-                    handleCanopyChange(
-                      activeBuilding,
-                      canopyIndex,
-                      'elevation',
-                      e.target.value
-                    )
+                }}
+                placeholder="Bay#"
+                disabled={locked}
+              />
+              <FeetInchesInput
+                name={`building-${activeBuilding}-canopyElevation-${canopyIndex}`}
+                label="Elevation:"
+                labelClass="offOnDesktop"
+                value={canopy.elevation}
+                allowBlankValue={true}
+                onChange={(e) =>
+                  handleCanopyChange(
+                    activeBuilding,
+                    canopyIndex,
+                    'elevation',
+                    e.target.value
+                  )
+                }
+                onFocus={() => {
+                  if (activeCanopy !== canopyIndex) {
+                    setActiveCanopy(canopyIndex);
                   }
-                  onFocus={() => {
-                    if (activeCanopy !== canopyIndex) {
-                      setActiveCanopy(canopyIndex);
+                }}
+                disabled={locked}
+              />
+              <div className="checkboxGroup">
+                <div className="checkRow">
+                  <input
+                    type="checkbox"
+                    id={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
+                    name={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
+                    checked={canopy.addColumns}
+                    onChange={(e) =>
+                      handleCanopyChange(
+                        activeBuilding,
+                        canopyIndex,
+                        'addColumns',
+                        e.target.checked
+                      )
                     }
-                  }}
-                  disabled={locked}
-                />
-                <div className="checkboxGroup">
-                  <div className="checkRow">
-                    <input
-                      type="checkbox"
-                      id={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
-                      name={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
-                      checked={canopy.addColumns}
-                      onChange={(e) =>
-                        handleCanopyChange(
-                          activeBuilding,
-                          canopyIndex,
-                          'addColumns',
-                          e.target.checked
-                        )
+                    onFocus={() => {
+                      if (activeCanopy !== canopyIndex) {
+                        setActiveCanopy(canopyIndex);
                       }
-                      onFocus={() => {
-                        if (activeCanopy !== canopyIndex) {
-                          setActiveCanopy(canopyIndex);
-                        }
-                      }}
-                      disabled={locked}
-                    />
-                    <label
-                      htmlFor={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
-                    >
-                      Add Columns
-                    </label>
-                  </div>
+                    }}
+                    disabled={locked}
+                  />
+                  <label
+                    htmlFor={`building-${activeBuilding}-canopyAddColumns-${canopyIndex}`}
+                  >
+                    Add Columns
+                  </label>
                 </div>
-                <button
-                  type="button"
-                  className="icon reject deleteRow"
-                  onClick={() => removeCanopy(activeBuilding, canopyIndex)}
-                  disabled={locked}
-                >
-                  <FontAwesomeIcon icon={faTrash} />
-                </button>
               </div>
-              <div className="divider offOnDesktop"></div>
-            </Fragment>
-          )
-        )}
+              <button
+                type="button"
+                className="icon reject deleteRow"
+                onClick={() => handleRemoveCanopy(activeBuilding, canopyIndex)}
+                disabled={locked}
+              >
+                <FontAwesomeIcon icon={faTrash} />
+              </button>
+            </div>
+            <div className="divider offOnDesktop"></div>
+          </Fragment>
+        ))}
 
-        {values.buildings[activeBuilding].canopies.length > 0 && (
+        {state.buildings[activeBuilding].canopies.length > 0 && (
           <>
             <div className="divider onDesktop"></div>
             <div className="grid2 alignTop">
@@ -1698,7 +1493,7 @@ const BuildingWallOptions = ({
                 label="Roof"
                 bldg={activeBuilding}
                 idx={activeCanopy}
-                value={values.buildings[activeBuilding].canopies[activeCanopy]}
+                value={state.buildings[activeBuilding].canopies[activeCanopy]}
                 onChange={(e, keyString) =>
                   handleCanopyChange(
                     activeBuilding,
@@ -1707,7 +1502,7 @@ const BuildingWallOptions = ({
                     e.target.value
                   )
                 }
-                colorClicked={colorClicked}
+                colorClicked={handleColorClick}
                 disabled={locked}
               />
               <div className="divider offOnLaptop"></div>
@@ -1716,7 +1511,7 @@ const BuildingWallOptions = ({
                 label="Soffit"
                 bldg={activeBuilding}
                 idx={activeCanopy}
-                value={values.buildings[activeBuilding].canopies[activeCanopy]}
+                value={state.buildings[activeBuilding].canopies[activeCanopy]}
                 onChange={(e, keyString) =>
                   handleCanopyChange(
                     activeBuilding,
@@ -1725,7 +1520,7 @@ const BuildingWallOptions = ({
                     e.target.value
                   )
                 }
-                colorClicked={colorClicked}
+                colorClicked={handleColorClick}
                 disabled={locked}
               />
             </div>
@@ -1738,7 +1533,7 @@ const BuildingWallOptions = ({
               <button
                 type="button"
                 className="addButton"
-                onClick={() => addCanopy(activeBuilding)}
+                onClick={() => handleAddCanopy(activeBuilding)}
               >
                 <FontAwesomeIcon icon={faPlus} />
               </button>
@@ -1773,12 +1568,12 @@ const BuildingWallOptions = ({
         <header>
           <h3>Wall Relites</h3>
         </header>
-        {values.buildings[activeBuilding].frontGirtType != 'open' ||
-        values.buildings[activeBuilding].backGirtType != 'open' ||
-        values.buildings[activeBuilding].leftGirtType != 'open' ||
-        values.buildings[activeBuilding].rightGirtType != 'open' ? (
+        {state.buildings[activeBuilding].frontGirtType != 'open' ||
+        state.buildings[activeBuilding].backGirtType != 'open' ||
+        state.buildings[activeBuilding].leftGirtType != 'open' ||
+        state.buildings[activeBuilding].rightGirtType != 'open' ? (
           <>
-            {values.buildings[activeBuilding].wallRelites?.length > 0 && (
+            {state.buildings[activeBuilding].wallRelites?.length > 0 && (
               <div className="onDesktop">
                 <div className="tableGrid8">
                   <h5>Wall</h5>
@@ -1792,7 +1587,7 @@ const BuildingWallOptions = ({
                 </div>
               </div>
             )}
-            {values.buildings[activeBuilding].wallRelites?.map(
+            {state.buildings[activeBuilding].wallRelites?.map(
               (wallRelite, wallReliteIndex) => (
                 <Fragment
                   key={`building-${activeBuilding}-wallRelite-${wallReliteIndex}`}
@@ -1870,11 +1665,9 @@ const BuildingWallOptions = ({
                       max={
                         wallRelite.wall == 'front' || wallRelite.wall == 'back'
                           ? Math.ceil(
-                              values.buildings[activeBuilding].length / 3
+                              state.buildings[activeBuilding].length / 3
                             )
-                          : Math.ceil(
-                              values.buildings[activeBuilding].width / 3
-                            )
+                          : Math.ceil(state.buildings[activeBuilding].width / 3)
                       }
                       negative={false}
                       allowBlankValue={true}
@@ -1921,8 +1714,8 @@ const BuildingWallOptions = ({
                       }
                       compareValue={
                         wallRelite.wall == 'front' || wallRelite.wall == 'back'
-                          ? values.buildings[activeBuilding].length
-                          : values.buildings[activeBuilding].width
+                          ? state.buildings[activeBuilding].length
+                          : state.buildings[activeBuilding].width
                       }
                       placeholder=""
                       disabled={locked}
@@ -1986,7 +1779,7 @@ const BuildingWallOptions = ({
                       type="button"
                       className="icon reject deleteRow"
                       onClick={() =>
-                        removeWallRelites(activeBuilding, wallReliteIndex)
+                        handleRemoveWallRelite(activeBuilding, wallReliteIndex)
                       }
                       disabled={locked}
                     >
@@ -1994,7 +1787,7 @@ const BuildingWallOptions = ({
                     </button>
                   </div>
                   {wallReliteIndex + 1 <
-                    values.buildings[activeBuilding].wallRelites.length && (
+                    state.buildings[activeBuilding].wallRelites.length && (
                     <div className="divider offOnTablet"></div>
                   )}
                 </Fragment>
@@ -2007,7 +1800,7 @@ const BuildingWallOptions = ({
                   <button
                     type="button"
                     className="addButton"
-                    onClick={() => addWallRelite(activeBuilding)}
+                    onClick={() => handleAddWallRelite(activeBuilding)}
                   >
                     <FontAwesomeIcon icon={faPlus} />
                   </button>
@@ -2107,6 +1900,14 @@ const BuildingWallOptions = ({
           </div>
         </section>
       </div> */}
+
+      {/* Dialogs */}
+      <ReusableColorSelect
+        isOpen={colorSelectInfo.isOpen}
+        onClose={() => handleColorClick({ ...colorSelectInfo, isOpen: false })}
+        onColorSelect={handleColorSelect}
+        {...colorSelectInfo}
+      />
     </>
   );
 };

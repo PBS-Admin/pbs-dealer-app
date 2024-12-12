@@ -3,6 +3,8 @@ import { authOptions } from '../../../api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import ClientQuote from '../ClientQuote';
 import { query } from '../../../../lib/db';
+import { BuildingProvider } from '@/contexts/BuildingContext';
+import { initialState as emptyInitialState } from '@/lib/initialState';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -15,58 +17,60 @@ export default async function Quote({ params }) {
   }
 
   const quoteId = params.id;
-  let quoteData = null;
-  let progress = null;
-  let status = null;
+  let initialQuoteData = null;
   let error = null;
-  let rsms = [];
-  let salesPerson = null;
-  let projectManager = null;
-  let estimator = null;
-  let checker = null;
 
-  if (quoteId != 0 && quoteId != null) {
+  // If quoteId is 0, start a new quote with initial data
+  if (quoteId == 0) {
+    initialQuoteData = {
+      ...emptyInitialState,
+      companyId: session.user.company,
+    };
+  } else if (quoteId != null) {
     try {
-      let quoteQuery;
-      let quoteParams = [];
-      (quoteQuery = 'SELECT * FROM Dealer_Quotes WHERE id = ? AND Company = ?'),
-        (quoteParams = [quoteId, session.user.company]);
+      let quotesQuery = 'SELECT * FROM Dealer_Quotes WHERE id = ?';
+      let queryParams = [quoteId];
 
-      let rsmQuery;
-      let rsmParams = [];
-      if (session.user.permission < 3) {
-        rsmQuery = `
-        SELECT ID as id, FullName as label
-        FROM Dealer_Users 
-        WHERE Active = 1 AND Company = ?`;
-        rsmParams = [session.user.company];
-      } else {
-        rsmQuery = `
-        SELECT ID as id, FullName as label 
-        FROM Dealer_Users 
-        WHERE Active = 1`;
+      // Restrict by company for lower permission levels
+      if (session.user.permission < 5) {
+        quotesQuery += ' AND Company = ?';
+        queryParams.push(session.user.company);
       }
 
-      const [quotesResult, rsmResult] = await Promise.all([
-        query(quoteQuery, quoteParams),
-        query(rsmQuery, rsmParams),
-      ]);
+      const quotesResult = await query(quotesQuery, queryParams);
 
       if (quotesResult.length > 0) {
-        quoteData = quotesResult[0].QuoteData;
-        progress = quotesResult[0].Progress;
-        status = quotesResult[0].Status;
-        salesPerson = quotesResult[0].SalesPerson;
-        projectManager = quotesResult[0].ProjectManager;
-        estimator = quotesResult[0].Estimator;
-        checker = quotesResult[0].Checker;
+        const quoteData = quotesResult[0];
+
+        let companyName = '';
+        if (quoteData.Company !== session.user.company) {
+          const companyResult = await query(
+            'SELECT Name FROM Dealer_Company WHERE ID = ?',
+            [quoteData.Company]
+          );
+          if (companyResult.length > 0) {
+            companyName = companyResult[0].Name;
+          }
+        }
+
+        const parsedQuoteData = JSON.parse(quoteData.QuoteData);
+
+        // Add assignments to quote data
+        initialQuoteData = {
+          ...emptyInitialState,
+          ...parsedQuoteData,
+          quoteId: quoteId,
+          quoteProgress: quoteData.Progress,
+          quoteStatus: quoteData.Status,
+          salesPerson: quoteData.SalesPerson || '',
+          projectManager: quoteData.ProjectManager || '',
+          estimator: quoteData.Estimator || '',
+          checker: quoteData.Checker || '',
+          companyId: quoteData.Company,
+          companyName: companyName || undefined,
+        };
       } else {
         error = 'Quote not found';
-      }
-      if (quotesResult.length > 0) {
-        rsms = rsmResult;
-      } else {
-        error = 'Rsms not found';
       }
     } catch (err) {
       console.error('Error fetching quote:', err);
@@ -79,17 +83,8 @@ export default async function Quote({ params }) {
   }
 
   return (
-    <ClientQuote
-      session={session}
-      quoteId={quoteId}
-      initialQuoteData={JSON.parse(quoteData)}
-      progress={progress}
-      status={status}
-      rsms={rsms}
-      salesPerson={salesPerson}
-      projectManager={projectManager}
-      estimator={estimator}
-      checker={checker}
-    />
+    <BuildingProvider initialState={initialQuoteData}>
+      <ClientQuote />
+    </BuildingProvider>
   );
 }

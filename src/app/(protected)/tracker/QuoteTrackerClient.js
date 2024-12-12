@@ -1,34 +1,21 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { redirect } from 'next/navigation';
 import QuoteTable from '@/components/QuoteTable';
 import QuoteTableEst from '@/components/QuoteTableEst';
 import styles from './page.module.css';
+import { useSession } from 'next-auth/react';
 
-export default function QuoteTrackerClient({ isEstimator }) {
-  const [showEstimatorView, setShowEstimatorView] = useState(true);
+export default function QuoteTrackerClient() {
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/login');
+    },
+  });
 
-  const handleViewChange = useCallback((e) => {
-    setShowEstimatorView(e.target.checked);
-  }, []);
+  const isEstimator = session?.user?.estimator === 1;
 
-  const estimatorControls = isEstimator ? (
-    <div className={styles.estBox}>
-      <input
-        type="checkbox"
-        id="estimator"
-        checked={showEstimatorView}
-        onChange={handleViewChange}
-        className="mr-2"
-      />
-      <label htmlFor="estimator">View as Estimator</label>
-    </div>
-  ) : null;
-
-  return (
-    <>
-      {estimatorControls}
-      {showEstimatorView && isEstimator ? <QuoteTableEst /> : <QuoteTable />}
-    </>
-  );
+  return <>{isEstimator ? <QuoteTableEst /> : <QuoteTable />}</>;
 }

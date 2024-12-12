@@ -6,52 +6,37 @@ import ReusableSelect from '../Inputs/ReusableSelect';
 import ReusableSlider from '../Inputs/ReusableSlider';
 import ReusableToggle from '../Inputs/ReusableToggle';
 import ReusableInteger from '../Inputs/ReusableInteger';
+import { useBuildingContext } from '@/contexts/BuildingContext';
 
-const Accessories = ({
-  values,
-  handleChange,
-  handleMandoorChange,
-  setValues,
-  locked,
-}) => {
+const Accessories = ({ locked }) => {
+  // Local State
   const [activeMandoor, setActiveMandoor] = useState(0);
 
-  const addMandoor = () => {
-    setValues((prev) => ({
-      ...prev,
-      mandoors: [
-        ...prev.mandoors,
-        {
-          qty: 1,
-          size: '3070',
-          glass: 'none',
-          leverLockset: true,
-          deadBolt: true,
-          panic: false,
-          closer: false,
-          kickPlate: false,
-          mullion: false,
-        },
-      ],
-    }));
-    setActiveMandoor(values.mandoors.length);
+  // Contexts
+  const {
+    state,
+    handleChange,
+    handleMandoorChange,
+    addMandoor,
+    removeMandoor,
+  } = useBuildingContext();
+
+  // Local Functions
+  const handleAddMandoor = () => {
+    addMandoor();
+    setActiveMandoor(state.mandoors.length);
   };
 
-  const removeMandoor = (indexToRemove) => {
-    setValues((prev) => ({
-      ...prev,
-      mandoors: prev.mandoors.filter((_, index) => index !== indexToRemove),
-    }));
-
-    // If the removed building was active, set the first building as active
+  const handleRemoveMandoor = (indexToRemove) => {
+    removeMandoor(indexToRemove);
     if (indexToRemove === activeMandoor) {
       setActiveMandoor(0);
     } else if (indexToRemove < activeMandoor) {
-      // If a building before the active one is removed, adjust the active index
       setActiveMandoor((prev) => prev - 1);
     }
   };
 
+  // JSX
   return (
     <>
       <section className="card">
@@ -64,7 +49,7 @@ const Accessories = ({
             <div className="toggleGroup grid2 large">
               <ReusableToggle
                 id="monoSlabDesign"
-                checked={values.monoSlabDesign}
+                checked={state.monoSlabDesign}
                 onChange={(e) => {
                   console.log('change e: ', e);
                   handleChange(e, 'monoSlabDesign');
@@ -74,7 +59,7 @@ const Accessories = ({
               />
               <ReusableToggle
                 id="pierFootingDesign"
-                checked={values.pierFootingDesign}
+                checked={state.pierFootingDesign}
                 onChange={(e) => handleChange(e, 'pierFootingDesign')}
                 label="Include Pier Footing Design"
                 className="prim"
@@ -85,7 +70,7 @@ const Accessories = ({
             <div className="toggleGroup grid2 large">
               <ReusableToggle
                 id="standardWarranty"
-                checked={values.standardWarranty}
+                checked={state.standardWarranty}
                 onChange={(e) => {
                   console.log('change e: ', e);
                   handleChange(e, 'standardWarranty');
@@ -95,7 +80,7 @@ const Accessories = ({
               />
               <ReusableToggle
                 id="singleSourceWarranty"
-                checked={values.singleSourceWarranty}
+                checked={state.singleSourceWarranty}
                 onChange={(e) => handleChange(e, 'singleSourceWarranty')}
                 label="Include Single Source Warranty"
                 className="prim"
@@ -106,7 +91,7 @@ const Accessories = ({
             <div className="toggleGroup grid2 large">
               <ReusableToggle
                 id="willCall"
-                checked={values.willCall}
+                checked={state.willCall}
                 onChange={(e) => handleChange(e, 'willCall')}
                 label="Will Call - Shipping By Others"
                 className="prim"
@@ -119,7 +104,7 @@ const Accessories = ({
             <ReusableSlider
               type="number"
               name="skylight4x4"
-              value={values.skylight4x4}
+              value={state.skylight4x4}
               allowBlankValue={true}
               negative={false}
               increment={1}
@@ -132,7 +117,7 @@ const Accessories = ({
             <ReusableSlider
               type="number"
               name="ridgeVent10ft"
-              value={values.ridgeVent10ft}
+              value={state.ridgeVent10ft}
               allowBlankValue={true}
               negative={false}
               increment={1}
@@ -145,7 +130,7 @@ const Accessories = ({
             <ReusableSlider
               type="number"
               name="canopyKit2x2x6"
-              value={values.canopyKit2x2x6}
+              value={state.canopyKit2x2x6}
               allowBlankValue={true}
               negative={false}
               increment={1}
@@ -158,7 +143,7 @@ const Accessories = ({
             <ReusableSlider
               type="number"
               name="canopyKit2x2x9"
-              value={values.canopyKit2x2x9}
+              value={state.canopyKit2x2x9}
               allowBlankValue={true}
               negative={false}
               increment={1}
@@ -176,7 +161,7 @@ const Accessories = ({
         <header className="cardHeader">
           <h3>Man Doors</h3>
         </header>
-        {values.mandoors.length > 0 && (
+        {state.mandoors.length > 0 && (
           <div className="onLaptop">
             <div className="tableGrid10">
               <h5>Qty</h5>
@@ -187,7 +172,7 @@ const Accessories = ({
             </div>
           </div>
         )}
-        {values.mandoors.map((mandoor, mandoorIndex) => (
+        {state.mandoors.map((mandoor, mandoorIndex) => (
           <Fragment key={`building-mandoor-${mandoorIndex}`}>
             <div
               className={`tableGrid10 ${mandoorIndex == activeMandoor ? 'activeRow' : ''}`}
@@ -408,7 +393,7 @@ const Accessories = ({
               <button
                 type="button"
                 className="icon reject deleteRow"
-                onClick={() => removeMandoor(mandoorIndex)}
+                onClick={() => handleRemoveMandoor(mandoorIndex)}
                 disabled={locked}
               >
                 <FontAwesomeIcon icon={faTrash} />
@@ -421,7 +406,7 @@ const Accessories = ({
           <button
             type="button"
             className="success addRow"
-            onClick={() => addMandoor()}
+            onClick={handleAddMandoor}
           >
             Add
           </button>
@@ -441,7 +426,7 @@ const Accessories = ({
                   type="checkbox"
                   id="noteCMUWallByOthers"
                   name="noteCMUWallByOthers"
-                  checked={values.noteCMUWallByOthers}
+                  checked={state.noteCMUWallByOthers}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -454,7 +439,7 @@ const Accessories = ({
                   type="checkbox"
                   id="notePlywoodLinerByOthers"
                   name="notePlywoodLinerByOthers"
-                  checked={values.notePlywoodLinerByOthers}
+                  checked={state.notePlywoodLinerByOthers}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -467,7 +452,7 @@ const Accessories = ({
                   type="checkbox"
                   id="noteMezzanineByOthers"
                   name="noteMezzanineByOthers"
-                  checked={values.noteMezzanineByOthers}
+                  checked={state.noteMezzanineByOthers}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -480,7 +465,7 @@ const Accessories = ({
                   type="checkbox"
                   id="noteFirewallByOthers"
                   name="noteFirewallByOthers"
-                  checked={values.noteFirewallByOthers}
+                  checked={state.noteFirewallByOthers}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -497,7 +482,7 @@ const Accessories = ({
                   type="checkbox"
                   id="noteExtBldgDisclaimer"
                   name="noteExtBldgDisclaimer"
-                  checked={values.noteExtBldgDisclaimer}
+                  checked={state.noteExtBldgDisclaimer}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -510,7 +495,7 @@ const Accessories = ({
                   type="checkbox"
                   id="noteRoofPitchDisclaimer"
                   name="noteRoofPitchDisclaimer"
-                  checked={values.noteRoofPitchDisclaimer}
+                  checked={state.noteRoofPitchDisclaimer}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -523,7 +508,7 @@ const Accessories = ({
                   type="checkbox"
                   id="noteSeismicGapDisclaimer"
                   name="noteSeismicGapDisclaimer"
-                  checked={values.noteSeismicGapDisclaimer}
+                  checked={state.noteSeismicGapDisclaimer}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -536,7 +521,7 @@ const Accessories = ({
                   type="checkbox"
                   id="noteWaterPondingDisclaimer"
                   name="noteWaterPondingDisclaimer"
-                  checked={values.noteWaterPondingDisclaimer}
+                  checked={state.noteWaterPondingDisclaimer}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -549,7 +534,7 @@ const Accessories = ({
                   type="checkbox"
                   id="noteBldgSpecsDisclaimer"
                   name="noteBldgSpecsDisclaimer"
-                  checked={values.addProjectInfo}
+                  checked={state.addProjectInfo}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -568,7 +553,7 @@ const Accessories = ({
                   type="checkbox"
                   id="addItemExtBldg"
                   name="addItemExtBldg"
-                  checked={values.addItemExtBldg}
+                  checked={state.addItemExtBldg}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -581,7 +566,7 @@ const Accessories = ({
                   type="checkbox"
                   id="addItemPartWalls"
                   name="addItemPartWalls"
-                  checked={values.addItemPartWalls}
+                  checked={state.addItemPartWalls}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -594,7 +579,7 @@ const Accessories = ({
                   type="checkbox"
                   id="addItemRoofOpenings"
                   name="addItemRoofOpenings"
-                  checked={values.addItemRoofOpenings}
+                  checked={state.addItemRoofOpenings}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -605,7 +590,7 @@ const Accessories = ({
                   type="checkbox"
                   id="addItemStepElev"
                   name="addItemStepElev"
-                  checked={values.addItemStepElev}
+                  checked={state.addItemStepElev}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -616,7 +601,7 @@ const Accessories = ({
                   type="checkbox"
                   id="addItemHorizPanels"
                   name="addItemHorizPanels"
-                  checked={values.addItemHorizPanels}
+                  checked={state.addItemHorizPanels}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -629,7 +614,7 @@ const Accessories = ({
                   type="checkbox"
                   id="addItemParapetWalls"
                   name="addItemParapetWalls"
-                  checked={values.addItemParapetWalls}
+                  checked={state.addItemParapetWalls}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -640,7 +625,7 @@ const Accessories = ({
                   type="checkbox"
                   id="addItemFaciaWalls"
                   name="addItemFaciaWalls"
-                  checked={values.addItemFaciaWalls}
+                  checked={state.addItemFaciaWalls}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -651,7 +636,7 @@ const Accessories = ({
                   type="checkbox"
                   id="addItemBumpoutWalls"
                   name="addItemBumpoutWalls"
-                  checked={values.addItemBumpoutWalls}
+                  checked={state.addItemBumpoutWalls}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -662,7 +647,7 @@ const Accessories = ({
                   type="checkbox"
                   id="addItemCupolas"
                   name="addItemCupolas"
-                  checked={values.addItemCupolas}
+                  checked={state.addItemCupolas}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -673,7 +658,7 @@ const Accessories = ({
                   type="checkbox"
                   id="addItemClearstory"
                   name="addItemClearstory"
-                  checked={values.addItemClearstory}
+                  checked={state.addItemClearstory}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -684,7 +669,7 @@ const Accessories = ({
                   type="checkbox"
                   id="addItemHipValley"
                   name="addItemHipValley"
-                  checked={values.addItemHipValley}
+                  checked={state.addItemHipValley}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -697,7 +682,7 @@ const Accessories = ({
                   type="checkbox"
                   id="addItemGambrelRoof"
                   name="addItemGambrelRoof"
-                  checked={values.addItemGambrelRoof}
+                  checked={state.addItemGambrelRoof}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -710,7 +695,7 @@ const Accessories = ({
                   type="checkbox"
                   id="addItemTiltUpWalls"
                   name="addItemTiltUpWalls"
-                  checked={values.addItemTiltUpWalls}
+                  checked={state.addItemTiltUpWalls}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -729,7 +714,7 @@ const Accessories = ({
                   type="checkbox"
                   id="mezzSimple"
                   name="mezzSimple"
-                  checked={values.mezzSimple}
+                  checked={state.mezzSimple}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -740,7 +725,7 @@ const Accessories = ({
                   type="checkbox"
                   id="mezzLShape"
                   name="mezzLShape"
-                  checked={values.mezzLShape}
+                  checked={state.mezzLShape}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -751,7 +736,7 @@ const Accessories = ({
                   type="checkbox"
                   id="mezzNotAligned"
                   name="mezzNotAligned"
-                  checked={values.mezzNotAligned}
+                  checked={state.mezzNotAligned}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -768,7 +753,7 @@ const Accessories = ({
                   type="checkbox"
                   id="craneStepCols"
                   name="craneStepCols"
-                  checked={values.craneStepCols}
+                  checked={state.craneStepCols}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -781,7 +766,7 @@ const Accessories = ({
                   type="checkbox"
                   id="craneJib"
                   name="craneJib"
-                  checked={values.craneJib}
+                  checked={state.craneJib}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -796,7 +781,7 @@ const Accessories = ({
                   type="checkbox"
                   id="tHangar"
                   name="tHangar"
-                  checked={values.tHangar}
+                  checked={state.tHangar}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -813,7 +798,7 @@ const Accessories = ({
                   type="checkbox"
                   id="otherBldgSpecs"
                   name="otherBldgSpecs"
-                  checked={values.otherBldgSpecs}
+                  checked={state.otherBldgSpecs}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -824,7 +809,7 @@ const Accessories = ({
                   type="checkbox"
                   id="otherNonStdSpecs"
                   name="otherNonStdSpecs"
-                  checked={values.otherNonStdSpecs}
+                  checked={state.otherNonStdSpecs}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -837,7 +822,7 @@ const Accessories = ({
                   type="checkbox"
                   id="otherCarrierBms"
                   name="otherCarrierBms"
-                  checked={values.otherCarrierBms}
+                  checked={state.otherCarrierBms}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -848,7 +833,7 @@ const Accessories = ({
                   type="checkbox"
                   id="otherPortalCarrier"
                   name="otherPortalCarrier"
-                  checked={values.otherPortalCarrier}
+                  checked={state.otherPortalCarrier}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -861,7 +846,7 @@ const Accessories = ({
                   type="checkbox"
                   id="otherNonStdCarrier"
                   name="otherNonStdCarrier"
-                  checked={values.otherNonStdCarrier}
+                  checked={state.otherNonStdCarrier}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -874,7 +859,7 @@ const Accessories = ({
                   type="checkbox"
                   id="otherBarJoists"
                   name="otherBarJoists"
-                  checked={values.otherBarJoists}
+                  checked={state.otherBarJoists}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -885,7 +870,7 @@ const Accessories = ({
                   type="checkbox"
                   id="otherWeakAxis"
                   name="otherWeakAxis"
-                  checked={values.otherWeakAxis}
+                  checked={state.otherWeakAxis}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -898,7 +883,7 @@ const Accessories = ({
                   type="checkbox"
                   id="otherSkewedEndwall"
                   name="otherSkewedEndwall"
-                  checked={values.otherSkewedEndwall}
+                  checked={state.otherSkewedEndwall}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -911,7 +896,7 @@ const Accessories = ({
                   type="checkbox"
                   id="otherSkewedSidewall"
                   name="otherSkewedSidewall"
-                  checked={values.otherSkewedSidewall}
+                  checked={state.otherSkewedSidewall}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -924,7 +909,7 @@ const Accessories = ({
                   type="checkbox"
                   id="otherBulkStorageSeeds"
                   name="otherBulkStorageSeeds"
-                  checked={values.otherBulkStorageSeeds}
+                  checked={state.otherBulkStorageSeeds}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -937,7 +922,7 @@ const Accessories = ({
                   type="checkbox"
                   id="otherBulkStorage"
                   name="otherBulkStorage"
-                  checked={values.otherBulkStorage}
+                  checked={state.otherBulkStorage}
                   onChange={handleChange}
                   disabled={locked}
                 />
@@ -950,7 +935,7 @@ const Accessories = ({
                   type="checkbox"
                   id="otherLoadsByOthers"
                   name="otherLoadsByOthers"
-                  checked={values.otherLoadsByOthers}
+                  checked={state.otherLoadsByOthers}
                   onChange={handleChange}
                   disabled={locked}
                 />

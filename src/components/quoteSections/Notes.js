@@ -2,13 +2,18 @@ import React, { Fragment } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import ReusableSelect from '../Inputs/ReusableSelect';
+import { useBuildingContext } from '@/contexts/BuildingContext';
 
-const Notes = ({ values, setValues, locked }) => {
+const Notes = ({ locked }) => {
+  // Contexts
+  const { state, addNote, removeNote, handleNoteChange } = useBuildingContext();
+
+  // Local Functions
   const getBuildingOptions = () => {
     const options = [{ value: 'Project', label: 'Project' }];
 
-    if (values.buildings && values.buildings.length > 0) {
-      values.buildings.forEach((_, index) => {
+    if (state.buildings && state.buildings.length > 0) {
+      state.buildings.forEach((_, index) => {
         const letter = String.fromCharCode(65 + index);
         options.push({
           value: `Building${letter}`,
@@ -20,42 +25,13 @@ const Notes = ({ values, setValues, locked }) => {
     return options;
   };
 
-  const addNote = () => {
-    setValues((prev) => ({
-      ...prev,
-      notes: [
-        ...(prev.notes || []),
-        {
-          building: 'Project',
-          text: '',
-        },
-      ],
-    }));
-  };
-
-  const removeNote = (indexToRemove) => {
-    setValues((prev) => ({
-      ...prev,
-      notes: prev.notes.filter((_, index) => index !== indexToRemove),
-    }));
-  };
-
-  const handleNoteChange = (index, field, value) => {
-    setValues((prev) => ({
-      ...prev,
-      notes: prev.notes.map((note, i) =>
-        i === index ? { ...note, [field]: value } : note
-      ),
-    }));
-  };
-
   return (
     <section className="card">
       <header className="cardHeader">
         <h3>Notes</h3>
       </header>
 
-      {(values.notes || []).map((note, noteIndex) => {
+      {(state.notes || []).map((note, noteIndex) => {
         return (
           <Fragment key={`note-${noteIndex}`}>
             <div className="flexNotes">
@@ -65,9 +41,7 @@ const Notes = ({ values, setValues, locked }) => {
                 label="Scope:"
                 labelClass="offOnLaptop"
                 value={note.building}
-                onChange={(e) =>
-                  handleNoteChange(noteIndex, 'building', e.target.value)
-                }
+                onChange={(e) => handleNoteChange(noteIndex, 'building', e)}
                 options={getBuildingOptions()}
                 disabled={locked}
               />
@@ -75,9 +49,7 @@ const Notes = ({ values, setValues, locked }) => {
                 type="text"
                 className="noteText"
                 value={note.text}
-                onChange={(e) =>
-                  handleNoteChange(noteIndex, 'text', e.target.value)
-                }
+                onChange={(e) => handleNoteChange(noteIndex, 'text', e)}
                 placeholder="Enter note text..."
                 disabled={locked}
               />

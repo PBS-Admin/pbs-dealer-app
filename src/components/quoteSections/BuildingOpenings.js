@@ -5,95 +5,49 @@ import FeetInchesInput from '../Inputs/FeetInchesInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { openingTypes } from '../../util/dropdownOptions';
+import { useUIContext } from '@/contexts/UIContext';
+import { useBuildingContext } from '@/contexts/BuildingContext';
 
-const BuildingOpenings = ({
-  values,
-  activeBuilding,
-  handleOpeningChange,
-  setValues,
-  isDesktop,
-  locked,
-}) => {
+const BuildingOpenings = ({ locked }) => {
+  // Local State
   const [activeOpening, setActiveOpening] = useState(0);
+  const [activeWallKey, setActiveWallKey] = useState('');
 
-  const addOpening = (buildingIndex, wall) => {
-    setValues((prev) => ({
-      ...prev,
-      buildings: prev.buildings.map((building, index) =>
-        index === buildingIndex
-          ? {
-              ...building,
-              openings: {
-                ...building.openings,
-                [wall]: [
-                  ...(building.openings[wall] || []),
-                  {
-                    bay: '',
-                    openType: 'overhead',
-                    width: '',
-                    height: '',
-                    sill: '',
-                    offset: '',
-                  },
-                ],
-              },
-            }
-          : building
-      ),
-    }));
-  };
+  // Contexts
+  const { activeBuilding } = useUIContext();
+  const { state, addOpening, removeOpening, handleOpeningChange } =
+    useBuildingContext();
 
-  const removeOpening = (buildingIndex, wall, openingIndex) => {
-    setValues((prev) => {
-      const newBuildings = prev.buildings.map((building, bIndex) =>
-        bIndex === buildingIndex
-          ? {
-              ...building,
-              openings: {
-                ...building.openings,
-                [wall]: (building.openings[wall] || []).filter(
-                  (_, oIndex) => oIndex !== openingIndex
-                ),
-              },
-            }
-          : building
-      );
+  // References
+  const tabListRef = useRef(null);
+  const activeTabRef = useRef(null);
 
-      const remainingOpenings =
-        newBuildings[buildingIndex].openings[wall]?.length || 0;
-      if (openingIndex <= activeOpening && activeOpening > 0) {
-        setActiveOpening(Math.min(activeOpening - 1, remainingOpenings - 1));
-      }
-
-      return { ...prev, buildings: newBuildings };
-    });
-  };
-
+  // Local Functions
   const walls = useMemo(() => {
     const mainWalls = [
       {
         key: 'front',
         name: 'Front Sidewall',
-        girtType: values.buildings[activeBuilding].frontGirtType,
+        girtType: state.buildings[activeBuilding].frontGirtType,
       },
       {
         key: 'back',
         name: 'Back Sidewall',
-        girtType: values.buildings[activeBuilding].backGirtType,
+        girtType: state.buildings[activeBuilding].backGirtType,
       },
       {
         key: 'left',
         name: 'Left Endwall',
-        girtType: values.buildings[activeBuilding].leftGirtType,
+        girtType: state.buildings[activeBuilding].leftGirtType,
       },
       {
         key: 'right',
         name: 'Right Endwall',
-        girtType: values.buildings[activeBuilding].rightGirtType,
+        girtType: state.buildings[activeBuilding].rightGirtType,
       },
     ].filter((wall) => wall.girtType !== 'open');
 
-    const partitionWalls = values.buildings[activeBuilding].partitions.map(
+    const partitionWalls = state.buildings[activeBuilding].partitions.map(
       (partition, index) => ({
         key: `partition${index + 1}`,
         name: `Partition ${index + 1}`,
@@ -102,12 +56,13 @@ const BuildingOpenings = ({
     );
 
     return [...mainWalls, ...partitionWalls];
-  }, [values.buildings[activeBuilding]]);
+  }, [state.buildings[activeBuilding]]);
 
-  const [activeWallKey, setActiveWallKey] = useState(walls[0]?.key || '');
-
-  const tabListRef = useRef(null);
-  const activeTabRef = useRef(null);
+  useEffect(() => {
+    if (walls.length > 0 && !activeWallKey) {
+      setActiveWallKey(walls[0].key);
+    }
+  }, [walls, activeWallKey]);
 
   useEffect(() => {
     if (activeTabRef.current && tabListRef.current) {
@@ -121,6 +76,22 @@ const BuildingOpenings = ({
     }
   }, [activeWallKey]);
 
+  const handleAddOpening = () => {
+    addOpening(activeBuilding, activeWallKey);
+    setActiveOpening(
+      state.buildings[activeBuilding].openings[activeWallKey]?.length
+    );
+  };
+
+  const handleRemoveOpening = (openingIndex) => {
+    removeOpening(activeBuilding, activeWallKey, openingIndex);
+    const remainingOpenings =
+      state.buildings[activeBuilding].openings[activeWallKey]?.length - 1 || 0;
+    if (openingIndex <= activeOpening && activeOpening > 0) {
+      setActiveOpening(Math.min(activeOpening - 1, remainingOpenings - 1));
+    }
+  };
+
   const renderOpeningInputs = (opening, openingIndex) => (
     <>
       <div
@@ -132,7 +103,7 @@ const BuildingOpenings = ({
           label="Bay:"
           labelClass="offOnTablet"
           min="1"
-          max={`${values.buildings[`${activeBuilding}`][`${activeWallKey}BaySpacing`].length}`}
+          max={`${state.buildings[`${activeBuilding}`][`${activeWallKey}BaySpacing`].length}`}
           allowBlankValue={true}
           onChange={(e) => {
             handleOpeningChange(
@@ -266,9 +237,7 @@ const BuildingOpenings = ({
         <button
           type="button"
           className="icon reject deleteRow"
-          onClick={() =>
-            removeOpening(activeBuilding, activeWallKey, openingIndex)
-          }
+          onClick={() => handleRemoveOpening(openingIndex)}
           disabled={locked}
         >
           <FontAwesomeIcon icon={faTrash} />
@@ -278,6 +247,7 @@ const BuildingOpenings = ({
     </>
   );
 
+  // JSX
   return (
     <section className="card">
       <header>
@@ -299,7 +269,7 @@ const BuildingOpenings = ({
         </div>
       </div>
       <div className="tabContent">
-        {values.buildings[activeBuilding].openings[activeWallKey]?.length >
+        {state.buildings[activeBuilding].openings[activeWallKey]?.length >
           0 && (
           <div className="onTablet">
             <div className="tableGrid7">
@@ -313,7 +283,7 @@ const BuildingOpenings = ({
             </div>
           </div>
         )}
-        {values.buildings[activeBuilding].openings[activeWallKey]?.map(
+        {state.buildings[activeBuilding].openings[activeWallKey]?.map(
           (opening, index) => (
             <Fragment
               key={`building-${activeBuilding}-opening-${activeWallKey}-${index}`}
@@ -324,13 +294,13 @@ const BuildingOpenings = ({
         )}
         {!locked && (
           <>
-            {values.buildings[activeBuilding].openings[activeWallKey]?.length >
+            {state.buildings[activeBuilding].openings[activeWallKey]?.length >
               0 && <div className="divider onTablet"></div>}
             <div className="buttonFooter">
               <button
                 type="button"
                 className="addButton"
-                onClick={() => addOpening(activeBuilding, activeWallKey)}
+                onClick={() => handleAddOpening()}
               >
                 <FontAwesomeIcon icon={faPlus} />
               </button>

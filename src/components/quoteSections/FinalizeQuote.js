@@ -1,36 +1,22 @@
-import React, {
-  useEffect,
-  useCallback,
-  useRef,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useEffect, useCallback, useRef, useMemo } from 'react';
 import { useExport } from '@/hooks/useExport';
 import { usePDF } from '@/hooks/usePDF';
-import { useSession } from 'next-auth/react';
 import ReusableLoader from '../ReusableLoader';
 import ReusableDialog from '../ReusableDialog';
 import useValidation from '@/hooks/useValidation';
 import useSeismic from '@/hooks/useSeismic';
 import ReusableToast from '../ReusableToast';
 import ReusableSelect from '../Inputs/ReusableSelect';
+import { useBuildingContext } from '@/contexts/BuildingContext';
+import { useUserContext } from '@/contexts/UserContext';
 
-const FinalizeQuote = ({
-  values,
-  setValues,
-  handleChange,
-  handleAssign,
-  onSubmitted,
-  quoteProgress,
-  quoteStatus,
-  locked,
-  rsms,
-  salesPerson,
-  projectManager,
-  estimator,
-  checker,
-}) => {
-  const { data: session } = useSession();
+const FinalizeQuote = ({ locked }) => {
+  // Contexts
+  const { state, handleChange, setValues } = useBuildingContext();
+  const { companyData, rsms, projectManagers, isLoading, hasPermission } =
+    useUserContext();
+
+  // Hooks
   const memoizedSetValues = useCallback(setValues, []);
   const { createFolderAndFiles, status, isExporting } = useExport();
   const { createContract } = usePDF();
@@ -41,18 +27,41 @@ const FinalizeQuote = ({
     handleResponse,
     autoResolveMessage,
     isValidating,
-    resetValidation,
-  } = useValidation(values, memoizedSetValues);
+  } = useValidation(state, memoizedSetValues);
   const { getSeismicLoad, seismicData, getSmsLoad, smsData } =
-    useSeismic(values);
+    useSeismic(state);
 
+  // References
+  const toastRef = useRef();
+  const exportPendingRef = useRef(false);
+
+  // Local Functions
   useEffect(() => {
     getSeismicLoad();
     getSmsLoad();
   }, [getSeismicLoad, getSmsLoad]);
 
-  const toastRef = useRef();
-  const exportPendingRef = useRef(false);
+  const rsmOptions = useMemo(
+    () =>
+      Object.entries(rsms)
+        .filter(([_, rsm]) => rsm.company === state.companyId)
+        .map(([id, rsm]) => ({
+          id: id,
+          label: rsm.name,
+        })),
+    [rsms]
+  );
+
+  const pmOptions = useMemo(
+    () =>
+      Object.entries(projectManagers)
+        .filter(([_, pm]) => pm.company === state.companyId)
+        .map(([id, pm]) => ({
+          id: id,
+          label: pm.name,
+        })),
+    [projectManagers]
+  );
 
   const fieldsToValidate = [
     {
@@ -121,10 +130,6 @@ const FinalizeQuote = ({
     []
   );
 
-  const hasPermission = (requiredLevel) => {
-    return session.user.permission >= requiredLevel;
-  };
-
   const handleSave = useCallback(async () => {
     const isValid = await validateFields([], autoFillRules);
     if (isValid) {
@@ -147,7 +152,7 @@ const FinalizeQuote = ({
         }
 
         exportPendingRef.current = false;
-        onSubmitted(e);
+        console.log(state);
       } catch (error) {
         console.error('Export error: ', error);
         showRejectExport();
@@ -172,7 +177,7 @@ const FinalizeQuote = ({
 
       exportPendingRef.current = false;
 
-      const result = await createFolderAndFiles(values);
+      const result = await createFolderAndFiles(state);
 
       if (result.success) {
         await createImportBAT(result.folder);
@@ -190,9 +195,63 @@ const FinalizeQuote = ({
     validateFields,
     fieldsToValidate,
     autoFillRules,
+    isValidating,
     createFolderAndFiles,
-    values,
+    state,
   ]);
+
+  const handleContract = useCallback(async () => {
+    try {
+      if (!companyData) {
+        showRejectExport();
+        return;
+      }
+
+      const contractData = {
+        ...state,
+        companyId: companyData.ID,
+        companyName: companyData.Name,
+        terms: companyData.Terms === null ? '' : JSON.parse(companyData.Terms),
+        initials: companyData.Initials || '',
+        line1: companyData.Line1 || '',
+        line2: companyData.Line2 || '',
+        line3: companyData.Line3 || '',
+        line4: companyData.Line4 || '',
+        line5: companyData.Line5 || '',
+        line6: companyData.Line6 || '',
+        line7: companyData.Line7 || '',
+        line8: companyData.Line8 || '',
+      };
+
+      const pdfBytes = await createContract(contractData);
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+
+      window.open(url);
+      showSuccessExport();
+    } catch (error) {
+      console.error('Contract error: ', error);
+      showRejectExport();
+    }
+  }, [state, companyData, createContract]);
+
+  const showSuccessExport = () => {
+    toastRef.current.show({
+      title: 'Success',
+      message: 'Your export to MBS has been successful',
+      timeout: 3000,
+      color: 'success',
+    });
+  };
+
+  const showRejectExport = () => {
+    toastRef.current.show({
+      title: 'Error',
+      message: 'Your export to MBS has failed, try again',
+      timeout: 3000,
+      color: 'reject',
+    });
+  };
 
   const handleValidationResponse = useCallback(
     async (response) => {
@@ -217,10 +276,10 @@ const FinalizeQuote = ({
 
     let newProjectHandle, newProjectName;
 
-    if (values.buildings.length > 1) {
-      newProjectName = values.quoteNumber + 'P';
+    if (state.buildings.length > 1) {
+      newProjectName = state.quoteNumber + 'P';
     } else {
-      newProjectName = values.quoteNumber;
+      newProjectName = state.quoteNumber;
     }
 
     newProjectHandle = await folder.getDirectoryHandle(newProjectName, {
@@ -233,11 +292,11 @@ const FinalizeQuote = ({
 
     const writable = await batchHandle.createWritable();
 
-    if (values.buildings.length > 1) {
-      const newProjectName = values.quoteNumber + 'P';
+    if (state.buildings.length > 1) {
+      const newProjectName = state.quoteNumber + 'P';
       const bldgAlpha = ' BCDEFGHI';
-      for (let i = 0; i < values.buildings.length; i++) {
-        const newFolderName = values.quoteNumber + bldgAlpha[i].trim();
+      for (let i = 0; i < state.buildings.length; i++) {
+        const newFolderName = state.quoteNumber + bldgAlpha[i].trim();
         await writable.write(
           `rename "${newFolderName}\\desctrl.txt" desctrl.ini\n`
         );
@@ -258,97 +317,17 @@ const FinalizeQuote = ({
     await writable.close();
   };
 
-  const showSuccessExport = () => {
-    toastRef.current.show({
-      title: 'Success',
-      message: 'Your export to MBS has been successful',
-      timeout: 3000,
-      color: 'success',
-    });
-  };
+  if (isLoading) {
+    return (
+      <ReusableLoader
+        isOpen={true}
+        title="Loading"
+        message="Loading company data..."
+      />
+    );
+  }
 
-  const showRejectExport = () => {
-    toastRef.current.show({
-      title: 'Error',
-      message: 'Your export to MBS has failed, try again',
-      timeout: 3000,
-      color: 'reject',
-    });
-  };
-
-  const handleContract = useCallback(async () => {
-    try {
-      // Fetch company data from database
-      const companyData = await fetch(
-        `/api/auth/company-data?company=${session.user.company}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const response = await companyData.json();
-      const {
-        ID,
-        Name,
-        Terms,
-        Initials,
-        Line1,
-        Line2,
-        Line3,
-        Line4,
-        Line5,
-        Line6,
-        Line7,
-        Line8,
-      } = response.company;
-
-      const contractData = {
-        ...values,
-        companyId: ID,
-        companyName: Name,
-        terms: Terms === null ? '' : JSON.parse(Terms),
-        initials: Initials === null ? '' : Initials,
-        line1: Line1 === null ? '' : Line1,
-        line2: Line2 === null ? '' : Line2,
-        line3: Line3 === null ? '' : Line3,
-        line4: Line4 === null ? '' : Line4,
-        line5: Line5 === null ? '' : Line5,
-        line6: Line6 === null ? '' : Line6,
-        line7: Line7 === null ? '' : Line7,
-        line8: Line8 === null ? '' : Line8,
-      };
-
-      try {
-        console.log('got into try statement');
-        const pdfBytes = await createContract(contractData);
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-
-        window.open(url);
-        showSuccessExport();
-      } catch (error) {
-        console.error('Contract create error: ', error);
-        showRejectExport();
-      }
-    } catch (error) {
-      console.error('Contract error: ', error);
-      showRejectExport();
-    }
-  }, [values, createContract]);
-
-  const rsmOptions = useMemo(
-    () => Object.entries(rsms).map(([id, name]) => name),
-    [rsms]
-  );
-
-  const pmOptions = useMemo(
-    () => Object.entries(rsms).map(([id, name]) => name),
-    [rsms]
-  );
-
+  // JSX
   return (
     <>
       <section className="card">
@@ -362,7 +341,7 @@ const FinalizeQuote = ({
                 Save Quote
               </button>
             )}
-            {!(quoteProgress & 0b100) && (
+            {!(state.quoteProgress & 0b100) && (
               <button
                 type="button"
                 className="accent"
@@ -390,7 +369,7 @@ const FinalizeQuote = ({
               type="button"
               className="sec"
               onClick={() => {
-                console.log(values);
+                console.log(state);
               }}
             >
               Notes for Estimator
@@ -408,7 +387,7 @@ const FinalizeQuote = ({
                   type="button"
                   className="nuetral"
                   onClick={() => {
-                    console.log(values);
+                    console.log(state);
                   }}
                 >
                   Open Contract
@@ -423,7 +402,7 @@ const FinalizeQuote = ({
                 type="button"
                 className="nuetral"
                 onClick={() => {
-                  console.log(values);
+                  console.log(state);
                 }}
               >
                 Archive Quote
@@ -439,7 +418,7 @@ const FinalizeQuote = ({
                   type="button"
                   className="reject"
                   onClick={() => {
-                    console.log(values);
+                    console.log(state);
                   }}
                 >
                   Delete Quote
@@ -456,39 +435,43 @@ const FinalizeQuote = ({
             <h3>Assignments</h3>
           </header>
 
-          <div className="grid4 alignTop">
+          <div className="grid4 alignTop assign">
             <ReusableSelect
               name={`salesPerson`}
-              value={salesPerson || ''}
-              onChange={handleAssign}
+              value={state.salesPerson || ''}
+              onChange={handleChange}
               options={rsmOptions}
               label="Sales Person:"
               disabled={locked}
             />
-            <ReusableSelect
-              name={`projectManager`}
-              value={projectManager || ''}
-              onChange={handleAssign}
-              options={pmOptions}
-              label="Project Manager:"
-              disabled={locked}
-            />
-            <ReusableSelect
-              name={`estimator`}
-              value={estimator || ''}
-              onChange={handleAssign}
-              options={pmOptions}
-              label="Estimator:"
-              disabled={locked}
-            />
-            <ReusableSelect
-              name={`checker`}
-              value={checker || ''}
-              onChange={handleAssign}
-              options={pmOptions}
-              label="Checker:"
-              disabled={locked}
-            />
+            {hasPermission(4) && (
+              <>
+                <ReusableSelect
+                  name={`projectManager`}
+                  value={state.projectManager || ''}
+                  onChange={handleChange}
+                  options={pmOptions}
+                  label="Project Manager:"
+                  disabled={locked}
+                />
+                <ReusableSelect
+                  name={`estimator`}
+                  value={state.estimator || ''}
+                  onChange={handleChange}
+                  options={pmOptions}
+                  label="Estimator:"
+                  disabled={locked}
+                />
+                <ReusableSelect
+                  name={`checker`}
+                  value={state.checker || ''}
+                  onChange={handleChange}
+                  options={pmOptions}
+                  label="Checker:"
+                  disabled={locked}
+                />
+              </>
+            )}
           </div>
         </section>
       )}

@@ -83,6 +83,7 @@ export const authOptions = {
         permission: token.permission,
         estimator: token.estimator,
       };
+
       return session;
     },
     async signOut({ token, session }) {
@@ -91,8 +92,6 @@ export const authOptions = {
         token = {};
         session = null;
 
-        // You could add any additional cleanup here if needed
-        // For example, logging the signout in your database
         await query('UPDATE Dealer_Users SET LastLogout = NOW() WHERE ID = ?', [
           token?.id,
         ]).catch(console.error);

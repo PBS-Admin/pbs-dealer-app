@@ -7,12 +7,8 @@ import { authOptions } from '../[...nextauth]/route';
 export async function GET(req) {
   try {
     const session = await getServerSession(authOptions);
-    const token = await getToken({
-      req,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
 
-    if (!session || !token) {
+    if (!session) {
       console.log('No valid session or token found, returning Unauthorized');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -37,49 +33,49 @@ export async function GET(req) {
     let quotesQuery;
     let queryParams = [];
 
-    if (session.user.permission > 6) {
+    // ! Quote Permissions
+    if (session.user.permission > 4) {
+      // Admin Permissions, Dealer PM, PM
+      quotesQuery = `
+        SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, 
+               SalesPerson, ProjectManager,  Estimator, DateStarted 
+        FROM Dealer_Quotes 
+        WHERE Status & 1`; // Started
+    } else if (session.user.permission > 1 && session.user.estimator == 0) {
+      // RSM 2, Supervisor
       quotesQuery = `
         SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, 
                SalesPerson, DateStarted 
         FROM Dealer_Quotes 
-        WHERE Status & 1`;
-    } else if (session.user.permission > 1) {
-      quotesQuery = `
-        SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, 
-               SalesPerson, DateStarted 
-        FROM Dealer_Quotes 
-        WHERE Company = ? AND Status & 1`;
+        WHERE Company = ? AND Status & 1`; // Started
       queryParams = [company];
-    } else if (session.user.estimator == 0) {
+    } else if (session.user.permission > 1 && session.user.estimator == 1) {
+      // Estimator 2, Estimating Manager
       quotesQuery = `
         SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, 
                SalesPerson, DateStarted 
         FROM Dealer_Quotes 
-        WHERE Company = ? AND Status & 1 AND SalesPerson = ?`;
+        WHERE Status & 84`; // 01010100 - check ClientQuote for status def
+    } else if (session.user.estimator == 1) {
+      // Estimator 1
+      quotesQuery = `
+        SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, 
+               SalesPerson, DateStarted 
+        FROM Dealer_Quotes 
+        WHERE Company = ? AND Estimator = ? AND Status & 84 `; // 01010100 - check ClientQuote for status def
       queryParams = [company, session.user.id];
     } else {
+      // RSM 1
       quotesQuery = `
-        SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, 
-               SalesPerson, DateStarted 
-        FROM Dealer_Quotes 
-        WHERE Company = ? AND Status & 1 AND Estimator = ?`;
+      SELECT ID, Progress, Quote, Rev, Complexity, Customer, ProjectName, 
+             SalesPerson, DateStarted 
+      FROM Dealer_Quotes 
+      WHERE Company = ? AND Status & 1 AND SalesPerson = ?`;
       queryParams = [company, session.user.id];
     }
 
-    let rsmQuery;
-    let rsmParams = [];
-    if (session.user.permission < 3) {
-      rsmQuery = `
-      SELECT ID, FullName 
-      FROM Dealer_Users 
-      WHERE Active = 1 AND Company = ?`;
-      rsmParams = [company];
-    } else {
-      rsmQuery = `
-      SELECT ID, FullName 
-      FROM Dealer_Users 
-      WHERE Active = 1`;
-    }
+    const rsmQuery =
+      'SELECT ID, Username, FullName, Company FROM Dealer_Users WHERE ACTIVE = 1 AND Permission < 3 ORDER BY FullName';
 
     const companyQuery = `
       SELECT ID, Name 
@@ -88,7 +84,7 @@ export async function GET(req) {
     // Execute all queries in parallel
     const [quotesResult, rsmResult, companyResult] = await Promise.all([
       query(quotesQuery, queryParams),
-      query(rsmQuery, rsmParams),
+      query(rsmQuery),
       query(companyQuery),
     ]);
 
@@ -117,10 +113,15 @@ export async function GET(req) {
       })
     );
 
-    const parsedRsms = rsmResult.map(({ ID, FullName }) => ({
-      ID,
-      Name: FullName,
-    }));
+    // const parsedRsms = rsmResult.map(({ ID, FullName }) => ({
+    //   ID,
+    //   Name: FullName,
+    // }));
+
+    const formattedRsms = rsmResult.reduce((acc, user) => {
+      acc[user.ID] = { name: user.FullName, company: user.Company };
+      return acc;
+    }, {});
 
     const parsedCompanies = companyResult.map(({ ID, Name }) => ({
       ID,
@@ -131,7 +132,7 @@ export async function GET(req) {
       {
         quotes: parsedQuotes,
         companies: parsedCompanies,
-        rsms: parsedRsms,
+        rsms: formattedRsms,
       },
       { status: 200 }
     );

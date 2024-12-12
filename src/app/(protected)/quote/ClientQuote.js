@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { redirect, useRouter } from 'next/navigation';
 import styles from './page.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -9,17 +8,10 @@ import {
   faChevronRight,
   faTrash,
   faComment,
-  faCopy,
-  faPlus,
   faCheck,
   faSave,
 } from '@fortawesome/free-solid-svg-icons';
-import { faCircle, faCircleDot } from '@fortawesome/free-regular-svg-icons';
-import useFormState from '@/hooks/useFormState';
-import useNavigation from '@/hooks/useNavigation';
-import useWind from '@/hooks/useWind';
 
-import { initialState } from './_initialState';
 // Quote Form Section
 import ProjectInformation from '../../../components/quoteSections/ProjectInformation';
 import BuildingLayout from '../../../components/quoteSections/BuildingLayout';
@@ -31,73 +23,55 @@ import Notes from '@/components/quoteSections/Notes';
 import FinalizeQuote from '../../../components/quoteSections/FinalizeQuote';
 import BuildingProject from '@/components/quoteSections/BuildingProject';
 
-import CopyBuildingDialog from '../../../components/CopyBuildingDialog';
 import DeleteDialog from '../../../components/DeleteDialog';
 import BuildingSketch from '../../../components/BuildingSketch';
-import FeetInchesInput from '../../../components/Inputs/FeetInchesInput';
-import RoofPitchInput from '../../../components/Inputs/RoofPitchInput';
 import ReusableLoader from '@/components/ReusableLoader';
-import ReusableInteger from '../../../components/Inputs/ReusableInteger';
-import ReusableSlider from '../../../components/Inputs/ReusableSlider';
 
 import PageHeader from '@/components/PageHeader';
 import Accessories from '@/components/quoteSections/Accessories';
 
-import { updateStateStructure } from '@/components/StateUpdater';
+import { useUIContext } from '@/contexts/UIContext';
+import { useBuildingContext } from '@/contexts/BuildingContext';
+import { useUserContext } from '@/contexts/UserContext';
+import { useSession } from 'next-auth/react';
 
-import { shapes } from '../../../util/dropdownOptions';
-import ReusableColorSelect from '@/components/Inputs/ReusableColorSelect';
-
-export default function ClientQuote({
-  session,
-  quoteId,
-  initialQuoteData,
-  progress,
-  status,
-  rsms,
-  salesPerson,
-  projectManager,
-  estimator,
-  checker,
-}) {
-  // State variables
-  const [isDesktop, setDesktop] = useState(false);
-  const [activeBuilding, setActiveBuilding] = useState(0);
-  const [currentQuote, setCurrentQuote] = useState(0);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [buildingToDelete, setBuildingToDelete] = useState(null);
-
-  const [selectedSalesPerson, setSelectedSalesPerson] = useState(salesPerson);
-  const [selectedProjectManager, setSelectedProjectManager] =
-    useState(projectManager);
-  const [selectedEstimator, setSelectedEstimator] = useState(estimator);
-  const [selectedChecker, setSelectedChecker] = useState(checker);
-
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [sourceBuildingIndex, setSourceBuildingIndex] = useState(0);
-  const [isQuoteDeleteDialogOpen, setIsQuoteDeleteDialogOpen] = useState(false);
-
-  const [isColorOpen, setIsColorOpen] = useState(false);
-  const [activeColor, setActiveColor] = useState('NC');
-  const [colorSelectInfo, setColorSelectInfo] = useState({
-    isOpen: false,
-    panelType: '',
-    panelLocation: '',
-    buildingIndex: 0,
-    gauge: '',
-    panel: '',
-    color: '',
-  });
-
-  const [saveStatus, setSaveStatus] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [error, setError] = useState('');
-  const initialRender = useRef(true);
+const ClientQuote = () => {
   const router = useRouter();
-  const permission = session.user.permission;
-  const submitted = !!(progress & 0b00000100);
-  const inChecking = !!(progress & 0b00010000);
-  const locked = (submitted || inChecking) && permission < 4;
+
+  // Local State
+  const [isDesktop, setDesktop] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const initialRender = useRef(true);
+
+  // Contexts
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/login');
+    },
+  });
+  const {
+    activeBuilding,
+    activeCard,
+    currentIndex,
+    navItems,
+    dialogs,
+    setActiveBuilding,
+    setActiveCard,
+    handlePrev,
+    handleNext,
+    handleDotClick,
+    updateDialog,
+    setLoading,
+    showToast,
+  } = useUIContext();
+  const { companyData, hasPermission } = useUserContext();
+  const { state, setValues } = useBuildingContext();
+
+  // Derived State
+  const submitted = !!(state.quoteProgress & 0b00000100);
+  const inChecking = !!(state.quoteProgress & 0b00010000);
+  const locked = (submitted || inChecking) && hasPermission(3);
 
   /*
   Progress Bits:
@@ -123,311 +97,44 @@ export default function ClientQuote({
     └─────────── OPEN
   */
 
-  // Hooks
-  const {
-    values,
-    lastChangedWall,
-    handleChange,
-    handleNestedChange,
-    handleCanopyChange,
-    handlePartitionChange,
-    handleWallLinerPanelChange,
-    handleRoofLinerPanelChange,
-    handleWainscotChange,
-    handlePartialWallChange,
-    handleWallSkirtChange,
-    handleWallReliteChange,
-    handleRoofReliteChange,
-    handleMandoorChange,
-    handleOpeningChange,
-    handleCalcChange,
-    setValues,
-  } = useFormState(initialState);
+  // Local Functions
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const {
-    navItems,
-    activeCard,
-    currentIndex,
-    handlePrev,
-    handleNext,
-    handleDotClick,
-    setActiveCardDirectly,
-  } = useNavigation(activeBuilding, 0);
-
-  const addBuilding = () => {
-    setValues((prev) => ({
-      ...prev,
-      buildings: [
-        ...prev.buildings,
-        {
-          width: '',
-          length: '',
-          offsetX: 0,
-          offsetY: 0,
-          rotation: 0,
-          commonWall: '',
-          steelFinish: 'NC',
-          shape: 'symmetrical',
-          backPeakOffset: '',
-          backEaveHeight: '',
-          frontEaveHeight: '',
-          backRoofPitch: '',
-          frontRoofPitch: '',
-          roofBaySpacing: '',
-          frontBaySpacing: '',
-          backBaySpacing: '',
-          leftBaySpacing: '',
-          rightBaySpacing: '',
-          collateralLoad: 1.0,
-          liveLoad: 20.0,
-          deadLoad: 2.5,
-          windEnclosure: 'C',
-          roofSnowLoad: 0.0,
-          thermalFactor: 1,
-          frameType: 'rigidFrame',
-          intColSpacing: '',
-          straightExtColumns: false,
-          noFlangeBraces: false,
-          leftFrame: 'postAndBeam',
-          leftEndwallInset: '',
-          leftIntColSpacing: '',
-          rightFrame: 'postAndBeam',
-          rightEndwallInset: '',
-          rightIntColSpacing: '',
-          frontBracingType: 'xBrace',
-          frontBracingHeight: '',
-          backBracingType: 'xBrace',
-          backBracingHeight: '',
-          leftBracingType: 'xBrace',
-          leftBracingHeight: '',
-          rightBracingType: 'xBrace',
-          rightBracingHeight: '',
-          interiorBracingType: 'xBrace',
-          interiorBracingHeight: '',
-          frontBracedBays: '',
-          backBracedBays: '',
-          leftBracedBays: '',
-          rightBracedBays: '',
-          roofBracedBays: '',
-          roofBreakPoints: 'left',
-          frontGirtType: 'bipass',
-          backGirtType: 'bipass',
-          outerLeftGirtType: 'bipass',
-          leftGirtType: 'bipass',
-          rightGirtType: 'bipass',
-          outerRightGirtType: 'bipass',
-          frontGirtSpacing: 'default',
-          backGirtSpacing: 'default',
-          outerLeftGirtSpacing: 'default',
-          leftGirtSpacing: 'default',
-          rightGirtSpacing: 'default',
-          outerRightGirtSpacing: 'default',
-          frontBaseCondition: 'angle',
-          backBaseCondition: 'angle',
-          leftBaseCondition: 'angle',
-          outerLeftBaseCondition: 'angle',
-          rightBaseCondition: 'angle',
-          outerRightBaseCondition: 'angle',
-          purlinSpacing: 'default',
-          roofPanelType: 'pbr',
-          roofPanelGauge: 26,
-          roofPanelFinish: 'painted',
-          roofPanelColor: 'NC',
-          wallPanelType: 'pbr',
-          wallPanelGauge: 26,
-          wallPanelFinish: 'painted',
-          wallPanelColor: 'NC',
-          allWallsSame: true,
-          frontWallPanelType: 'pbr',
-          frontWallPanelGauge: 26,
-          frontWallPanelFinish: 'painted',
-          frontWallPanelColor: 'NC',
-          backWallPanelType: 'pbr',
-          backWallPanelGauge: 26,
-          backWallPanelFinish: 'painted',
-          backWallPanelColor: 'NC',
-          outerLeftWallPanelType: 'pbr',
-          outerLeftWallPanelGauge: 26,
-          outerLeftWallPanelFinish: 'painted',
-          outerLeftWallPanelColor: 'NC',
-          leftWallPanelType: 'pbr',
-          leftWallPanelGauge: 26,
-          leftWallPanelFinish: 'painted',
-          leftWallPanelColor: 'NC',
-          rightWallPanelType: 'pbr',
-          rightWallPanelGauge: 26,
-          rightWallPanelFinish: 'painted',
-          rightWallPanelColor: 'NC',
-          outerRightWallPanelType: 'pbr',
-          outerRightWallPanelGauge: 26,
-          outerRightWallPanelFinish: 'painted',
-          outerRightWallPanelColor: 'NC',
-          includeGutters: true,
-          roofInsulation: 'none',
-          roofInsulationOthers: false,
-          wallInsulation: 'none',
-          wallInsulationOthers: false,
-          frontWallInsulation: 'none',
-          backWallInsulation: 'none',
-          outerLeftWallInsulation: 'none',
-          leftWallInsulation: 'none',
-          rightWallInsulation: 'none',
-          outerRightWallInsulation: 'none',
-          // Building - Extensions
-          frontExtensionWidth: 0,
-          backExtensionWidth: 0,
-          leftExtensionWidth: 0,
-          rightExtensionWidth: 0,
-          frontExtensionBays: '',
-          frontExtensionColumns: false,
-          backExtensionBays: '',
-          backExtensionColumns: false,
-          extensionInsulation: true,
-          soffitPanelType: 'pbr',
-          soffitPanelGauge: 26,
-          soffitPanelFinish: 'painted',
-          soffitPanelColor: 'NC',
-          roofTrim: {
-            gable: { vendor: 'PBS', gauge: 26, color: 'NC' },
-            eave: { vendor: 'PBS', gauge: 26, color: 'NC' },
-            gutter: { vendor: 'PBS', gauge: 26, color: 'NC' },
-            downspout: { vendor: 'PBS', gauge: 26, color: 'NC' },
-          },
-          wallTrim: {
-            corner: { vendor: 'PBS', gauge: 26, color: 'NC' },
-            jamb: { vendor: 'PBS', gauge: 26, color: 'NC' },
-            base: { vendor: 'PBS', gauge: 26, color: 'NC' },
-          },
-          canopies: [],
-          partitions: [],
-          wallLinerPanels: [],
-          roofLinerPanels: [],
-          wainscots: [],
-          partialWalls: [],
-          wallSkirts: [],
-          wallRelites: [],
-          roofRelites: [],
-          openings: {
-            front: [],
-            back: [],
-            left: [],
-            right: [],
-          },
-        },
-      ],
-    }));
-    setActiveBuilding(values.buildings.length);
-  };
-
-  const removeBuilding = (indexToRemove) => {
-    setValues((prev) => ({
-      ...prev,
-      buildings: prev.buildings.filter((_, index) => index !== indexToRemove),
-    }));
-
-    // If the removed building was active, set the first building as active
-    if (indexToRemove === activeBuilding) {
-      setActiveBuilding(0);
-    } else if (indexToRemove < activeBuilding) {
-      // If a building before the active one is removed, adjust the active index
-      setActiveBuilding((prev) => prev - 1);
-    }
-  };
-
-  const openCopyDialog = (index) => {
-    setSourceBuildingIndex(index);
-    setDialogOpen(true);
-  };
-
-  const closeCopyDialog = () => {
-    setDialogOpen(false);
-    setSourceBuildingIndex(null);
-  };
-
-  const copyBuilding = (targetIndex) => {
-    if (sourceBuildingIndex === null) {
-      closeCopyDialog();
+    // Early validation
+    if (!companyData?.ID) {
+      showToast({
+        title: 'Error',
+        message: 'Company information not available',
+        type: 'error',
+      });
       return;
     }
 
-    setValues((prev) => {
-      const newBuildings = [...prev.buildings];
-      const sourceBuilding = newBuildings[sourceBuildingIndex];
-
-      // Create a deep copy of the source building
-      const buildingToCopy = JSON.parse(JSON.stringify(sourceBuilding));
-
-      // Reset certain properties that should not be copied
-      buildingToCopy.offsetX = '';
-      buildingToCopy.offsetY = '';
-      buildingToCopy.rotation = '';
-      buildingToCopy.commonWall = '';
-
-      if (targetIndex === 'new') {
-        newBuildings.push(buildingToCopy);
-      } else {
-        // Merge the copied building with the existing one at the target index
-        newBuildings[targetIndex] = {
-          ...newBuildings[targetIndex],
-          ...buildingToCopy,
-          // Preserve the original offsets and rotation for existing buildings
-          offsetX: newBuildings[targetIndex].offsetX,
-          offsetY: newBuildings[targetIndex].offsetY,
-          rotation: newBuildings[targetIndex].rotation,
-          commonWall: newBuildings[targetIndex].commonWall,
-        };
-      }
-
-      return { ...prev, buildings: newBuildings };
-    });
-
-    closeCopyDialog();
-  };
-
-  const openDeleteDialog = (index) => {
-    setBuildingToDelete(index);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const closeDeleteDialog = () => {
-    setIsDeleteDialogOpen(false);
-    setBuildingToDelete(null);
-  };
-
-  const confirmRemoveBuilding = () => {
-    if (buildingToDelete !== null) {
-      removeBuilding(buildingToDelete);
-      closeDeleteDialog();
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSaveStatus(true);
-
-    let user = session.user;
+    setLoading(true, 'Saving quote...');
 
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      const saveData = {
+        currentQuote: state.quoteId || 0,
+        user: {
+          id: session?.user?.id,
+          company: companyData.ID,
+        },
+        state: {
+          ...state,
+          Progress: submitted ? 6 : state.quoteProgress || 0,
+        },
+        salesPerson: state.salesPerson,
+        projectManager: state.projectManager,
+        estimator: state.estimator,
+        checker: state.checker,
+      };
 
       const response = await fetch('/api/auth/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          currentQuote,
-          user,
-          values,
-          salesPerson: selectedSalesPerson,
-          projectManager: selectedProjectManager,
-          estimator: selectedEstimator,
-          checker: selectedChecker,
-        }),
-        signal: controller.signal,
+        body: JSON.stringify(saveData),
       });
-
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -436,224 +143,72 @@ export default function ClientQuote({
 
       const data = await response.json();
 
-      if (isNaN(data.message.quoteId)) {
-        console.log(data.message);
-      } else {
-        setCurrentQuote(data.message.quoteId);
-        setValues({ ...values, quoteNumber: data.message.quoteNum });
+      // Handle new quote case
+      if (!state.quoteId && data.message?.quoteId) {
+        setValues({
+          ...state,
+          quoteId: data.message.quoteId,
+          quoteNumber: data.message.quoteNum,
+        });
       }
+
+      showToast({
+        title: 'Success',
+        message: 'Quote saved successfully',
+        type: 'success',
+      });
 
       setSaveSuccess(true);
-      setSaveStatus(false);
-      // Reset saveSuccess after 3 seconds
-      setTimeout(() => {
-        setSaveSuccess(false);
-      }, 3000);
-    } catch (error) {
-      setSaveStatus(false);
-      if (error.name === 'AbortError') {
-        setError('Request timed out. Please try again.');
-      } else {
-        setError('An error occurred. Please try again.');
+      setTimeout(() => setSaveSuccess(false), 3000);
+
+      // Handle submission case
+      if (submitted) {
+        router.replace('/tracker');
       }
+    } catch (error) {
       console.error('Save error:', error);
-    }
-  };
-
-  const handleSubmitted = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSaveStatus(true);
-
-    let user = session.user;
-
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-      const response = await fetch('/api/auth/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currentQuote, user, values, progress: 6 }),
-        signal: controller.signal,
+      showToast({
+        title: 'Error',
+        message: error.message || 'Failed to save quote',
+        type: 'error',
       });
-
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        await router.replace('/tracker');
-      } else {
-        const data = await response.json();
-        setError(data.message || 'Something went wrong');
-      }
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        setError('Request timed out. Please try again.');
-      } else {
-        setError('An error occurred. Please try again.');
-      }
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleAssign = async (e) => {
-    switch (e.target.name) {
-      case 'salesPerson':
-        setSelectedSalesPerson(e.target.value);
-        break;
-      case 'projectManager':
-        setSelectedProjectManager(e.target.value);
-        break;
-      case 'estimator':
-        setSelectedEstimator(e.target.value);
-        break;
-      case 'checker':
-        setSelectedChecker(e.target.value);
-        break;
-      default:
-        setSelectedSalesPerson(e.target.value);
-        break;
-    }
-  };
-
-  const openQuoteDeleteDialog = () => {
-    setIsQuoteDeleteDialogOpen(true);
-  };
-
-  const closeQuoteDeleteDialog = () => {
-    setIsQuoteDeleteDialogOpen(false);
-  };
-
-  const handleDeleteQuote = async () => {
-    if (!session) return;
-
-    try {
-      const url = new URL(`/api/quotes/${quoteId}`, window.location.origin);
-
-      const response = await fetch(url.toString(), {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete quote');
-      }
-
-      router.push('/dashboard');
-      closeDeleteDialog();
-    } catch (error) {
-      console.error('Error deleting quote:', error);
-      alert('Failed to delete quote. Please try again.');
-    }
-  };
-
-  const openColorDialog = (info) => {
-    setColorSelectInfo({
+  // Handle delete functionality
+  const handleDeleteClick = () => {
+    updateDialog('deleteQuote', {
       isOpen: true,
-      ...info,
+      data: {
+        quoteId: state.id,
+        quoteName: `Quote ${state.quoteNumber}`,
+        redirectUrl: '/dashboard',
+      },
     });
   };
 
-  const closeColorDialog = () => {
-    setIsColorOpen(false);
-  };
-
-  const handleColorSelect = (colorInfo) => {
-    const { color, panelType, panelLocation, buildingIndex } = colorInfo;
-
-    switch (panelType) {
-      case 'partitionLeft':
-      case 'partitionRight':
-        handlePartitionChange(
-          buildingIndex,
-          panelLocation,
-          `${panelType}PanelColor`,
-          color
-        );
-        break;
-      case 'roofLiner':
-        handleRoofLinerPanelChange(
-          buildingIndex,
-          panelLocation,
-          `${panelType}PanelColor`,
-          color
-        );
-        break;
-      case 'wallLiner':
-        handleWallLinerPanelChange(
-          buildingIndex,
-          panelLocation,
-          `${panelType}PanelColor`,
-          color
-        );
-        break;
-      case 'wainscot':
-        handleWainscotChange(
-          buildingIndex,
-          panelLocation,
-          `${panelType}PanelColor`,
-          color
-        );
-        break;
-      case 'canopyRoof':
-      case 'canopySoffit':
-        handleCanopyChange(
-          buildingIndex,
-          panelLocation,
-          `${panelType}PanelColor`,
-          color
-        );
-        break;
-      default:
-        handleNestedChange(buildingIndex, `${panelType}PanelColor`, color);
-    }
-    setColorSelectInfo((prev) => ({ ...prev, isOpen: false }));
-  };
-
-  // Checking for screen width to conditionally render DOM elements
   useEffect(() => {
-    if (initialRender.current) {
-      if (initialQuoteData) {
-        setCurrentQuote(quoteId);
-        const updatedQuoteData = updateStateStructure(initialQuoteData);
-        setValues(updatedQuoteData);
-      }
-      initialRender.current = false;
-    }
-
-    if (window.innerWidth > 1000) {
-      setDesktop(true);
-    } else {
-      setDesktop(false);
-    }
-
-    const updateMedia = () => {
-      if (window.innerWidth > 1000) {
-        setDesktop(true);
-      } else {
-        setDesktop(false);
-      }
-    };
-    window.addEventListener('resize', updateMedia);
-    return () => window.removeEventListener('resize', updateMedia);
-  }, [initialQuoteData, currentIndex]);
+    const handleResize = () => setDesktop(window.innerWidth > 1000);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <main>
       <PageHeader
-        session={session}
         title="Quote Input"
         subtitle={
-          values.quoteNumber +
-          (values.revNumber > 0 ? ' R' + values.revNumber : '') +
-          (values.customerName
-            ? (values.quoteNumber ? ' - ' : '') + values.customerName
+          state.quoteNumber +
+          (state.revNumber > 0 ? ' R' + state.revNumber : '') +
+          (state.customerName
+            ? (state.quoteNumber ? ' - ' : '') + state.customerName
             : '') +
-          (values.projectName
-            ? (values.quoteNumber || values.customerName ? ' - ' : '') +
-              values.projectName
+          (state.projectName
+            ? (state.quoteNumber || state.customerName ? ' - ' : '') +
+              state.projectName
             : '')
         }
         isLogOut={false}
@@ -662,7 +217,7 @@ export default function ClientQuote({
       {isDesktop && (
         <div>
           <div className={styles.tabContainer}>
-            {quoteId != 0 && (
+            {state.quoteId != 0 && (
               <>
                 <button
                   type="button"
@@ -676,7 +231,7 @@ export default function ClientQuote({
                   <button
                     type="button"
                     className={styles.deleteTab}
-                    onClick={openQuoteDeleteDialog}
+                    onClick={handleDeleteClick}
                   >
                     <FontAwesomeIcon icon={faTrash} />
                   </button>
@@ -693,82 +248,22 @@ export default function ClientQuote({
               </button>
             )}
           </div>
+          {/* Sidebar Nav */}
           <nav className={styles.sidebar}>
-            <button
-              className={`${activeCard == 'quote-info' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('quote-info')}
-            >
-              Project Information
-            </button>
-            <button
-              className={`${activeCard == 'building-project' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('building-project')}
-            >
-              Building Project
-            </button>
-            <button
-              className={`${styles.bldg} ${activeCard == 'bldg-layout' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('bldg-layout')}
-            >
-              Building {String.fromCharCode(activeBuilding + 65)} - Layout
-            </button>
-            <button
-              className={`${styles.bldg} ${activeCard == 'bldg-partitions' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('bldg-partitions')}
-            >
-              Building {String.fromCharCode(activeBuilding + 65)} - Partitions
-            </button>
-            <button
-              className={`${styles.bldg} ${activeCard == 'bldg-roof-options' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('bldg-roof-options')}
-            >
-              Building {String.fromCharCode(activeBuilding + 65)} - Roof Options
-            </button>
-            <button
-              className={`${styles.bldg} ${activeCard == 'bldg-wall-options' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('bldg-wall-options')}
-            >
-              Building {String.fromCharCode(activeBuilding + 65)} - Wall Options
-            </button>
-            {/* <button
-              className={`${styles.bldg} ${activeCard == 'bldg-cranes' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('bldg-cranes')}
-            >
-              Building {String.fromCharCode(activeBuilding + 65)} - Cranes
-            </button> */}
-            {/* <button
-              className={`${styles.bldg} ${activeCard == 'bldg-mezzanines' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('bldg-mezzanines')}
-            >
-              Building {String.fromCharCode(activeBuilding + 65)} - Mezzanines
-            </button> */}
-            <button
-              className={`${styles.bldg} ${activeCard == 'bldg-openings' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('bldg-openings')}
-            >
-              Building {String.fromCharCode(activeBuilding + 65)} - Openings
-            </button>
-            <button
-              className={`${activeCard == 'accessories' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('accessories')}
-            >
-              Accessories
-            </button>
-            <button
-              className={`${activeCard == 'notes' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('notes')}
-            >
-              Notes
-            </button>
-            <button
-              className={`${activeCard == 'finalize-quote' ? styles.activeCard : ''}`}
-              onClick={() => setActiveCardDirectly('finalize-quote')}
-            >
-              Finalize Quote
-            </button>
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                className={`${item.id.includes('bldg-') ? styles.bldg : ''} ${
+                  activeCard === item.id ? styles.activeCard : ''
+                }`}
+                onClick={() => setActiveCard(item.id)}
+              >
+                {item.label}
+              </button>
+            ))}
           </nav>
-          {(values.buildings[activeBuilding].width > 0 ||
-            values.buildings[activeBuilding].length > 0) && (
+          {(state.buildings[activeBuilding].width > 0 ||
+            state.buildings[activeBuilding].length > 0) && (
             <section className={`card ${styles.sketchBox}`}>
               <header>
                 <h3>Active Building</h3>
@@ -776,8 +271,7 @@ export default function ClientQuote({
 
               <div className={styles.sketch}>
                 <BuildingSketch
-                  buildingData={values.buildings[activeBuilding]}
-                  lastChangedWall={lastChangedWall}
+                  buildingData={state.buildings[activeBuilding]}
                 />
               </div>
             </section>
@@ -787,135 +281,48 @@ export default function ClientQuote({
 
       <form onSubmit={handleSubmit} className="inputForm">
         {/* Project Info Page */}
-        {activeCard == 'quote-info' && (
-          <ProjectInformation
-            values={values}
-            handleChange={handleChange}
-            setValues={setValues}
-            locked={locked}
-          />
-        )}
+        {activeCard == 'quote-info' && <ProjectInformation locked={locked} />}
         {/* Building Project Page */}
         {activeCard == 'building-project' && (
-          <BuildingProject
-            values={values}
-            activeBuilding={activeBuilding}
-            handleNestedChange={handleNestedChange}
-            setActiveBuilding={setActiveBuilding}
-            openCopyDialog={openCopyDialog}
-            openDeleteDialog={openDeleteDialog}
-            addBuilding={addBuilding}
-            locked={locked}
-          />
+          <BuildingProject locked={locked} />
         )}
         {/* Building Layout Page */}
         {activeCard == 'bldg-layout' && activeBuilding != null && (
-          <BuildingLayout
-            values={values}
-            activeBuilding={activeBuilding}
-            handleNestedChange={handleNestedChange}
-            handleCalcChange={handleCalcChange}
-            locked={locked}
-          />
+          <BuildingLayout locked={locked} />
         )}
         {/* Building Partitions Page */}
         {activeCard == 'bldg-partitions' && (
           <>
-            <BuildingPartitions
-              values={values}
-              activeBuilding={activeBuilding}
-              handlePartitionChange={handlePartitionChange}
-              setValues={setValues}
-              isDesktop={isDesktop}
-              colorClicked={openColorDialog}
-              locked={locked}
-            />
+            <BuildingPartitions locked={locked} />
           </>
         )}
         {/* Building Roof Options Page */}
         {activeCard == 'bldg-roof-options' && (
           <>
-            <BuildingRoofOptions
-              values={values}
-              activeBuilding={activeBuilding}
-              handleNestedChange={handleNestedChange}
-              handleRoofLinerPanelChange={handleRoofLinerPanelChange}
-              handleRoofReliteChange={handleRoofReliteChange}
-              setValues={setValues}
-              isDesktop={isDesktop}
-              colorClicked={openColorDialog}
-              locked={locked}
-            />
+            <BuildingRoofOptions locked={locked} />
           </>
         )}
         {/* Building Wall Options Page */}
         {activeCard == 'bldg-wall-options' && (
           <>
-            <BuildingWallOptions
-              values={values}
-              activeBuilding={activeBuilding}
-              handleNestedChange={handleNestedChange}
-              handleWallLinerPanelChange={handleWallLinerPanelChange}
-              handleWainscotChange={handleWainscotChange}
-              handlePartialWallChange={handlePartialWallChange}
-              handleWallSkirtChange={handleWallSkirtChange}
-              handleCanopyChange={handleCanopyChange}
-              handleWallReliteChange={handleWallReliteChange}
-              setValues={setValues}
-              isDesktop={isDesktop}
-              colorClicked={openColorDialog}
-              locked={locked}
-            />
+            <BuildingWallOptions locked={locked} />
           </>
         )}
         {/* {activeCard == 'bldg-cranes' && <section></section>} */}
         {activeCard == 'bldg-openings' && (
           <>
-            <BuildingOpenings
-              values={values}
-              activeBuilding={activeBuilding}
-              handleOpeningChange={handleOpeningChange}
-              setValues={setValues}
-              isDesktop={isDesktop}
-              locked={locked}
-            />
+            <BuildingOpenings locked={locked} />
           </>
         )}
         {/* Accessories Page */}
-        {activeCard == 'accessories' && (
-          <Accessories
-            values={values}
-            handleChange={handleChange}
-            handleMandoorChange={handleMandoorChange}
-            setValues={setValues}
-            locked={locked}
-          />
-        )}
+        {activeCard == 'accessories' && <Accessories locked={locked} />}
         {/* Notes Page */}
-        {activeCard == 'notes' && (
-          <Notes values={values} setValues={setValues} />
-        )}
+        {activeCard == 'notes' && <Notes />}
         {/* Finalize Page */}
-        {activeCard == 'finalize-quote' && (
-          <FinalizeQuote
-            values={values}
-            setValues={setValues}
-            handleChange={handleChange}
-            handleAssign={handleAssign}
-            onSubmitted={handleSubmitted}
-            quoteProgress={progress}
-            quoteStatus={status}
-            locked={locked}
-            rsms={rsms}
-            salesPerson={selectedSalesPerson}
-            projectManager={selectedProjectManager}
-            estimator={selectedEstimator}
-            checker={selectedChecker}
-          />
-        )}
+        {activeCard == 'finalize-quote' && <FinalizeQuote locked={locked} />}
         {!isDesktop &&
-          (values.buildings[activeBuilding].width > 0 ||
-            values.buildings[activeBuilding].length > 0) && (
+          (state.buildings[activeBuilding].width > 0 ||
+            state.buildings[activeBuilding].length > 0) && (
             <section className={`card ${styles.sketchBox}`}>
               <header>
                 <h3>Active Building</h3>
@@ -923,8 +330,7 @@ export default function ClientQuote({
 
               <div className={styles.sketch}>
                 <BuildingSketch
-                  buildingData={values.buildings[activeBuilding]}
-                  lastChangedWall={lastChangedWall}
+                  buildingData={state.buildings[activeBuilding]}
                 />
               </div>
             </section>
@@ -948,7 +354,9 @@ export default function ClientQuote({
               {navItems.map((item, index) => (
                 <button
                   key={index}
-                  className={`${styles.dot} ${index === currentIndex ? styles.activeDot : ''}`}
+                  className={`${styles.dot} ${
+                    index === currentIndex ? styles.activeDot : ''
+                  }`}
                   onClick={() => handleDotClick(index)}
                   aria-label={`Go to ${item.label}`}
                 />
@@ -964,45 +372,23 @@ export default function ClientQuote({
           </button>
         </nav>
       )}
-      <CopyBuildingDialog
-        isOpen={dialogOpen}
-        onClose={closeCopyDialog}
-        buildings={values.buildings}
-        onCopy={copyBuilding}
-        sourceBuildingIndex={sourceBuildingIndex}
-      />
+
+      {/* Dialogs */}
       <DeleteDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={closeDeleteDialog}
-        onDelete={confirmRemoveBuilding}
+        isOpen={dialogs.deleteQuote.isOpen}
+        onClose={() => updateDialog('deleteQuote', { isOpen: false })}
+        onDelete={handleDeleteClick}
         title="Confirm Deletion"
-        message={`Are you sure you want to delete Building ${buildingToDelete !== null ? String.fromCharCode(buildingToDelete + 65) : ''}?`}
+        message={`Are you sure you want to delete ${dialogs.deleteQuote.data?.quoteName}?`}
       />
-      <DeleteDialog
-        isOpen={isQuoteDeleteDialogOpen}
-        onClose={closeQuoteDeleteDialog}
-        onDelete={handleDeleteQuote}
-        title="Confirm Deletion"
-        message={`Are you sure you want to delete this whole quote?`}
-      />
-      <ReusableColorSelect
-        isOpen={colorSelectInfo.isOpen}
-        onClose={() =>
-          setColorSelectInfo((prev) => ({ ...prev, isOpen: false }))
-        }
-        onColorSelect={handleColorSelect}
-        panel={colorSelectInfo.panel}
-        gauge={colorSelectInfo.gauge}
-        panelType={colorSelectInfo.panelType}
-        panelLocation={colorSelectInfo.panelLocation}
-        buildingIndex={colorSelectInfo.buildingIndex}
-        value={colorSelectInfo.color}
-      />
+
       <ReusableLoader
-        isOpen={saveStatus}
-        title="Loading"
-        message="Trying to save Quote..."
+        isOpen={dialogs.loader.isOpen}
+        title={dialogs.loader.title}
+        message={dialogs.loader.message}
       />
     </main>
   );
-}
+};
+
+export default ClientQuote;

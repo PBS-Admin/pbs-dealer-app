@@ -1,18 +1,30 @@
 import { NextResponse } from 'next/server';
 import { query, transaction, getPoolStatus } from '../../../../lib/db';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '../[...nextauth]/route';
 
 export async function POST(req) {
   try {
+    // Authentication checks
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const {
       currentQuote,
       user,
-      values,
+      state,
       progress,
       salesPerson,
       projectManager,
       estimator,
       checker,
     } = await req.json();
+
+    console.log('user: ', user);
+    console.log('session: ', session);
 
     const company = user.company;
     const id = user.id;
@@ -42,20 +54,33 @@ export async function POST(req) {
             [company]
           );
 
-          const updatedValues = { ...values, quoteNumber: quoteNumber };
+          const updatedValues = { ...state, quoteNumber: quoteNumber };
 
           // Insert new quote
-          result = await conn.query(
-            'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, SalesPerson, DateStarted) VALUES (?, ?, ?, ?, ?, ?, Now())',
-            [
-              quoteNumber,
-              values.customerName,
-              values.projectName,
-              company,
-              JSON.stringify(updatedValues),
-              id,
-            ]
-          );
+          if (session.user.estimator == 0 && session.user.permission < 3) {
+            result = await conn.query(
+              'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, SalesPerson, DateStarted) VALUES (?, ?, ?, ?, ?, ?, Now())',
+              [
+                quoteNumber,
+                state.customerName,
+                state.projectName,
+                company,
+                JSON.stringify(updatedValues),
+                id,
+              ]
+            );
+          } else {
+            result = await conn.query(
+              'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, DateStarted) VALUES (?, ?, ?, ?, ?, Now())',
+              [
+                quoteNumber,
+                state.customerName,
+                state.projectName,
+                company,
+                JSON.stringify(updatedValues),
+              ]
+            );
+          }
 
           // Log the save
           await conn.query(
@@ -85,9 +110,9 @@ export async function POST(req) {
           await query(
             'UPDATE Dealer_Quotes SET QuoteData = ?, Customer = ?, ProjectName = ?, Progress = Progress ^ ?, SalesPerson = ?, ProjectManager = ?, Estimator = ?, Checker = ? WHERE id = ?',
             [
-              JSON.stringify(values),
-              values.customerName,
-              values.projectName,
+              JSON.stringify(state),
+              state.customerName,
+              state.projectName,
               progress || 0,
               salesPerson,
               projectManager,
@@ -104,7 +129,7 @@ export async function POST(req) {
         });
 
         return NextResponse.json(
-          { message: 'Quote updated successfully', updatedValues: values },
+          { message: 'Quote updated successfully', updatedValues: state },
           { status: 200 }
         );
       } catch (error) {

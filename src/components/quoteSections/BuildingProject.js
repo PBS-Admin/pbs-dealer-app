@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCopy,
@@ -12,22 +12,77 @@ import FeetInchesInput from '../Inputs/FeetInchesInput';
 import RoofPitchInput from '../Inputs/RoofPitchInput';
 import ReusableSlider from '../Inputs/ReusableSlider';
 import { shapes } from '../../util/dropdownOptions';
+import { useBuildingContext } from '@/contexts/BuildingContext';
+import CopyBuildingDialog from '../CopyBuildingDialog';
+import DeleteDialog from '../DeleteDialog';
+import { useUIContext } from '@/contexts/UIContext';
 
-const BuildingProject = ({
-  values,
-  activeBuilding,
-  handleNestedChange,
-  setActiveBuilding,
-  openCopyDialog,
-  openDeleteDialog,
-  addBuilding,
-  locked,
-}) => {
+const BuildingProject = ({ locked }) => {
+  // Contexts
+  const {
+    state,
+    handleNestedChange,
+    addBuilding,
+    removeBuilding,
+    copyBuilding,
+  } = useBuildingContext();
+  const { activeBuilding, dialogs, setActiveBuilding, updateDialog } =
+    useUIContext();
+
+  // Local Functions
+  useEffect(() => {
+    if (state.buildings.length === 0) {
+      setActiveBuilding(0);
+    } else if (activeBuilding >= state.buildings.length) {
+      setActiveBuilding(state.buildings.length - 1);
+    }
+  }, [state.buildings.length, activeBuilding, setActiveBuilding]);
+
+  const handleAddBuilding = () => {
+    addBuilding();
+    setActiveBuilding(state.buildings.length - 1);
+  };
+
+  const handleRemoveBuilding = () => {
+    const buildingIndex = dialogs.deleteBuilding?.data;
+    if (buildingIndex !== null && buildingIndex !== undefined) {
+      // Update active building before removing the building
+      if (buildingIndex === activeBuilding) {
+        setActiveBuilding(Math.max(0, activeBuilding - 1));
+      } else if (buildingIndex < activeBuilding) {
+        setActiveBuilding(activeBuilding - 1);
+      }
+      // Remove the building
+      removeBuilding(buildingIndex);
+      updateDialog('deleteBuilding', { isOpen: false, data: null });
+    }
+  };
+
+  const handleCopyBuilding = (targetIndex) => {
+    const sourceBuildingIndex = dialogs.copyBuilding?.data;
+
+    if (sourceBuildingIndex === null || sourceBuildingIndex === undefined) {
+      updateDialog('copyBuilding', { isOpen: false, data: null });
+      return;
+    }
+    copyBuilding(sourceBuildingIndex, targetIndex);
+
+    // Set active building to either the new building index or the target index
+    if (targetIndex === 'new') {
+      setActiveBuilding(state.buildings.length);
+    } else {
+      setActiveBuilding(parseInt(targetIndex));
+    }
+
+    updateDialog('copyBuilding', { isOpen: false, data: null });
+  };
+
+  // JSX
   return (
     <section className="page">
       <div className="projectCard">
         {/* Buildings section */}
-        {values.buildings.map((building, index) => (
+        {state.buildings.map((building, index) => (
           <div key={index} className={styles.buildingContainer}>
             <div className={styles.buildingTitleContainer}>
               <h3>Building {String.fromCharCode(index + 65)}</h3>
@@ -35,7 +90,9 @@ const BuildingProject = ({
                 <button
                   type="button"
                   className="icon actionButton sec"
-                  onClick={() => openCopyDialog(index)}
+                  onClick={() =>
+                    updateDialog('copyBuilding', { isOpen: true, data: index })
+                  }
                 >
                   <FontAwesomeIcon icon={faCopy} />
                 </button>
@@ -220,7 +277,7 @@ const BuildingProject = ({
               )}
             </div>
 
-            {values.buildings.length > 1 && index !== 0 && (
+            {state.buildings.length > 1 && index !== 0 && (
               <>
                 <div className="divider white"></div>
                 <div className="grid4">
@@ -285,7 +342,7 @@ const BuildingProject = ({
                       disabled={index != activeBuilding || locked}
                     >
                       <option value="">Select a building</option>
-                      {values.buildings.map(
+                      {state.buildings.map(
                         (_, buildingIndex) =>
                           buildingIndex !== index && (
                             <option
@@ -314,11 +371,16 @@ const BuildingProject = ({
                 />
               </button>
 
-              {values.buildings.length > 1 && index !== 0 && !locked && (
+              {state.buildings.length > 1 && index !== 0 && !locked && (
                 <button
                   type="button"
                   className="icon actionButton reject"
-                  onClick={() => openDeleteDialog(index)}
+                  onClick={() =>
+                    updateDialog('deleteBuilding', {
+                      isOpen: true,
+                      data: index,
+                    })
+                  }
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
@@ -326,12 +388,39 @@ const BuildingProject = ({
             </div>
           </div>
         ))}
-        {values.buildings.length < 9 && !locked && (
-          <button type="button" className="addButton" onClick={addBuilding}>
+        {state.buildings.length < 9 && !locked && (
+          <button
+            type="button"
+            className="addButton"
+            onClick={handleAddBuilding}
+          >
             <FontAwesomeIcon icon={faPlus} />
           </button>
         )}
       </div>
+      <CopyBuildingDialog
+        isOpen={dialogs.copyBuilding?.isOpen}
+        onClose={() =>
+          updateDialog('copyBuilding', { isOpen: false, data: null })
+        }
+        onCopy={handleCopyBuilding}
+        buildings={state.buildings}
+        sourceBuildingIndex={dialogs.copyBuilding?.data}
+      />
+
+      <DeleteDialog
+        isOpen={dialogs.deleteBuilding?.isOpen}
+        onClose={() =>
+          updateDialog('deleteBuilding', { isOpen: false, data: null })
+        }
+        onDelete={handleRemoveBuilding}
+        title="Confirm Deletion"
+        message={`Are you sure you want to delete Building ${
+          dialogs.deleteBuilding?.data !== null
+            ? String.fromCharCode(dialogs.deleteBuilding.data + 65)
+            : ''
+        }?`}
+      />
     </section>
   );
 };

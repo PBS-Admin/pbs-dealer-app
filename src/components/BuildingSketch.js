@@ -3,11 +3,7 @@ import * as THREE from 'three';
 import { useThreeSetup } from '../hooks/useThreeSetup';
 import { createBuilding, addBayLines, addBraceLines } from './BuildingUtils';
 
-const BuildingSketch = ({
-  buildingData,
-  lastChangedWall,
-  backgroundColor = 0xf5f5f5,
-}) => {
+const BuildingSketch = ({ buildingData, backgroundColor = 0xf5f5f5 }) => {
   const mountRef = useRef(null);
   const canvasRef = useRef(null);
   const updateCountRef = useRef(0);
@@ -190,7 +186,6 @@ const BuildingSketch = ({
           TOP
         </button>
         <button
-          type="button"
           type="button"
           className="sketchButton"
           onClick={() => handleViewChange('ISO')}

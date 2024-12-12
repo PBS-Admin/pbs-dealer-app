@@ -15,127 +15,65 @@ import {
   polycarbRoofColor,
   roof,
 } from '../../util/dropdownOptions';
+import { useUIContext } from '@/contexts/UIContext';
+import { useBuildingContext } from '@/contexts/BuildingContext';
+import { useColorSelection } from '@/hooks/useColorSelection';
+import ReusableColorSelect from '../Inputs/ReusableColorSelect';
 
-const BuildingRoofOptions = ({
-  values,
-  activeBuilding,
-  handleNestedChange,
-  handleRoofLinerPanelChange,
-  handleRoofReliteChange,
-  colorClicked,
-  setValues,
-  locked,
-}) => {
+const BuildingRoofOptions = ({ locked }) => {
+  // Local State
   const [activeRoofLinerPanel, setActiveRoofLinerPanel] = useState(0);
   const [activeRoofRelite, setActiveRoofRelite] = useState(0);
 
-  const addRoofLinerPanel = (buildingIndex) => {
-    setValues((prev) => ({
-      ...prev,
-      buildings: prev.buildings.map((building, index) =>
-        index === buildingIndex
-          ? {
-              ...building,
-              roofLinerPanels: [
-                ...building.roofLinerPanels,
-                {
-                  wall: 'roof',
-                  start: '',
-                  end: '',
-                  height: '',
-                  roofLinerPanelType: 'pbr',
-                  roofLinerPanelGauge: 26,
-                  roofLinerPanelFinish: 'painted',
-                  roofLinerPanelColor: 'NC',
-                  roofLinerTrim: {
-                    trim: { vendor: 'PBS', gauge: 26, color: 'NC' },
-                  },
-                },
-              ],
-            }
-          : building
-      ),
-    }));
+  // Contexts
+  const { activeBuilding } = useUIContext();
+  const {
+    state,
+    handleNestedChange,
+    addRoofLinerPanel,
+    removeRoofLinerPanel,
+    handleRoofLinerPanelChange,
+    addRoofRelite,
+    removeRoofRelite,
+    handleRoofReliteChange,
+  } = useBuildingContext();
+
+  // Hooks
+  const { colorSelectInfo, handleColorClick, handleColorSelect } =
+    useColorSelection();
+
+  // Local Functions
+  const handleAddRoofLinerPanel = () => {
+    addRoofLinerPanel(activeBuilding);
+    setActiveRoofLinerPanel(
+      state.buildings[activeBuilding].roofLinerPanels.length
+    );
   };
 
-  const removeRoofLinerPanel = (buildingIndex, roofLinerPanelIndex) => {
-    setValues((prev) => {
-      const newBuildings = prev.buildings.map((building, bIndex) =>
-        bIndex === buildingIndex
-          ? {
-              ...building,
-              roofLinerPanels: building.roofLinerPanels.filter(
-                (_, lpIndex) => lpIndex !== roofLinerPanelIndex
-              ),
-            }
-          : building
-      );
-
-      const remainingRoofLinerPanels =
-        newBuildings[buildingIndex].roofLinerPanels.length;
-      if (
-        roofLinerPanelIndex <= activeRoofLinerPanel &&
-        activeRoofLinerPanel > 0
-      ) {
-        setActiveRoofLinerPanel(
-          Math.min(activeRoofLinerPanel - 1, remainingRoofLinerPanels - 1)
-        );
-      }
-
-      return { ...prev, buildings: newBuildings };
-    });
+  const handleRemoveRoofLinerPanel = (roofLinerPanelIndex) => {
+    removeRoofLinerPanel(activeBuilding, roofLinerPanelIndex);
+    if (roofLinerPanelIndex === activeRoofLinerPanel) {
+      setActiveRoofLinerPanel(0);
+    } else if (roofLinerPanelIndex < activeRoofLinerPanel) {
+      setActiveRoofLinerPanel((prev) => prev - 1);
+    }
   };
 
-  const addRoofRelite = (buildingIndex) => {
-    setValues((prev) => ({
-      ...prev,
-      buildings: prev.buildings.map((building, index) =>
-        index === buildingIndex
-          ? {
-              ...building,
-              roofRelites: [
-                ...building.roofRelites,
-                {
-                  roof: 'back',
-                  size: '10',
-                  color: 'clear',
-                  qty: '',
-                  location: '',
-                  offset: '',
-                  cutPanels: false,
-                },
-              ],
-            }
-          : building
-      ),
-    }));
+  const handleAddRoofRelite = () => {
+    addRoofRelite(activeBuilding);
+    setActiveRoofRelite(state.buildings[activeBuilding].roofRelites.length);
   };
 
-  const removeRoofRelites = (buildingIndex, roofReliteIndex) => {
-    setValues((prev) => {
-      const newBuildings = prev.buildings.map((building, bIndex) =>
-        bIndex === buildingIndex
-          ? {
-              ...building,
-              roofRelites: building.roofRelites.filter(
-                (_, wsIndex) => wsIndex !== roofReliteIndex
-              ),
-            }
-          : building
-      );
-
-      const remainingRoofRelites =
-        newBuildings[buildingIndex].roofRelites.length;
-      if (roofReliteIndex <= activeRoofRelite && activeRoofRelite > 0) {
-        setActiveRoofRelite(
-          Math.min(activeRoofRelite - 1, remainingRoofRelites - 1)
-        );
-      }
-
-      return { ...prev, buildings: newBuildings };
-    });
+  const handleRemoveRoofRelite = (roofReliteIndex) => {
+    removeRoofRelite(activeBuilding, roofReliteIndex);
+    if (roofReliteIndex === activeRoofRelite) {
+      setActiveRoofRelite(0);
+    } else if (roofReliteIndex < activeRoofRelite) {
+      setActiveRoofRelite((prev) => prev - 1);
+    }
   };
 
+  // JSX
   return (
     <>
       {/* Sheeting & Insulation */}
@@ -148,7 +86,7 @@ const BuildingRoofOptions = ({
           <div className="grid2">
             <ReusableSelect
               name={`buildingRoofInsulation-${activeBuilding}`}
-              value={values.buildings[activeBuilding].roofInsulation}
+              value={state.buildings[activeBuilding].roofInsulation}
               onChange={(e) =>
                 handleNestedChange(
                   activeBuilding,
@@ -166,9 +104,7 @@ const BuildingRoofOptions = ({
                   type="checkbox"
                   id={`buildingRoofInsulationOthers-${activeBuilding}`}
                   name={`buildingRoofInsulationOthers-${activeBuilding}`}
-                  checked={
-                    values.buildings[activeBuilding].roofInsulationOthers
-                  }
+                  checked={state.buildings[activeBuilding].roofInsulationOthers}
                   onChange={(e) =>
                     handleNestedChange(
                       activeBuilding,
@@ -191,11 +127,11 @@ const BuildingRoofOptions = ({
             name="roof"
             label="Roof"
             bldg={activeBuilding}
-            value={values.buildings[activeBuilding]}
+            value={state.buildings[activeBuilding]}
             onChange={(e, keyString) =>
               handleNestedChange(activeBuilding, keyString, e.target.value)
             }
-            colorClicked={colorClicked}
+            colorClicked={handleColorClick}
             disabled={locked}
           />
         </div>
@@ -207,7 +143,7 @@ const BuildingRoofOptions = ({
           <div className="toggleGroup">
             <ReusableToggle
               id={`buildingIncludeGutters-${activeBuilding}`}
-              checked={values.buildings[activeBuilding].includeGutters}
+              checked={state.buildings[activeBuilding].includeGutters}
               onChange={(e) =>
                 handleNestedChange(
                   activeBuilding,
@@ -233,7 +169,7 @@ const BuildingRoofOptions = ({
               name={`buildingfrontExtensionWidth-${activeBuilding}`}
               label="Front Sidewall Extension Width:"
               allowBlankValue={true}
-              value={values.buildings[activeBuilding].frontExtensionWidth}
+              value={state.buildings[activeBuilding].frontExtensionWidth}
               onChange={(e) =>
                 handleNestedChange(
                   activeBuilding,
@@ -247,7 +183,7 @@ const BuildingRoofOptions = ({
             <div className="toggleGroup">
               <ReusableToggle
                 id={`buildingFrontExtensionColumns-${activeBuilding}`}
-                checked={values.buildings[activeBuilding].frontExtensionColumns}
+                checked={state.buildings[activeBuilding].frontExtensionColumns}
                 onChange={(e) =>
                   handleNestedChange(
                     activeBuilding,
@@ -267,7 +203,7 @@ const BuildingRoofOptions = ({
                 type="text"
                 id={`buildingFrontExtensionBays-${activeBuilding}`}
                 name={`buildingFrontExtensionBays-${activeBuilding}`}
-                value={values.buildings[activeBuilding].frontExtensionBays}
+                value={state.buildings[activeBuilding].frontExtensionBays}
                 onChange={(e) =>
                   handleNestedChange(
                     activeBuilding,
@@ -285,7 +221,7 @@ const BuildingRoofOptions = ({
               name={`buildingbackExtensionWidth-${activeBuilding}`}
               label="Back Sidewall Extension Width:"
               allowBlankValue={true}
-              value={values.buildings[activeBuilding].backExtensionWidth}
+              value={state.buildings[activeBuilding].backExtensionWidth}
               onChange={(e) =>
                 handleNestedChange(
                   activeBuilding,
@@ -299,7 +235,7 @@ const BuildingRoofOptions = ({
             <div className="toggleGroup">
               <ReusableToggle
                 id={`buildingBackExtensionColumns-${activeBuilding}`}
-                checked={values.buildings[activeBuilding].backExtensionColumns}
+                checked={state.buildings[activeBuilding].backExtensionColumns}
                 onChange={(e) =>
                   handleNestedChange(
                     activeBuilding,
@@ -319,7 +255,7 @@ const BuildingRoofOptions = ({
                 type="text"
                 id={`buildingBackExtensionBays-${activeBuilding}`}
                 name={`buildingBackExtensionBays-${activeBuilding}`}
-                value={values.buildings[activeBuilding].backExtensionBays}
+                value={state.buildings[activeBuilding].backExtensionBays}
                 onChange={(e) =>
                   handleNestedChange(
                     activeBuilding,
@@ -336,7 +272,7 @@ const BuildingRoofOptions = ({
             name={`buildingleftExtensionWidth-${activeBuilding}`}
             label="Left Endwall Extension Width:"
             allowBlankValue={true}
-            value={values.buildings[activeBuilding].leftExtensionWidth}
+            value={state.buildings[activeBuilding].leftExtensionWidth}
             onChange={(e) =>
               handleNestedChange(
                 activeBuilding,
@@ -351,7 +287,7 @@ const BuildingRoofOptions = ({
             name={`buildingrightExtensionWidth-${activeBuilding}`}
             label="Right Endwall Extension Width:"
             allowBlankValue={true}
-            value={values.buildings[activeBuilding].rightExtensionWidth}
+            value={state.buildings[activeBuilding].rightExtensionWidth}
             onChange={(e) =>
               handleNestedChange(
                 activeBuilding,
@@ -372,7 +308,7 @@ const BuildingRoofOptions = ({
                 type="checkbox"
                 id={`buildingExtensionInsulation-${activeBuilding}`}
                 name={`buildingExtensionInsulation-${activeBuilding}`}
-                checked={values.buildings[activeBuilding].extensionInsulation}
+                checked={state.buildings[activeBuilding].extensionInsulation}
                 onChange={(e) =>
                   handleNestedChange(
                     activeBuilding,
@@ -407,11 +343,11 @@ const BuildingRoofOptions = ({
             name="soffit"
             label="Soffit"
             bldg={activeBuilding}
-            value={values.buildings[activeBuilding]}
+            value={state.buildings[activeBuilding]}
             onChange={(e, keyString) =>
               handleNestedChange(activeBuilding, keyString, e.target.value)
             }
-            colorClicked={colorClicked}
+            colorClicked={handleColorClick}
             disabled={locked}
           />
         </div>
@@ -423,7 +359,7 @@ const BuildingRoofOptions = ({
           <h3>Roof Liner Panels</h3>
         </header>
         <>
-          {values.buildings[activeBuilding].roofLinerPanels?.length > 0 && (
+          {state.buildings[activeBuilding].roofLinerPanels?.length > 0 && (
             <div className="onTablet">
               <div className="tableGrid5">
                 <h5>Location</h5>
@@ -439,7 +375,7 @@ const BuildingRoofOptions = ({
               </div>
             </div>
           )}
-          {values.buildings[activeBuilding].roofLinerPanels?.map(
+          {state.buildings[activeBuilding].roofLinerPanels?.map(
             (roofLinerPanel, roofLinerPanelIndex) => (
               <Fragment
                 key={`building-${activeBuilding}-roofLinerPanel-${roofLinerPanelIndex}`}
@@ -549,7 +485,7 @@ const BuildingRoofOptions = ({
                     type="button"
                     className="icon reject deleteRow"
                     onClick={() =>
-                      removeRoofLinerPanel(activeBuilding, roofLinerPanelIndex)
+                      handleRemoveRoofLinerPanel(roofLinerPanelIndex)
                     }
                     disabled={locked}
                   >
@@ -561,7 +497,7 @@ const BuildingRoofOptions = ({
             )
           )}
 
-          {values.buildings[activeBuilding].roofLinerPanels?.length > 0 && (
+          {state.buildings[activeBuilding].roofLinerPanels?.length > 0 && (
             <>
               <div className="divider onDesktop"></div>
               <div className="grid2">
@@ -572,7 +508,7 @@ const BuildingRoofOptions = ({
                   bldg={activeBuilding}
                   idx={activeRoofLinerPanel}
                   value={
-                    values.buildings[activeBuilding].roofLinerPanels[
+                    state.buildings[activeBuilding].roofLinerPanels[
                       activeRoofLinerPanel
                     ]
                   }
@@ -584,7 +520,7 @@ const BuildingRoofOptions = ({
                       e.target.value
                     )
                   }
-                  colorClicked={colorClicked}
+                  colorClicked={handleColorClick}
                   disabled={locked}
                 />
               </div>
@@ -597,7 +533,7 @@ const BuildingRoofOptions = ({
                 <button
                   type="button"
                   className="addButton"
-                  onClick={() => addRoofLinerPanel(activeBuilding)}
+                  onClick={() => handleAddRoofLinerPanel(activeBuilding)}
                 >
                   <FontAwesomeIcon icon={faPlus} />
                 </button>
@@ -619,7 +555,7 @@ const BuildingRoofOptions = ({
         <header>
           <h3>Roof Relites</h3>
         </header>
-        {values.buildings[activeBuilding].roofRelites?.length > 0 && (
+        {state.buildings[activeBuilding].roofRelites?.length > 0 && (
           <div className="onDesktop">
             <div className="tableGrid8">
               <h5>Roof</h5>
@@ -633,7 +569,7 @@ const BuildingRoofOptions = ({
             </div>
           </div>
         )}
-        {values.buildings[activeBuilding].roofRelites?.map(
+        {state.buildings[activeBuilding].roofRelites?.map(
           (roofRelite, roofReliteIndex) => (
             <Fragment
               key={`building-${activeBuilding}-roofRelite-${roofReliteIndex}`}
@@ -709,7 +645,7 @@ const BuildingRoofOptions = ({
                   value={roofRelite.qty}
                   min={1}
                   max={Math.floor(
-                    Math.floor(values.buildings[activeBuilding].length / 3) / 2
+                    Math.floor(state.buildings[activeBuilding].length / 3) / 2
                   )}
                   negative={false}
                   allowBlankValue={true}
@@ -750,7 +686,7 @@ const BuildingRoofOptions = ({
                     }
                   }}
                   compareLabel="building length"
-                  compareValue={values.buildings[activeBuilding].length}
+                  compareValue={state.buildings[activeBuilding].length}
                   placeholder=""
                   disabled={locked}
                 />
@@ -802,16 +738,14 @@ const BuildingRoofOptions = ({
                 <button
                   type="button"
                   className="icon reject deleteRow"
-                  onClick={() =>
-                    removeRoofRelites(activeBuilding, roofReliteIndex)
-                  }
+                  onClick={() => handleRemoveRoofRelite(roofReliteIndex)}
                   disabled={locked}
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </div>
               {roofReliteIndex + 1 <
-                values.buildings[activeBuilding].roofRelites.length && (
+                state.buildings[activeBuilding].roofRelites.length && (
                 <div className="divider offOnTablet"></div>
               )}
             </Fragment>
@@ -824,7 +758,7 @@ const BuildingRoofOptions = ({
               <button
                 type="button"
                 className="addButton"
-                onClick={() => addRoofRelite(activeBuilding)}
+                onClick={() => handleAddRoofRelite(activeBuilding)}
               >
                 <FontAwesomeIcon icon={faPlus} />
               </button>
@@ -832,6 +766,14 @@ const BuildingRoofOptions = ({
           </>
         )}
       </section>
+
+      {/* Dialogs */}
+      <ReusableColorSelect
+        isOpen={colorSelectInfo.isOpen}
+        onClose={() => handleColorClick({ ...colorSelectInfo, isOpen: false })}
+        onColorSelect={handleColorSelect}
+        {...colorSelectInfo}
+      />
     </>
   );
 };

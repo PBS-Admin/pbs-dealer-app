@@ -3,14 +3,18 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHouse, faDoorOpen } from '@fortawesome/free-solid-svg-icons';
-import { logo } from '../../public/images';
-import { signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { signOut, useSession } from 'next-auth/react';
 import { useState, useCallback } from 'react';
+import { redirect } from 'next/navigation';
 
-const PageHeader = ({ session, title, subtitle, isLogOut }) => {
-  const router = useRouter();
+const PageHeader = ({ title, subtitle, isLogOut }) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/login');
+    },
+  });
 
   const handleLogout = useCallback(async () => {
     try {
@@ -58,7 +62,6 @@ const PageHeader = ({ session, title, subtitle, isLogOut }) => {
         {session?.user && (
           <>
             <div className="avatar">
-              {/* <Image alt="Logo" src={logo} className="avatar" /> */}
               <Image
                 src={`/api/auth/logos?filename=${encodeURIComponent('contract-logo.png')}&company=${session.user.company}`}
                 alt={'Logo'}
