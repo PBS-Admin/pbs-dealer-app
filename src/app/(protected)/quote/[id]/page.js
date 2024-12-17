@@ -1,3 +1,7 @@
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
@@ -5,9 +9,6 @@ import QuoteClient from '../QuoteClient';
 import { query } from '../../../../lib/db';
 import { BuildingProvider } from '@/contexts/BuildingContext';
 import { initialState as emptyInitialState } from '@/lib/initialState';
-
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 export default async function Quote({ params }) {
   const session = await getServerSession(authOptions);
@@ -83,7 +84,10 @@ export default async function Quote({ params }) {
   }
 
   return (
-    <BuildingProvider initialState={initialQuoteData}>
+    <BuildingProvider
+      initialState={initialQuoteData}
+      key={`quote-${quoteId}-${Date.now()}`}
+    >
       <QuoteClient />
     </BuildingProvider>
   );

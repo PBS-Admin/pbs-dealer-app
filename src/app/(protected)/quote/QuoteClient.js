@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { redirect, useRouter } from 'next/navigation';
 import styles from './page.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -50,6 +50,7 @@ const QuoteClient = () => {
       redirect('/login');
     },
   });
+  const isEstimator = session?.user?.estimator === 1;
   const {
     activeBuilding,
     activeCard,
@@ -71,7 +72,10 @@ const QuoteClient = () => {
   // Derived State
   const submitted = !!(state.quoteProgress & 0b00000100);
   const inChecking = !!(state.quoteProgress & 0b00010000);
-  const locked = (submitted || inChecking) && hasPermission(3);
+  const locked =
+    (submitted || inChecking) &&
+    session?.user?.estimator == 0 &&
+    !hasPermission(3);
 
   /*
   Progress Bits:
@@ -122,7 +126,6 @@ const QuoteClient = () => {
         },
         state: {
           ...state,
-          Progress: submitted ? 6 : state.quoteProgress || 0,
         },
         salesPerson: state.salesPerson,
         projectManager: state.projectManager,
@@ -134,6 +137,7 @@ const QuoteClient = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(saveData),
+        cache: 'no-store',
       });
 
       if (!response.ok) {
@@ -145,10 +149,13 @@ const QuoteClient = () => {
 
       // Handle new quote case
       if (!state.quoteId && data.message?.quoteId) {
+        console.log("hit spot I didn't expect");
         setValues({
           ...state,
           quoteId: data.message.quoteId,
           quoteNumber: data.message.quoteNum,
+          quoteProgress: 1,
+          quoteStatus: 1,
         });
       }
 
@@ -162,7 +169,7 @@ const QuoteClient = () => {
       setTimeout(() => setSaveSuccess(false), 3000);
 
       // Handle submission case
-      if (submitted) {
+      if (submitted && !isEstimator) {
         router.replace('/tracker');
       }
     } catch (error) {
@@ -196,6 +203,11 @@ const QuoteClient = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const handleBackWithClear = useCallback(() => {
+    setValues(null); // Clear the building context
+    router.replace('/tracker');
+  }, [setValues, router]);
+
   return (
     <main>
       <PageHeader
@@ -212,6 +224,7 @@ const QuoteClient = () => {
             : '')
         }
         backPage={'tracker'}
+        onBack={handleBackWithClear}
       />
       {/* Sidebar Navigation */}
       {isDesktop && (

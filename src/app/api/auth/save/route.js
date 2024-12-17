@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { query, transaction, getPoolStatus } from '../../../../lib/db';
+import { query, transaction } from '../../../../lib/db';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../[...nextauth]/route';
+import { revalidatePath } from 'next/cache';
 
 export async function POST(req) {
   try {
@@ -16,18 +17,15 @@ export async function POST(req) {
       currentQuote,
       user,
       state,
-      progress,
       salesPerson,
       projectManager,
       estimator,
       checker,
     } = await req.json();
 
-    console.log('user: ', user);
-    console.log('session: ', session);
-
     const company = user.company;
     const id = user.id;
+
     if (currentQuote == 0) {
       let result, quoteNum, quoteNumber;
 
@@ -58,6 +56,7 @@ export async function POST(req) {
 
           // Insert new quote
           if (session.user.estimator == 0 && session.user.permission < 3) {
+            console.log('spot 2 hit');
             result = await conn.query(
               'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, SalesPerson, DateStarted) VALUES (?, ?, ?, ?, ?, ?, Now())',
               [
@@ -70,6 +69,8 @@ export async function POST(req) {
               ]
             );
           } else {
+            console.log('spot 3 hit');
+            console.log('state at this spot:', state);
             result = await conn.query(
               'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, DateStarted) VALUES (?, ?, ?, ?, ?, Now())',
               [
@@ -105,15 +106,17 @@ export async function POST(req) {
         );
       }
     } else if (currentQuote > 0) {
+      console.log('spot 1 hit');
+      console.log('progress at spot 1: ', state.quoteProgress);
       try {
         await transaction(async (conn) => {
           await query(
-            'UPDATE Dealer_Quotes SET QuoteData = ?, Customer = ?, ProjectName = ?, Progress = Progress ^ ?, SalesPerson = ?, ProjectManager = ?, Estimator = ?, Checker = ? WHERE id = ?',
+            'UPDATE Dealer_Quotes SET QuoteData = ?, Customer = ?, ProjectName = ?, Progress = ?, SalesPerson = ?, ProjectManager = ?, Estimator = ?, Checker = ? WHERE id = ?',
             [
               JSON.stringify(state),
               state.customerName,
               state.projectName,
-              progress || 0,
+              state.quoteProgress || 0,
               salesPerson,
               projectManager,
               estimator,
@@ -127,6 +130,9 @@ export async function POST(req) {
             [currentQuote, id]
           );
         });
+
+        revalidatePath('/tracker');
+        revalidatePath(`/quote/${currentQuote}`);
 
         return NextResponse.json(
           { message: 'Quote updated successfully', updatedValues: state },

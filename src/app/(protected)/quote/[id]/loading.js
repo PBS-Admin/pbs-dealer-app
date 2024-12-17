@@ -8,7 +8,7 @@ export default function Loading() {
     <main className="loadingPage">
       <div className="loadingCard">
         <div className="loadingMessage">
-          <h3>Populating you Quote</h3>
+          <h3>Populating your Quote</h3>
           <FontAwesomeIcon className="rotate" icon={faCircleNotch} />
         </div>
         <Image alt="PBS Buildings Logo" src={logo} className="loadingImage" />

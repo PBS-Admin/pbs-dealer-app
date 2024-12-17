@@ -1,6 +1,12 @@
 'use client';
 
-import { createContext, useContext, useReducer, useCallback } from 'react';
+import {
+  createContext,
+  useContext,
+  useReducer,
+  useCallback,
+  useEffect,
+} from 'react';
 import {
   initialState as defaultInitialState,
   buildingTemplate,
@@ -945,6 +951,11 @@ export function BuildingProvider({
   const [state, dispatch] = useReducer(buildingReducer, {
     ...initialState,
   });
+
+  useEffect(() => {
+    // Reset state when component mounts
+    setValues(initialState);
+  }, [initialState]);
 
   // * Building
   const addBuilding = useCallback(() => {
