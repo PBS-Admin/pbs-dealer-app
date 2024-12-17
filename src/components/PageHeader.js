@@ -9,9 +9,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { signOut, useSession } from 'next-auth/react';
 import { useState, useCallback } from 'react';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 
-const PageHeader = ({ title, subtitle, backPage }) => {
+const PageHeader = ({ title, subtitle, backPage, onBack }) => {
+  const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { data: session } = useSession({
     required: true,
@@ -43,6 +44,14 @@ const PageHeader = ({ title, subtitle, backPage }) => {
     }
   }, [isLoggingOut]);
 
+  const handleBack = (e) => {
+    e.preventDefault();
+    if (backPage == 'tracker') {
+      onBack();
+    }
+    router.replace(`/${backPage}`);
+  };
+
   let backIcon;
 
   switch (backPage) {
@@ -68,9 +77,9 @@ const PageHeader = ({ title, subtitle, backPage }) => {
           <FontAwesomeIcon icon={faDoorOpen} />
         </button>
       ) : (
-        <Link href={`/${backPage}`} className="button">
+        <button onClick={handleBack} className="button">
           <FontAwesomeIcon icon={backIcon} />
-        </Link>
+        </button>
       )}
       <div>
         <h1>{title}</h1>

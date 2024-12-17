@@ -22,8 +22,9 @@ export const USER_ACTIONS = {
 const initialState = {
   companyData: null, // Company details
   quotes: [],
-  rsms: {}, // RSM key-value pairs
-  projectManagers: {}, // PM key-value pairs
+  rsms: {},
+  projectManagers: {},
+  estimators: {},
   isLoading: false,
   error: null,
 };
@@ -36,6 +37,7 @@ function userReducer(state, action) {
         companyData: action.payload.company,
         rsms: action.payload.rsms,
         projectManagers: action.payload.projectManagers,
+        estimators: action.payload.estimators,
       };
     case USER_ACTIONS.SET_QUOTES:
       return {
@@ -86,7 +88,6 @@ export function UserProvider({ children }) {
       }
 
       const data = await response.json();
-      console.log('data: ', data);
       dispatch({
         type: USER_ACTIONS.SET_COMPANY_DATA,
         payload: data,
@@ -101,30 +102,39 @@ export function UserProvider({ children }) {
     }
   };
 
-  const fetchQuotes = useCallback(async (initialQuotes = null) => {
-    if (initialQuotes) {
-      dispatch({ type: USER_ACTIONS.SET_QUOTES, payload: initialQuotes });
-      return;
-    }
+  const fetchQuotes = useCallback(
+    async (forceRefresh = false) => {
+      if (!session?.user?.company) return;
 
-    if (!session?.user?.company) return;
+      dispatch({ type: USER_ACTIONS.SET_LOADING, payload: true });
+      dispatch({ type: USER_ACTIONS.SET_ERROR, payload: null });
 
-    dispatch({ type: USER_ACTIONS.SET_LOADING, payload: true });
-    dispatch({ type: USER_ACTIONS.SET_ERROR, payload: null });
+      try {
+        const response = await fetch(`/api/auth/open`, {
+          headers: {
+            'Cache-Control': 'no-cache',
+            Pragma: 'no-cache',
+          },
+          next: { revalidate: 0 },
+        });
 
-    try {
-      const response = await fetch(`/api/auth/open`);
-      if (!response.ok) throw new Error('Failed to fetch quotes');
+        if (!response.ok) throw new Error('Failed to fetch quotes');
 
-      const data = await response.json();
-      dispatch({ type: USER_ACTIONS.SET_QUOTES, payload: data.quotes });
-    } catch (err) {
-      console.error('Error fetching quotes:', err);
-      dispatch({ type: USER_ACTIONS.SET_ERROR, payload: err.message });
-    } finally {
-      dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
-    }
-  }, []);
+        const data = await response.json();
+        dispatch({ type: USER_ACTIONS.SET_QUOTES, payload: data.quotes });
+      } catch (err) {
+        console.error('Error fetching quotes:', err);
+        dispatch({ type: USER_ACTIONS.SET_ERROR, payload: err.message });
+      } finally {
+        dispatch({ type: USER_ACTIONS.SET_LOADING, payload: false });
+      }
+    },
+    [session?.user?.company]
+  );
+
+  useEffect(() => {
+    fetchQuotes(true);
+  }, [fetchQuotes]);
 
   const deleteQuote = useCallback(async (quoteId) => {
     try {
@@ -166,7 +176,6 @@ export function UserProvider({ children }) {
         if (!response.ok) throw new Error('Failed to fetch quote');
 
         const data = await response.json();
-        console.log('res data: ', data);
         const saveResponse = await fetch('/api/auth/save', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -249,10 +258,25 @@ export function UserProvider({ children }) {
   // Helper function to get names from IDs
   const getNameById = useCallback(
     (id, type = 'rsm') => {
-      const lookup = type === 'rsm' ? state.rsms : state.projectManagers;
+      // console.log('id: ' + id + 'type: ' + type);
+      let lookup;
+      switch (type) {
+        case 'rsm':
+          lookup = state.rsms;
+          break;
+        case 'pm':
+          lookup = state.projectManagers;
+          break;
+        case 'estimator':
+          lookup = state.estimators;
+          break;
+        default:
+          lookup = state.rsms;
+          break;
+      }
       return lookup[id] || '';
     },
-    [state.rsms, state.projectManagers]
+    [state.rsms, state.projectManagers, state.estimators]
   );
 
   const value = {
@@ -260,6 +284,7 @@ export function UserProvider({ children }) {
     quotes: state.quotes,
     rsms: state.rsms,
     projectManagers: state.projectManagers,
+    estimators: state.estimators,
     isLoading: state.isLoading,
     error: state.error,
     switchCompany,

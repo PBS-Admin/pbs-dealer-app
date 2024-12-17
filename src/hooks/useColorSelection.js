@@ -28,8 +28,6 @@ export const useColorSelection = () => {
     (colorInfo) => {
       const { color, panelType, panelLocation } = colorInfo;
 
-      console.log(panelType);
-
       // Map of panel types to their respective update functions
       const updateFunctions = {
         partitionLeft: handlePartitionChange,

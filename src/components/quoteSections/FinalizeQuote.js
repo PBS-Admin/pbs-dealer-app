@@ -9,12 +9,28 @@ import ReusableToast from '../ReusableToast';
 import ReusableSelect from '../Inputs/ReusableSelect';
 import { useBuildingContext } from '@/contexts/BuildingContext';
 import { useUserContext } from '@/contexts/UserContext';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 const FinalizeQuote = ({ locked }) => {
+  const router = useRouter();
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/login');
+    },
+  });
   // Contexts
   const { state, handleChange, setValues } = useBuildingContext();
-  const { companyData, rsms, projectManagers, isLoading, hasPermission } =
-    useUserContext();
+  const {
+    companyData,
+    rsms,
+    projectManagers,
+    estimators,
+    isLoading,
+    hasPermission,
+  } = useUserContext();
 
   // Hooks
   const memoizedSetValues = useCallback(setValues, []);
@@ -31,6 +47,8 @@ const FinalizeQuote = ({ locked }) => {
   const { getSeismicLoad, seismicData, getSmsLoad, smsData } =
     useSeismic(state);
 
+  const isEstimator = session?.user?.estimator === 1;
+
   // References
   const toastRef = useRef();
   const exportPendingRef = useRef(false);
@@ -42,25 +60,42 @@ const FinalizeQuote = ({ locked }) => {
   }, [getSeismicLoad, getSmsLoad]);
 
   const rsmOptions = useMemo(
-    () =>
-      Object.entries(rsms)
+    () => [
+      { id: '', label: '-- Select Sales Person --' },
+      ...Object.entries(rsms)
         .filter(([_, rsm]) => rsm.company === state.companyId)
         .map(([id, rsm]) => ({
           id: id,
           label: rsm.name,
         })),
+    ],
     [rsms]
   );
 
   const pmOptions = useMemo(
-    () =>
-      Object.entries(projectManagers)
+    () => [
+      { id: '', label: '-- Select Project Manager --' },
+      ...Object.entries(projectManagers)
         .filter(([_, pm]) => pm.company === state.companyId)
         .map(([id, pm]) => ({
           id: id,
           label: pm.name,
         })),
+    ],
     [projectManagers]
+  );
+
+  const estimatorOptions = useMemo(
+    () => [
+      { id: '', label: '-- Select Estimator/Checker --' },
+      ...Object.entries(estimators)
+        .filter(([_, est]) => est.company === state.companyId)
+        .map(([id, est]) => ({
+          id: id,
+          label: est.name,
+        })),
+    ],
+    [estimators]
   );
 
   const fieldsToValidate = [
@@ -130,15 +165,17 @@ const FinalizeQuote = ({ locked }) => {
     []
   );
 
-  const handleSave = useCallback(async () => {
-    const isValid = await validateFields([], autoFillRules);
-    if (isValid) {
-      console.log('Save successful');
-    }
-  }, [validateFields, autoFillRules]);
+  // const handleSave = useCallback(async () => {
+  //   const isValid = await validateFields([], autoFillRules);
+  //   if (isValid) {
+  //     console.log('Save successful');
+  //   }
+  // }, [validateFields, autoFillRules]);
 
   const handleSubmit = useCallback(
     async (e) => {
+      console.log('state at submit: ', state);
+      console.log('val at submit: ', state.quoteProgress | 4);
       try {
         exportPendingRef.current = true;
         const isValid = await validateFields(fieldsToValidate, autoFillRules);
@@ -151,8 +188,44 @@ const FinalizeQuote = ({ locked }) => {
           return;
         }
 
+        console.log('state after valid: ', state);
+        console.log('val after valid: ', state.quoteProgress | 4);
+
         exportPendingRef.current = false;
-        console.log(state);
+
+        // console.log('progs: ', state.quoteProgress);
+
+        const saveData = {
+          currentQuote: state.quoteId || 0,
+          user: {
+            id: session?.user?.id,
+            company: companyData.ID,
+          },
+          state: {
+            ...state,
+            quoteProgress: state.quoteProgress | 4,
+          },
+          salesPerson: state.salesPerson,
+          projectManager: state.projectManager,
+          estimator: state.estimator,
+          checker: state.checker,
+        };
+
+        const response = await fetch('/api/auth/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(saveData),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // if (data.refresh) {
+          //   // Force a refresh of the quotes data
+          //   await fetchQuotes();
+          // }
+          router.replace('/tracker');
+        }
       } catch (error) {
         console.error('Export error: ', error);
         showRejectExport();
@@ -161,6 +234,114 @@ const FinalizeQuote = ({ locked }) => {
     },
     [validateFields, fieldsToValidate, autoFillRules]
   );
+
+  const handleReject = useCallback(async (e) => {
+    try {
+      const saveData = {
+        currentQuote: state.quoteId || 0,
+        user: {
+          id: session?.user?.id,
+          company: companyData.ID,
+        },
+        state: {
+          ...state,
+          quoteProgress:
+            state.quoteProgress & 16
+              ? state.quoteProgress ^ 28
+              : state.quoteProgress ^ 12,
+        },
+        salesPerson: state.salesPerson,
+        projectManager: state.projectManager,
+        estimator: state.estimator,
+        checker: state.checker,
+      };
+
+      const response = await fetch('/api/auth/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(saveData),
+      });
+
+      if (response.ok) {
+        router.replace('/tracker');
+      }
+    } catch (error) {
+      console.error('Export error: ', error);
+      showRejectExport();
+      exportPendingRef.current = false;
+    }
+  }, []);
+
+  const handleToChecking = useCallback(async (e) => {
+    try {
+      const saveData = {
+        currentQuote: state.quoteId || 0,
+        user: {
+          id: session?.user?.id,
+          company: companyData.ID,
+        },
+        state: {
+          ...state,
+          quoteProgress: state.quoteProgress | 16,
+        },
+        salesPerson: state.salesPerson,
+        projectManager: state.projectManager,
+        estimator: state.estimator,
+        checker: state.checker,
+      };
+
+      const response = await fetch('/api/auth/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(saveData),
+      });
+
+      if (response.ok) {
+        router.replace('/tracker');
+      }
+    } catch (error) {
+      console.error('Export error: ', error);
+      showRejectExport();
+      exportPendingRef.current = false;
+    }
+  }, []);
+
+  const handleReturn = useCallback(async (e) => {
+    try {
+      const saveData = {
+        currentQuote: state.quoteId || 0,
+        user: {
+          id: session?.user?.id,
+          company: companyData.ID,
+        },
+        state: {
+          ...state,
+          quoteProgress:
+            state.quoteProgress & 16
+              ? state.quoteProgress ^ 52
+              : state.quoteProgress ^ 36,
+        },
+        salesPerson: state.salesPerson,
+        projectManager: state.projectManager,
+        estimator: state.estimator,
+        checker: state.checker,
+      };
+
+      const response = await fetch('/api/auth/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(saveData),
+      });
+
+      if (response.ok) {
+        router.replace('/tracker');
+      }
+    } catch (error) {
+      console.error('Export error: ', error);
+      showRejectExport();
+      exportPendingRef.current = false;
+    }
+  }, []);
 
   const handleExport = useCallback(async () => {
     try {
@@ -327,6 +508,9 @@ const FinalizeQuote = ({ locked }) => {
     );
   }
 
+  // console.log(hasPermission(3) && isEstimator);
+  console.log('status: ', state);
+
   // JSX
   return (
     <>
@@ -341,7 +525,7 @@ const FinalizeQuote = ({ locked }) => {
                 Save Quote
               </button>
             )}
-            {!(state.quoteProgress & 0b100) && (
+            {!(state.quoteProgress & 0b100) && state.quoteNumber && (
               <button
                 type="button"
                 className="accent"
@@ -398,15 +582,31 @@ const FinalizeQuote = ({ locked }) => {
           <div className="divider showWithSidebar span2"></div>
           {!locked && (
             <div className="cardButton">
-              <button
-                type="button"
-                className="nuetral"
-                onClick={() => {
-                  console.log(state);
-                }}
-              >
-                Archive Quote
-              </button>
+              {(state.quoteProgress & 4) == 4 && //Is Submitted
+                (state.quoteProgress & 16) != 16 && //Not in Checking
+                isEstimator && (
+                  <button
+                    type="button"
+                    className="nuetral"
+                    onClick={handleToChecking}
+                  >
+                    Move to Checking
+                  </button>
+                )}
+              {(state.quoteProgress & 4) == 4 && isEstimator && (
+                <button type="button" className="reject" onClick={handleReject}>
+                  Reject Quote
+                </button>
+              )}
+              {(state.quoteProgress & 4) == 4 && isEstimator && (
+                <button
+                  type="button"
+                  className="success"
+                  onClick={handleReturn}
+                >
+                  Return Quote
+                </button>
+              )}
             </div>
           )}
 
@@ -422,6 +622,16 @@ const FinalizeQuote = ({ locked }) => {
                   }}
                 >
                   Delete Quote
+                </button>
+                <button
+                  type="button"
+                  className="nuetral"
+                  onClick={() => {
+                    console.log(state);
+                    // console.log(6 | 4);
+                  }}
+                >
+                  Archive Quote
                 </button>
               </div>
             </>
@@ -444,21 +654,26 @@ const FinalizeQuote = ({ locked }) => {
               label="Sales Person:"
               disabled={locked}
             />
-            {hasPermission(4) && (
+
+            {hasPermission(4) ? (
+              <ReusableSelect
+                name={`projectManager`}
+                value={state.projectManager || ''}
+                onChange={handleChange}
+                options={pmOptions}
+                label="Project Manager:"
+                disabled={locked}
+              />
+            ) : (
+              <div></div>
+            )}
+            {((hasPermission(3) && isEstimator) || hasPermission(4)) && (
               <>
-                <ReusableSelect
-                  name={`projectManager`}
-                  value={state.projectManager || ''}
-                  onChange={handleChange}
-                  options={pmOptions}
-                  label="Project Manager:"
-                  disabled={locked}
-                />
                 <ReusableSelect
                   name={`estimator`}
                   value={state.estimator || ''}
                   onChange={handleChange}
-                  options={pmOptions}
+                  options={estimatorOptions}
                   label="Estimator:"
                   disabled={locked}
                 />
@@ -466,7 +681,7 @@ const FinalizeQuote = ({ locked }) => {
                   name={`checker`}
                   value={state.checker || ''}
                   onChange={handleChange}
-                  options={pmOptions}
+                  options={estimatorOptions}
                   label="Checker:"
                   disabled={locked}
                 />

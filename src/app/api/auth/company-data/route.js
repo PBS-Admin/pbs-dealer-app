@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { query, getPoolStatus } from '../../../../lib/db';
-import { getToken } from 'next-auth/jwt';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../[...nextauth]/route';
 
@@ -29,7 +28,7 @@ export async function GET(req) {
     console.log('Pool status:', status);
 
     // Run all queries in parallel
-    const [companyData, rsms, projectManagers] = await Promise.all([
+    const [companyData, rsms, projectManagers, estimators] = await Promise.all([
       // Company data query
       query(
         'SELECT ID, Name, Terms, Initials, Line1, Line2, Line3, Line4, Line5, Line6, Line7, Line8 FROM Dealer_Company WHERE ID = ?',
@@ -38,12 +37,17 @@ export async function GET(req) {
 
       // RSMs query (Permission < 3)
       query(
-        'SELECT ID, Username, FullName, Company FROM Dealer_Users WHERE ACTIVE = 1 AND Permission < 3 ORDER BY FullName'
+        'SELECT ID, Username, FullName, Company FROM Dealer_Users WHERE ACTIVE = 1 AND Permission < 4 ORDER BY FullName'
       ),
 
       // Project Managers query (Permission = 3)
       query(
-        'SELECT ID, Username, FullName, Company FROM Dealer_Users WHERE ACTIVE = 1 AND Permission = 3 ORDER BY FullName'
+        'SELECT ID, Username, FullName, Company FROM Dealer_Users WHERE ACTIVE = 1 AND Permission < 6 AND Permission > 3 ORDER BY FullName'
+      ),
+
+      // Estimators query (Estimator = 1)
+      query(
+        'SELECT ID, Username, FullName, Company FROM Dealer_Users WHERE ACTIVE = 1 AND Estimator = 1 ORDER BY FullName'
       ),
     ]);
 
@@ -63,11 +67,17 @@ export async function GET(req) {
       return acc;
     }, {});
 
+    const formattedEstimators = estimators.reduce((acc, user) => {
+      acc[user.ID] = { name: user.FullName, company: user.Company };
+      return acc;
+    }, {});
+
     // Construct response
     const response = {
       company: companyData[0],
       rsms: formattedRsms,
       projectManagers: formattedPMs,
+      estimators: formattedEstimators,
     };
 
     return NextResponse.json(response, { status: 200 });
