@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { compare } from 'bcrypt';
-import { query, getPoolStatus } from '../../../../lib/db';
+import { query, transaction } from '../../../../lib/db';
 
 export const authOptions = {
   providers: [
@@ -17,39 +17,38 @@ export const authOptions = {
           return null;
         }
 
-        const user = await query(
-          'SELECT * FROM Dealer_Users WHERE Username = ?',
-          [credentials.email]
-        );
-
-        if (user.length === 0) {
-          console.log('No user found with this email');
-          return null;
-        }
-
-        let isPasswordCorrect;
         try {
-          isPasswordCorrect = await compare(
+          const user = await query(
+            'SELECT * FROM Dealer_Users WHERE Username = ?',
+            [credentials.email]
+          );
+
+          if (user.length === 0) {
+            console.log('No user found with this email');
+            return null;
+          }
+
+          const isPasswordCorrect = await compare(
             credentials.password,
             user[0].Password
           );
+
+          if (!isPasswordCorrect) {
+            return null;
+          }
+
+          return {
+            id: user[0].ID,
+            email: user[0].Username,
+            fullName: user[0].FullName,
+            company: user[0].Company,
+            permission: user[0].Permission,
+            estimator: user[0].Estimator,
+          };
         } catch (error) {
-          console.error('Error during password comparison:', error);
+          console.error('Authorization error:', error);
           return null;
         }
-
-        if (!isPasswordCorrect) {
-          return null;
-        }
-
-        return {
-          id: user[0].ID,
-          email: user[0].Username,
-          fullName: user[0].FullName,
-          company: user[0].Company,
-          permission: user[0].Permission,
-          estimator: user[0].Estimator,
-        };
       },
     }),
   ],
@@ -86,20 +85,17 @@ export const authOptions = {
 
       return session;
     },
-    async signOut({ token, session }) {
+    async signOut({ token }) {
+      if (!token?.id) return true;
+
       try {
-        // Clear any custom session data
-        token = {};
-        session = null;
-
         await query('UPDATE Dealer_Users SET LastLogout = NOW() WHERE ID = ?', [
-          token?.id,
-        ]).catch(console.error);
-
+          token.id,
+        ]);
         return true;
       } catch (error) {
         console.error('SignOut error:', error);
-        return false;
+        return true; // Return true anyway to allow sign out
       }
     },
   },

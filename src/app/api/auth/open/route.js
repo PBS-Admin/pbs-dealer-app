@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { query } from '../../../../lib/db';
+import { transaction } from '../../../../lib/db';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../[...nextauth]/route';
 
@@ -65,8 +65,11 @@ export async function GET() {
       queryParams = [company, session.user.id];
     }
 
-    // Execute all queries in parallel
-    const [quotesResult] = await Promise.all([query(quotesQuery, queryParams)]);
+    // Execute all queries in parallel usign transaction
+    const quotesResult = await transaction(async (conn) => {
+      const result = await conn.query(quotesQuery, queryParams);
+      return result;
+    });
 
     // Transform results
     const parsedQuotes = quotesResult.map(

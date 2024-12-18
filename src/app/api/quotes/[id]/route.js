@@ -17,8 +17,6 @@ export async function DELETE(req, { params }) {
       [id]
     );
 
-    const status = await getPoolStatus();
-
     return NextResponse.json(
       { message: 'Quote deleted successfully' },
       { status: 200 }

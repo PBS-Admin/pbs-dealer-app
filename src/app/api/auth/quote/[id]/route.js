@@ -15,7 +15,6 @@ export async function GET(req, { params }) {
     }
 
     const { id } = params;
-
     if (!id) {
       return NextResponse.json(
         { error: 'Quote ID is required' },
@@ -26,7 +25,6 @@ export async function GET(req, { params }) {
     let quoteQuery = 'SELECT * FROM Dealer_Quotes WHERE ID = ? AND Status & 1';
     let queryParams = [id];
 
-    // If user has lower permission level, restrict to their company
     if (session.user.permission < 3) {
       quoteQuery += ' AND Company = ?';
       queryParams.push(session.user.company);
@@ -35,7 +33,6 @@ export async function GET(req, { params }) {
     const result = await query(quoteQuery, queryParams);
 
     if (result.length === 0) {
-      // Check if quote exists at all (for better error messaging)
       const quoteExists = await query(
         'SELECT ID FROM Dealer_Quotes WHERE ID = ? AND Status & 1',
         [id]
@@ -51,7 +48,7 @@ export async function GET(req, { params }) {
       }
     }
 
-    // Add company information to the quote response
+    // Get company name in same query process
     const companyInfo = await query(
       'SELECT Name FROM Dealer_Company WHERE ID = ?',
       [result[0].Company]
