@@ -67,7 +67,7 @@ const QuoteClient = () => {
     showToast,
   } = useUIContext();
   const { companyData, hasPermission } = useUserContext();
-  const { state, setValues } = useBuildingContext();
+  const { state, complexityInfo, setValues } = useBuildingContext();
 
   // Derived State
   const submitted = !!(state.quoteProgress & 0b00000100);
@@ -149,7 +149,6 @@ const QuoteClient = () => {
 
       // Handle new quote case
       if (!state.quoteId && data.message?.quoteId) {
-        console.log("hit spot I didn't expect");
         setValues({
           ...state,
           quoteId: data.message.quoteId,
@@ -212,17 +211,17 @@ const QuoteClient = () => {
     <main>
       <PageHeader
         title="Quote Input"
-        subtitle={
-          state.quoteNumber +
-          (state.revNumber > 0 ? ' R' + state.revNumber : '') +
-          (state.customerName
-            ? (state.quoteNumber ? ' - ' : '') + state.customerName
-            : '') +
-          (state.projectName
-            ? (state.quoteNumber || state.customerName ? ' - ' : '') +
-              state.projectName
-            : '')
-        }
+        subtitle={[
+          state.quoteNumber,
+          state.revNumber > 0 && `R${state.revNumber}`,
+          state.customerName && state.quoteNumber && '-',
+          state.customerName,
+          (state.quoteNumber || state.customerName) && state.projectName && '-',
+          state.projectName,
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        complexityInfo={complexityInfo}
         backPage={'tracker'}
         onBack={handleBackWithClear}
       />
