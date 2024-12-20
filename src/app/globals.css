@@ -183,6 +183,10 @@ p {
   margin-block: 1em 0em;
 }
 
+.card h4.top {
+  margin-top: 0;
+}
+
 .small {
   font-size: 0.65em;
   align-self: center;
@@ -1052,14 +1056,22 @@ label:has(.tooltip.left) {
 .flexNotes {
   display: flex;
   flex-flow: row nowrap;
-  align-items: flex-end;
+  align-items: flex-start;
   width: 100%;
 }
 
 .noteText {
-  margin-bottom: 0.3em;
+  margin: 0.25em 0;
   font-size: 0.9em;
   flex-grow: 1;
+  padding-left: 0.3em;
+  border-radius: 0.3em;
+  border: 1px solid var(--dark-gray);
+  resize: vertical;
+}
+
+.noteDelete {
+  align-self: flex-start;
 }
 
 .noteAdd {

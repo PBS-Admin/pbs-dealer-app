@@ -6,6 +6,9 @@ import Image from 'next/image';
 import logo from '../../public/images/pbslogo.png';
 import {
   shapes,
+  frames,
+  FrameOptions,
+  steelFinish,
   buildingCodes,
   riskCategories,
   enclosure,
@@ -133,6 +136,13 @@ export function usePDF() {
     return formated;
   };
 
+  const formatDollar = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  };
+
   const today = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'numeric',
@@ -171,11 +181,13 @@ export function usePDF() {
     return lines;
   }
 
-  // const createContract = useCallback(async (values) => {
+  // const createContract = useCallback(async (state) => {
   const createContract = useCallback(async (contractData) => {
     const {
       companyId,
       companyName,
+      companyAddress,
+      companyCityStateZip,
       terms,
       initials,
       line1,
@@ -186,19 +198,140 @@ export function usePDF() {
       line6,
       line7,
       line8,
-      ...values
+      ...state
     } = contractData;
     const pdfDoc = await PDFDocument.create();
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     const italicFont = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
     const stdFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const specialFont = await pdfDoc.embedFont(StandardFonts.ZapfDingbats);
     let pages = pdfDoc.getPages();
     let currentPage = -1;
     let pageTitle = '';
-    let bldgPageNums = Array.from(Array(values.buildings.length), () => {
+    let bldgPageNums = Array.from(Array(state.buildings.length), () => {
       return { currentPage: 0, currentLine: 0, pageStart: 0, pageEnd: 0 };
     });
     let bldgItems = [];
+
+    const accessories = [
+      {
+        name: 'skylight4x4',
+        text: '4\'-0" x 4\'-0" insulated double dome skylight with curb',
+      },
+      {
+        name: 'ridgeVent10ft',
+        text: '12" x 10\'-0" ridge vent with bird screens and dampers with chain operator',
+      },
+      {
+        name: 'canopyKit2x2x6',
+        text: '2\'-0" x 2\'-0" x 6\'-0" long light weight canopy with 26 gauge painted PBR sheeting (no gutters)',
+      },
+      {
+        name: 'canopyKit2x2x9',
+        text: '2\'-0" x 2\'-0" x 9\'-0" long light weight canopy with 26 gauge painted PBR sheeting (no gutters)',
+      },
+    ];
+
+    const walkDoors = [
+      {
+        name: '3070',
+        text: '3070 insulated walk door',
+      },
+      {
+        name: '4070',
+        text: '3070 insulated walk door',
+      },
+      {
+        name: '6070',
+        text: '6070 insulated walk door',
+      },
+      {
+        name: '3070P',
+        text: '3070 insulated pre-hung walk door',
+      },
+      {
+        name: '4070P',
+        text: '4070 insulated pre-hung walk door',
+      },
+      {
+        name: '6070P',
+        text: '6070 insulated pre-hung walk door',
+      },
+    ];
+
+    const stdNotes = [
+      {
+        name: 'monoSlabDesign',
+        type: 'checkbox',
+        text: 'Monolithic slab foundation design included in this contract. Foundation design to be released after building engineered plans have been completed. Foundation design excludes: retaining wall, stem wall, and/or pits.',
+      },
+      {
+        name: 'pierFootingDesign',
+        type: 'checkbox',
+        text: 'Pier footing foundation design included in this contract. Foundation design to be released after building engineered plans have been completed. Foundation design excludes: retaining wall, stem wall, and/or pits.',
+      },
+      {
+        name: 'standardWarranty',
+        type: 'checkbox',
+        text: 'Includes 20 year Standard II weather tightness warranty. See MBCI.com for more information. The roofing contractor is responsible for properly installing the roof and must provide a roof that is weathertight for 24 consecutive months. During this period, if a claim is filed against the warranty, the roofing contractor is obligated, under the terms of the warranty, to make the roof repairs. PBS takes no responsibility of installation of the product, PBS will only provide material and warranty.',
+      },
+      {
+        name: 'singleSourceWarranty',
+        type: 'checkbox',
+        text: 'Includes 20 year Single Source III weather tightness warranty. See MBCI.com for more information. Customer must provide correct installation documentation prior to weather tight warranty issuances as a certified installer of the roof material. Special inspection of roof installation from vendor will be required during the installation process, customer agrees to work with vendor during the installation process for warranty. Vendor requirements must be adhered to during installation. PBS takes no responsibility of installation of the product, PBS will only provide material and warranty. Any costs associated to the weather tight warranty approval during erection will be covered by customer.',
+      },
+      {
+        name: 'willCall',
+        type: 'checkbox',
+        text: "F.O.B. manufacturer's shop in Woodburn, Oregon. Manufacturer does not hot load trailers. Trailers required 2 days prior to loading.",
+      },
+      {
+        name: 'noteCMUWallByOthers',
+        type: 'checkbox',
+        text: 'CMU wall by others.',
+      },
+      {
+        name: 'notePlywoodLinerByOthers',
+        type: 'checkbox',
+        text: 'Plywood liner by others. Weight not to exceed 5 psf.',
+      },
+      {
+        name: 'noteMezzanineByOthers',
+        type: 'checkbox',
+        text: 'Mezzanine by others to be independent and self-supporting.',
+      },
+      {
+        name: 'noteFirewallByOthers',
+        type: 'checkbox',
+        text: 'Firewall design and material by others. Firewall design required prior to building design.',
+      },
+      {
+        name: 'noteExtBldgDisclaimer',
+        type: 'checkbox',
+        text: 'PBS is not responsible for retrofitting / evaluation of the structural integrity of the existing building due to extra loads such as snow drift caused by this building addition.',
+      },
+      {
+        name: 'noteRoofPitchDisclaimer',
+        type: 'checkbox',
+        text: 'PBR roofing is not recommended for a 1/2:12 roof pitch.',
+      },
+      {
+        name: 'noteSeismicGapDisclaimer',
+        type: 'checkbox',
+        text: 'Due to unknown horizontal deflection of the existing building, it is difficult for PBS to determine an accurate seismic gap. PBS assumes 6" is adequate. It is the customer\'s responsibility to verify that the seismic gap is sufficient.',
+      },
+      {
+        name: 'noteWaterPondingDisclaimer',
+        type: 'checkbox',
+        text: "Building not designed for water ponding load. It is the customer's responsibility to efficiently drain water to avoid water ponding.",
+      },
+      {
+        name: 'noteBldgSpecsDisclaimer',
+        type: 'checkbox',
+        text: 'Any specifications not specifically addressed in this contract are to be considered excluded.',
+      },
+      // { name: '', type: 'occurrence', text: '' },
+    ];
 
     const largeFont = 12;
     const stdFontSize = 10;
@@ -218,9 +351,38 @@ export function usePDF() {
     let currentY = startY;
     let wallsInBldg = [];
     let wallBracingType = [];
+    let mandoorIncludes = [];
+    let mandoorDesc = '';
     let i = 0;
     let j = 0;
     let k = 0;
+
+    //THESE ARE TEMP
+    const tempPrice = 12345678;
+    const tempWeight = 54321;
+    const tempEngOnly = false;
+
+    const drawCheckBox = (page, text, x, y, check = false) => {
+      page.drawRectangle({
+        x: x,
+        y: y - 0.5,
+        width: 8,
+        height: 8,
+        opacity: 0,
+        borderWidth: thinLine,
+        borderOpacity: 1,
+      });
+      textSmallLeft(page, text, x + 12, y + 0.5);
+      if (check) {
+        page.drawText('\u2713', {
+          x: x + 1,
+          y: y + 1,
+          size: largeFont,
+          font: specialFont,
+        });
+      }
+      return page;
+    };
 
     const setTextLeft = (font, size) => {
       return (page, text, x, y, max = undefined) => {
@@ -433,77 +595,9 @@ export function usePDF() {
     // Add Main Page
     let page = addPage('QUOTE / CONTRACT', '');
     const quoteNum =
-      values.quoteNumber +
-      (values.revNumber > 0 ? ' R' + values.revNumber : '');
+      state.quoteNumber + (state.revNumber > 0 ? ' R' + state.revNumber : '');
 
     /* Company Information */
-
-    const companyTerms = [
-      {
-        Title: '1. DEFINITIONS:',
-        Term: 'These terms and conditions and the Quote/Contract, along with all attachments, prepared by Seller for Purchaser are together referred to as the "Agreement." As used in Agreement, "Seller" shall mean Pacific Building Systems Inc., an Oregon corporation, and "Purchaser" shall mean the person or entity identified as customer in the Quote/Contract. Purchaser represents that they are the owner of the project site or an agent of the property owner authorized to enter into this Agreement for the benefit of the property owner.',
-      },
-      {
-        Title: '2. PRODUCT:',
-        Term: "This Agreement covers only the Seller's standard metal building system components and related accessories identified in the Quote for Purchaser and does not include any construction or installation services. The terms and specifications set forth on Seller's Contract/Quote shall control, notwithstanding any specifications or instructions provided by Purchaser. Any deviation from the Seller's standard specifications will be specified in the Notes section of the Contract/Quote. Seller reserves the right to substitute materials as it sees fit without notice to Purchaser to meet Seller's standards specifications.",
-      },
-      {
-        Title: '3. COMMON INDUSTRY PRACTICES:',
-        Term: '"The Common Industry Practices" in the current edition of the Metal Building Manufacturer\'s Association ("MBMA") Building Systems Manual, are incorporated into this Agreement by reference. The "Common Industry Practices" apply to this transaction unless the terms thereof conflict with the express terms of this Agreement in which event the terms of this Agreement shall govern.',
-      },
-      {
-        Title: '4. TERMS OF PAYMENT:',
-        Term: '',
-        // Term: '  4.1   If the total amount of this Agreement is less than $250,000.00 then 20% is due at the time Seller accepts this Agreement, the remaining balance to be paid prior to shipment of the first load of materials and/or components.\n  4.2   If the total amount of this Agreement is greater than $250,000.00, then 20% is due at time Seller accepts Agreement and 40% of the contract price is due prior to any fabrication process and/or purchasing of materials and the remaining balance to be paid prior to shipment of the first load of materials and/or components.\n  4.3   If this Agreement contains hangar door(s), in addition to the payment terms stated above, Purchaser shall pay 50% of the total cost of the door at time that Seller accepts this Agreement and 50% prior to the fabrication of the hangar door by the manufacturer.\n  4.4   Payments which are not paid when due shall accrue late fees of one and one-half per cent (1.5 %) per month on the unpaid balance until paid. Purchaser will pay all Seller\'s costs of collecting or securing any amount due hereunder, including lien expenses, reasonable attorney's fees, and litigation expenses. No retainage by Purchaser is permitted. If Purchaser fails to make the payments required by this Agreement, Seller may terminate this Agreement or suspend performance to include, without limitation, design, fabrication, or delivery of Products until payment is made, including any and all added costs related to unpaid payment. Purchaser shall pay Seller's costs of engineering, work orders, purchase of out-sourced materials or services, processing, detailing, and production of all approval, permit, erection, or similar drawings and work completed.'
-      },
-      {
-        Title: '5. TAXES:',
-        Term: 'Unless otherwise specified, taxes are not included in the sales price and will be paid by the Purchaser. Applicable taxes will be charged unless appropriate documentation (resale certificate) is submitted to Seller authorizing exemption from payment of taxes prior to acceptance of this Agreement.',
-      },
-      {
-        Title: '6. DELIVERY:',
-        Term: 'Delivery will be scheduled by Seller after fabrication of the Products and/or when engineered drawings have been completed for the location identified in this Agreement. Seller may adjust the delivery schedule due to product or design changes, credit hold, Purchaser or End Customer design or fabrication holds or any other delay caused by Purchaser or End Customer ("Purchaser Delays"). If at any given time the Seller experiences Purchaser Delays or delays out of Seller\'s control, the price provided in this Agreement may be increased by Seller until date of shipment by any additional costs incurred by Seller, including lost engineering and detailing hours, rescheduling fees, and increased material costs. Purchaser agrees to make available a safe location for unloading. If, in the opinion of the Seller\'s driver or carrier service the delivery of materials and/or components is deemed as unsafe or impractical to reach the site to off-load, delivery shall be that place where off-loading may reasonably proceed. Each load shall be unloaded by the Purchaser at the time and date of scheduled delivery with a maximum unload time of 2 hours per load. If this does not occur, the Purchaser agrees to pay additional fees of $75 per hour per load. Purchaser also agrees to off load and reload material destined for other sites at no cost to Seller. If, for any reason, Purchaser fails to accept delivery of the Product or requests rescheduling of delivery, Purchaser shall be responsible for any additional costs incurred by Seller to deliver the Products, including but not limited to, handling, transportation, and storage fees.',
-      },
-      {
-        Title: '7. ACCEPTANCE AND INSPECTION PERIOD:',
-        Term: 'Purchaser shall have fifteen (15) business days to inspect the product after delivery by Seller\'s driver or Carrier Service. If Purchaser does not deliver to Seller written notice objecting to any defects or non-conformity of the product in accordance with this Agreement within the fifteen-day inspection period, then Purchaser will be deemed to have accepted delivery of the product and limit Purchaser to the remedies provided for under this Agreement. WARNING: This material is subject to severe water damage if moisture is allowed to get between the parts; therefore, it MUST BE STORED UNDER COVER and one end elevated to allow for drainage until erected. If moisture is allowed to get between the parts "RUST" or "PAINT LIFT OFF" may occur. Seller shall have no responsibility or liability for damage resulting from improperly stored product and Purchaser assumes full responsibility for the condition of the Product following delivery.',
-      },
-      {
-        Title: '8. SHORTAGES & BACK CHARGES:',
-        Term: "Seller shall not be responsible for loss or damage to Products after delivery. Seller will not pay any claims or accept any back-charges from the Purchaser related to correction of errors and repairs unless the following procedure is followed: (1) Purchaser, prior to any correction or repair, must provide Seller with a written notice describing the problem; (2) Purchaser must provide Seller with sufficient information to allow Seller to evaluate the problem; determine the estimated amount of man-hours needed and Products required and determine the direct cost to the Purchaser to correct the problem; and (3) if Seller determines that correction is necessary, Seller will authorize the corrective process by issuing the Purchaser a written authorization. After receiving the authorization, the Purchaser can make the corrections. The hourly labor rate for work to be approved by Seller prior to any commencement of work, only Seller approved labor rate will be charged. COST OF EQUIPMENT (RENTAL EXPENSE, VALUE OR DEPRECIATION), TOOLS, SUPERVISION, OVERHEAD AND PROFIT, DELAY CHARGES OR CONSEQUENTIAL, LIQUIDATED, OR INCIDENTAL DAMAGES ARE EXCLUDED. SELLER WILL NOT BE LIABLE FOR ANY CLAIMS OR BACK CHARGES PERFORMED WITHOUT SELLER'S PRIOR AUTHORIZATION. FREIGHT DAMAGE MUST BE NOTED ON SHIPPING DOCUMENTS AND NOTICE MUST BE GIVEN TO SELLER PRIOR TO THE CARRIER LEAVING THE DELIVERY SITE. SHORTAGES MUST BE REPORTED WITHIN FIFTEEN (15) BUSINESS DAYS FOLLOWING SHIPMENT. ALL OTHER CLAIMS MUST BE SUBMITTED WITHIN THREE (3) MONTHS OF DELIVERY.",
-      },
-      {
-        Title: '9. PURCHASER DELAYS:',
-        Term: "If, at Purchaser's request, Seller agrees to delay release to fabrication or delivery schedule after approval drawings are accepted, then Purchaser agrees to pay lost engineering, detailing hours, and rescheduling fees. If, at Purchaser's request, Seller agrees to delay delivery of Products after commencement of fabrication, then Purchaser shall make full payment at time of Seller invoice. Unless otherwise agreed to in writing by the parties, title and risk of loss pass to Purchaser upon notice that the Products are fabricated. Upon written request from Seller, Purchaser shall provide reasonable evidence of property insurance on the Products and designate Seller as loss payee. Seller may charge Purchaser a reasonable storage charge per day until actual shipment. Storage charges are due prior to delivery of the Product. Any storage shall occur outside of Seller's plant. In no event shall Seller be responsible for any damage or loss that occurs because of weather, theft, vandalism, fire, or acts of God during the storage period.",
-      },
-      {
-        Title: '10. LIMITED WARRANTY:',
-        Term: 'Seller warrants its products against defects in material and defects in fabrication of the products from that specified in the Quote/Contract for a period of one (1) year from date of delivery to Purchaser. Damage or failures due to faulty or improper handling, storage, or erection by Purchaser or others are not covered by this Warranty, including without limitation defects in paint and rust. This Warranty is further limited by the following: (1) The Products must be erected promptly after shipment to Purchaser; (2) Damages from outside sources, misuse and abuse, lack of proper maintenance (including removal of excessive loads such as snow and ice), unauthorized modification or alteration to the Products, addition of unspecified collateral loads, damages caused by negligence of others, or natural storms imposing loads beyond specified design loads, and normal wear and tear are excluded from and void this Warranty. This Warranty does not cover goods, materials, inventory, accessories, parts or attachments or other property which are not manufactured by Seller. Written notice of any claim under this limited warranty must be delivered to Seller within thirty (30) days of discovery of the alleged defect, and Seller must afford Purchaser a reasonable opportunity to inspect the Products in unaltered condition to evaluate the claims. This Warranty is non-assignable and non-transferable. THE WARRANTY SET FORTH ABOVE IS SUBJECT TO THE LIMITATIONS SPECIFIED, AND THIS AGREEMENT EXCLUDES ALL OTHER WARRANTIES, WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, WARRANTY OF MERCHANTABILITY OR WARRANTY OF FITNESS FOR A PARTICULAR PURPOSE. PURCHASER ACKNOWLEDGES THAT SELLER HAS NO CONTROL OVER INSTALLATION, ENGINEERING, CUSTOM SPECIFICATIONS, CONSTRUCTION METHODS, SITE CONDITIONS, OR OTHER CIRCUMSTANCES RELATED TO THE USE OF THE PRODUCTS. AS A RESULT, NO OTHER WARRANTIES OR GUARANTEES, EXPRESS OR IMPLIED, STATUTORY OR OTHERWISE, ARE GIVEN.',
-      },
-      { Title: '11. EXCLUSIVE REMEDIES:', Term: 'test' },
-      {
-        Title:
-          '12. LIMITATION OF LIABILITY; CONSEQUENTIAL, INCIDENTAL AND LIQUIDATED DAMAGES:',
-        Term: 'test',
-      },
-      { Title: '13. FORCE MAJEURE:', Term: 'test' },
-      { Title: '14. INDEMNIFICATION:', Term: 'test' },
-      { Title: '15. PURCHASE SPECIFICATIONS:', Term: 'test' },
-      {
-        Title: '16. MATCHING COLORS AND FINISHES NOT GUARANTEED:',
-        Term: 'test',
-      },
-      { Title: '17. ERECTION:', Term: 'test' },
-      { Title: '18. ACCEPTANCE, APPROVAL, CHANGE ORDERS:', Term: 'test' },
-      { Title: '19. TERMINATION:', Term: 'test' },
-      { Title: '20. INTELLECTUAL PROPERTY:', Term: 'test' },
-      { Title: '21. ASSIGNMENT AND BENEFICIARIES:', Term: 'test' },
-      { Title: '22. PROMOTIONAL MATERIALS:', Term: 'test' },
-      { Title: '23. ENTIRE AGREEMENT:', Term: 'test' },
-      { Title: '24. SEVERABILITY:', Term: 'test' },
-      { Title: '25. APPLICABLE LAW & JURISDICTION:', Term: 'test' },
-    ];
-
     const logoUrl =
       '/api/auth/logos?filename=' +
       encodeURIComponent('contract-logo.png') +
@@ -551,22 +645,22 @@ export function usePDF() {
 
     textLeft(page, 'Customer:', 22, currentY + textOffsetY);
     textLeft(page, 'Project Name:', 310, currentY + textOffsetY);
-    textBoldLeft(page, values.customerName, 72, currentY + textOffsetY, 232);
-    textBoldLeft(page, values.projectName, 376, currentY + textOffsetY, 216);
+    textBoldLeft(page, state.customerName, 72, currentY + textOffsetY, 232);
+    textBoldLeft(page, state.projectName, 376, currentY + textOffsetY, 216);
     lineThin(page, pageStartX, currentY, pageEndX, currentY);
     currentY -= lineHt;
 
     textLeft(page, 'Contact:', 22, currentY + textOffsetY);
     textLeft(page, 'Project For:', 310, currentY + textOffsetY);
-    textBoldLeft(page, values.contactName, 72, currentY + textOffsetY, 232);
-    textBoldLeft(page, values.projectFor, 376, currentY + textOffsetY, 216);
+    textBoldLeft(page, state.contactName, 72, currentY + textOffsetY, 232);
+    textBoldLeft(page, state.projectFor, 376, currentY + textOffsetY, 216);
     lineThin(page, pageStartX, currentY, pageEndX, currentY);
     currentY -= lineHt;
 
     textLeft(page, 'Address:', 22, currentY + textOffsetY);
     textLeft(page, 'Address:', 310, currentY + textOffsetY);
-    textBoldLeft(page, values.customerAddress, 72, currentY + textOffsetY, 232);
-    textBoldLeft(page, values.projectAddress, 376, currentY + textOffsetY, 216);
+    textBoldLeft(page, state.customerAddress, 72, currentY + textOffsetY, 232);
+    textBoldLeft(page, state.projectAddress, 376, currentY + textOffsetY, 216);
     lineThin(page, pageStartX, currentY, pageEndX, currentY);
     currentY -= lineHt;
 
@@ -576,28 +670,28 @@ export function usePDF() {
     textLeft(page, 'City:', 310, currentY + textOffsetY);
     textLeft(page, 'State:', 459, currentY + textOffsetY);
     textLeft(page, 'Zip:', 522, currentY + textOffsetY);
-    textBoldLeft(page, values.customerCity, 58, currentY + textOffsetY, 111);
-    textBoldLeft(page, values.customerState, 204, currentY + textOffsetY, 28);
-    textBoldLeft(page, values.customerZip, 256, currentY + textOffsetY, 48);
-    textBoldLeft(page, values.projectCity, 346, currentY + textOffsetY, 111);
-    textBoldLeft(page, values.projectState, 492, currentY + textOffsetY, 28);
-    textBoldLeft(page, values.projectZip, 544, currentY + textOffsetY, 48);
+    textBoldLeft(page, state.customerCity, 58, currentY + textOffsetY, 111);
+    textBoldLeft(page, state.customerState, 204, currentY + textOffsetY, 28);
+    textBoldLeft(page, state.customerZip, 256, currentY + textOffsetY, 48);
+    textBoldLeft(page, state.projectCity, 346, currentY + textOffsetY, 111);
+    textBoldLeft(page, state.projectState, 492, currentY + textOffsetY, 28);
+    textBoldLeft(page, state.projectZip, 544, currentY + textOffsetY, 48);
     lineThin(page, pageStartX, currentY, pageEndX, currentY);
     currentY -= lineHt;
 
     textLeft(page, 'Phone:', 22, currentY + textOffsetY);
     textLeft(page, 'Fax:', 164, currentY + textOffsetY);
     textLeft(page, 'County:', 310, currentY + textOffsetY);
-    textBoldLeft(page, values.customerPhone, 58, currentY + textOffsetY, 104);
-    textBoldLeft(page, values.customerFax, 200, currentY + textOffsetY, 104);
-    textBoldLeft(page, values.projectCounty, 346, currentY + textOffsetY, 246);
+    textBoldLeft(page, state.customerPhone, 58, currentY + textOffsetY, 104);
+    textBoldLeft(page, state.customerFax, 200, currentY + textOffsetY, 104);
+    textBoldLeft(page, state.projectCounty, 346, currentY + textOffsetY, 246);
     lineThin(page, pageStartX, currentY, pageEndX, currentY);
     currentY -= lineHt;
 
     textLeft(page, 'Cell:', 22, currentY + textOffsetY);
     textLeft(page, 'Email:', 164, currentY + textOffsetY);
-    textBoldLeft(page, values.customerCell, 58, currentY + textOffsetY, 104);
-    textBoldLeft(page, values.customerEmail, 200, currentY + textOffsetY, 104);
+    textBoldLeft(page, state.customerCell, 58, currentY + textOffsetY, 104);
+    textBoldLeft(page, state.customerEmail, 200, currentY + textOffsetY, 104);
     lineThick(page, pageStartX, currentY, pageEndX, currentY);
     lineThick(page, 306, 696, 306, currentY);
     startY = currentY;
@@ -620,14 +714,14 @@ export function usePDF() {
     textLeft(page, 'Risk Category:', 428, currentY + textOffsetY);
     textBoldLeft(
       page,
-      buildingCodes.find((item) => item.id === values.buildingCode).label,
+      buildingCodes.find((item) => item.id === state.buildingCode).label,
       178,
       currentY + textOffsetY,
       248
     );
     textBoldLeft(
       page,
-      riskCategories.find((item) => item.id === values.riskCategory).label,
+      riskCategories.find((item) => item.id === state.riskCategory).label,
       500,
       currentY + textOffsetY,
       92
@@ -641,21 +735,21 @@ export function usePDF() {
     textLeft(page, 'Dead Load:', 428, currentY + textOffsetY);
     textBoldLeft(
       page,
-      values.collateralLoad + ' psf',
+      state.collateralLoad + ' psf',
       178,
       currentY + textOffsetY,
       86
     );
     textBoldLeft(
       page,
-      values.liveLoad + ' psf',
+      state.liveLoad + ' psf',
       330,
       currentY + textOffsetY,
       96
     );
     textBoldLeft(
       page,
-      values.deadLoad + ' psf',
+      state.deadLoad + ' psf',
       500,
       currentY + textOffsetY,
       92
@@ -669,15 +763,15 @@ export function usePDF() {
     textLeft(page, 'Enclosure:', 428, currentY + textOffsetY);
     textBoldLeft(
       page,
-      values.windLoad + ' mph',
+      state.windLoad + ' mph',
       178,
       currentY + textOffsetY,
       86
     );
-    textBoldLeft(page, values.exposure, 330, currentY + textOffsetY, 96);
+    textBoldLeft(page, state.exposure, 330, currentY + textOffsetY, 96);
     textBoldLeft(
       page,
-      enclosure.find((item) => item.id === values.windEnclosure).label,
+      enclosure.find((item) => item.id === state.windEnclosure).label,
       500,
       currentY + textOffsetY,
       92
@@ -691,21 +785,21 @@ export function usePDF() {
     textLeft(page, 'Thermal Factor:', 428, currentY + textOffsetY);
     textBoldLeft(
       page,
-      values.groundSnowLoad + ' psf',
+      state.groundSnowLoad + ' psf',
       178,
       currentY + textOffsetY,
       86
     );
     textBoldLeft(
       page,
-      values.roofSnowLoad + ' psf',
+      state.roofSnowLoad + ' psf',
       330,
       currentY + textOffsetY,
       96
     );
     textBoldLeft(
       page,
-      thermalFactor.find((item) => item.id === values.thermalFactor).label,
+      thermalFactor.find((item) => item.id === state.thermalFactor).label,
       500,
       currentY + textOffsetY,
       92
@@ -721,31 +815,31 @@ export function usePDF() {
     textLeft(page, 'Sms:', 428, currentY + textOffsetY);
     textLeft(page, 'Sm  :', 510, currentY + textOffsetY);
     textSmallLeft(page, '1', 525, currentY + textOffsetY);
-    textBoldLeft(page, values.seismicCategory, 228, currentY + textOffsetY, 36);
+    textBoldLeft(page, state.seismicCategory, 228, currentY + textOffsetY, 36);
     textBoldLeft(
       page,
-      values.seismicSs.toString(),
+      state.seismicSs.toString(),
       292,
       currentY + textOffsetY,
       48
     );
     textBoldLeft(
       page,
-      values.seismicS1.toString(),
+      state.seismicS1.toString(),
       374,
       currentY + textOffsetY,
       48
     );
     textBoldLeft(
       page,
-      values.seismicSms.toString(),
+      state.seismicSms.toString(),
       460,
       currentY + textOffsetY,
       48
     );
     textBoldLeft(
       page,
-      values.seismicSm1.toString(),
+      state.seismicSm1.toString(),
       542,
       currentY + textOffsetY,
       48
@@ -755,8 +849,8 @@ export function usePDF() {
     startY = currentY;
 
     /* Building Layout */
-    for (i = 0; i < values.buildings.length; i++) {
-      bldgItems = whatInBldg(values.buildings[i]);
+    for (i = 0; i < state.buildings.length; i++) {
+      bldgItems = whatInBldg(state.buildings[i]);
       // Add to next page if section does not fit on page
       if (startY < pageEndY + lineHt * (6 + Math.ceil(bldgItems.length / 3))) {
         page = addPage('', 'Project Definition (cont.)');
@@ -764,7 +858,7 @@ export function usePDF() {
 
       currentY = startY - lineHt;
       addSection(page, currentY);
-      if (values.buildings.length > 1) {
+      if (state.buildings.length > 1) {
         textBoldLeft(
           page,
           'BUILDING ' + String.fromCharCode(i + 65) + ':',
@@ -782,16 +876,16 @@ export function usePDF() {
       textLeft(page, 'Building Type:', 22, currentY + textOffsetY);
       textBoldLeft(
         page,
-        shapes.find((item) => item.id === values.buildings[i].shape).label,
+        shapes.find((item) => item.id === state.buildings[i].shape).label,
         96,
         currentY + textOffsetY,
         232
       );
-      if (values.buildings[i].shape == 'nonSymmetrical') {
+      if (state.buildings[i].shape == 'nonSymmetrical') {
         textLeft(page, 'Peak Offset:', 404, currentY + textOffsetY);
         textBoldLeft(
           page,
-          formatFeetInches(values.buildings[i].backPeakOffset),
+          formatFeetInches(state.buildings[i].backPeakOffset),
           470,
           currentY + textOffsetY,
           122
@@ -811,28 +905,28 @@ export function usePDF() {
       );
       textBoldLeft(
         page,
-        formatFeetInches(values.buildings[i].width),
+        formatFeetInches(state.buildings[i].width),
         60,
         currentY + textOffsetY,
         54
       );
       textBoldLeft(
         page,
-        formatFeetInches(values.buildings[i].length),
+        formatFeetInches(state.buildings[i].length),
         156,
         currentY + textOffsetY,
         54
       );
       textBoldLeft(
         page,
-        formatFeetInches(values.buildings[i].backEaveHeight),
+        formatFeetInches(state.buildings[i].backEaveHeight),
         348,
         currentY + textOffsetY,
         54
       );
       textBoldLeft(
         page,
-        formatFeetInches(values.buildings[i].frontEaveHeight),
+        formatFeetInches(state.buildings[i].frontEaveHeight),
         538,
         currentY + textOffsetY,
         54
@@ -843,16 +937,16 @@ export function usePDF() {
       textLeft(page, 'Back Roof Pitch:', 22, currentY + textOffsetY);
       textBoldLeft(
         page,
-        values.buildings[i].backRoofPitch + ':12',
+        state.buildings[i].backRoofPitch + ':12',
         106,
         currentY + textOffsetY,
         108
       );
-      if (values.buildings[i].shape == 'nonSymmetrical') {
+      if (state.buildings[i].shape == 'nonSymmetrical') {
         textLeft(page, 'Front Roof Pitch:', 216, currentY + textOffsetY);
         textBoldLeft(
           page,
-          values.buildings[i].frontRoofPitch + ':12',
+          state.buildings[i].frontRoofPitch + ':12',
           300,
           currentY + textOffsetY,
           108
@@ -868,21 +962,20 @@ export function usePDF() {
         textBoldLeft(
           page,
           'Building ' +
-            (values.buildings[i].rotation > 0
-              ? 'rotated ' + values.buildings[i].rotation + '° & '
+            (state.buildings[i].rotation > 0
+              ? 'rotated ' + state.buildings[i].rotation + '° & '
               : '') +
             'moved ' +
-            (values.buildings[i].offsetX != 0
-              ? (values.buildings[i].offsetX < 0 ? 'left ' : 'right ') +
-                formatFeetInches(Math.abs(values.buildings[i].offsetX))
+            (state.buildings[i].offsetX != 0
+              ? (state.buildings[i].offsetX < 0 ? 'left ' : 'right ') +
+                formatFeetInches(Math.abs(state.buildings[i].offsetX))
               : '') +
-            (values.buildings[i].offsetX != 0 &&
-            values.buildings[i].offsetY != 0
+            (state.buildings[i].offsetX != 0 && state.buildings[i].offsetY != 0
               ? ' & '
               : '') +
-            (values.buildings[i].offsetY != 0
-              ? (values.buildings[i].offsetY < 0 ? 'down ' : 'up ') +
-                formatFeetInches(Math.abs(values.buildings[i].offsetY))
+            (state.buildings[i].offsetY != 0
+              ? (state.buildings[i].offsetY < 0 ? 'down ' : 'up ') +
+                formatFeetInches(Math.abs(state.buildings[i].offsetY))
               : ''),
           68,
           currentY + textOffsetY,
@@ -890,14 +983,14 @@ export function usePDF() {
         );
         textBoldLeft(
           page,
-          values.buildings[i].commanWall + '',
+          state.buildings[i].commanWall + '',
           476,
           currentY + textOffsetY,
           116
         );
       }
 
-      if (values.buildings.length > 1) {
+      if (state.buildings.length > 1) {
         lineThin(page, pageStartX, currentY, pageEndX, currentY);
         currentY -= lineHt;
 
@@ -919,30 +1012,467 @@ export function usePDF() {
       startY = currentY;
     }
 
-    // if (startY < pageEndY + lineHt * (6 + Math.ceil(bldgItems.length / 3))) {
-    //   page = addPage('', 'Project Definition )cont.)');
-    // }
+    /* Accessories */
+    if (startY < pageEndY + lineHt * 2) {
+      page = addPage('', '');
+    }
+
+    currentY -= lineHt;
+    addSection(page, currentY);
+    textBoldLeft(page, 'ACCESSORIES:', 22, currentY + textOffsetY);
+    line(page, pageStartX, currentY, pageEndX, currentY);
+    currentY -= lineHt;
+
+    i = 0;
+    // Accessories
+    accessories
+      .filter((accessories) => state[accessories.name])
+      .map((acc) => {
+        ++i;
+        textLeft(page, 'Qty:', 22, currentY + textOffsetY);
+        textBoldCenter(
+          page,
+          state[acc.name].toString(),
+          54,
+          currentY + textOffsetY
+        );
+
+        let lines = wrapText(acc.text, 520, stdFont, stdFontSize);
+        let numLines = 0;
+        for (const line of lines) {
+          page.drawText(line, {
+            x: 70,
+            y: currentY + textOffsetY,
+            size: stdFontSize,
+            font: stdFont,
+          });
+          numLines++;
+          lineThin(page, pageStartX, currentY, pageEndX, currentY);
+          currentY -= lineHt;
+
+          if (currentY < pageEndY) {
+            page = addPage('', '', 'ACCESSORIES (cont.)');
+            numLines = 0;
+          }
+        }
+      });
+
+    // Man Doors
+    state.mandoors.map((door) => {
+      ++i;
+      textLeft(page, 'Qty:', 22, currentY + textOffsetY);
+      textBoldCenter(page, door.qty.toString(), 54, currentY + textOffsetY);
+      mandoorIncludes = [];
+      if (door.glass == 'half') mandoorIncludes.push('half glass');
+      if (door.glass == 'narrow') mandoorIncludes.push('narrow lite');
+      if (door.leverLockset) mandoorIncludes.push('lever-lockset');
+      if (door.deadBolt) mandoorIncludes.push('deadbolt');
+      if (door.panic) mandoorIncludes.push('panic hardware');
+      if (door.mullion) mandoorIncludes.push('removable mullion');
+      if (door.closer) mandoorIncludes.push('closers');
+      if (door.kickPlate) {
+        if (door.size == '6070' || door.size == '6070P') {
+          mandoorIncludes.push('kick plates');
+        } else {
+          mandoorIncludes.push('kick plate');
+        }
+      }
+      mandoorDesc = ' with ';
+      for (j = 0; j < mandoorIncludes.length; j++) {
+        mandoorDesc +=
+          j == 0
+            ? mandoorIncludes[j]
+            : mandoorIncludes.length == 2
+              ? ' and ' + mandoorIncludes[j]
+              : j + 1 == mandoorIncludes.length
+                ? ', and ' + mandoorIncludes[j]
+                : ', ' + mandoorIncludes[j];
+      }
+
+      walkDoors
+        .filter((doorType) => doorType.name == door.size)
+        .map((size) => {
+          let lines = wrapText(
+            size.text + mandoorDesc,
+            520,
+            stdFont,
+            stdFontSize
+          );
+          let numLines = 0;
+          for (const line of lines) {
+            page.drawText(line, {
+              x: 70,
+              y: currentY + textOffsetY,
+              size: stdFontSize,
+              font: stdFont,
+            });
+            numLines++;
+            lineThin(page, pageStartX, currentY, pageEndX, currentY);
+            currentY -= lineHt;
+
+            if (currentY < pageEndY) {
+              page = addPage('', '', 'ACCESSORIES (cont.)');
+              numLines = 0;
+            }
+          }
+        });
+    });
+
+    if (i == 0) {
+      textBoldLeft(page, 'None', 50, currentY + textOffsetY);
+    } else {
+      currentY += lineHt;
+    }
+    lineThick(page, pageStartX, currentY, pageEndX, currentY);
+
+    /* Project Notes */
+    if (startY < pageEndY + lineHt * 2) {
+      page = addPage('', '');
+    }
+
+    currentY -= lineHt;
+    addSection(page, currentY);
+    textBoldLeft(page, 'PROJECT NOTES:', 22, currentY + textOffsetY);
+    line(page, pageStartX, currentY, pageEndX, currentY);
+    currentY -= lineHt;
+
+    i = 0;
+    // Custom Notes
+    state.notes
+      .filter((notes) => notes.building === 'Project')
+      .map((note) => {
+        textCenter(page, (++i).toString() + '.', 34, currentY + textOffsetY);
+
+        let lines = wrapText(note.text, 548, stdFont, stdFontSize);
+        let numLines = 0;
+        for (const line of lines) {
+          page.drawText(line, {
+            x: 46,
+            y: currentY + textOffsetY,
+            size: stdFontSize,
+            font: stdFont,
+          });
+          numLines++;
+          lineThin(page, pageStartX, currentY, pageEndX, currentY);
+          currentY -= lineHt;
+
+          if (currentY < pageEndY) {
+            page = addPage('', '', 'PROJECT NOTES (cont.)');
+            numLines = 0;
+          }
+        }
+      });
+
+    // Standard Notes
+    stdNotes
+      .filter((notes) => notes.type === 'checkbox' && state[notes.name])
+      .map((note) => {
+        textCenter(page, (++i).toString() + '.', 34, currentY + textOffsetY);
+
+        let lines = wrapText(note.text, 548, stdFont, stdFontSize);
+        let numLines = 0;
+        for (const line of lines) {
+          page.drawText(line, {
+            x: 46,
+            y: currentY + textOffsetY,
+            size: stdFontSize,
+            font: stdFont,
+          });
+          numLines++;
+          lineThin(page, pageStartX, currentY, pageEndX, currentY);
+          currentY -= lineHt;
+
+          if (currentY < pageEndY) {
+            page = addPage('', '', 'PROJECT NOTES (cont.)');
+            numLines = 0;
+          }
+        }
+      });
+
+    // Fill blank area with lines
+    if (currentY < pageEndY + lineHt * 13) {
+      for (currentY; currentY > pageEndY; currentY -= lineHt) {
+        lineThin(page, pageStartX, currentY, pageEndX, currentY);
+      }
+      page = addPage('', '');
+      //add a page of lines???
+      currentY = pageEndY + lineHt * 13;
+      lineThick(page, pageStartX, currentY, pageEndX, currentY);
+      currentY -= lineHt;
+      startY = currentY;
+    } else {
+      for (currentY; currentY > pageEndY + lineHt * 13; currentY -= lineHt) {
+        lineThin(page, pageStartX, currentY, pageEndX, currentY);
+      }
+      lineThick(page, pageStartX, currentY, pageEndX, currentY);
+      currentY -= lineHt;
+      startY = currentY;
+    }
+
+    /* Price and Signature Section */
+    addSection(page, currentY);
+    textBoldLeft(page, 'CONTRACT AMOUNT:', 22, currentY + textOffsetY);
+    line(page, pageStartX, currentY, pageEndX, currentY);
+    currentY -= lineHt * 1.25;
+
+    textItalicLeft(page, 'Price:', 22, currentY + textOffsetY);
+    textItalicLeft(page, 'Weight:', 480, currentY + textOffsetY);
+    textCenter(
+      page,
+      state.willCall
+        ? "Building Package F.O.B. Manufacturer's Shop"
+        : state.projectState == 'AK' || state.projectState == 'HI'
+          ? 'Building Package F.O.B. Seattle Docks'
+          : 'Building Package F.O.B. Job Site',
+      306,
+      currentY + textOffsetY,
+      340
+    );
+    textLargeBoldLeft(
+      page,
+      formatDollar(tempPrice),
+      56,
+      currentY + textOffsetY,
+      76
+    );
+    textBoldLeft(
+      page,
+      tempWeight.toLocaleString() + ' lbs.',
+      520,
+      currentY + textOffsetY,
+      72
+    );
+    lineThin(page, pageStartX, currentY, pageEndX, currentY);
+    currentY -= lineHt;
+
+    textItalicLeft(page, 'Terms:', 22, currentY + textOffsetY);
+    textSmallLeft(
+      page,
+      tempEngOnly
+        ? 'Purchaser will pay a 50% down payment at time of order.'
+        : tempPrice < 250000
+          ? 'Purchaser will pay a 20% down payment at time of order.'
+          : 'Purchaser will pay a 20% down payment at time of order and 40% of the contract price prior to fabrication.',
+      60,
+      currentY + textOffsetY,
+      530
+    );
+    currentY -= lineHt * 0.75;
+
+    textSmallLeft(
+      page,
+      tempEngOnly
+        ? 'The balance is due upon delivery of stamped engineered drawings and calculations.'
+        : tempPrice < 250000
+          ? 'The balance is due prior to delivery of the first load/shipment.'
+          : 'The balance is due prior to delivery of the first load/shipment.',
+      60,
+      currentY + textOffsetY,
+      530
+    );
+    currentY -= lineHt * 0.75;
+
+    textSmallCenter(
+      page,
+      state.monoSlabDesign || state.pierFootingDesign
+        ? '• Sales tax and anchor bolts are not included.  • Bid is good for 7 days.  • Contract price is good for 21 days.'
+        : '• Sales tax, anchor bolts, and concrete design are not included.  • Bid is good for 7 days.  • Contract price is good for 21 days.',
+      306,
+      currentY + textOffsetY
+    );
+    lineThick(page, pageStartX, currentY, pageEndX, currentY);
+    startY = currentY;
+    currentY -= lineHt;
+
+    addSection(page, currentY);
+    textBoldLeft(
+      page,
+      companyId == 1 ? 'PBS SIGNATURE:' : 'SUPPLIERS SIGNATURE:',
+      22,
+      currentY + textOffsetY
+    );
+    textBoldLeft(page, 'PURCHASER SIGNATURE:', 310, currentY + textOffsetY);
+    line(page, pageStartX, currentY, pageEndX, currentY);
+    currentY -= lineHt * 1.25;
+
+    textLeft(
+      page,
+      companyId == 1 ? 'Manufatured by:' : 'Provided by:',
+      22,
+      currentY + textOffsetY
+    );
+    textRight(page, "Buyer's Signature:", 400, currentY + textOffsetY);
+    line(page, 404, currentY, 580, currentY);
+    currentY -= lineHt;
+
+    textLeft(page, companyName, 44, currentY + textOffsetY);
+    textRight(page, "Buyer's Name:", 400, currentY + textOffsetY);
+    line(page, 404, currentY, 580, currentY);
+    currentY -= lineHt;
+
+    textLeft(page, companyAddress, 44, currentY + textOffsetY);
+    textRight(page, 'Billing Address:', 400, currentY + textOffsetY);
+    line(page, 404, currentY, 580, currentY);
+    currentY -= lineHt;
+
+    textLeft(page, companyCityStateZip, 44, currentY + textOffsetY);
+    textRight(page, 'Accounts Payable Email:', 430, currentY + textOffsetY);
+    line(page, 434, currentY, 580, currentY);
+    currentY -= lineHt;
+
+    textRight(page, 'Reseller Permit #:', 430, currentY + textOffsetY);
+    line(page, 434, currentY, 580, currentY);
+    currentY -= lineHt;
+
+    textLeft(page, 'By:', 22, currentY + textOffsetY);
+    line(page, 40, currentY, 296, currentY);
+    textRight(page, 'Date:', 344, currentY + textOffsetY);
+    line(page, 348, currentY, 448, currentY);
+    textRight(page, 'PO #:', 476, currentY + textOffsetY);
+    line(page, 480, currentY, 580, currentY);
+    currentY -= lineHt;
+
+    textLeft(page, 'Authorized Signature', 44, currentY + textOffsetY);
+    textLeft(page, 'Title', 220, currentY + textOffsetY);
+    lineThick(page, 306, startY, 306, currentY);
+    currentY -= lineHt;
 
     /* Each Building */
-    for (i = 0; i < values.buildings.length; i++) {
+    for (i = 0; i < state.buildings.length; i++) {
       bldgPageNums[i].pageStart = currentPage + 2; //Still on the previous page
       pageTitle =
-        values.buildings.length > 1
+        state.buildings.length > 1
           ? 'Building ' + String.fromCharCode(i + 65)
           : '';
 
-      /* Roof Sheet */
+      /* Frame Section */
+      page = addPage(pageTitle, 'Frame Definition', 'FRAMING DATA:');
+
+      textLeft(page, 'Frame Type:', 22, currentY + textOffsetY);
+      if (state.buildings[i].frameType == 'multiSpan') {
+        textBoldLeft(
+          page,
+          frames.find((item) => item.id === state.buildings[i].frameType).label,
+          90,
+          currentY + textOffsetY,
+          124
+        );
+        textLeft(page, 'Interior Col Spacing:', 216, currentY + textOffsetY);
+        textBoldLeft(
+          page,
+          formatBaySpacing(state.buildings[i].intColSpacing),
+          320,
+          currentY + textOffsetY,
+          124
+        );
+      } else {
+        textBoldLeft(
+          page,
+          frames.find((item) => item.id === state.buildings[i].frameType).label,
+          90,
+          currentY + textOffsetY,
+          354
+        );
+      }
+      textLeft(page, 'Finish:', 446, currentY + textOffsetY);
+      textBoldLeft(
+        page,
+        steelFinish.find((item) => item.id === state.buildings[i].steelFinish)
+          .label,
+        486,
+        currentY + textOffsetY,
+        104
+      );
+      // lineThin(page, pageStartX, currentY, pageEndX, currentY);
+      currentY -= lineHt;
+
+      drawCheckBox(
+        page,
+        'Straight Exterior Columns',
+        120,
+        currentY + textOffsetY,
+        state.buildings[i].noFlangeBraces
+      );
+      drawCheckBox(
+        page,
+        'No Flange Braces on Columns',
+        250,
+        currentY + textOffsetY,
+        state.buildings[i].noFlangeBraces
+      );
+      lineThin(page, pageStartX, currentY, pageEndX, currentY);
+      currentY -= lineHt;
+
+      textLeft(page, 'Left Endwall Frame:', 22, currentY + textOffsetY);
+      textBoldLeft(
+        page,
+        FrameOptions.find((item) => item.id === state.buildings[i].leftFrame)
+          .label,
+        120,
+        currentY + textOffsetY,
+        194
+      );
+      if (state.buildings[i].leftFrame == 'insetRF') {
+        textLeft(page, 'Number of Bays:', 316, currentY + textOffsetY);
+        textBoldLeft(
+          page,
+          state.buildings[i].leftEndwallInset.toString(),
+          400,
+          currentY + textOffsetY,
+          192
+        );
+      }
+      lineThin(page, pageStartX, currentY, pageEndX, currentY);
+      currentY -= lineHt;
+
+      textLeft(page, 'Right Endwall Frame:', 22, currentY + textOffsetY);
+      textBoldLeft(
+        page,
+        FrameOptions.find((item) => item.id === state.buildings[i].rightFrame)
+          .label,
+        120,
+        currentY + textOffsetY,
+        124
+      );
+      if (state.buildings[i].rightFrame == 'insetRF') {
+        textLeft(page, 'Number of Bays:', 316, currentY + textOffsetY);
+        textBoldLeft(
+          page,
+          state.buildings[i].rightEndwallInset.toString(),
+          400,
+          currentY + textOffsetY,
+          192
+        );
+      }
+      lineThick(page, pageStartX, currentY, pageEndX, currentY);
+      currentY -= lineHt;
+
+      /* Roof Section */
       wallsInBldg =
-        values.buildings[i].shape == 'singleSlope' ||
-        values.buildings[i].shape == 'leanTo'
+        state.buildings[i].shape == 'singleSlope' ||
+        state.buildings[i].shape == 'leanTo'
           ? singleSlopeRoofs
           : roofs;
 
-      page = addPage(pageTitle, 'Roof', 'BASIC INFORMATION:');
+      if (currentY < pageEndY + lineHt * 8) {
+        page = addPage(pageTitle, 'Roof Definition', '');
+      } else {
+        currentY -= lineHt;
+        textBoldCenter(page, 'Roof Definition', 306, currentY + textOffsetY);
+        lineThick(page, pageStartX, currentY, pageEndX, currentY);
+        currentY -= lineHt;
+      }
+
+      addSection(page, currentY);
+      textBoldLeft(page, 'BASIC INFORMATION:', 22, currentY + textOffsetY);
+      line(page, pageStartX, currentY, pageEndX, currentY);
+      currentY -= lineHt;
+      //      page = addPage(pageTitle, 'Roof Definition', 'BASIC INFORMATION:');
+
       textLeft(page, 'Bay Spacing:', 22, currentY + textOffsetY);
       textBoldLeft(
         page,
-        formatBaySpacing(values.buildings[i].roofBaySpacing),
+        formatBaySpacing(state.buildings[i].roofBaySpacing),
         90,
         currentY + textOffsetY,
         504
@@ -955,7 +1485,7 @@ export function usePDF() {
       textLeft(page, 'Braced Bays:', 216, currentY + textOffsetY);
       textBoldLeft(
         page,
-        formatBaySelected(values.buildings[i].roofBracedBays),
+        formatBaySelected(state.buildings[i].roofBracedBays),
         286,
         currentY + textOffsetY,
         306
@@ -969,7 +1499,7 @@ export function usePDF() {
       textBoldLeft(
         page,
         purlinSpacing.find(
-          (item) => item.id === values.buildings[i].purlinSpacing
+          (item) => item.id === state.buildings[i].purlinSpacing
         ).label,
         320,
         currentY + textOffsetY,
@@ -984,7 +1514,7 @@ export function usePDF() {
       textLeft(page, 'Color:', 446, currentY + textOffsetY);
       textBoldLeft(
         page,
-        roofPanels.find((item) => item.id === values.buildings[i].roofPanelType)
+        roofPanels.find((item) => item.id === state.buildings[i].roofPanelType)
           .label,
         90,
         currentY + textOffsetY,
@@ -993,35 +1523,35 @@ export function usePDF() {
       textBoldLeft(
         page,
         roofGauge.find(
-          (item) => parseInt(item.id) === values.buildings[i].roofPanelGauge
+          (item) => parseInt(item.id) === state.buildings[i].roofPanelGauge
         ).label,
         260,
         currentY + textOffsetY,
         54
       );
-      textBoldLeft(
-        page,
-        roofFinish.find(
-          (item) => item.id === values.buildings[i].roofPanelFinish
-        ).label,
-        356,
-        currentY + textOffsetY,
-        88
-      );
+      // textBoldLeft(
+      //   page,
+      //   roofFinish.find(
+      //     (item) => item.id === state.buildings[i].roofPanelFinish
+      //   ).label,
+      //   356,
+      //   currentY + textOffsetY,
+      //   88
+      // );
       textBoldLeft(
         page,
         masterColorList.find(
-          (item) => item.id === values.buildings[i].roofPanelColor
+          (item) => item.id === state.buildings[i].roofPanelColor
         ).label,
         486,
         currentY + textOffsetY,
         106
       );
       if (
-        values.buildings[i].roofPanelType == 'ssq' ||
-        values.buildings[i].roofPanelType == 'ms200' ||
-        values.buildings[i].roofPanelType == 'doubleLok' ||
-        values.buildings[i].roofPanelType == 'battenLok'
+        state.buildings[i].roofPanelType == 'ssq' ||
+        state.buildings[i].roofPanelType == 'ms200' ||
+        state.buildings[i].roofPanelType == 'doubleLok' ||
+        state.buildings[i].roofPanelType == 'battenLok'
       ) {
         currentY -= lineHt;
         textSmallLeft(
@@ -1038,10 +1568,10 @@ export function usePDF() {
       textBoldLeft(
         page,
         roofInsulation.find(
-          (item) => item.id === values.buildings[i].roofInsulation
+          (item) => item.id === state.buildings[i].roofInsulation
         ).label +
-          (values.buildings[i].roofInsulationOthers &&
-          values.buildings[i].roofInsulation != 'none'
+          (state.buildings[i].roofInsulationOthers &&
+          state.buildings[i].roofInsulation != 'none'
             ? ' - By Others'
             : ''),
         90,
@@ -1054,7 +1584,7 @@ export function usePDF() {
       textLeft(page, 'Eave Trim:', 22, currentY + textOffsetY);
       textBoldLeft(
         page,
-        values.buildings[i].includeGutters
+        state.buildings[i].includeGutters
           ? 'Gutters and Downspouts'
           : 'Standard Eave Trim (No Gutters)',
         90,
@@ -1067,10 +1597,10 @@ export function usePDF() {
 
       /* Roof Extensions */
       if (
-        values.buildings[i].frontExtensionWidth > 0 ||
-        values.buildings[i].backExtensionWidth > 0 ||
-        values.buildings[i].leftExtensionWidth > 0 ||
-        values.buildings[i].rightExtensionWidth > 0
+        state.buildings[i].frontExtensionWidth > 0 ||
+        state.buildings[i].backExtensionWidth > 0 ||
+        state.buildings[i].leftExtensionWidth > 0 ||
+        state.buildings[i].rightExtensionWidth > 0
       ) {
         addSection(page, currentY);
         textBoldLeft(page, 'ROOF EXTENSIONS:', 22, currentY + textOffsetY);
@@ -1079,7 +1609,7 @@ export function usePDF() {
 
         wallsInBldg = walls;
         for (j = 0; j < wallsInBldg.length; j++) {
-          if (values.buildings[i][`${wallsInBldg[j].id}ExtensionWidth`]) {
+          if (state.buildings[i][`${wallsInBldg[j].id}ExtensionWidth`]) {
             textLeft(page, 'Location:', 22, currentY + textOffsetY);
             textLeft(page, 'Width:', 216, currentY + textOffsetY);
             textBoldLeft(
@@ -1092,7 +1622,7 @@ export function usePDF() {
             textBoldLeft(
               page,
               formatFeetInches(
-                values.buildings[i][`${wallsInBldg[j].id}ExtensionWidth`]
+                state.buildings[i][`${wallsInBldg[j].id}ExtensionWidth`]
               ),
               260,
               currentY + textOffsetY,
@@ -1100,24 +1630,21 @@ export function usePDF() {
             );
             if (wallsInBldg[j].id == 'front' || wallsInBldg[j].id == 'back') {
               textLeft(page, 'Bays:', 316, currentY + textOffsetY);
-              textLeft(page, 'Add Columns:', 446, currentY + textOffsetY);
               textBoldLeft(
                 page,
-                values.buildings[i][
+                state.buildings[i][
                   `${wallsInBldg[j].id}ExtensionBays`
                 ].toString(),
                 356,
                 currentY + textOffsetY,
-                88
+                128
               );
-              textBoldLeft(
+              drawCheckBox(
                 page,
-                values.buildings[i][
-                  `${wallsInBldg[j].id}ExtensionColumns`
-                ].toString(),
-                512,
+                'Add Columns',
+                486,
                 currentY + textOffsetY,
-                82
+                state.buildings[i][`${wallsInBldg[j].id}ExtensionColumns`]
               );
             }
 
@@ -1133,7 +1660,7 @@ export function usePDF() {
         textBoldLeft(
           page,
           soffitPanels.find(
-            (item) => item.id === values.buildings[i].soffitPanelType
+            (item) => item.id === state.buildings[i].soffitPanelType
           ).label,
           90,
           currentY + textOffsetY,
@@ -1142,25 +1669,25 @@ export function usePDF() {
         textBoldLeft(
           page,
           soffitGauge.find(
-            (item) => parseInt(item.id) === values.buildings[i].soffitPanelGauge
+            (item) => parseInt(item.id) === state.buildings[i].soffitPanelGauge
           ).label,
           260,
           currentY + textOffsetY,
           54
         );
-        textBoldLeft(
-          page,
-          soffitFinish.find(
-            (item) => item.id === values.buildings[i].soffitPanelFinish
-          ).label,
-          356,
-          currentY + textOffsetY,
-          88
-        );
+        // textBoldLeft(
+        //   page,
+        //   soffitFinish.find(
+        //     (item) => item.id === state.buildings[i].soffitPanelFinish
+        //   ).label,
+        //   356,
+        //   currentY + textOffsetY,
+        //   88
+        // );
         textBoldLeft(
           page,
           masterColorList.find(
-            (item) => item.id === values.buildings[i].soffitPanelColor
+            (item) => item.id === state.buildings[i].soffitPanelColor
           ).label,
           486,
           currentY + textOffsetY,
@@ -1172,13 +1699,13 @@ export function usePDF() {
 
       /* Roof Liner Panels */
       bldgItems = getItemsByWall(
-        values.buildings[i].roofLinerPanels,
+        state.buildings[i].roofLinerPanels,
         'wall',
         'roof'
       );
       if (bldgItems.length > 0) {
         if (currentY < pageEndY + lineHt * 2) {
-          page = addPage(pageTitle, 'Roof' + ' (cont.)');
+          page = addPage(pageTitle, 'Roof Definition' + ' (cont.)');
         }
 
         addSection(page, currentY);
@@ -1229,15 +1756,15 @@ export function usePDF() {
             currentY + textOffsetY,
             54
           );
-          textBoldLeft(
-            page,
-            soffitFinish.find(
-              (item) => item.id === bldgItems[k].roofLinerPanelFinish
-            ).label,
-            356,
-            currentY + textOffsetY,
-            88
-          );
+          // textBoldLeft(
+          //   page,
+          //   soffitFinish.find(
+          //     (item) => item.id === bldgItems[k].roofLinerPanelFinish
+          //   ).label,
+          //   356,
+          //   currentY + textOffsetY,
+          //   88
+          // );
           textBoldLeft(
             page,
             masterColorList.find(
@@ -1253,7 +1780,11 @@ export function usePDF() {
           }
 
           if (currentY < pageEndY + lineHt * 1) {
-            page = addPage(pageTitle, 'Roof (cont.)', 'LINER PANELS: (cont.)');
+            page = addPage(
+              pageTitle,
+              'Roof Definition (cont.)',
+              'LINER PANELS: (cont.)'
+            );
           }
         }
         lineThick(page, pageStartX, currentY, pageEndX, currentY);
@@ -1261,9 +1792,9 @@ export function usePDF() {
       }
 
       /* Roof Relite Panels */
-      if (values.buildings[i].roofRelites.length > 0) {
+      if (state.buildings[i].roofRelites.length > 0) {
         if (currentY < pageEndY + lineHt * 2) {
-          page = addPage(pageTitle, 'Roof (cont.)');
+          page = addPage(pageTitle, 'Roof Definition (cont.)');
         }
 
         addSection(page, currentY);
@@ -1273,7 +1804,7 @@ export function usePDF() {
 
         for (j = 0; j < wallsInBldg.length; j++) {
           bldgItems = getItemsByWall(
-            values.buildings[i].roofRelites,
+            state.buildings[i].roofRelites,
             'roof',
             wallsInBldg[j].id
           );
@@ -1306,8 +1837,8 @@ export function usePDF() {
                 236
               );
               if (
-                values.buildings[i].shape != 'singleSlope' &&
-                values.buildings[i].shape != 'leanTo'
+                state.buildings[i].shape != 'singleSlope' &&
+                state.buildings[i].shape != 'leanTo'
               ) {
                 textLeft(page, 'Ridge Side:', 446, currentY + textOffsetY);
                 textBoldLeft(
@@ -1323,7 +1854,6 @@ export function usePDF() {
 
               textLeft(page, 'Location:', 22, currentY + textOffsetY);
               textLeft(page, 'Offset:', 316, currentY + textOffsetY);
-              textLeft(page, 'Cut Panels:', 446, currentY + textOffsetY);
               textBoldLeft(
                 page,
                 formatBaySpacing(bldgItems[k].location),
@@ -1336,14 +1866,14 @@ export function usePDF() {
                 formatFeetInches(bldgItems[k].offset),
                 356,
                 currentY + textOffsetY,
-                88
+                128
               );
-              textBoldLeft(
+              drawCheckBox(
                 page,
-                bldgItems[k].cutPanels.toString(),
-                500,
+                'Cut Panels',
+                486,
                 currentY + textOffsetY,
-                92
+                bldgItems[k].cutPanels
               );
               if (k + 1 < bldgItems.length) {
                 line(page, pageStartX, currentY, pageEndX, currentY);
@@ -1353,7 +1883,7 @@ export function usePDF() {
               if (currentY < pageEndY + lineHt * 1) {
                 page = addPage(
                   pageTitle,
-                  'Roof (cont.)',
+                  'Roof Definition (cont.)',
                   'ROOF RELITES: (cont.)'
                 );
               }
@@ -1372,12 +1902,12 @@ export function usePDF() {
 
       /* Wall Sheets */
       wallsInBldg =
-        values.buildings[i].leftFrame == 'insetRF' &&
-        values.buildings[i].rightFrame == 'insetRF'
+        state.buildings[i].leftFrame == 'insetRF' &&
+        state.buildings[i].rightFrame == 'insetRF'
           ? wallsOuterBoth
-          : values.buildings[i].leftFrame == 'insetRF'
+          : state.buildings[i].leftFrame == 'insetRF'
             ? wallsOuterLeft
-            : values.buildings[i].rightFrame == 'insetRF'
+            : state.buildings[i].rightFrame == 'insetRF'
               ? wallsOuterRight
               : walls;
 
@@ -1387,12 +1917,31 @@ export function usePDF() {
             ? SidewallBracingType
             : EndwallBracingType;
 
-        page = addPage(pageTitle, wallsInBldg[j].label, 'BASIC INFORMATION:');
+        if (currentY < pageEndY + lineHt * 7) {
+          page = addPage(pageTitle, wallsInBldg[j].label, '');
+        } else {
+          currentY -= lineHt;
+          textBoldCenter(
+            page,
+            wallsInBldg[j].label,
+            306,
+            currentY + textOffsetY
+          );
+          lineThick(page, pageStartX, currentY, pageEndX, currentY);
+          currentY -= lineHt;
+        }
+
+        addSection(page, currentY);
+        textBoldLeft(page, 'BASIC INFORMATION:', 22, currentY + textOffsetY);
+        line(page, pageStartX, currentY, pageEndX, currentY);
+        currentY -= lineHt;
+        // page = addPage(pageTitle, wallsInBldg[j].label, 'BASIC INFORMATION:');
+
         textLeft(page, 'Bay Spacing:', 22, currentY + textOffsetY);
         textBoldLeft(
           page,
           formatBaySpacing(
-            values.buildings[i][`${wallsInBldg[j].id}BaySpacing`]
+            state.buildings[i][`${wallsInBldg[j].id}BaySpacing`]
           ),
           90,
           currentY + textOffsetY,
@@ -1409,7 +1958,7 @@ export function usePDF() {
             : wallBracingType.find(
                 (item) =>
                   item.id ===
-                  values.buildings[i][`${wallsInBldg[j].id}BracingType`]
+                  state.buildings[i][`${wallsInBldg[j].id}BracingType`]
               ).label,
           90,
           currentY + textOffsetY,
@@ -1418,13 +1967,13 @@ export function usePDF() {
         if (
           wallsInBldg[j].id != 'outerLeft' &&
           wallsInBldg[j].id != 'outerRight' &&
-          values.buildings[i][`${wallsInBldg[j].id}BracingType`] != 'none'
+          state.buildings[i][`${wallsInBldg[j].id}BracingType`] != 'none'
         ) {
           textLeft(page, 'Braced Bays:', 216, currentY + textOffsetY);
           textBoldLeft(
             page,
             formatBaySelected(
-              values.buildings[i][`${wallsInBldg[j].id}BracedBays`]
+              state.buildings[i][`${wallsInBldg[j].id}BracedBays`]
             ),
             286,
             currentY + textOffsetY,
@@ -1441,7 +1990,7 @@ export function usePDF() {
           page,
           girtTypes.find(
             (item) =>
-              item.id === values.buildings[i][`${wallsInBldg[j].id}GirtType`]
+              item.id === state.buildings[i][`${wallsInBldg[j].id}GirtType`]
           ).label,
           90,
           currentY + textOffsetY,
@@ -1451,7 +2000,7 @@ export function usePDF() {
           page,
           girtSpacing.find(
             (item) =>
-              item.id === values.buildings[i][`${wallsInBldg[j].id}GirtSpacing`]
+              item.id === state.buildings[i][`${wallsInBldg[j].id}GirtSpacing`]
           ).label,
           320,
           currentY + textOffsetY,
@@ -1462,7 +2011,7 @@ export function usePDF() {
           baseCondition.find(
             (item) =>
               item.id ===
-              values.buildings[i][`${wallsInBldg[j].id}BaseCondition`]
+              state.buildings[i][`${wallsInBldg[j].id}BaseCondition`]
           ).label,
           486,
           currentY + textOffsetY,
@@ -1480,7 +2029,7 @@ export function usePDF() {
           wallPanels.find(
             (item) =>
               item.id ===
-              values.buildings[i][`${wallsInBldg[j].id}WallPanelType`]
+              state.buildings[i][`${wallsInBldg[j].id}WallPanelType`]
           ).label,
           90,
           currentY + textOffsetY,
@@ -1491,29 +2040,29 @@ export function usePDF() {
           wallGauge.find(
             (item) =>
               parseInt(item.id) ===
-              values.buildings[i][`${wallsInBldg[j].id}WallPanelGauge`]
+              state.buildings[i][`${wallsInBldg[j].id}WallPanelGauge`]
           ).label,
           260,
           currentY + textOffsetY,
           54
         );
-        textBoldLeft(
-          page,
-          wallFinish.find(
-            (item) =>
-              item.id ===
-              values.buildings[i][`${wallsInBldg[j].id}WallPanelFinish`]
-          ).label,
-          356,
-          currentY + textOffsetY,
-          88
-        );
+        // textBoldLeft(
+        //   page,
+        //   wallFinish.find(
+        //     (item) =>
+        //       item.id ===
+        //       state.buildings[i][`${wallsInBldg[j].id}WallPanelFinish`]
+        //   ).label,
+        //   356,
+        //   currentY + textOffsetY,
+        //   88
+        // );
         textBoldLeft(
           page,
           masterColorList.find(
             (item) =>
               item.id ===
-              values.buildings[i][`${wallsInBldg[j].id}WallPanelColor`]
+              state.buildings[i][`${wallsInBldg[j].id}WallPanelColor`]
           ).label,
           486,
           currentY + textOffsetY,
@@ -1528,10 +2077,10 @@ export function usePDF() {
           wallInsulation.find(
             (item) =>
               item.id ===
-              values.buildings[i][`${wallsInBldg[j].id}WallInsulation`]
+              state.buildings[i][`${wallsInBldg[j].id}WallInsulation`]
           ).label +
-            (values.buildings[i].wallInsulationOthers &&
-            values.buildings[i][`${wallsInBldg[j].id}WallInsulation`] != 'none'
+            (state.buildings[i].wallInsulationOthers &&
+            state.buildings[i][`${wallsInBldg[j].id}WallInsulation`] != 'none'
               ? ' - By Others'
               : ''),
           90,
@@ -1544,7 +2093,7 @@ export function usePDF() {
 
         /* Wall Liner Panels */
         bldgItems = getItemsByWall(
-          values.buildings[i].wallLinerPanels,
+          state.buildings[i].wallLinerPanels,
           'wall',
           wallsInBldg[j].id
         );
@@ -1610,15 +2159,15 @@ export function usePDF() {
               currentY + textOffsetY,
               54
             );
-            textBoldLeft(
-              page,
-              wallFinish.find(
-                (item) => item.id === bldgItems[k].wallLinerPanelFinish
-              ).label,
-              356,
-              currentY + textOffsetY,
-              88
-            );
+            // textBoldLeft(
+            //   page,
+            //   wallFinish.find(
+            //     (item) => item.id === bldgItems[k].wallLinerPanelFinish
+            //   ).label,
+            //   356,
+            //   currentY + textOffsetY,
+            //   88
+            // );
             textBoldLeft(
               page,
               masterColorList.find(
@@ -1647,7 +2196,7 @@ export function usePDF() {
 
         /* Canopies */
         bldgItems = getItemsByWall(
-          values.buildings[i].canopies,
+          state.buildings[i].canopies,
           'wall',
           wallsInBldg[j].id
         );
@@ -1664,7 +2213,6 @@ export function usePDF() {
 
             textLeft(page, 'Width:', 22, currentY + textOffsetY);
             textLeft(page, 'Slope:', 156, currentY + textOffsetY);
-            textLeft(page, 'Columns:', 316, currentY + textOffsetY);
             textBoldLeft(
               page,
               formatFeetInches(bldgItems[k].width),
@@ -1677,14 +2225,14 @@ export function usePDF() {
               bldgItems[k].slope + ':12',
               200,
               currentY + textOffsetY,
-              114
+              284
             );
-            textBoldLeft(
+            drawCheckBox(
               page,
-              bldgItems[k].addColumns.toString(),
-              366,
+              'Add Columns',
+              486,
               currentY + textOffsetY,
-              236
+              bldgItems[k].addColumns
             );
             lineThin(page, pageStartX, currentY, pageEndX, currentY);
             currentY -= lineHt;
@@ -1739,15 +2287,15 @@ export function usePDF() {
               currentY + textOffsetY,
               54
             );
-            textBoldLeft(
-              page,
-              roofFinish.find(
-                (item) => item.id === bldgItems[k].canopyRoofPanelFinish
-              ).label,
-              356,
-              currentY + textOffsetY,
-              88
-            );
+            // textBoldLeft(
+            //   page,
+            //   roofFinish.find(
+            //     (item) => item.id === bldgItems[k].canopyRoofPanelFinish
+            //   ).label,
+            //   356,
+            //   currentY + textOffsetY,
+            //   88
+            // );
             textBoldLeft(
               page,
               masterColorList.find(
@@ -1783,15 +2331,15 @@ export function usePDF() {
               currentY + textOffsetY,
               54
             );
-            textBoldLeft(
-              page,
-              soffitFinish.find(
-                (item) => item.id === bldgItems[k].canopySoffitPanelFinish
-              ).label,
-              356,
-              currentY + textOffsetY,
-              88
-            );
+            // textBoldLeft(
+            //   page,
+            //   soffitFinish.find(
+            //     (item) => item.id === bldgItems[k].canopySoffitPanelFinish
+            //   ).label,
+            //   356,
+            //   currentY + textOffsetY,
+            //   88
+            // );
             textBoldLeft(
               page,
               masterColorList.find(
@@ -1820,7 +2368,7 @@ export function usePDF() {
 
         /* Partial Walls */
         bldgItems = getItemsByWall(
-          values.buildings[i].partialWalls,
+          state.buildings[i].partialWalls,
           'wall',
           wallsInBldg[j].id
         );
@@ -1889,7 +2437,7 @@ export function usePDF() {
 
         /* Wall Skirts */
         bldgItems = getItemsByWall(
-          values.buildings[i].wallSkirts,
+          state.buildings[i].wallSkirts,
           'wall',
           wallsInBldg[j].id
         );
@@ -1907,7 +2455,6 @@ export function usePDF() {
             textLeft(page, 'Start Bay:', 22, currentY + textOffsetY);
             textLeft(page, 'End Bay:', 156, currentY + textOffsetY);
             textLeft(page, 'Height:', 316, currentY + textOffsetY);
-            textLeft(page, 'Cut Columns:', 446, currentY + textOffsetY);
             textBoldLeft(
               page,
               bldgItems[k].startBay.toString(),
@@ -1927,14 +2474,14 @@ export function usePDF() {
               formatFeetInches(bldgItems[k].height),
               356,
               currentY + textOffsetY,
-              88
+              128
             );
-            textBoldLeft(
+            drawCheckBox(
               page,
-              bldgItems[k].cutColumns.toString(),
-              510,
+              'Cut Columns',
+              486,
               currentY + textOffsetY,
-              88
+              bldgItems[k].cutColumns
             );
             if (k + 1 < bldgItems.length) {
               line(page, pageStartX, currentY, pageEndX, currentY);
@@ -1955,7 +2502,7 @@ export function usePDF() {
 
         /* Wainscots */
         bldgItems = getItemsByWall(
-          values.buildings[i].wainscots,
+          state.buildings[i].wainscots,
           'wall',
           wallsInBldg[j].id
         );
@@ -2028,15 +2575,15 @@ export function usePDF() {
               currentY + textOffsetY,
               54
             );
-            textBoldLeft(
-              page,
-              wallFinish.find(
-                (item) => item.id === bldgItems[k].wainscotPanelFinish
-              ).label,
-              356,
-              currentY + textOffsetY,
-              88
-            );
+            // textBoldLeft(
+            //   page,
+            //   wallFinish.find(
+            //     (item) => item.id === bldgItems[k].wainscotPanelFinish
+            //   ).label,
+            //   356,
+            //   currentY + textOffsetY,
+            //   88
+            // );
             textBoldLeft(
               page,
               masterColorList.find(
@@ -2065,7 +2612,7 @@ export function usePDF() {
 
         /* Wall Relite Panels */
         bldgItems = getItemsByWall(
-          values.buildings[i].wallRelites,
+          state.buildings[i].wallRelites,
           'wall',
           wallsInBldg[j].id
         );
@@ -2111,7 +2658,6 @@ export function usePDF() {
 
             textLeft(page, 'Location:', 22, currentY + textOffsetY);
             textLeft(page, 'Offset:', 316, currentY + textOffsetY);
-            textLeft(page, 'Cut Panels:', 446, currentY + textOffsetY);
             textBoldLeft(
               page,
               formatBaySpacing(bldgItems[k].location),
@@ -2124,14 +2670,14 @@ export function usePDF() {
               formatFeetInches(bldgItems[k].offset),
               356,
               currentY + textOffsetY,
-              88
+              128
             );
-            textBoldLeft(
+            drawCheckBox(
               page,
-              bldgItems[k].cutPanels.toString(),
-              500,
+              'Cut Panels',
+              486,
               currentY + textOffsetY,
-              92
+              bldgItems[k].cutPanels
             );
             if (k + 1 < bldgItems.length) {
               line(page, pageStartX, currentY, pageEndX, currentY);
@@ -2156,7 +2702,7 @@ export function usePDF() {
           wallsInBldg[j].id != 'outerRight'
         ) {
           //THIS IS TEMP
-          if (values.buildings[i].openings[`${wallsInBldg[j].id}`].length > 0) {
+          if (state.buildings[i].openings[`${wallsInBldg[j].id}`].length > 0) {
             if (currentY < pageEndY + lineHt * 2) {
               page = addPage(pageTitle, wallsInBldg[j].label + ' (cont.)');
             }
@@ -2177,12 +2723,12 @@ export function usePDF() {
 
             for (
               k = 0;
-              k < values.buildings[i].openings[`${wallsInBldg[j].id}`].length;
+              k < state.buildings[i].openings[`${wallsInBldg[j].id}`].length;
               k++
             ) {
               textBoldLeft(
                 page,
-                values.buildings[i].openings[`${wallsInBldg[j].id}`][
+                state.buildings[i].openings[`${wallsInBldg[j].id}`][
                   k
                 ].bay.toString(),
                 38,
@@ -2194,7 +2740,7 @@ export function usePDF() {
                 openingTypes.find(
                   (item) =>
                     item.id ===
-                    values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                    state.buildings[i].openings[`${wallsInBldg[j].id}`][k]
                       .openType
                 ).label,
                 80,
@@ -2202,13 +2748,13 @@ export function usePDF() {
                 146
               );
               if (
-                values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                state.buildings[i].openings[`${wallsInBldg[j].id}`][k]
                   .openType != 'openbay'
               ) {
                 textBoldLeft(
                   page,
                   formatFeetInches(
-                    values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                    state.buildings[i].openings[`${wallsInBldg[j].id}`][k]
                       .offset
                   ),
                   228,
@@ -2218,8 +2764,7 @@ export function usePDF() {
                 textBoldLeft(
                   page,
                   formatFeetInches(
-                    values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
-                      .width
+                    state.buildings[i].openings[`${wallsInBldg[j].id}`][k].width
                   ),
                   316,
                   currentY + textOffsetY,
@@ -2228,7 +2773,7 @@ export function usePDF() {
                 textBoldLeft(
                   page,
                   formatFeetInches(
-                    values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                    state.buildings[i].openings[`${wallsInBldg[j].id}`][k]
                       .height
                   ),
                   404,
@@ -2237,16 +2782,16 @@ export function usePDF() {
                 );
                 textBoldLeft(
                   page,
-                  values.buildings[i].openings[`${wallsInBldg[j].id}`][k].sill >
+                  state.buildings[i].openings[`${wallsInBldg[j].id}`][k].sill >
                     0 ||
-                    values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                    state.buildings[i].openings[`${wallsInBldg[j].id}`][k]
                       .openType == 'window' ||
-                    values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                    state.buildings[i].openings[`${wallsInBldg[j].id}`][k]
                       .openType == 'commericalwindow' ||
-                    values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                    state.buildings[i].openings[`${wallsInBldg[j].id}`][k]
                       .openType == 'louver'
                     ? formatFeetInches(
-                        values.buildings[i].openings[`${wallsInBldg[j].id}`][k]
+                        state.buildings[i].openings[`${wallsInBldg[j].id}`][k]
                           .sill
                       )
                     : '',
@@ -2257,7 +2802,7 @@ export function usePDF() {
               }
               if (
                 k + 1 <
-                values.buildings[i].openings[`${wallsInBldg[j].id}`].length
+                state.buildings[i].openings[`${wallsInBldg[j].id}`].length
               ) {
                 lineThin(
                   page,
@@ -2346,19 +2891,31 @@ export function usePDF() {
     if (pages.length > 0) {
       textBoldCenter(pages[0], 'TOTAL PAGES: ' + pages.length, 306, 762.5);
 
-      if (values.buildings.length > 1) {
+      if (state.buildings.length > 1) {
         for (i = 0; i < bldgPageNums.length; i++) {
-          textSmallBoldLeft(
-            pages[bldgPageNums[i].currentPage],
-            'Information for Building ' +
-              String.fromCharCode(i + 65) +
-              ' is found on pages ' +
-              bldgPageNums[i].pageStart +
-              ' to ' +
-              bldgPageNums[i].pageEnd,
-            90,
-            bldgPageNums[i].currentLine + textOffsetY
-          );
+          if (bldgPageNums[i].pageStart == bldgPageNums[i].pageEnd) {
+            textSmallBoldLeft(
+              pages[bldgPageNums[i].currentPage],
+              'Information for Building ' +
+                String.fromCharCode(i + 65) +
+                ' is found on page ' +
+                bldgPageNums[i].pageStart,
+              90,
+              bldgPageNums[i].currentLine + textOffsetY
+            );
+          } else {
+            textSmallBoldLeft(
+              pages[bldgPageNums[i].currentPage],
+              'Information for Building ' +
+                String.fromCharCode(i + 65) +
+                ' is found on pages ' +
+                bldgPageNums[i].pageStart +
+                ' to ' +
+                bldgPageNums[i].pageEnd,
+              90,
+              bldgPageNums[i].currentLine + textOffsetY
+            );
+          }
         }
       }
 
