@@ -46,6 +46,7 @@ import {
   wallsOuterRight,
   wallsOuterBoth,
 } from '../util/dropdownOptions';
+import { jsx } from 'react/jsx-runtime';
 
 export function usePDF() {
   const formatFeetInches = (decimal) => {
@@ -853,7 +854,7 @@ export function usePDF() {
       bldgItems = whatInBldg(state.buildings[i]);
       // Add to next page if section does not fit on page
       if (startY < pageEndY + lineHt * (6 + Math.ceil(bldgItems.length / 3))) {
-        page = addPage('', 'Project Definition (cont.)');
+        page = addPage('', 'Project Information (cont.)');
       }
 
       currentY = startY - lineHt;
@@ -1138,6 +1139,33 @@ export function usePDF() {
 
     i = 0;
     // Custom Notes
+    if (state.buildings.length == 1) {
+      state.notes
+        .filter((notes) => notes.building === 'Building A')
+        .map((note) => {
+          textCenter(page, (++i).toString() + '.', 34, currentY + textOffsetY);
+
+          let lines = wrapText(note.text, 548, stdFont, stdFontSize);
+          let numLines = 0;
+          for (const line of lines) {
+            page.drawText(line, {
+              x: 46,
+              y: currentY + textOffsetY,
+              size: stdFontSize,
+              font: stdFont,
+            });
+            numLines++;
+            lineThin(page, pageStartX, currentY, pageEndX, currentY);
+            currentY -= lineHt;
+
+            if (currentY < pageEndY) {
+              page = addPage('', '', 'PROJECT NOTES (cont.)');
+              numLines = 0;
+            }
+          }
+        });
+    }
+
     state.notes
       .filter((notes) => notes.building === 'Project')
       .map((note) => {
@@ -1345,8 +1373,139 @@ export function usePDF() {
           ? 'Building ' + String.fromCharCode(i + 65)
           : '';
 
+      page = addPage(pageTitle, 'Building Information', '');
+
+      /* Building Code Override per Building */
+      if (
+        state.collateralLoad != state.buildings[i].collateralLoad ||
+        state.liveLoad != state.buildings[i].liveLoad ||
+        state.deadLoad != state.buildings[i].deadLoad ||
+        state.windEnclosure != state.buildings[i].windEnclosure ||
+        state.roofSnowLoad != state.buildings[i].roofSnowLoad ||
+        state.thermalFactor != state.buildings[i].thermalFactor
+      ) {
+        addSection(page, currentY);
+        textBoldLeft(page, 'DESIGN CODES:', 22, currentY + textOffsetY);
+        textSmallBoldLeft(
+          page,
+          'Note: The below load adjustments apply to this building only.',
+          110,
+          currentY + textOffsetY
+        );
+        line(page, pageStartX, currentY, pageEndX, currentY);
+        startY = currentY;
+        currentY -= lineHt;
+
+        if (
+          state.collateralLoad != state.buildings[i].collateralLoad ||
+          state.liveLoad != state.buildings[i].liveLoad ||
+          state.deadLoad != state.buildings[i].deadLoad
+        ) {
+          textItalicRight(page, 'Roof Code', 96, currentY + textOffsetY);
+
+          if (state.collateralLoad != state.buildings[i].collateralLoad) {
+            textLeft(page, 'Collateral Load:', 104, currentY + textOffsetY);
+            textBoldLeft(
+              page,
+              state.buildings[i].collateralLoad + ' psf',
+              178,
+              currentY + textOffsetY,
+              86
+            );
+          }
+
+          if (state.liveLoad != state.buildings[i].liveLoad) {
+            textLeft(page, 'Live Load:', 266, currentY + textOffsetY);
+            textBoldLeft(
+              page,
+              state.buildings[i].liveLoad + ' psf',
+              330,
+              currentY + textOffsetY,
+              96
+            );
+          }
+
+          if (state.deadLoad != state.buildings[i].deadLoad) {
+            textLeft(page, 'Dead Load:', 428, currentY + textOffsetY);
+            textBoldLeft(
+              page,
+              state.buildings[i].deadLoad + ' psf',
+              500,
+              currentY + textOffsetY,
+              92
+            );
+          }
+
+          lineThin(page, pageStartX, currentY, pageEndX, currentY);
+          currentY -= lineHt;
+        }
+
+        if (state.windEnclosure != state.buildings[i].windEnclosure) {
+          textItalicRight(page, 'Wind Load', 96, currentY + textOffsetY);
+
+          if (state.windEnclosure != state.buildings[i].windEnclosure) {
+            textLeft(page, 'Enclosure:', 428, currentY + textOffsetY);
+            textBoldLeft(
+              page,
+              enclosure.find(
+                (item) => item.id === state.buildings[i].windEnclosure
+              ).label,
+              500,
+              currentY + textOffsetY,
+              92
+            );
+          }
+
+          lineThin(page, pageStartX, currentY, pageEndX, currentY);
+          currentY -= lineHt;
+        }
+
+        if (
+          state.roofSnowLoad != state.buildings[i].roofSnowLoad ||
+          state.thermalFactor != state.buildings[i].thermalFactor
+        ) {
+          textItalicRight(page, 'Snow Load', 96, currentY + textOffsetY);
+
+          if (state.roofSnowLoad != state.buildings[i].roofSnowLoad) {
+            textLeft(page, 'Roof Snow:', 266, currentY + textOffsetY);
+            textBoldLeft(
+              page,
+              state.buildings[i].roofSnowLoad + ' psf',
+              330,
+              currentY + textOffsetY,
+              96
+            );
+          }
+
+          if (state.thermalFactor != state.buildings[i].thermalFactor) {
+            textLeft(page, 'Thermal Factor:', 428, currentY + textOffsetY);
+            textBoldLeft(
+              page,
+              thermalFactor.find(
+                (item) => item.id === state.buildings[i].thermalFactor
+              ).label,
+              500,
+              currentY + textOffsetY,
+              92
+            );
+          }
+
+          lineThin(page, pageStartX, currentY, pageEndX, currentY);
+          currentY -= lineHt;
+        }
+
+        currentY += lineHt;
+        lineThick(page, pageStartX, currentY, pageEndX, currentY);
+        line(page, 100, startY, 100, currentY);
+        currentY -= lineHt;
+        startY = currentY;
+      }
+
       /* Frame Section */
-      page = addPage(pageTitle, 'Frame Definition', 'FRAMING DATA:');
+      addSection(page, currentY);
+      textBoldLeft(page, 'FRAMING DATA:', 22, currentY + textOffsetY);
+      line(page, pageStartX, currentY, pageEndX, currentY);
+      currentY -= lineHt;
 
       textLeft(page, 'Frame Type:', 22, currentY + textOffsetY);
       if (state.buildings[i].frameType == 'multiSpan') {
@@ -1447,6 +1606,52 @@ export function usePDF() {
       lineThick(page, pageStartX, currentY, pageEndX, currentY);
       currentY -= lineHt;
 
+      /* Custom Building Notes */
+      j = 0;
+      startY = currentY;
+      if (state.buildings.length > 1) {
+        state.notes
+          .filter((notes) => notes.building === pageTitle)
+          .map((note) => {
+            currentY -= j == 0 ? lineHt : 0;
+            textCenter(
+              page,
+              (++j).toString() + '.',
+              34,
+              currentY + textOffsetY
+            );
+
+            let lines = wrapText(note.text, 548, stdFont, stdFontSize);
+            let numLines = 0;
+            for (const line of lines) {
+              page.drawText(line, {
+                x: 46,
+                y: currentY + textOffsetY,
+                size: stdFontSize,
+                font: stdFont,
+              });
+              numLines++;
+              lineThin(page, pageStartX, currentY, pageEndX, currentY);
+              currentY -= lineHt;
+
+              if (currentY < pageEndY) {
+                page = addPage('', '', 'BUILDING NOTES (cont.)');
+                numLines = 0;
+              }
+            }
+          });
+        if (j > 0) {
+          addSection(page, startY);
+          textBoldLeft(page, 'BUILDING NOTES:', 22, startY + textOffsetY);
+          line(page, pageStartX, startY, pageEndX, startY);
+
+          currentY += lineHt;
+          lineThick(page, pageStartX, currentY, pageEndX, currentY);
+          currentY -= lineHt;
+          startY = currentY;
+        }
+      }
+
       /* Roof Section */
       wallsInBldg =
         state.buildings[i].shape == 'singleSlope' ||
@@ -1455,10 +1660,10 @@ export function usePDF() {
           : roofs;
 
       if (currentY < pageEndY + lineHt * 8) {
-        page = addPage(pageTitle, 'Roof Definition', '');
+        page = addPage(pageTitle, 'Roof', '');
       } else {
         currentY -= lineHt;
-        textBoldCenter(page, 'Roof Definition', 306, currentY + textOffsetY);
+        textBoldCenter(page, 'Roof', 306, currentY + textOffsetY);
         lineThick(page, pageStartX, currentY, pageEndX, currentY);
         currentY -= lineHt;
       }
@@ -1467,7 +1672,7 @@ export function usePDF() {
       textBoldLeft(page, 'BASIC INFORMATION:', 22, currentY + textOffsetY);
       line(page, pageStartX, currentY, pageEndX, currentY);
       currentY -= lineHt;
-      //      page = addPage(pageTitle, 'Roof Definition', 'BASIC INFORMATION:');
+      // page = addPage(pageTitle, 'Roof', 'BASIC INFORMATION:');
 
       textLeft(page, 'Bay Spacing:', 22, currentY + textOffsetY);
       textBoldLeft(
@@ -1705,7 +1910,7 @@ export function usePDF() {
       );
       if (bldgItems.length > 0) {
         if (currentY < pageEndY + lineHt * 2) {
-          page = addPage(pageTitle, 'Roof Definition' + ' (cont.)');
+          page = addPage(pageTitle, 'Roof' + ' (cont.)');
         }
 
         addSection(page, currentY);
@@ -1780,11 +1985,7 @@ export function usePDF() {
           }
 
           if (currentY < pageEndY + lineHt * 1) {
-            page = addPage(
-              pageTitle,
-              'Roof Definition (cont.)',
-              'LINER PANELS: (cont.)'
-            );
+            page = addPage(pageTitle, 'Roof (cont.)', 'LINER PANELS: (cont.)');
           }
         }
         lineThick(page, pageStartX, currentY, pageEndX, currentY);
@@ -1794,7 +1995,7 @@ export function usePDF() {
       /* Roof Relite Panels */
       if (state.buildings[i].roofRelites.length > 0) {
         if (currentY < pageEndY + lineHt * 2) {
-          page = addPage(pageTitle, 'Roof Definition (cont.)');
+          page = addPage(pageTitle, 'Roof (cont.)');
         }
 
         addSection(page, currentY);
@@ -1883,7 +2084,7 @@ export function usePDF() {
               if (currentY < pageEndY + lineHt * 1) {
                 page = addPage(
                   pageTitle,
-                  'Roof Definition (cont.)',
+                  'Roof (cont.)',
                   'ROOF RELITES: (cont.)'
                 );
               }
