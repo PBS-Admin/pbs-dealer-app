@@ -155,6 +155,8 @@ function buildingReducer(state, action) {
           updatedState.buildings = updatedBuildings;
         }
       } else {
+        console.log('hit update: ', name);
+
         // Handle numeric fields
         const newValue = [
           'thermalFactor',

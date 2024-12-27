@@ -157,6 +157,7 @@ export default function QuoteTableEst() {
   }, [quotes, activeTabKey]);
 
   const renderEstTable = (filteredQuotes) => {
+    console.log(filteredQuotes);
     return (
       <table>
         <thead>

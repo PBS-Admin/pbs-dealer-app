@@ -29,7 +29,7 @@ export const initialState = {
   seismicDeflection: 65,
   snowFactor: 1.0,
   // Design Code Page
-  buildingCode: 'ibc18',
+  buildingCode: 'ibc21',
   riskCategory: 'II',
   collateralLoad: 1.0,
   liveLoad: 20.0,
@@ -880,6 +880,279 @@ export const complexityRules = [
     condition: (state) => state.buildings.length > 1,
     desc: `Quote contains multiple buildings`,
     complexity: 3,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'nextExisting',
+    condition: (state) => state.addItemExtBldg,
+    desc: `Next to an existing building`,
+    complexity: 3,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'partitionOthers',
+    condition: (state) => state.addItemPartWalls,
+    desc: `Partition walls by others`,
+    complexity: 3,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  // * Complexity 4 Rules
+  {
+    id: 'roofOpenings',
+    condition: (state) => state.addItemRoofOpenings,
+    desc: `Has roof openings`,
+    complexity: 4,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'kingspanPanels',
+    condition: (state) =>
+      state.buildings.some(
+        (b) =>
+          b.frontWallPanelType == 'kingSeam' ||
+          b.backWallPanelType == 'kingSeam' ||
+          b.outerLeftWallPanelType == 'kingSeam' ||
+          b.leftWallPanelType == 'kingSeam' ||
+          b.rightWallPanelType == 'kingSeam' ||
+          b.outerRightWallPanelType == 'kingSeam'
+      ),
+    desc: `Building includes King Span insulated panels`,
+    complexity: 4,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'insulatedOthers',
+    condition: (state) =>
+      state.buildings.some(
+        (b) =>
+          b.frontWallPanelType == 'insulatedOthers' ||
+          b.backWallPanelType == 'insulatedOthers' ||
+          b.outerLeftWallPanelType == 'insulatedOthers' ||
+          b.leftWallPanelType == 'insulatedOthers' ||
+          b.rightWallPanelType == 'insulatedOthers' ||
+          b.outerRightWallPanelType == 'insulatedOthers'
+      ),
+    desc: `Building includes insulated panels by others`,
+    complexity: 4,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'stepElevations',
+    condition: (state) => state.addItemStepElev,
+    desc: `Has step elevations`,
+    complexity: 4,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  // * Complexity 5 Rules
+  {
+    id: 'simpleMezz',
+    condition: (state) => state.mezzSimple,
+    desc: `Has simple mezzanine`,
+    complexity: 5,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'horizPanels',
+    condition: (state) => state.addItemHorizPanels,
+    desc: `Has horizontal panels`,
+    complexity: 5,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  // * Complexity 6 Rules
+  {
+    id: 'parapet',
+    condition: (state) => state.addItemParapetWalls,
+    desc: `Has parapet walls`,
+    complexity: 6,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  // * Complexity 7 Rules
+  {
+    id: 'facia',
+    condition: (state) => state.addItemFaciaWalls,
+    desc: `Has facia walls`,
+    complexity: 7,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'bumpout',
+    condition: (state) => state.addItemBumpoutWalls,
+    desc: `Has bumpout walls`,
+    complexity: 7,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'simpleCarrier',
+    condition: (state) => state.otherCarrierBms,
+    desc: `Has simple carrier beams`,
+    complexity: 7,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'lMezz',
+    condition: (state) => state.mezzLShape,
+    desc: `Has L shaped mezzanine`,
+    complexity: 7,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'fixedBase',
+    condition: (state) => state.otherWeakAxis,
+    desc: `Has fixed base columns with weak-axis bending`,
+    complexity: 7,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  // * Complexity 8 Rules
+  {
+    id: 'skewedEnd',
+    condition: (state) => state.otherSkewedEndwall,
+    desc: `Has skewed wall at the endwall`,
+    complexity: 8,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'cupolas',
+    condition: (state) => state.addItemCupolas,
+    desc: `Has cupolas`,
+    complexity: 8,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'portalCarrier',
+    condition: (state) => state.otherPortalCarrier,
+    desc: `Has portal carrier beams`,
+    complexity: 8,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'jibCranes',
+    condition: (state) => state.craneJib,
+    desc: `Has jib cranes`,
+    complexity: 8,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  // * Complexity 9 Rules
+  {
+    id: 'skewedSide',
+    condition: (state) => state.otherSkewedSidewall,
+    desc: `Has skewed wall at the sidewall`,
+    complexity: 9,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'clearstory',
+    condition: (state) => state.addItemClearstory,
+    desc: `Has clearstory`,
+    complexity: 9,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'clearstory',
+    condition: (state) => state.otherNonStdCarrier,
+    desc: `Has non-standard carrier beams`,
+    complexity: 9,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'seedStorage',
+    condition: (state) => state.otherBulkStorageSeeds,
+    desc: `Bulk storage for seeds`,
+    complexity: 9,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'hipValley',
+    condition: (state) => state.addItemHipValley,
+    desc: `Has hip/valley roof condition`,
+    complexity: 9,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  // * Complexity 10 Rules
+  {
+    id: 'barJoists',
+    condition: (state) => state.otherBarJoists,
+    desc: `Has bar joists`,
+    complexity: 10,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'bulkStorage',
+    condition: (state) => state.otherBulkStorage,
+    desc: `Has bulk storage for potatoes/onions`,
+    complexity: 10,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'craneStep',
+    condition: (state) => state.craneStepCols,
+    desc: `Has step columns for cranes over 20 tons`,
+    complexity: 10,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'gambrelRoof',
+    condition: (state) => state.addItemGambrelRoof,
+    desc: `Has gambrel roof (Special shape)`,
+    complexity: 10,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'nonStandardSpecs',
+    condition: (state) => state.otherNonStdSpecs,
+    desc: `Has non-standard project specs`,
+    complexity: 10,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'thangar',
+    condition: (state) => state.tHangar,
+    desc: `Has T-hangar`,
+    complexity: 10,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'concreteTilt',
+    condition: (state) => state.addItemTiltUpWalls,
+    desc: `Has concrete tilt up walls`,
+    complexity: 10,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'loadsByOthers',
+    condition: (state) => state.otherLoadsByOthers,
+    desc: `Has loads by others on PBS building`,
+    complexity: 10,
     engAdd: 0,
     detAdd: 0,
   },

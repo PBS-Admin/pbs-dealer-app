@@ -2,23 +2,30 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { useThreeSetup } from '../hooks/useThreeSetup';
 import { createBuilding, addBayLines, addBraceLines } from './BuildingUtils';
+import { useBuildingContext } from '@/contexts/BuildingContext';
+import { useUIContext } from '@/contexts/UIContext';
 
-const BuildingSketch = ({ buildingData, backgroundColor = 0xf5f5f5 }) => {
+const BuildingSketch = () => {
+  const backgroundColor = 0xf5f5f5;
   const mountRef = useRef(null);
   const canvasRef = useRef(null);
   const updateCountRef = useRef(0);
   const [currentView, setCurrentView] = useState('ISO');
+  const { state } = useBuildingContext();
+  const { activeBuilding } = useUIContext();
   const { scene, camera, renderer, controls, isSetup, updateCameraPosition } =
     useThreeSetup(
       mountRef,
       backgroundColor,
       {
-        width: buildingData.width,
-        length: buildingData.length,
-        height: buildingData.backEaveHeight,
+        width: state.buildings[activeBuilding].width,
+        length: state.buildings[activeBuilding].length,
+        height: state.buildings[activeBuilding].backEaveHeight,
       },
       currentView
     );
+
+  console.log(state.projectName);
 
   const updateBuilding = useCallback(() => {
     updateCountRef.current++;
@@ -41,8 +48,9 @@ const BuildingSketch = ({ buildingData, backgroundColor = 0xf5f5f5 }) => {
     axesHelper.name = 'axesHelper';
     scene.add(axesHelper);
 
-    const { building, roof, buildingLines, roofLines } =
-      createBuilding(buildingData);
+    const { building, roof, buildingLines, roofLines } = createBuilding(
+      state.buildings[activeBuilding]
+    );
 
     // Assign names to the objects for easier identification
     building.name = 'building';
@@ -53,75 +61,75 @@ const BuildingSketch = ({ buildingData, backgroundColor = 0xf5f5f5 }) => {
     scene.add(building, roof, buildingLines, roofLines);
 
     addBayLines(
-      buildingData.leftBaySpacing,
+      state.buildings[activeBuilding].leftBaySpacing,
       'leftEndwall',
       scene,
-      buildingData
+      state.buildings[activeBuilding]
     );
     addBayLines(
-      buildingData.rightBaySpacing,
+      state.buildings[activeBuilding].rightBaySpacing,
       'rightEndwall',
       scene,
-      buildingData
+      state.buildings[activeBuilding]
     );
     addBayLines(
-      buildingData.roofBaySpacing,
+      state.buildings[activeBuilding].roofBaySpacing,
       'frontSidewall',
       scene,
-      buildingData
+      state.buildings[activeBuilding]
     );
 
     addBraceLines(
-      buildingData.frontBaySpacing,
-      buildingData.frontBracedBays,
+      state.buildings[activeBuilding].frontBaySpacing,
+      state.buildings[activeBuilding].frontBracedBays,
       'frontSidewall',
       scene,
-      buildingData
+      state.buildings[activeBuilding]
     );
 
     addBraceLines(
-      buildingData.backBaySpacing,
-      buildingData.backBracedBays,
+      state.buildings[activeBuilding].backBaySpacing,
+      state.buildings[activeBuilding].backBracedBays,
       'backSidewall',
       scene,
-      buildingData
+      state.buildings[activeBuilding]
     );
 
     addBraceLines(
-      buildingData.leftBaySpacing,
-      buildingData.leftBracedBays,
+      state.buildings[activeBuilding].leftBaySpacing,
+      state.buildings[activeBuilding].leftBracedBays,
       'leftEndwall',
       scene,
-      buildingData
+      state.buildings[activeBuilding]
     );
 
     addBraceLines(
-      buildingData.rightBaySpacing,
-      buildingData.rightBracedBays,
+      state.buildings[activeBuilding].rightBaySpacing,
+      state.buildings[activeBuilding].rightBracedBays,
       'rightEndwall',
       scene,
-      buildingData
+      state.buildings[activeBuilding]
     );
 
     addBraceLines(
-      buildingData.roofBaySpacing,
-      buildingData.roofBracedBays,
+      state.buildings[activeBuilding].roofBaySpacing,
+      state.buildings[activeBuilding].roofBracedBays,
       'roof',
       scene,
-      buildingData
+      state.buildings[activeBuilding]
     );
 
     // Render the scene
     if (renderer && camera) {
       renderer.render(scene, camera);
     }
-  }, [buildingData, isSetup, scene, renderer, camera]);
+  }, [state.buildings[activeBuilding], isSetup, scene, renderer, camera]);
 
   useEffect(() => {
     if (isSetup) {
       updateBuilding();
     }
-  }, [buildingData, isSetup, updateBuilding]);
+  }, [state.buildings[activeBuilding], isSetup, updateBuilding]);
 
   useEffect(() => {
     if (isSetup) {

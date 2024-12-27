@@ -131,6 +131,7 @@ const QuoteClient = () => {
         projectManager: state.projectManager,
         estimator: state.estimator,
         checker: state.checker,
+        complexity: complexityInfo?.complexity || 1,
       };
 
       const response = await fetch('/api/auth/save', {
@@ -282,9 +283,7 @@ const QuoteClient = () => {
               </header>
 
               <div className={styles.sketch}>
-                <BuildingSketch
-                  buildingData={state.buildings[activeBuilding]}
-                />
+                <BuildingSketch />
               </div>
             </section>
           )}
@@ -341,9 +340,7 @@ const QuoteClient = () => {
               </header>
 
               <div className={styles.sketch}>
-                <BuildingSketch
-                  buildingData={state.buildings[activeBuilding]}
-                />
+                <BuildingSketch />
               </div>
             </section>
           )}

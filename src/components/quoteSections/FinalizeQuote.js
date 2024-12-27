@@ -22,7 +22,8 @@ const FinalizeQuote = ({ locked }) => {
     },
   });
   // Contexts
-  const { state, handleChange, setValues } = useBuildingContext();
+  const { state, handleChange, complexityInfo, setValues } =
+    useBuildingContext();
   const {
     companyData,
     rsms,
@@ -195,6 +196,7 @@ const FinalizeQuote = ({ locked }) => {
           projectManager: state.projectManager,
           estimator: state.estimator,
           checker: state.checker,
+          complexity: complexityInfo?.complexity || 1,
         };
 
         const response = await fetch('/api/auth/save', {
@@ -240,6 +242,7 @@ const FinalizeQuote = ({ locked }) => {
         projectManager: state.projectManager,
         estimator: state.estimator,
         checker: state.checker,
+        complexity: complexityInfo?.complexity || 1,
       };
 
       const response = await fetch('/api/auth/save', {
@@ -274,6 +277,7 @@ const FinalizeQuote = ({ locked }) => {
         projectManager: state.projectManager,
         estimator: state.estimator,
         checker: state.checker,
+        complexity: complexityInfo?.complexity || 1,
       };
 
       const response = await fetch('/api/auth/save', {
@@ -311,6 +315,7 @@ const FinalizeQuote = ({ locked }) => {
         projectManager: state.projectManager,
         estimator: state.estimator,
         checker: state.checker,
+        complexity: complexityInfo?.complexity || 1,
       };
 
       const response = await fetch('/api/auth/save', {

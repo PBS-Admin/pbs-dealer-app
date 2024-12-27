@@ -1,5 +1,6 @@
 'use client';
 
+import { useBuildingContext } from '@/contexts/BuildingContext';
 import { useState, useCallback } from 'react';
 
 export function useExport() {
@@ -7,6 +8,13 @@ export function useExport() {
   const [isExporting, setIsExporting] = useState(false);
   const bldgAlpha = ' BCDEFGHI';
   let folderPaths = [];
+  const { state, complexityInfo } = useBuildingContext();
+
+  // ! Eng/Draft rates and minimums
+  let engRate = 80;
+  let detRate = 20;
+  let engMin = 0;
+  let detMin = 20;
 
   const countFiles = async (dirHandle) => {
     let count = 0;
@@ -18,7 +26,7 @@ export function useExport() {
     return count;
   };
 
-  const createFolderAndFiles = useCallback(async (values) => {
+  const createFolderAndFiles = useCallback(async () => {
     if (typeof window === 'undefined' || !('showDirectoryPicker' in window)) {
       setStatus('File System Access API is not supported in this environment.');
       const res = { success: false, folder: '' };
@@ -80,8 +88,8 @@ export function useExport() {
       let newProjectHandle, rootHandle, newBuildingHandle, shouldCreate;
 
       // Create a new Project folder in the Jobs folder
-      if (values.buildings.length > 1) {
-        const newProjectName = values.quoteNumber + 'P' || 'New Project Folder';
+      if (state.buildings.length > 1) {
+        const newProjectName = state.quoteNumber + 'P' || 'New Project Folder';
         newProjectHandle = await jobsFolderHandle.getDirectoryHandle(
           newProjectName,
           { create: true }
@@ -94,19 +102,19 @@ export function useExport() {
 
       // Create Folder Structure
       setStatus('Creating Folders...');
-      values.buildings.map(async (building, index) => {
+      state.buildings.map(async (building, index) => {
         newBuildingHandle ? (shouldCreate = false) : (shouldCreate = true);
 
         newBuildingHandle = await rootHandle.getDirectoryHandle(
-          values.quoteNumber + bldgAlpha[index].trim(),
+          state.quoteNumber + bldgAlpha[index].trim(),
           {
             create: shouldCreate,
           }
         );
         if (
-          !folderPaths.includes(values.quoteNumber + bldgAlpha[index].trim())
+          !folderPaths.includes(state.quoteNumber + bldgAlpha[index].trim())
         ) {
-          folderPaths.push(values.quoteNumber + bldgAlpha[index].trim());
+          folderPaths.push(state.quoteNumber + bldgAlpha[index].trim());
         }
       });
 
@@ -116,7 +124,6 @@ export function useExport() {
         countFiles,
         siz2FolderHandle,
         newProjectHandle,
-        values,
         newBuildingHandle,
         rootHandle
       );
@@ -189,11 +196,11 @@ export function useExport() {
             await newCommonWritable.close();
           }
 
-          values.buildings.map(async (building, index) => {
+          state.buildings.map(async (building, index) => {
             newBuildingHandle ? (shouldCreate = false) : (shouldCreate = true);
 
             newBuildingHandle = await rootHandle.getDirectoryHandle(
-              values.quoteNumber + bldgAlpha[index].trim(),
+              state.quoteNumber + bldgAlpha[index].trim(),
               {
                 create: shouldCreate,
               }
@@ -224,18 +231,18 @@ export function useExport() {
         const writable = await projectInHandle.createWritable();
 
         await writable.write('[PROJECT]\n');
-        await writable.write(`Id=${values.quoteNumber + 'P'}\n`);
-        await writable.write(`#Building=${values.buildings.length}\n`);
+        await writable.write(`Id=${state.quoteNumber + 'P'}\n`);
+        await writable.write(`#Building=${state.buildings.length}\n`);
         await writable.write('Units=\n');
         await writable.write('Status=\n');
         await writable.write('Title=\n');
         await writable.write('Comments=\n');
-        await writable.write(`NextIdKey=${values.buildings.length + 1}\n`);
+        await writable.write(`NextIdKey=${state.buildings.length + 1}\n`);
 
-        for (let index = 0; index < values.buildings.length; index++) {
+        for (let index = 0; index < state.buildings.length; index++) {
           await writable.write(`[BUILDING:${index + 1}]\n`);
           await writable.write(
-            `Id=${values.quoteNumber + bldgAlpha[index].trim()}\n`
+            `Id=${state.quoteNumber + bldgAlpha[index].trim()}\n`
           );
           await writable.write(`IdKey=${index + 1}\n`);
           await writable.write('Active=Y\n');
@@ -247,9 +254,9 @@ export function useExport() {
       // Create and write to MBS.in file in the new folder
       setStatus('Creating MBS.in file...');
 
-      for (let index = 0; index < values.buildings.length; index++) {
+      for (let index = 0; index < state.buildings.length; index++) {
         newBuildingHandle = await rootHandle.getDirectoryHandle(
-          values.quoteNumber + bldgAlpha[index].trim(),
+          state.quoteNumber + bldgAlpha[index].trim(),
           {
             create: false,
           }
@@ -259,13 +266,13 @@ export function useExport() {
         );
 
         // Loop through buildings and create these files
-        await createDesCtrl(rootHandle, values, index);
+        await createDesCtrl(rootHandle, index);
 
-        await createDesLoad(rootHandle, values, index);
+        await createDesLoad(rootHandle, index);
 
-        await createMBS(rootHandle, values, values.buildings[index], index);
+        await createMBS(rootHandle, index);
 
-        await createBldCtrl(rootHandle, values, index);
+        await createBldCtrl(rootHandle, index);
       }
 
       if (newProjectHandle) {
@@ -273,7 +280,7 @@ export function useExport() {
         const newMbsInHandle = await newProjectHandle.getFileHandle('MBS.in', {
           create: true,
         });
-        const mbsFile = await createMBS(rootHandle, values);
+        const mbsFile = await createMBS(rootHandle);
         const writable = await newMbsInHandle.createWritable();
         await writable.write(mbsFile);
         await writable.close();
@@ -310,7 +317,6 @@ export function useExport() {
     countFiles,
     siz2FolderHandle,
     newProjectHandle,
-    values,
     newBuildingHandle,
     rootHandle
   ) {
@@ -337,9 +343,9 @@ export function useExport() {
           await newCommonWritable.close();
         }
 
-        values.buildings.map(async (building, index) => {
+        state.buildings.map(async (building, index) => {
           newBuildingHandle = await rootHandle.getDirectoryHandle(
-            values.quoteNumber + bldgAlpha[index].trim(),
+            state.quoteNumber + bldgAlpha[index].trim(),
             {
               create: false,
             }
@@ -359,9 +365,9 @@ export function useExport() {
     }
   }
 
-  async function createMBS(rootHandle, values, building = {}, index = 0) {
+  async function createMBS(rootHandle, index = 0) {
     const newBuildingHandle = await rootHandle.getDirectoryHandle(
-      values.quoteNumber + bldgAlpha[index].trim(),
+      state.quoteNumber + bldgAlpha[index].trim(),
       {
         create: false,
       }
@@ -371,51 +377,51 @@ export function useExport() {
       create: true,
     });
 
-    const { length, roofBreakPoints, steelFinish } = building;
+    const { length, roofBreakPoints, steelFinish } = state.buildings[index];
+    const { complexity, detailingHours, engineeringHours } = complexityInfo;
 
-    let draftCost, foundCost, farmBureau;
+    let draftCost, foundCost, farmBureau, engHours, detHours;
 
-    if (values.buildings.length > 1) {
-      draftCost = '2000';
-      foundCost =
-        values.monoSlabDesign || values.pierFootingDesign ? '2000' : '';
-    } else {
-      draftCost = '1600';
-      foundCost =
-        values.monoSlabDesign || values.pierFootingDesign ? '1500' : '';
-    }
+    // Compare hours against the minimum
+    engHours = engineeringHours < engMin ? engMin : engineeringHours;
+    detHours = detailingHours < detMin ? detMin : detailingHours;
+    draftCost = engHours * engRate + detHours * detRate;
+    foundCost =
+      state.monoSlabDesign || state.pierFootingDesign
+        ? complexity < 3
+          ? '1500'
+          : '2000'
+        : '';
 
     const writable = await mbsInHandle.createWritable();
     await writable.write(`Pacific Building Systems\n`);
     await writable.write(`2100 N Pacific Hwy\n`);
     await writable.write(`Woodburn, OR 97071\n`);
     await writable.write(
-      `${values.customerName ? values.customerName : values.contactName}\n`
+      `${state.customerName ? state.customerName : state.contactName}\n`
     );
-    await writable.write(`${values.customerAddress}\n`);
+    await writable.write(`${state.customerAddress}\n`);
     await writable.write(
-      `${values.customerCity}, ${values.customerState} ${values.customerZip}\n`
+      `${state.customerCity}, ${state.customerState} ${state.customerZip}\n`
     );
-    await writable.write(`${values.projectName}\n`);
-    await writable.write(`${values.projectAddress}\n`);
+    await writable.write(`${state.projectName}\n`);
+    await writable.write(`${state.projectAddress}\n`);
     await writable.write(
-      `${values.projectCity}, ${values.projectState} ${values.projectZip}\n`
+      `${state.projectCity}, ${state.projectState} ${state.projectZip}\n`
     );
-    await writable.write(`${values.quoteNumber}\n`);
-    await writable.write(`${values.engineerInitials || 'TEE'}\n`); // todo: create var
-    await writable.write(`${values.detailerInitials || 'TEE'}\n`); // todo: create var
+    await writable.write(`${state.quoteNumber}\n`);
+    await writable.write(`${state.engineerInitials || 'TEE'}\n`); // todo: create var
+    await writable.write(`${state.detailerInitials || 'TEE'}\n`); // todo: create var
     await writable.write(`\n`);
-    await writable.write(`${values.contactName}\n`);
-    await writable.write(`${values.customerPhone}\n`);
-    await writable.write(`${values.customerFax}\n`);
-    await writable.write(`${values.projectCity}\n`);
-    await writable.write(`${values.projectCounty}\n`);
-    await writable.write(`${values.projectState}\n`);
-    await writable.write(`${values.salespersonInitials || 'TEE'}\n`); // todo: create var
-    await writable.write(`${values.quoteNumber}\n`);
-    await writable.write(`${values.estimatorInitials || 'TEE'}\n`); // todo: create var
-    await writable.write(`\n`);
-    await writable.write(`\n`);
+    await writable.write(`${state.contactName}\n`);
+    await writable.write(`${state.customerPhone}\n`);
+    await writable.write(`${state.customerFax}\n`);
+    await writable.write(`${state.projectCity}\n`);
+    await writable.write(`${state.projectCounty}\n`);
+    await writable.write(`${state.projectState}\n`);
+    await writable.write(`${state.salespersonInitials || 'TEE'}\n`); // todo: create var
+    await writable.write(`${state.quoteNumber}\n`);
+    await writable.write(`${state.estimatorInitials || 'TEE'}\n`); // todo: create var
     await writable.write(`\n`);
     await writable.write(`\n`);
     await writable.write(`\n`);
@@ -432,10 +438,12 @@ export function useExport() {
     await writable.write(`\n`);
     await writable.write(`\n`);
     await writable.write(`\n`);
-    await writable.write(`${values.complexity || 1}\n`); // todo: create var
+    await writable.write(`\n`);
+    await writable.write(`\n`);
+    await writable.write(`${complexity || 1}\n`); // todo: create var
     await writable.write(`${draftCost || 50}\n`);
     await writable.write(`${foundCost || ''}\n`);
-    await writable.write(`${values.farmBureau || 'N'}\n`); // todo: create var
+    await writable.write(`${state.farmBureau || 'N'}\n`); // todo: create var
     await writable.write(`\n`);
     await writable.write(`\n`);
     await writable.write(`\n`);
@@ -445,26 +453,26 @@ export function useExport() {
     await writable.write(`\n`);
     await writable.write(`\n`);
     await writable.write(`\n`);
-    await writable.write(`${values.customerCell}\n`);
-    await writable.write(`${values.customerEmail}\n`);
+    await writable.write(`${state.customerCell}\n`);
+    await writable.write(`${state.customerEmail}\n`);
     await writable.write(`\n`);
-    await writable.write(`${values.pmInitials || ''}\n`); // todo: create var
-    await writable.write(`${values.projectMileage || ''}\n`);
+    await writable.write(`${state.pmInitials || ''}\n`); // todo: create var
+    await writable.write(`${state.projectMileage || ''}\n`);
     await writable.write(`\n`);
     await writable.write(`\n`);
     await writable.write(`\n`);
     await writable.write(`${steelFinish == 'GZ' ? 'GZ' : 'ST'}\n`); // todo: create var
     await writable.write(`${roofBreakPoints == 'left' ? 'N' : 'Y'}\n`);
     await writable.write(
-      `${values.projectState == 'OR' || values.projectState == 'WA' ? 'Y' : 'N'}\n`
+      `${state.projectState == 'OR' || state.projectState == 'WA' ? 'Y' : 'N'}\n`
     );
     await writable.write(
-      `${values.projectState == 'OR' || values.projectState == 'WA' || values.projectState == 'AK' || values.projectState == 'HI' ? 'N' : 'Y'}\n`
+      `${state.projectState == 'OR' || state.projectState == 'WA' || state.projectState == 'AK' || state.projectState == 'HI' ? 'N' : 'Y'}\n`
     );
     await writable.write(
-      `${values.projectState == 'AK' || values.projectState == 'HI' ? 'Y' : 'N'}\n`
+      `${state.projectState == 'AK' || state.projectState == 'HI' ? 'Y' : 'N'}\n`
     );
-    await writable.write(`${values.willCall ? 'Y' : 'N'}\n`); // todo: create var
+    await writable.write(`${state.willCall ? 'Y' : 'N'}\n`); // todo: create var
     await writable.write(`\n`);
     await writable.write(`\n`);
     await writable.write(`4\n`);
@@ -476,7 +484,7 @@ export function useExport() {
     await writable.write(`\n`);
     await writable.write(`N\n`);
     await writable.write(`\n`);
-    await writable.write(`${values.noFlangeBraces ? 'Y' : 'N'}\n`);
+    await writable.write(`${state.noFlangeBraces ? 'Y' : 'N'}\n`);
     await writable.write(`N\n`);
     await writable.write(`N\n`);
     await writable.write(`\n`);
@@ -521,9 +529,9 @@ export function useExport() {
     return mbsFile;
   }
 
-  async function createBldCtrl(rootHandle, values, index = 0) {
+  async function createBldCtrl(rootHandle, index = 0) {
     const newBuildingHandle = await rootHandle.getDirectoryHandle(
-      values.quoteNumber + bldgAlpha[index].trim(),
+      state.quoteNumber + bldgAlpha[index].trim(),
       {
         create: false,
       }
@@ -578,14 +586,14 @@ export function useExport() {
     return logFile;
   }
 
-  async function createDesLoad(rootHandle, values, index = 0) {
+  async function createDesLoad(rootHandle, index = 0) {
     const response = await fetch('/api/rain', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        zipCode: values.projectZip,
+        zipCode: state.projectZip,
       }),
     });
 
@@ -612,41 +620,41 @@ export function useExport() {
     };
 
     const newBuildingHandle = await rootHandle.getDirectoryHandle(
-      values.quoteNumber + bldgAlpha[index].trim(),
+      state.quoteNumber + bldgAlpha[index].trim(),
       {
         create: false,
       }
     );
 
-    const windSpeedService = (values.windLoad * 0.65132156).toFixed(4);
+    const windSpeedService = (state.windLoad * 0.65132156).toFixed(4);
 
-    const thermalFactor = values.thermalFactor
-      ? formatNumericValue(values.thermalFactor)
-      : '';
-
-    const snowFactor = values.snowFactor
-      ? formatNumericValue(values.snowFactor)
-      : '';
-    const seismicFa = values.seismicFa
-      ? formatNumericValue(values.seismicFa, 3)
-      : '';
-    const seismicFv = values.seismicFv
-      ? formatNumericValue(values.seismicFv, 3)
-      : '';
-    const seismicSms = values.seismicSms
-      ? formatNumericValue(values.seismicSms, 3)
-      : '';
-    const seismicSm1 = values.seismicSm1
-      ? formatNumericValue(values.seismicSm1, 3)
-      : '';
-    const seismicSds = values.seismicSds
-      ? formatNumericValue(values.seismicSds, 3)
-      : '';
-    const seismicSd1 = values.seismicSd1
-      ? formatNumericValue(values.seismicSd1, 3)
+    const thermalFactor = state.thermalFactor
+      ? formatNumericValue(state.thermalFactor)
       : '';
 
-    let averagePeak = getAverageHeight(values.buildings[index]);
+    const snowFactor = state.snowFactor
+      ? formatNumericValue(state.snowFactor)
+      : '';
+    const seismicFa = state.seismicFa
+      ? formatNumericValue(state.seismicFa, 3)
+      : '';
+    const seismicFv = state.seismicFv
+      ? formatNumericValue(state.seismicFv, 3)
+      : '';
+    const seismicSms = state.seismicSms
+      ? formatNumericValue(state.seismicSms, 3)
+      : '';
+    const seismicSm1 = state.seismicSm1
+      ? formatNumericValue(state.seismicSm1, 3)
+      : '';
+    const seismicSds = state.seismicSds
+      ? formatNumericValue(state.seismicSds, 3)
+      : '';
+    const seismicSd1 = state.seismicSd1
+      ? formatNumericValue(state.seismicSd1, 3)
+      : '';
+
+    let averagePeak = getAverageHeight(state.buildings[index]);
     let taMoment = (0.028 * Math.pow(averagePeak, 0.8)).toFixed(4);
     let taBrace = (0.02 * Math.pow(averagePeak, 0.75)).toFixed(4);
 
@@ -656,33 +664,33 @@ export function useExport() {
     const writable = await desLoadHandle.createWritable();
     await writable.write(`[BUILDING]\n`);
     await writable.write(
-      `Occupancy_Category=${riskLabels[values.riskCategory]}\n`
+      `Occupancy_Category=${riskLabels[state.riskCategory]}\n`
     );
     await writable.write(`[BUILDING_CODE]\n`);
-    await writable.write(`Database=${codes[values.buildingCode]}\n`);
-    await writable.write(`User=${codes[values.buildingCode]}\n`);
-    await writable.write(`CITY=${values.projectCity}\n`);
-    await writable.write(`COUNTY=${values.projectCounty}\n`);
-    await writable.write(`State=${values.projectState}\n`);
+    await writable.write(`Database=${codes[state.buildingCode]}\n`);
+    await writable.write(`User=${codes[state.buildingCode]}\n`);
+    await writable.write(`CITY=${state.projectCity}\n`);
+    await writable.write(`COUNTY=${state.projectCounty}\n`);
+    await writable.write(`State=${state.projectState}\n`);
     await writable.write(`Interpolate=FALSE\n`);
     await writable.write(`[WIND]\n`);
     await writable.write(`Serviceability_Year_MRI=10 -year MRI\n`);
     await writable.write(`Wind_Speed_Serviceability=${windSpeedService}\n`);
     await writable.write(`Special_Wind_Region=0\n`);
     await writable.write(`[Climate]\n`);
-    await writable.write(`Building_Elevation=${values.projectElevation}\n`);
+    await writable.write(`Building_Elevation=${state.projectElevation}\n`);
     await writable.write(`[SNOW]\n`);
     await writable.write(`Thermal_Coefficient=${thermalFactor}\n`);
     await writable.write(
-      `Ground=${formatNumericValue(values.groundSnowLoad, 1)}\n`
+      `Ground=${formatNumericValue(state.groundSnowLoad, 1)}\n`
     );
     await writable.write(`Importance=${formatNumericValue(snowFactor, 4)}\n`);
     await writable.write(`Status=F\n`);
     await writable.write(`[SEISMIC]\n`);
     await writable.write(`Status=T\n`);
-    await writable.write(`Ss=${values.seismicSs}\n`);
-    await writable.write(`S1=${values.seismicS1}\n`);
-    await writable.write(`Site_Class=${values.seismicSite}\n`);
+    await writable.write(`Ss=${state.seismicSs}\n`);
+    await writable.write(`S1=${state.seismicS1}\n`);
+    await writable.write(`Site_Class=${state.seismicSite}\n`);
     await writable.write(`Fa=${seismicFa}\n`);
     await writable.write(`Fv=${seismicFv}\n`);
     await writable.write(`Sms=${seismicSms}\n`);
@@ -695,13 +703,13 @@ export function useExport() {
     await writable.write(`Intensity=${fiveYear}\n`);
     await writable.write(`Intensity_25=${twentyFiveYear}\n`);
     await writable.write(`[ZIP]\n`);
-    await writable.write(`Code=${values.projectZip}\n`);
+    await writable.write(`Code=${state.projectZip}\n`);
     await writable.close();
     const desLoadFile = await desLoadHandle.getFile();
     return desLoadFile;
   }
 
-  async function createDesCtrl(rootHandle, values, index = 0) {
+  async function createDesCtrl(rootHandle, index = 0) {
     const walls = {
       1: 'left',
       2: 'front',
@@ -733,7 +741,7 @@ export function useExport() {
         'Cold_Version=NAUS16' +
         '\n' +
         'Exposure=' +
-        values.exposure +
+        state.exposure +
         '\n' +
         'Country=----' +
         '\n' +
@@ -742,13 +750,13 @@ export function useExport() {
         'FileName=IBC.21' +
         '\n' +
         'Closure=' +
-        values.windEnclosure +
+        state.windEnclosure +
         '\n' +
         'Zone=' +
-        values.seismicCategory +
+        state.seismicCategory +
         '\n' +
         'Import_Seis=' +
-        values.seismicFactor +
+        state.seismicFactor +
         '\n' +
         'Import_Wind=1.0000' +
         '\n' +
@@ -771,7 +779,7 @@ export function useExport() {
         'Cold_Version=NAUS16' +
         '\n' +
         'Exposure=' +
-        values.exposure +
+        state.exposure +
         '\n' +
         'Country=----' +
         '\n' +
@@ -780,13 +788,13 @@ export function useExport() {
         'FileName=IBC.18' +
         '\n' +
         'Closure=' +
-        values.windEnclosure +
+        state.windEnclosure +
         '\n' +
         'Zone=' +
-        values.seismicCategory +
+        state.seismicCategory +
         '\n' +
         'Import_Seis=' +
-        values.seismicFactor +
+        state.seismicFactor +
         '\n' +
         'Import_Wind=1.0000' +
         '\n' +
@@ -809,7 +817,7 @@ export function useExport() {
         'Cold_Version=NAUS12' +
         '\n' +
         'Exposure=' +
-        values.exposure +
+        state.exposure +
         '\n' +
         'Country=----' +
         '\n' +
@@ -818,13 +826,13 @@ export function useExport() {
         'FileName=IBC.15' +
         '\n' +
         'Closure=' +
-        values.windEnclosure +
+        state.windEnclosure +
         '\n' +
         'Zone=' +
-        values.seismicCategory +
+        state.seismicCategory +
         '\n' +
         'Import_Seis=' +
-        values.seismicFactor +
+        state.seismicFactor +
         '\n' +
         'Import_Wind=1.0000' +
         '\n' +
@@ -847,7 +855,7 @@ export function useExport() {
         'Cold_Version=NAUS16' +
         '\n' +
         'Exposure=' +
-        values.exposure +
+        state.exposure +
         '\n' +
         'Country=----' +
         '\n' +
@@ -856,13 +864,13 @@ export function useExport() {
         'FileName=OR_OSSC.22' +
         '\n' +
         'Closure=' +
-        values.windEnclosure +
+        state.windEnclosure +
         '\n' +
         'Zone=' +
-        values.seismicCategory +
+        state.seismicCategory +
         '\n' +
         'Import_Seis=' +
-        values.seismicFactor +
+        state.seismicFactor +
         '\n' +
         'Import_Wind=1.0000' +
         '\n' +
@@ -885,7 +893,7 @@ export function useExport() {
         'Cold_Version=NAUS16' +
         '\n' +
         'Exposure=' +
-        values.exposure +
+        state.exposure +
         '\n' +
         'Country=----' +
         '\n' +
@@ -894,13 +902,13 @@ export function useExport() {
         'FileName=OR_OSSC.19' +
         '\n' +
         'Closure=' +
-        values.windEnclosure +
+        state.windEnclosure +
         '\n' +
         'Zone=' +
-        values.seismicCategory +
+        state.seismicCategory +
         '\n' +
         'Import_Seis=' +
-        values.seismicFactor +
+        state.seismicFactor +
         '\n' +
         'Import_Wind=1.0000' +
         '\n' +
@@ -923,7 +931,7 @@ export function useExport() {
         'Cold_Version=NAUS16' +
         '\n' +
         'Exposure=' +
-        values.exposure +
+        state.exposure +
         '\n' +
         'Country=----' +
         '\n' +
@@ -932,13 +940,13 @@ export function useExport() {
         'FileName=CA_CBC.22' +
         '\n' +
         'Closure=' +
-        values.windEnclosure +
+        state.windEnclosure +
         '\n' +
         'Zone=' +
-        values.seismicCategory +
+        state.seismicCategory +
         '\n' +
         'Import_Seis=' +
-        values.seismicFactor +
+        state.seismicFactor +
         '\n' +
         'Import_Wind=1.0000' +
         '\n' +
@@ -961,7 +969,7 @@ export function useExport() {
         'Cold_Version=NAUS16' +
         '\n' +
         'Exposure=' +
-        values.exposure +
+        state.exposure +
         '\n' +
         'Country=----' +
         '\n' +
@@ -970,13 +978,13 @@ export function useExport() {
         'FileName=CA_CBC.19' +
         '\n' +
         'Closure=' +
-        values.windEnclosure +
+        state.windEnclosure +
         '\n' +
         'Zone=' +
-        values.seismicCategory +
+        state.seismicCategory +
         '\n' +
         'Import_Seis=' +
-        values.seismicFactor +
+        state.seismicFactor +
         '\n' +
         'Import_Wind=1.0000' +
         '\n' +
@@ -990,7 +998,7 @@ export function useExport() {
     };
 
     const newBuildingHandle = await rootHandle.getDirectoryHandle(
-      values.quoteNumber + bldgAlpha[index].trim(),
+      state.quoteNumber + bldgAlpha[index].trim(),
       {
         create: false,
       }
@@ -1003,22 +1011,22 @@ export function useExport() {
 
     // Job Info
     await writable.write(`[JOB_ID]\n`);
-    await writable.write(`JOB_ID=${values.quoteNumber}\n`);
+    await writable.write(`JOB_ID=${state.quoteNumber}\n`);
     await writable.write(`VERSION=2.0000\n`);
     await writable.write(`\n`);
 
     // Wall and Base Options
     await writable.write(`[WALL_OPTIONS1]\n`);
-    await writable.write(`${getGirtTypes(values.buildings[index], 'left')}\n`);
+    await writable.write(`${getGirtTypes(state.buildings[index], 'left')}\n`);
     await writable.write(`\n`);
     await writable.write(`[WALL_OPTIONS2]\n`);
-    await writable.write(`${getGirtTypes(values.buildings[index], 'front')}\n`);
+    await writable.write(`${getGirtTypes(state.buildings[index], 'front')}\n`);
     await writable.write(`\n`);
     await writable.write(`[WALL_OPTIONS3]\n`);
-    await writable.write(`${getGirtTypes(values.buildings[index], 'right')}\n`);
+    await writable.write(`${getGirtTypes(state.buildings[index], 'right')}\n`);
     await writable.write(`\n`);
     await writable.write(`[WALL_OPTIONS4]\n`);
-    await writable.write(`${getGirtTypes(values.buildings[index], 'back')}\n`);
+    await writable.write(`${getGirtTypes(state.buildings[index], 'back')}\n`);
     await writable.write(`\n`);
 
     await writable.write(`[ROOF_OPTIONS]\n`);
@@ -1036,14 +1044,12 @@ export function useExport() {
     await writable.write(`\n`);
 
     await writable.write(`[BASE_OPTIONS]\n`);
-    await writable.write(`${getGirtTypes(values.buildings[index], 'base')}\n`);
+    await writable.write(`${getGirtTypes(state.buildings[index], 'base')}\n`);
     await writable.write(`\n`);
 
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[BASE_OPTIONS${i}]\n`);
-      await writable.write(
-        `${getGirtTypes(values.buildings[index], 'base')}\n`
-      );
+      await writable.write(`${getGirtTypes(state.buildings[index], 'base')}\n`);
       await writable.write(`\n`);
     }
 
@@ -1052,10 +1058,10 @@ export function useExport() {
     await writable.write(`Hot=50.0000\n`);
     await writable.write(`Cold=55.0000\n`);
     await writable.write(
-      `Wall_Panel=${getPanelYield(values.buildings[index], 'wall')}\n`
+      `Wall_Panel=${getPanelYield(state.buildings[index], 'wall')}\n`
     );
     await writable.write(
-      `Roof_Panel=${getPanelYield(values.buildings[index], 'roof')}\n`
+      `Roof_Panel=${getPanelYield(state.buildings[index], 'roof')}\n`
     );
     await writable.write(`Flange=50.0000\n`);
     await writable.write(`Web=50.0000\n`);
@@ -1077,9 +1083,9 @@ export function useExport() {
     await writable.write(`Rig_Frm_Vert=180.0000\n`);
     await writable.write(`Wind_Bent=80.0000\n`);
     await writable.write(`Rig_Frm_Crane=100.0000\n`);
-    await writable.write(`Rig_Frm_Seis=${values.seismicDeflection}\n`);
+    await writable.write(`Rig_Frm_Seis=${state.seismicDeflection}\n`);
     await writable.write(
-      `${values.seismicDeflection < 80 ? 'Wind_Bent_Seis=80.0000' : 'Wind_Bent_Seis=' + values.seismicDeflection}\n`
+      `${state.seismicDeflection < 80 ? 'Wind_Bent_Seis=80.0000' : 'Wind_Bent_Seis=' + state.seismicDeflection}\n`
     );
     await writable.write(`Purlin_Vert_Total=150.0000\n`);
     await writable.write(`EW_Raf_Vert_Total=180.0000\n`);
@@ -1095,95 +1101,93 @@ export function useExport() {
 
     // Building Code
     await writable.write(`[BUILDING_CODE]\n`);
-    await writable.write(`${bldgBuildingCode[values.buildingCode]}\n`);
+    await writable.write(`${bldgBuildingCode[state.buildingCode]}\n`);
     await writable.write(`\n`);
 
     // Building Loads
     await writable.write(`[BUILDING_LOADS]\n`);
     await writable.write(
-      `Dead=${values.deadLoad ? formatNumericValue(values.deadLoad) : '0.00'}\n`
+      `Dead=${state.deadLoad ? formatNumericValue(state.deadLoad) : '0.00'}\n`
     );
     await writable.write(
-      `Live=${values.liveLoad ? formatNumericValue(values.liveLoad) : '0.00'}\n`
+      `Live=${state.liveLoad ? formatNumericValue(state.liveLoad) : '0.00'}\n`
     );
     await writable.write(
-      `Snow=${values.roofSnowLoad ? formatNumericValue(values.roofSnowLoad) : '0.00'}\n`
+      `Snow=${state.roofSnowLoad ? formatNumericValue(state.roofSnowLoad) : '0.00'}\n`
     );
     await writable.write(
-      `Collateral=${values.collateralLoad ? formatNumericValue(values.collateralLoad) : '0.00'}\n`
+      `Collateral=${state.collateralLoad ? formatNumericValue(state.collateralLoad) : '0.00'}\n`
     );
-    await writable.write(`Wind_Speed=${values.windLoad}\n`);
+    await writable.write(`Wind_Speed=${state.windLoad}\n`);
     await writable.write(`Reduce=N\n`);
-    await writable.write(`Za=${values.seismicSms || ''}\n`);
+    await writable.write(`Za=${state.seismicSms || ''}\n`);
     await writable.write(`\n`);
 
     // Building Shape
     await writable.write(`[BUILDING_SHAPE]\n`);
     await writable.write(
-      `${values.buildings[index] == 'leanTo' || values.buildings[index] == 'leanTo' ? 'Type=LT-' : 'Type=FF-'}\n`
+      `${state.buildings[index] == 'leanTo' || state.buildings[index] == 'leanTo' ? 'Type=LT-' : 'Type=FF-'}\n`
     );
-    await writable.write(`Width=${values.buildings[index].width}\n`);
-    await writable.write(`Length=${values.buildings[index].length}\n`);
-    await writable.write(`HeightL=${values.buildings[index].backEaveHeight}\n`);
+    await writable.write(`Width=${state.buildings[index].width}\n`);
+    await writable.write(`Length=${state.buildings[index].length}\n`);
+    await writable.write(`HeightL=${state.buildings[index].backEaveHeight}\n`);
+    await writable.write(`HeightR=${state.buildings[index].frontEaveHeight}\n`);
     await writable.write(
-      `HeightR=${values.buildings[index].frontEaveHeight}\n`
-    );
-    await writable.write(
-      `PeakOff=${values.buildings[index].shape == 'leanTo' || values.buildings[index].shape == 'singleSlope' ? '0' : values.buildings[index].backPeakOffset}\n`
+      `PeakOff=${state.buildings[index].shape == 'leanTo' || state.buildings[index].shape == 'singleSlope' ? '0' : state.buildings[index].backPeakOffset}\n`
     );
     await writable.write(
-      `Slope=${formatNumericValue(values.buildings[index].backRoofPitch, 4)}\n`
+      `Slope=${formatNumericValue(state.buildings[index].backRoofPitch, 4)}\n`
     );
     await writable.write(`\n`);
 
     // Expand Endwall
     await writable.write(`[EXPAND_EW1]\n`);
     await writable.write(
-      `${getEndFrameTypeData(values.buildings[index], 'left')}\n`
+      `${getEndFrameTypeData(state.buildings[index], 'left')}\n`
     );
 
     await writable.write(`[EXPAND_EW3]\n`);
     await writable.write(
-      `${getEndFrameTypeData(values.buildings[index], 'right')}\n`
+      `${getEndFrameTypeData(state.buildings[index], 'right')}\n`
     );
 
     // Bay Spacing
     await writable.write(`[BAY_SPACING_WALL1]\n`);
     await writable.write(
-      `${formatBaySpacing(values.buildings[index].leftBaySpacing)}\n`
+      `${formatBaySpacing(state.buildings[index].leftBaySpacing)}\n`
     );
 
     await writable.write(`[BAY_SPACING_WALL2]\n`);
     await writable.write(
-      `${formatBaySpacing(values.buildings[index].roofBaySpacing)}\n`
+      `${formatBaySpacing(state.buildings[index].roofBaySpacing)}\n`
     );
 
     await writable.write(`[BAY_SPACING_WALL3]\n`);
     await writable.write(
-      `${formatBaySpacing(values.buildings[index].rightBaySpacing)}\n`
+      `${formatBaySpacing(state.buildings[index].rightBaySpacing)}\n`
     );
 
     await writable.write(`[BAY_SPACING_WALL4]\n`);
     await writable.write(
-      `${formatBaySpacing(values.buildings[index].roofBaySpacing)}\n`
+      `${formatBaySpacing(state.buildings[index].roofBaySpacing)}\n`
     );
 
     await writable.write(`[BAY_SPACING_WALL5]\n`);
     await writable.write(
-      `${formatBaySpacing(values.buildings[index].roofBaySpacing)}\n`
+      `${formatBaySpacing(state.buildings[index].roofBaySpacing)}\n`
     );
 
-    if (values.buildings[index].leftFrame == 'inset') {
+    if (state.buildings[index].leftFrame == 'inset') {
       await writable.write(`[BAY_SPACING_WALL6]\n`);
       await writable.write(
-        `${formatBaySpacing(values.buildings[index].width)}\n`
+        `${formatBaySpacing(state.buildings[index].width)}\n`
       ); //todo: I think you need to pass in array of inset wall
     }
 
-    if (values.buildings[index].rightFrame == 'inset') {
+    if (state.buildings[index].rightFrame == 'inset') {
       await writable.write(`[BAY_SPACING_WALL7]\n`);
       await writable.write(
-        `${formatBaySpacing(values.buildings[index].width)}\n`
+        `${formatBaySpacing(state.buildings[index].width)}\n`
       ); //todo: I think you need to pass in array of inset wall
     }
 
@@ -1192,7 +1196,7 @@ export function useExport() {
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[FRAMED_OPENINGS_WALL${i}]\n`);
       await writable.write(
-        `${getFramedOpenings(values.buildings[index], walls[i], 0)}\n`
+        `${getFramedOpenings(state.buildings[index], walls[i], 0)}\n`
       );
     }
 
@@ -1200,10 +1204,10 @@ export function useExport() {
     await writable.write(`[ENDWALL_FRAMING1]\n`);
     await writable.write(`Corner_Col_Type=RW\n`);
     await writable.write(
-      `Corner_Col_Rotate1=${getCornerColRotating(values.buildings[index], 'backLeft')}\n`
+      `Corner_Col_Rotate1=${getCornerColRotating(state.buildings[index], 'backLeft')}\n`
     );
     await writable.write(
-      `Corner_Col_Rotate2=${getCornerColRotating(values.buildings[index], 'frontLeft')}\n`
+      `Corner_Col_Rotate2=${getCornerColRotating(state.buildings[index], 'frontLeft')}\n`
     );
 
     await writable.write(`Corner_Col_Depth=0.0000\n`);
@@ -1218,10 +1222,10 @@ export function useExport() {
     await writable.write(`[ENDWALL_FRAMING3]\n`);
     await writable.write(`Corner_Col_Type=RW\n`);
     await writable.write(
-      `Corner_Col_Rotate1=${getCornerColRotating(values.buildings[index], 'frontRight')}\n`
+      `Corner_Col_Rotate1=${getCornerColRotating(state.buildings[index], 'frontRight')}\n`
     );
     await writable.write(
-      `Corner_Col_Rotate2=${getCornerColRotating(values.buildings[index], 'backRight')}\n`
+      `Corner_Col_Rotate2=${getCornerColRotating(state.buildings[index], 'backRight')}\n`
     );
     await writable.write(`Corner_Col_Depth=0.0000\n`);
     await writable.write(`Int_Col_Type=RW\n`);
@@ -1244,13 +1248,13 @@ export function useExport() {
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[WALL_GIRTS_WALL${i}]\n`);
       await writable.write(
-        `Type=${getGirtType(values.buildings[index], walls[i])}\n`
+        `Type=${getGirtType(state.buildings[index], walls[i])}\n`
       );
       await writable.write(`Flg_Brace_Use=Y\n`);
       await writable.write(`Flg_Brace_Supply=Y\n`);
       await writable.write(`Offset=0.0000\n`);
       await writable.write(
-        `Project=${getGirtProject(values.buildings[index], walls[i])}\n`
+        `Project=${getGirtProject(state.buildings[index], walls[i])}\n`
       );
       await writable.write(`Set_Depth=8.0000\n`);
       await writable.write(`Set_Lap=0.0000\n`);
@@ -1262,7 +1266,7 @@ export function useExport() {
       await writable.write(`[WALL_GIRT_LOC_WALL${i}]\n`);
       await writable.write(`Low=0.0000\n`);
       await writable.write(
-        `${setGirtSpacing(values.buildings[index], walls[i], values.groundLoad)}\n`
+        `${setGirtSpacing(state.buildings[index], walls[i], state.groundLoad)}\n`
       );
     }
 
@@ -1274,14 +1278,14 @@ export function useExport() {
     await writable.write(`Offset=0.0000\n`);
     await writable.write(`Project=0.0000\n`);
     await writable.write(
-      `Set_Depth=${getPurlinDepth(values.buildings[index])}\n`
+      `Set_Depth=${getPurlinDepth(state.buildings[index])}\n`
     );
     await writable.write(`Set_Lap=0.0000\n`);
     await writable.write(`\n`);
 
     if (
-      values.buildings[index].shape != 'leanTo' &&
-      values.buildings[index].shape != 'singleSlope'
+      state.buildings[index].shape != 'leanTo' &&
+      state.buildings[index].shape != 'singleSlope'
     ) {
       await writable.write(`[ROOF_PURLINS_SURF3]\n`);
       await writable.write(`Type=ZB\n`);
@@ -1290,7 +1294,7 @@ export function useExport() {
       await writable.write(`Offset=0.0000\n`);
       await writable.write(`Project=0.0000\n`);
       await writable.write(
-        `Set_Depth=${getPurlinDepth(values.buildings[index])}\n`
+        `Set_Depth=${getPurlinDepth(state.buildings[index])}\n`
       );
       await writable.write(`Set_Lap=0.0000\n`);
       await writable.write(`\n`);
@@ -1298,18 +1302,18 @@ export function useExport() {
 
     // Eave Struts
     await writable.write(`[EAVE_STRUT_WALL2]\n`);
-    values.buildings[index].backRoofPitch > 4
+    state.buildings[index].backRoofPitch > 4
       ? await writable.write(`Type=ZO\n`)
       : await writable.write(`Type=EO\n`);
     await writable.write(`\n`);
 
     await writable.write(`[EAVE_STRUT_WALL4]\n`);
-    if (values.buildings[index].shape == 'nonSymmetrical') {
-      values.buildings[index].frontRoofPitch > 4
+    if (state.buildings[index].shape == 'nonSymmetrical') {
+      state.buildings[index].frontRoofPitch > 4
         ? await writable.write(`Type=ZO\n`)
         : await writable.write(`Type=EO\n`);
     } else {
-      values.buildings[index].backRoofPitch > 4
+      state.buildings[index].backRoofPitch > 4
         ? await writable.write(`Type=ZO\n`)
         : await writable.write(`Type=EO\n`);
     }
@@ -1317,26 +1321,26 @@ export function useExport() {
 
     // Roof Purlin Space
     await writable.write(`[ROOF_PURLIN_SPACE_SURF2]\n`);
-    values.buildings[index].shape == 'singleSlope'
+    state.buildings[index].shape == 'singleSlope'
       ? await writable.write(`Peak_Space=0.0000\n`)
       : await writable.write(`Peak_Space=1.0000\n`);
     await writable.write(`Max_Space=5.0000\n`);
     await writable.write(
-      `Set_Space=${setPurlinSpacing(values.buildings[index])}\n`
+      `Set_Space=${setPurlinSpacing(state.buildings[index])}\n`
     );
-    await writable.write(`${getGableExtension(values.buildings[index])}\n`);
+    await writable.write(`${getGableExtension(state.buildings[index])}\n`);
 
     if (
-      values.buildings[index].shape != 'leanTo' &&
-      values.buildings[index].shape != 'singleSlope'
+      state.buildings[index].shape != 'leanTo' &&
+      state.buildings[index].shape != 'singleSlope'
     ) {
       await writable.write(`[ROOF_PURLIN_SPACE_SURF3]\n`);
       await writable.write(`Peak_Space=1.0000\n`);
       await writable.write(`Max_Space=5.0000\n`);
       await writable.write(
-        `Set_Space=${setPurlinSpacing(values.buildings[index])}\n`
+        `Set_Space=${setPurlinSpacing(state.buildings[index])}\n`
       );
-      await writable.write(`${getGableExtension(values.buildings[index])}\n`);
+      await writable.write(`${getGableExtension(state.buildings[index])}\n`);
     }
 
     // Wall Panel
@@ -1344,39 +1348,39 @@ export function useExport() {
     for (let i = 0; i <= 4; i++) {
       await writable.write(`[WALL_PANEL${wallChars[i].trim()}]\n`);
       await writable.write(
-        `Type=${getPanelType(values.buildings[index], 'wall')}\n`
+        `Type=${getPanelType(state.buildings[index], 'wall')}\n`
       );
       await writable.write(
-        `Part=${getPanelPart(values.buildings[index], 'wall')}\n`
+        `Part=${getPanelPart(state.buildings[index], 'wall')}\n`
       );
       await writable.write(
-        `Gage=${getPanelGauge(values.buildings[index], 'wall')}\n`
+        `Gage=${getPanelGauge(state.buildings[index], 'wall')}\n`
       );
       await writable.write(
-        `Yield=${getPanelYield(values.buildings[index], 'wall')}\n`
+        `Yield=${getPanelYield(state.buildings[index], 'wall')}\n`
       );
       await writable.write(
-        `Wall_Color=${getPanelColor(values.buildings[index], 'wall')}\n`
+        `Wall_Color=${getPanelColor(state.buildings[index], 'wall')}\n`
       );
       await writable.write(`Wall_Style=\n`);
       await writable.write(
-        `Eave_Color=${getPanelColor(values.buildings[index], 'wall')}\n`
+        `Eave_Color=${getPanelColor(state.buildings[index], 'wall')}\n`
       );
       await writable.write(`Eave_Style=--\n`);
       await writable.write(
-        `Corner_Color=${getPanelColor(values.buildings[index], 'wall')}\n`
+        `Corner_Color=${getPanelColor(state.buildings[index], 'wall')}\n`
       );
       await writable.write(`Corner_Style=\n`);
       await writable.write(
-        `Jamb_Color=${getPanelColor(values.buildings[index], 'wall')}\n`
+        `Jamb_Color=${getPanelColor(state.buildings[index], 'wall')}\n`
       );
       await writable.write(`Jamb_Style=\n`);
       await writable.write(
-        `Screw_Type=${getScrewLength(values.buildings[index], 'wall')}\n`
+        `Screw_Type=${getScrewLength(state.buildings[index], 'wall')}\n`
       );
       await writable.write(`Screw_Finish=--\n`);
       await writable.write(
-        `${getInsulation(values.buildings[index], 'wall')}\n`
+        `${getInsulation(state.buildings[index], 'wall')}\n`
       );
       await writable.write(`\n`);
     }
@@ -1384,46 +1388,44 @@ export function useExport() {
     // Roof Panel
     await writable.write(`[ROOF_PANEL]\n`);
     await writable.write(
-      `Type=${getPanelType(values.buildings[index], 'roof')}\n`
+      `Type=${getPanelType(state.buildings[index], 'roof')}\n`
     );
     await writable.write(
-      `Part=${getPanelPart(values.buildings[index], 'roof')}\n`
+      `Part=${getPanelPart(state.buildings[index], 'roof')}\n`
     );
     await writable.write(
-      `Gage=${getPanelGauge(values.buildings[index], 'roof')}\n`
+      `Gage=${getPanelGauge(state.buildings[index], 'roof')}\n`
     );
     await writable.write(
-      `Yield=${getPanelYield(values.buildings[index], 'roof')}\n`
+      `Yield=${getPanelYield(state.buildings[index], 'roof')}\n`
     );
     await writable.write(
-      `Roof_Color=${getPanelColor(values.buildings[index], 'roof')}\n`
+      `Roof_Color=${getPanelColor(state.buildings[index], 'roof')}\n`
     );
     await writable.write(`Roof_Style=\n`);
     await writable.write(
-      `Gable_Color=${getPanelColor(values.buildings[index], 'roof')}\n`
+      `Gable_Color=${getPanelColor(state.buildings[index], 'roof')}\n`
     );
     await writable.write(`Gable_Style=--\n`);
     await writable.write(
-      `Screw_Type=${getScrewLength(values.buildings[index], 'roof')}\n`
+      `Screw_Type=${getScrewLength(state.buildings[index], 'roof')}\n`
     );
     await writable.write(`Screw_Finish=--\n`);
-    await writable.write(`${getInsulation(values.buildings[index], 'roof')}\n`);
+    await writable.write(`${getInsulation(state.buildings[index], 'roof')}\n`);
     await writable.write(
-      `${getStandingSeamClips(values.buildings[index], 'roof', '')}\n`
+      `${getStandingSeamClips(state.buildings[index], 'roof', '')}\n`
     );
     await writable.write(`\n`);
 
     // No Frames
     await writable.write(`[NO_FRAMES]\n`);
-    await writable.write(`${getRigidFrames(values.buildings[index])}\n`);
+    await writable.write(`${getRigidFrames(state.buildings[index])}\n`);
 
     // Wind Framing
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[WIND_FRAMING_WALL${i}]\n`);
       await writable.write(`Panel_Shear=N\n`);
-      await writable.write(
-        `${getBracing(values.buildings[index], walls[i])}\n`
-      );
+      await writable.write(`${getBracing(state.buildings[index], walls[i])}\n`);
       await writable.write(`Wind_Column=N\n`);
       await writable.write(`Weak_Axis_Bend=N\n`);
       if (i == 1 || i == 3) {
@@ -1435,13 +1437,11 @@ export function useExport() {
 
     await writable.write(`[WIND_FRAMING_ROOF]\n`);
     await writable.write(`Panel_Shear=N\n`);
-    await writable.write(`${getBracing(values.buildings[index], 'roof')}\n`);
+    await writable.write(`${getBracing(state.buildings[index], 'roof')}\n`);
     await writable.write(`\n`);
 
     await writable.write(`[WIND_FRAMING_INT]\n`);
-    await writable.write(
-      `${getBracing(values.buildings[index], 'interior')}\n`
-    );
+    await writable.write(`${getBracing(state.buildings[index], 'interior')}\n`);
     await writable.write(`Wind_Column=N\n`);
     await writable.write(`Weak_Axis_Bend=N\n`);
     await writable.write(`\n`);
@@ -1450,13 +1450,13 @@ export function useExport() {
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[WIND_BRACING_WALL${i}]\n`);
       await writable.write(
-        `${getXBracingBays(values.buildings[index], walls[i])}\n`
+        `${getXBracingBays(state.buildings[index], walls[i])}\n`
       );
     }
 
     await writable.write(`[WIND_BRACING_ROOF]\n`);
     await writable.write(
-      `${getXBracingBays(values.buildings[index], 'roof')}\n`
+      `${getXBracingBays(state.buildings[index], 'roof')}\n`
     );
 
     // Wind Bents
@@ -1464,7 +1464,7 @@ export function useExport() {
       await writable.write(`[WIND_BENT_WALL${i}]\n`);
       if (i == 2 || i == 4) {
         await writable.write(
-          `${getPortalBays(values.buildings[index], walls[i])}\n`
+          `${getPortalBays(state.buildings[index], walls[i])}\n`
         );
       } else {
         await writable.write(`No_Bays=0\n`);
@@ -1481,31 +1481,31 @@ export function useExport() {
     // Eave Extensions
     await writable.write(`[EAVE_EXTENSION_WALL2]\n`);
     await writable.write(
-      `${await getEaveExtension(values.buildings[index], 'front', values.projectZip)}\n`
+      `${await getEaveExtension(state.buildings[index], 'front', state.projectZip)}\n`
     );
     await writable.write(`[EAVE_EXTENSION_WALL4]\n`);
     await writable.write(
-      `${await getEaveExtension(values.buildings[index], 'back', values.projectZip)}\n`
+      `${await getEaveExtension(state.buildings[index], 'back', state.projectZip)}\n`
     );
 
     // Gutters
     await writable.write(`[GUTTER_DOWNSPOUTS]\n`);
     await writable.write(
-      `${await getDownspouts(values.buildings[index], values.projectZip)}\n`
+      `${await getDownspouts(state.buildings[index], state.projectZip)}\n`
     );
     await writable.write(`[GUTTERS]\n`);
     await writable.write(
-      `${await getGutters(values.buildings[index], values.projectZip)}\n`
+      `${await getGutters(state.buildings[index], state.projectZip)}\n`
     );
     // Relites
     await writable.write(`[WALL_LIGHT_PANELS]\n`);
-    await writable.write(`${getRelites(values.buildings[index], 'Wall')}\n`);
+    await writable.write(`${getRelites(state.buildings[index], 'Wall')}\n`);
     await writable.write(`[ROOF_LIGHT_PANELS]\n`);
-    await writable.write(`${getRelites(values.buildings[index], 'Roof')}\n`);
+    await writable.write(`${getRelites(state.buildings[index], 'Roof')}\n`);
 
     // Doors
     await writable.write(`[DOORS]\n`);
-    await writable.write(`${getMandoors(values)}\n`);
+    await writable.write(`${getMandoors()}\n`);
     await writable.write(`\n`);
     // Accessories
     await writable.write(`[ADDITIONAL_ITEMS]\n`);
@@ -1513,10 +1513,10 @@ export function useExport() {
     await writable.write(`\n`);
 
     await writable.write(`[ACCESSORY_ITEMS]\n`);
-    await writable.write(`${getAccessories(values.buildings[index])}\n`);
+    await writable.write(`${getAccessories(state.buildings[index])}\n`);
     await writable.write(`\n`);
 
-    await writable.write(`${setLinerPanels(values.buildings[index])}\n`);
+    await writable.write(`${setLinerPanels(state.buildings[index])}\n`);
 
     // Properties Walls
     await writable.write(`[NO_PROPERTIES_WALL]\n`);
@@ -1526,7 +1526,7 @@ export function useExport() {
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[PROPERTIES_WALL${i}]\n`);
       await writable.write(
-        `${getWallLoads(values.buildings[index], walls[i])}\n`
+        `${getWallLoads(state.buildings[index], walls[i])}\n`
       );
     }
 
@@ -1537,27 +1537,25 @@ export function useExport() {
 
     // Est Items
     await writable.write(`[ESTIMATE_ITEMS]\n`);
-    await writable.write(`${getCoverAccessories(values)}\n`);
+    await writable.write(`${getCoverAccessories()}\n`);
     // Canopies
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[CANOPY_WALL${i}]\n`);
       await writable.write(
-        `${setCanopies(values.buildings[index], walls[i])}\n`
+        `${setCanopies(state.buildings[index], walls[i])}\n`
       );
     }
 
     // Additional Loads
     await writable.write(`[ADDITIONAL_LOADS]\n`);
-    await writable.write(
-      `${getAdditionalLoads(values, values.buildings[index], index)}\n`
-    );
+    await writable.write(`${getAdditionalLoads(index)}\n`);
     await writable.write(`\n`);
 
     // Facia
     await writable.write(`[LOAD_FACIA]\n`);
     await writable.write(`Dead=2.5000\n`);
-    await writable.write(`Live_SW=${values.roofSnowLoad * 2}\n`);
-    await writable.write(`Live_EW=${values.roofSnowLoad * 2}\n`);
+    await writable.write(`Live_SW=${state.roofSnowLoad * 2}\n`);
+    await writable.write(`Live_EW=${state.roofSnowLoad * 2}\n`);
     await writable.write(`\n`);
 
     await writable.write(`[DEFLECT_FACIA]\n`);
@@ -1585,7 +1583,7 @@ export function useExport() {
     await writable.write(`\n`);
 
     await writable.write(`[NO_PARTITION_WALL]\n`);
-    await writable.write(`${getPartitions(values.buildings[index])}\n`);
+    await writable.write(`${getPartitions(state.buildings[index])}\n`);
 
     await writable.write(`[NO_PARTITION_INTERSECT]\n`);
     await writable.write(`No_Partition_Intersect=0\n`);
@@ -1633,11 +1631,11 @@ export function useExport() {
 
     // Wide Openings
     await writable.write(`[NO_WIDE_OPENING]\n`);
-    await writable.write(`${getWideOpenings(values.buildings[index])}\n`);
+    await writable.write(`${getWideOpenings(state.buildings[index])}\n`);
     await writable.write(`\n`);
 
     await writable.write(`[NO_WIDE_EW_OPENING]\n`);
-    await writable.write(`${getWideEWOpenings(values.buildings[index])}\n`);
+    await writable.write(`${getWideEWOpenings(state.buildings[index])}\n`);
     await writable.write(`\n`);
 
     // User Purlins
@@ -1657,7 +1655,7 @@ export function useExport() {
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[PARTIAL_WALLS_WALL${i}]\n`);
       await writable.write(
-        `${setPartialWalls(values.buildings[index], walls[i])}\n`
+        `${setPartialWalls(state.buildings[index], walls[i])}\n`
       );
     }
 
@@ -1665,7 +1663,7 @@ export function useExport() {
     for (let i = 1; i <= 4; i++) {
       await writable.write(`[WAINSCOT_WALL${i}]\n`);
       await writable.write(
-        `${setWainscot(values.buildings[index], walls[i])}\n`
+        `${setWainscot(state.buildings[index], walls[i])}\n`
       );
     }
     // Floor
@@ -1675,7 +1673,7 @@ export function useExport() {
 
     // Floor Layout
     await writable.write(`[FLOOR_LAYOUT]\n`);
-    await writable.write(`${getMezzanines(values.buildings[index])}\n`);
+    await writable.write(`${getMezzanines(state.buildings[index])}\n`);
     // Close and Save File
     await writable.close();
     const desCtrlFile = await desCtrlHandle.getFile();
@@ -4021,13 +4019,13 @@ export function useExport() {
     return returnValue;
   }
 
-  function getMandoors(values) {
-    const { mandoors } = values;
+  function getMandoors() {
+    const { mandoors } = state;
     let itemTotal = mandoors.length;
     let returnValue = `No_Doors=${itemTotal}\n`;
     let glass = '';
 
-    if (values > 0) {
+    if (state > 0) {
       return returnValue;
     }
 
@@ -4352,9 +4350,9 @@ export function useExport() {
     );
   }
 
-  function getCoverAccessories(values) {
+  function getCoverAccessories() {
     let returnValue = '';
-    const { mandoors, buildings } = values;
+    const { mandoors, buildings } = state;
     let itemNum = 0;
 
     let mandoor3070 = 0;
@@ -4694,7 +4692,7 @@ export function useExport() {
     return currentId;
   }
 
-  function getAdditionalLoads(values, building, bIndex) {
+  function getAdditionalLoads(bIndex) {
     let returnValue = '';
     const {
       shape,
@@ -4709,7 +4707,7 @@ export function useExport() {
       backGirtType,
       frontEaveHeight,
       backEaveHeight,
-    } = building;
+    } = state.buildings[bIndex];
     let itemNum = 0;
 
     if (
@@ -4722,8 +4720,8 @@ export function useExport() {
       //Add Snow Load to Open Lean-to with the same height as Main Building and if lean-to is connected to a sidewall
       //Could be connected to other buildings besides Main Building
       if (
-        frontEaveHeight == values.buildings[0].backEaveHeight ||
-        frontEaveHeight == values.builidngs[0].frontEaveHeight
+        frontEaveHeight == state.buildings[0].backEaveHeight ||
+        frontEaveHeight == state.builidngs[0].frontEaveHeight
       ) {
         itemNum++;
         returnValue += `Frame_Type${itemNum}=BUILD\n`;
