@@ -5,6 +5,7 @@ export const createBuilding = (buildingData) => {
 
   switch (shape) {
     case 'symmetrical':
+      // return createNonSymmetricalBuilding(buildingData);
       return createSymmetricalBuilding(buildingData);
     case 'singleSlope':
     case 'leanTo':
