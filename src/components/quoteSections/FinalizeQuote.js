@@ -99,78 +99,11 @@ const FinalizeQuote = ({ locked }) => {
     [estimators]
   );
 
-  const fieldsToValidate = [
-    {
-      field: 'windLoad',
-      validate: (value) => value >= 60 && value <= 145,
-      message:
-        'Wind load should be between 60 and 145 mph. Would you like to update it to 100?',
-      suggestedValue: 100,
-    },
-    {
-      field: 'seismicSs',
-      validate: (value) => value > 0,
-      message:
-        'Seismic Ss value was never found, would you like to look it up?',
-      suggestedValue: () => seismicData?.response?.data?.ss || 0,
-    },
-    {
-      field: 'seismicS1',
-      validate: (value) => value > 0,
-      message:
-        'Seismic S1 value was never found, would you like to look it up?',
-      suggestedValue: () => seismicData?.response?.data?.s1 || 0,
-    },
-    {
-      field: 'seismicSms',
-      validate: (value) => value > 0,
-      message:
-        'Seismic Sms value was never found, would you like to look it up?',
-      suggestedValue: () => smsData?.Sms || 0,
-    },
-    {
-      field: 'seismicSm1',
-      validate: (value) => value > 0,
-      message:
-        'Seismic Sm1 value was never found, would you like to look it up?',
-      suggestedValue: () => smsData?.Sm1 || 0,
-    },
-    {
-      field: 'seismicFa',
-      validate: (value) => value > 0,
-      message:
-        'Seismic Fa value was never found, would you like to calculate it?',
-      suggestedValue: () => seismicData?.response?.data?.fa || 0,
-    },
-    // Add more fields as needed
-  ];
-
-  const autoFillRules = useMemo(
-    () => [
-      {
-        field: 'backPeakOffset',
-        condition: (building) => building.shape === 'symmetrical',
-        setValue: (building) => building.width / 2,
-      },
-      {
-        field: 'frontEaveHeight',
-        condition: (building) => building.shape === 'symmetrical',
-        setValue: (building) => building.backEaveHeight,
-      },
-      {
-        field: 'leftBracingType',
-        condition: (building) => building.leftFrame !== 'postAndBeam',
-        setValue: (building) => 'none',
-      },
-    ],
-    []
-  );
-
   const handleSubmit = useCallback(
     async (e) => {
       try {
         exportPendingRef.current = true;
-        const isValid = await validateFields(fieldsToValidate, autoFillRules);
+        const isValid = await validateFields();
 
         if (isValidating) {
           return;
@@ -220,7 +153,7 @@ const FinalizeQuote = ({ locked }) => {
         exportPendingRef.current = false;
       }
     },
-    [validateFields, fieldsToValidate, autoFillRules]
+    [validateFields]
   );
 
   const handleReject = useCallback(async (e) => {
@@ -337,7 +270,7 @@ const FinalizeQuote = ({ locked }) => {
   const handleExport = useCallback(async () => {
     try {
       exportPendingRef.current = true;
-      const isValid = await validateFields(fieldsToValidate, autoFillRules);
+      const isValid = await validateFields();
 
       if (isValidating) {
         return;
@@ -363,14 +296,7 @@ const FinalizeQuote = ({ locked }) => {
       showRejectExport();
       exportPendingRef.current = false;
     }
-  }, [
-    validateFields,
-    fieldsToValidate,
-    autoFillRules,
-    isValidating,
-    createFolderAndFiles,
-    state,
-  ]);
+  }, [validateFields, isValidating, createFolderAndFiles, state]);
 
   const handleContract = useCallback(async () => {
     try {
