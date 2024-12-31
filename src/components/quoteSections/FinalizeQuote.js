@@ -22,7 +22,8 @@ const FinalizeQuote = ({ locked }) => {
     },
   });
   // Contexts
-  const { state, handleChange, setValues } = useBuildingContext();
+  const { state, handleChange, complexityInfo, setValues } =
+    useBuildingContext();
   const {
     companyData,
     rsms,
@@ -165,17 +166,8 @@ const FinalizeQuote = ({ locked }) => {
     []
   );
 
-  // const handleSave = useCallback(async () => {
-  //   const isValid = await validateFields([], autoFillRules);
-  //   if (isValid) {
-  //     console.log('Save successful');
-  //   }
-  // }, [validateFields, autoFillRules]);
-
   const handleSubmit = useCallback(
     async (e) => {
-      console.log('state at submit: ', state);
-      console.log('val at submit: ', state.quoteProgress | 4);
       try {
         exportPendingRef.current = true;
         const isValid = await validateFields(fieldsToValidate, autoFillRules);
@@ -188,12 +180,7 @@ const FinalizeQuote = ({ locked }) => {
           return;
         }
 
-        console.log('state after valid: ', state);
-        console.log('val after valid: ', state.quoteProgress | 4);
-
         exportPendingRef.current = false;
-
-        // console.log('progs: ', state.quoteProgress);
 
         const saveData = {
           currentQuote: state.quoteId || 0,
@@ -209,6 +196,7 @@ const FinalizeQuote = ({ locked }) => {
           projectManager: state.projectManager,
           estimator: state.estimator,
           checker: state.checker,
+          complexity: complexityInfo?.complexity || 1,
         };
 
         const response = await fetch('/api/auth/save', {
@@ -254,6 +242,7 @@ const FinalizeQuote = ({ locked }) => {
         projectManager: state.projectManager,
         estimator: state.estimator,
         checker: state.checker,
+        complexity: complexityInfo?.complexity || 1,
       };
 
       const response = await fetch('/api/auth/save', {
@@ -288,6 +277,7 @@ const FinalizeQuote = ({ locked }) => {
         projectManager: state.projectManager,
         estimator: state.estimator,
         checker: state.checker,
+        complexity: complexityInfo?.complexity || 1,
       };
 
       const response = await fetch('/api/auth/save', {
@@ -325,6 +315,7 @@ const FinalizeQuote = ({ locked }) => {
         projectManager: state.projectManager,
         estimator: state.estimator,
         checker: state.checker,
+        complexity: complexityInfo?.complexity || 1,
       };
 
       const response = await fetch('/api/auth/save', {
@@ -507,9 +498,6 @@ const FinalizeQuote = ({ locked }) => {
       />
     );
   }
-
-  // console.log(hasPermission(3) && isEstimator);
-  console.log('status: ', state);
 
   // JSX
   return (

@@ -96,6 +96,10 @@ p {
   color: var(--black);
 }
 
+button {
+  background: none;
+}
+
 /* !! Global Class Styles */
 
 /* Page Header Styles */
@@ -109,7 +113,17 @@ p {
   align-items: center;
 }
 
-.pageHeader button,
+.backIcon {
+  background: none;
+  color: var(--dark-blue);
+  margin-left: 2em;
+  border-color: transparent;
+  font-size: 1.5em;
+  align-self: center;
+  justify-self: flex-start;
+}
+
+/* .pageHeader button,
 .pageHeader .button {
   border: none;
   background: none;
@@ -124,6 +138,13 @@ p {
 .pageHeader .button:hover {
   background-color: transparent;
   color: var(--light-blue);
+} */
+
+.titleBox {
+  display: flex;
+  flex-flow: column nowrap;
+  color: var(--dark-blue);
+  align-items: center;
 }
 
 .avatarBox {
@@ -151,6 +172,32 @@ p {
 .avatar img {
   max-width: 100%;
   height: auto;
+}
+
+.complexityBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  margin-top: 0.5em;
+}
+
+.complexity {
+  font-size: 0.75em;
+  font-weight: 700;
+}
+
+.complexityButton {
+  padding: 0;
+  display: flex;
+  align-items: center;
+  margin: 0 !important;
+  color: var(--dark-blue);
+  font-size: 1.25em;
+}
+
+.complexityButton * {
+  font-size: 0.65em;
 }
 
 /* Global Card Styles */
@@ -489,7 +536,7 @@ select option:disabled {
   border-radius: 0.5em;
   background-color: var(--light-red);
   padding: 0.5em;
-  z-index: 99;
+  z-index: 101;
   /* box-shadow: var(--dark-gray) 2px 2px 3px; */
 }
 
@@ -793,6 +840,7 @@ label:has(.tooltip.left) {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 102;
 }
 
 .dialog-content {
@@ -802,7 +850,7 @@ label:has(.tooltip.left) {
   gap: 0.75em;
   background-color: var(--background-white);
   color: var(--black);
-  padding: 1em 3em 3em 3em;
+  padding: 1em 3em 2em 3em;
   border-radius: 10px;
 }
 
@@ -816,10 +864,31 @@ label:has(.tooltip.left) {
   text-align: center;
 }
 
+.dialog-category {
+  align-self: flex-start;
+  justify-self: flex-start;
+}
+
+.dialog-bullets {
+  text-align: left;
+  display: flex;
+  gap: 0 !important;
+  flex-flow: column nowrap;
+  list-style-type: circle !important;
+  font-size: 0.75em;
+  margin-bottom: 0.5em;
+}
+
 .dialog-buttons {
   display: flex;
   width: 100%;
   justify-content: space-around;
+}
+
+.dialog-button {
+  margin: 0 !important;
+  font-size: 1em !important;
+  color: var(--background-white) !important;
 }
 
 .dialog-content:has(.colorGroups) {

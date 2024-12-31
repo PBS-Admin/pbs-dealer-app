@@ -21,6 +21,7 @@ export async function POST(req) {
       projectManager,
       estimator,
       checker,
+      complexity,
     } = await req.json();
 
     const company = user.company;
@@ -56,9 +57,8 @@ export async function POST(req) {
 
           // Insert new quote
           if (session.user.estimator == 0 && session.user.permission < 3) {
-            console.log('spot 2 hit');
             result = await conn.query(
-              'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, SalesPerson, DateStarted) VALUES (?, ?, ?, ?, ?, ?, Now())',
+              'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, SalesPerson, Complexity, DateStarted) VALUES (?, ?, ?, ?, ?, ?, 1, Now())',
               [
                 quoteNumber,
                 state.customerName,
@@ -69,8 +69,6 @@ export async function POST(req) {
               ]
             );
           } else {
-            console.log('spot 3 hit');
-            console.log('state at this spot:', state);
             result = await conn.query(
               'INSERT INTO Dealer_Quotes (Quote, Customer, ProjectName, Company, QuoteData, DateStarted) VALUES (?, ?, ?, ?, ?, Now())',
               [
@@ -106,12 +104,11 @@ export async function POST(req) {
         );
       }
     } else if (currentQuote > 0) {
-      console.log('spot 1 hit');
-      console.log('progress at spot 1: ', state.quoteProgress);
       try {
+        // console.log('complex', complexityInfo?.complexity);
         await transaction(async (conn) => {
           await query(
-            'UPDATE Dealer_Quotes SET QuoteData = ?, Customer = ?, ProjectName = ?, Progress = ?, SalesPerson = ?, ProjectManager = ?, Estimator = ?, Checker = ? WHERE id = ?',
+            'UPDATE Dealer_Quotes SET QuoteData = ?, Customer = ?, ProjectName = ?, Progress = ?, SalesPerson = ?, ProjectManager = ?, Estimator = ?, Checker = ?, Complexity = ? WHERE id = ?',
             [
               JSON.stringify(state),
               state.customerName,
@@ -121,6 +118,7 @@ export async function POST(req) {
               projectManager,
               estimator,
               checker,
+              complexity,
               currentQuote,
             ]
           );

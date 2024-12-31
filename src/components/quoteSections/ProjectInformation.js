@@ -127,12 +127,36 @@ const ProjectInformation = ({ locked }) => {
 
   useEffect(() => {
     if (projectAddressDetails) {
+      // Set the building code when you autofill the address
+      let buildingCode;
+      switch (projectAddressDetails.state) {
+        case 'OR':
+          buildingCode = 'ossc22';
+          break;
+        case 'CA':
+          buildingCode = 'cbc22';
+          break;
+        case 'WA':
+        case 'AK':
+        case 'MT':
+          buildingCode = 'ibc21';
+          break;
+        case 'ID':
+        case 'NV':
+        case 'HI':
+          buildingCode = 'ibc18';
+          break;
+        default:
+          buildingCode = state.buildingCode;
+          break;
+      }
       setValues((prevValues) => ({
         ...prevValues,
         projectAddress: projectAddressDetails.street,
         projectCity: projectAddressDetails.city,
         projectState: projectAddressDetails.state,
         projectZip: projectAddressDetails.zip,
+        buildingCode: buildingCode,
       }));
     }
   }, [projectAddressDetails, setValues]);
@@ -711,11 +735,11 @@ const ProjectInformation = ({ locked }) => {
         message={currentPrompt?.Prompt}
         onConfirm={() => handleResponse(true)}
       />
-      <ReusableLoader
+      {/* <ReusableLoader
         isOpen={loading}
         title="Loading"
         message="Determining County..."
-      />
+      /> */}
     </>
   );
 };

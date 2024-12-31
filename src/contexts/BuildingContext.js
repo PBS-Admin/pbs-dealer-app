@@ -6,6 +6,7 @@ import {
   useReducer,
   useCallback,
   useEffect,
+  useMemo,
 } from 'react';
 import {
   initialState as defaultInitialState,
@@ -22,6 +23,7 @@ import {
   openingTemplate,
   mandoorTemplate,
   noteTemplate,
+  calculateBuildingMetrics,
 } from '../lib/initialState';
 
 const BuildingContext = createContext(undefined);
@@ -153,6 +155,8 @@ function buildingReducer(state, action) {
           updatedState.buildings = updatedBuildings;
         }
       } else {
+        console.log('hit update: ', name);
+
         // Handle numeric fields
         const newValue = [
           'thermalFactor',
@@ -952,6 +956,12 @@ export function BuildingProvider({
     ...initialState,
   });
 
+  // Call complexity hook to grab complexity info
+  const complexityInfo = useMemo(
+    () => calculateBuildingMetrics(state),
+    [state]
+  );
+
   useEffect(() => {
     // Reset state when component mounts
     setValues(initialState);
@@ -1320,6 +1330,7 @@ export function BuildingProvider({
 
   const value = {
     state,
+    complexityInfo,
     addBuilding,
     removeBuilding,
     copyBuilding,

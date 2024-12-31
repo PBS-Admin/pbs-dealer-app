@@ -6,14 +6,17 @@ import {
   faHouse,
   faDoorOpen,
   faRotateLeft,
+  faQuestionCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { signOut, useSession } from 'next-auth/react';
 import { useState, useCallback } from 'react';
 import { redirect, useRouter } from 'next/navigation';
+import ReusableDialog from './ReusableDialog';
 
-const PageHeader = ({ title, subtitle, backPage, onBack }) => {
+const PageHeader = ({ title, subtitle, complexityInfo, backPage, onBack }) => {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
@@ -66,6 +69,22 @@ const PageHeader = ({ title, subtitle, backPage, onBack }) => {
       break;
   }
 
+  const handleWhy = (e) => {
+    e.preventDefault();
+    // console.log(complexityInfo.reasons);
+    setIsDialogOpen(true);
+  };
+
+  const handleResponse = useCallback((response) => {
+    if (response) {
+      // User confirmed the prompt
+      setIsDialogOpen(false);
+    } else {
+      // User cancelled the prompt
+      setIsDialogOpen(false);
+    }
+  }, []);
+
   return (
     <header className="pageHeader">
       {backPage == 'logout' ? (
@@ -77,13 +96,25 @@ const PageHeader = ({ title, subtitle, backPage, onBack }) => {
           <FontAwesomeIcon icon={faDoorOpen} />
         </button>
       ) : (
-        <button onClick={handleBack} className="button">
+        <button onClick={handleBack} className="backIcon">
           <FontAwesomeIcon icon={backIcon} />
         </button>
       )}
-      <div>
+      <div className="titleBox">
         <h1>{title}</h1>
         {subtitle && <h4>{subtitle}</h4>}
+        {complexityInfo && (
+          <div className="complexityBox">
+            <small className="complexity">
+              Complexity: {complexityInfo.complexity}
+            </small>
+            {complexityInfo.complexity > 1 && (
+              <button onClick={handleWhy} className="complexityButton">
+                <FontAwesomeIcon icon={faQuestionCircle} />
+              </button>
+            )}
+          </div>
+        )}
       </div>
       <div className="avatarBox">
         {session?.user && (
@@ -100,6 +131,15 @@ const PageHeader = ({ title, subtitle, backPage, onBack }) => {
           </>
         )}
       </div>
+      <ReusableDialog
+        isOpen={isDialogOpen}
+        onClose={() => handleResponse(false)}
+        title={`Complexity Reasons:`}
+        message={complexityInfo}
+        onConfirm={() => handleResponse(true)}
+        onlyConfirm={true}
+        isComplexity={true}
+      />
     </header>
   );
 };
