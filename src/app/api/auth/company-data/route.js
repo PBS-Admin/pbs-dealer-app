@@ -31,7 +31,7 @@ export async function GET(req) {
     const [companyData, rsms, projectManagers, estimators] = await Promise.all([
       // Company data query
       query(
-        'SELECT ID, Name, Terms, Initials, Line1, Line2, Line3, Line4, Line5, Line6, Line7, Line8 FROM Dealer_Company WHERE ID = ?',
+        'SELECT ID, Name, Address1, Address2, Terms, Initials, Line1, Line2, Line3, Line4, Line5, Line6, Line7, Line8 FROM Dealer_Company WHERE ID = ?',
         [companyId]
       ),
 

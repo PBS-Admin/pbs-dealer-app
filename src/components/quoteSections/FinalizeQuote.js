@@ -309,6 +309,8 @@ const FinalizeQuote = ({ locked }) => {
         ...state,
         companyId: companyData.ID,
         companyName: companyData.Name,
+        companyAddress: companyData.Address1 || '',
+        companyCityStateZip: companyData.Address2 || '',
         terms: companyData.Terms === null ? '' : JSON.parse(companyData.Terms),
         initials: companyData.Initials || '',
         line1: companyData.Line1 || '',
