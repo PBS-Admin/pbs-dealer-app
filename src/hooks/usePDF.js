@@ -199,6 +199,7 @@ export function usePDF() {
       line6,
       line7,
       line8,
+      complexity,
       ...state
     } = contractData;
     const pdfDoc = await PDFDocument.create();
@@ -358,11 +359,11 @@ export function usePDF() {
     let j = 0;
     let k = 0;
 
-    //THESE ARE TEMP
-    const tempPrice = 0;
-    const tempWeight = 0;
+    // ! THESE ARE TEMP
+    const tempPrice = state.contractPrice || 0;
+    const tempWeight = state.contractWeight || 0;
     const tempEngOnly = false;
-    const tempComp = 0;
+    const tempComp = complexity || 0;
 
     const drawCheckBox = (page, text, x, y, check = false) => {
       page.drawRectangle({

@@ -4,17 +4,14 @@ import {
   faCalculator,
   faMagnifyingGlass,
   faCircleInfo,
+  faFileInvoiceDollar,
 } from '@fortawesome/free-solid-svg-icons';
 
-const formatDouble = (value, decimalPlaces) => {
+const formatDouble = (value, decimalPlaces, prefix = '', suffix = '') => {
   const number = parseFloat(value);
-
-  /*
-  return isNaN(number)
-    ? `0.${'0'.repeat(decimalPlaces)}`
-    : number.toFixed(decimalPlaces);
-*/
-  return isNaN(number) ? '' : number.toFixed(decimalPlaces);
+  if (isNaN(number)) return '';
+  const formatted = number.toFixed(decimalPlaces);
+  return `${prefix}${formatted}${suffix}`;
 };
 
 const parseDouble = (input) => {
@@ -42,11 +39,14 @@ const ReusableDouble = ({
     calculator: faCalculator,
     lookup: faMagnifyingGlass,
     info: faCircleInfo,
+    import: faFileInvoiceDollar,
   };
 
   useEffect(() => {
-    setInputValue(formatDouble(value, decimalPlaces));
-  }, [value, decimalPlaces]);
+    const prefix = name === 'contractPrice' ? '$ ' : '';
+    const suffix = name === 'contractWeight' ? ' lbs' : '';
+    setInputValue(formatDouble(value, decimalPlaces, prefix, suffix));
+  }, [value, decimalPlaces, name]);
   /*
   useEffect(() => {
     // Update placeholder when decimalPlaces changes
@@ -64,18 +64,15 @@ const ReusableDouble = ({
   };
 
   const handleBlur = () => {
-    /*
-    const parsedValue = parseDouble(inputValue);
-    const formattedValue = formatDouble(parsedValue, decimalPlaces);
-    setInputValue(formattedValue);
-*/
-    const parsedValue = formatDouble(inputValue, decimalPlaces);
-    setInputValue(parsedValue);
-    // Only call onChange when the input loses focus
+    const prefix = name === 'contractPrice' ? '$ ' : '';
+    const suffix = name === 'contractWeight' ? ' lbs' : '';
+    const numericValue = parseFloat(inputValue.replace(/[^\d.-]/g, '')) || 0;
+    setInputValue(formatDouble(numericValue, decimalPlaces, prefix, suffix));
     onChange({
       target: {
         name: name,
-        value: parsedValue,
+        value: numericValue,
+        type: 'number',
       },
     });
   };

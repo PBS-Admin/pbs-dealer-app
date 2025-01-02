@@ -155,8 +155,6 @@ function buildingReducer(state, action) {
           updatedState.buildings = updatedBuildings;
         }
       } else {
-        console.log('hit update: ', name);
-
         // Handle numeric fields
         const newValue = [
           'thermalFactor',
@@ -170,6 +168,8 @@ function buildingReducer(state, action) {
           'deadLoad',
           'roofSnowLoad',
           'groundSnowLoad',
+          'contractPrice',
+          'contractWeight',
         ].includes(name)
           ? parseFloat(value)
           : value;

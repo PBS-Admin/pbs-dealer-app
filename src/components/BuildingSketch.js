@@ -25,8 +25,6 @@ const BuildingSketch = () => {
       currentView
     );
 
-  console.log(state.projectName);
-
   const updateBuilding = useCallback(() => {
     updateCountRef.current++;
     if (!isSetup || !scene) return;

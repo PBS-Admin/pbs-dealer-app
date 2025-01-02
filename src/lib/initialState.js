@@ -3,6 +3,8 @@ export const initialState = {
   quoteNumber: '',
   revNumber: 0,
   customerName: '',
+  contractPrice: '0',
+  contractWeight: '0',
   contactName: '',
   customerAddress: '',
   customerCity: '',
