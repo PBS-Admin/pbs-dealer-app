@@ -33,7 +33,7 @@ export default async function Quote({ params }) {
       let queryParams = [quoteId];
 
       // Restrict by company for lower permission levels
-      if (session.user.permission < 5) {
+      if (session.user.permission < 5 && session.user.estimator != 1) {
         quotesQuery += ' AND Company = ?';
         queryParams.push(session.user.company);
       }

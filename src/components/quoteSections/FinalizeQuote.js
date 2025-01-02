@@ -12,6 +12,7 @@ import { useUserContext } from '@/contexts/UserContext';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { redirect } from 'next/navigation';
+import ReusableDouble from '../Inputs/ReusableDouble';
 
 const FinalizeQuote = ({ locked }) => {
   const router = useRouter();
@@ -60,6 +61,7 @@ const FinalizeQuote = ({ locked }) => {
     getSmsLoad();
   }, [getSeismicLoad, getSmsLoad]);
 
+  // Fill out rsm dropdown field
   const rsmOptions = useMemo(
     () => [
       { id: '', label: '-- Select Sales Person --' },
@@ -72,7 +74,7 @@ const FinalizeQuote = ({ locked }) => {
     ],
     [rsms]
   );
-
+  // Fill out project manager dropdown field
   const pmOptions = useMemo(
     () => [
       { id: '', label: '-- Select Project Manager --' },
@@ -85,7 +87,7 @@ const FinalizeQuote = ({ locked }) => {
     ],
     [projectManagers]
   );
-
+  // Fill out estimator/checker dropdown field
   const estimatorOptions = useMemo(
     () => [
       { id: '', label: '-- Select Estimator/Checker --' },
@@ -305,6 +307,8 @@ const FinalizeQuote = ({ locked }) => {
         return;
       }
 
+      console.log(complexityInfo.complexity);
+
       const contractData = {
         ...state,
         companyId: companyData.ID,
@@ -321,6 +325,7 @@ const FinalizeQuote = ({ locked }) => {
         line6: companyData.Line6 || '',
         line7: companyData.Line7 || '',
         line8: companyData.Line8 || '',
+        complexity: complexityInfo.complexity,
       };
 
       const pdfBytes = await createContract(contractData);
@@ -417,6 +422,54 @@ const FinalizeQuote = ({ locked }) => {
     await writable.close();
   };
 
+  const handleImport = useCallback(async () => {
+    try {
+      const jobFolderHandle = await window.showDirectoryPicker({
+        id: 'CDriveSelection',
+        mode: 'readwrite',
+        title: 'Select your jobs folder',
+      });
+
+      const mbsJobFolder = await jobFolderHandle.getDirectoryHandle(
+        state.quoteNumber,
+        {
+          create: false,
+        }
+      );
+
+      const newPDWGFileHandle = await mbsJobFolder.getFileHandle(
+        'bldgStats.txt',
+        {
+          create: false,
+        }
+      );
+
+      const file = await newPDWGFileHandle.getFile();
+      const text = await file.text();
+
+      const lines = text.split('\n');
+
+      const buildingWeight = lines
+        .find((line) => line.startsWith('Total_Wt'))
+        ?.split(',')[1]
+        .trim();
+
+      const finalPrice = lines
+        .find((line) => line.startsWith('Price'))
+        ?.split(',')[1]
+        .trim();
+
+      // Set the weight and price in the state
+      setValues({
+        ...state,
+        contractWeight: buildingWeight,
+        contractPrice: finalPrice,
+      });
+    } catch (error) {
+      console.error('Error parsing file:', error);
+    }
+  }, []);
+
   if (isLoading) {
     return (
       <ReusableLoader
@@ -474,7 +527,8 @@ const FinalizeQuote = ({ locked }) => {
             >
               Notes for Estimator
             </button>
-            {hasPermission(8) && (
+            {((state.contractPrice > 0 && state.contractWeight > 0) ||
+              hasPermission(8)) && (
               <>
                 <button
                   type="button"
@@ -606,6 +660,41 @@ const FinalizeQuote = ({ locked }) => {
           </div>
         </section>
       )}
+
+      <section className="card">
+        <header className="cardHeader">
+          <h3>Cost / Weight</h3>
+        </header>
+
+        <div className="grid4 alignTop assign">
+          <ReusableDouble
+            id={'contractWeight'}
+            value={state.contractWeight || 0}
+            onChange={handleChange}
+            name={'contractWeight'}
+            label={
+              <>
+                Fab Weight: <small>(lbs)</small>
+              </>
+            }
+            icon={complexityInfo.complexity < 3 ? 'import' : ''}
+            iconClass={'prim'}
+            iconOnClick={handleImport}
+            tooltip="Import price and weight"
+            disabled={locked}
+            decimalPlaces={2}
+          />
+          <ReusableDouble
+            id={'contractPrice'}
+            value={state.contractPrice || 0}
+            onChange={handleChange}
+            name={'contractPrice'}
+            label={'Contract Price:'}
+            disabled={locked}
+            decimalPlaces={2}
+          />
+        </div>
+      </section>
 
       <ReusableLoader isOpen={isExporting} title="Loading" message={status} />
       <ReusableDialog
