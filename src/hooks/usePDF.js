@@ -359,9 +359,10 @@ export function usePDF() {
     let k = 0;
 
     //THESE ARE TEMP
-    const tempPrice = 12345678;
-    const tempWeight = 54321;
+    const tempPrice = 0;
+    const tempWeight = 0;
     const tempEngOnly = false;
+    const tempComp = 0;
 
     const drawCheckBox = (page, text, x, y, check = false) => {
       page.drawRectangle({
@@ -624,6 +625,7 @@ export function usePDF() {
     textCenter(page, line7, 326, 717.375, 118);
     textCenter(page, line8, 326, 704.875, 118);
 
+    textSmallItalicRight(page, 'Comp: ' + tempComp, 590, 749);
     textLargeLeft(page, 'Job Number:', 394, 736.125);
     textLeft(page, 'Quote Number:', 394, 720.5);
     textLeft(page, 'Salesperson:', 394, 704.875);
