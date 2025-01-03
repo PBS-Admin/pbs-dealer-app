@@ -91,7 +91,7 @@ const PageHeader = ({ title, subtitle, complexityInfo, backPage, onBack }) => {
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
-          className={isLoggingOut ? 'opacity-50' : ''}
+          className="backIcon"
         >
           <FontAwesomeIcon icon={faDoorOpen} />
         </button>

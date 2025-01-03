@@ -528,26 +528,27 @@ const FinalizeQuote = ({ locked }) => {
               Notes for Estimator
             </button>
             {((state.contractPrice > 0 && state.contractWeight > 0) ||
-              hasPermission(8)) && (
-              <>
-                <button
-                  type="button"
-                  className="nuetral"
-                  onClick={handleContract}
-                >
-                  Create Contract
-                </button>
-                <button
-                  type="button"
-                  className="nuetral"
-                  onClick={() => {
-                    console.log(state);
-                  }}
-                >
-                  Open Contract
-                </button>
-              </>
-            )}
+              hasPermission(8)) &&
+              state.quoteNumber != '' && (
+                <>
+                  <button
+                    type="button"
+                    className="nuetral"
+                    onClick={handleContract}
+                  >
+                    Create Contract
+                  </button>
+                  <button
+                    type="button"
+                    className="nuetral"
+                    onClick={() => {
+                      console.log(state);
+                    }}
+                  >
+                    Open Contract
+                  </button>
+                </>
+              )}
           </div>
           <div className="divider showWithSidebar span2"></div>
           {!locked && (
