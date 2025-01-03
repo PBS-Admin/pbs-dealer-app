@@ -47,8 +47,11 @@ import {
   wallsOuterBoth,
 } from '../util/dropdownOptions';
 import { jsx } from 'react/jsx-runtime';
+import { useUserContext } from '@/contexts/UserContext';
 
 export function usePDF() {
+  const { getNameById } = useUserContext();
+
   const formatFeetInches = (decimal) => {
     const feet = parseInt(decimal);
     const inches = Math.abs(Math.round((decimal - feet) * 12 * 10000) / 10000); //round to 4 decimal places
@@ -199,8 +202,13 @@ export function usePDF() {
       line6,
       line7,
       line8,
+      complexity,
+      contractPrice,
+      contractWeight,
+      salesPerson,
       ...state
     } = contractData;
+
     const pdfDoc = await PDFDocument.create();
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     const italicFont = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
@@ -359,10 +367,10 @@ export function usePDF() {
     let k = 0;
 
     //THESE ARE TEMP
-    const tempPrice = 0;
-    const tempWeight = 0;
+    const tempPrice = contractPrice || 0;
+    const tempWeight = contractWeight || 0;
     const tempEngOnly = false;
-    const tempComp = 0;
+    const tempComp = complexity || 0;
 
     const drawCheckBox = (page, text, x, y, check = false) => {
       page.drawRectangle({
@@ -632,7 +640,7 @@ export function usePDF() {
 
     textLargeBoldLeft(page, '', 470, 736.125, 120);
     textBoldLeft(page, quoteNum, 470, 720.5, 120);
-    textBoldLeft(page, '', 470, 704.875, 120);
+    textBoldLeft(page, getNameById(salesPerson).name, 470, 704.875, 120);
 
     currentY = 696;
     lineThick(page, 390, 758.5, 390, 696);
@@ -2114,8 +2122,6 @@ export function usePDF() {
             : state.buildings[i].rightFrame == 'insetRF'
               ? wallsOuterRight
               : walls;
-
-      console.log('test: ', wallsInBldg);
 
       for (j = 0; j < wallsInBldg.length; j++) {
         wallBracingType =
