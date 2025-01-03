@@ -83,6 +83,11 @@ function useValidation(initialFormValues, setFormValues) {
         setValue: (building) => building.width / 2,
       },
       {
+        field: 'frontRoofPitch',
+        condition: (building) => building.shape === 'symmetrical',
+        setValue: (building) => building.backRoofPitch,
+      },
+      {
         field: 'frontEaveHeight',
         condition: (building) => building.shape === 'symmetrical',
         setValue: (building) => building.backEaveHeight,
@@ -91,6 +96,66 @@ function useValidation(initialFormValues, setFormValues) {
         field: 'leftBracingType',
         condition: (building) => building.leftFrame !== 'postAndBeam',
         setValue: (building) => 'none',
+      },
+      {
+        field: 'frontWallPanelType',
+        condition: (building) => building.allWallsSame === true,
+        setValue: (building) => building.wallPanelType,
+      },
+      {
+        field: 'backWallPanelType',
+        condition: (building) => building.allWallsSame === true,
+        setValue: (building) => building.wallPanelType,
+      },
+      {
+        field: 'leftWallPanelType',
+        condition: (building) => building.allWallsSame === true,
+        setValue: (building) => building.wallPanelType,
+      },
+      {
+        field: 'rightWallPanelType',
+        condition: (building) => building.allWallsSame === true,
+        setValue: (building) => building.wallPanelType,
+      },
+      {
+        field: 'frontWallPanelGauge',
+        condition: (building) => building.allWallsSame === true,
+        setValue: (building) => building.wallPanelGauge,
+      },
+      {
+        field: 'backWallPanelGauge',
+        condition: (building) => building.allWallsSame === true,
+        setValue: (building) => building.wallPanelGauge,
+      },
+      {
+        field: 'leftWallPanelGauge',
+        condition: (building) => building.allWallsSame === true,
+        setValue: (building) => building.wallPanelGauge,
+      },
+      {
+        field: 'rightWallPanelGauge',
+        condition: (building) => building.allWallsSame === true,
+        setValue: (building) => building.wallPanelGauge,
+      },
+      {
+        field: 'frontWallPanelFinish',
+        condition: (building) => building.allWallsSame === true,
+        setValue: (building) => building.wallPanelFinish,
+      },
+      {
+        field: 'backWallPanelFinish',
+        condition: (building) => building.allWallsSame === true,
+        setValue: (building) => building.wallPanelFinish,
+      },
+      {
+        field: 'leftWallPanelFinish',
+        condition: (building) => building.allWallsSame === true,
+        setValue: (building) => building.wallPanelFinish,
+      },
+      {
+        field: 'rightWallPanelFinish',
+        condition: (building) => building.allWallsSame === true,
+        setValue: (building) => building.wallPanelFinish,
       },
     ],
     []

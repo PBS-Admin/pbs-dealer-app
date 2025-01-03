@@ -179,8 +179,27 @@ function buildingReducer(state, action) {
 
         // Only update buildings if they exist and the field exists in buildings
         if (state.buildings && Array.isArray(state.buildings)) {
+          const fieldsToCompare = [
+            'collateralLoad',
+            'liveLoad',
+            'deadLoad',
+            'roofSnowLoad',
+          ];
+          const selectsToCompare = ['thermalFactor', 'windEnclosure'];
+
           const updatedBuildings = state.buildings.map((building) => {
             if (building && name in building) {
+              if (fieldsToCompare.includes(name)) {
+                return {
+                  ...building,
+                  [name]: building[name] < newValue ? newValue : building[name],
+                };
+              } else if (selectsToCompare.includes(name)) {
+                return {
+                  ...building,
+                  [name]: newValue,
+                };
+              }
               return {
                 ...building,
                 [name]: building[name] == 0 ? newValue : building[name],

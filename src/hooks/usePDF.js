@@ -199,7 +199,6 @@ export function usePDF() {
       line6,
       line7,
       line8,
-      complexity,
       ...state
     } = contractData;
     const pdfDoc = await PDFDocument.create();
@@ -359,11 +358,11 @@ export function usePDF() {
     let j = 0;
     let k = 0;
 
-    // ! THESE ARE TEMP
-    const tempPrice = state.contractPrice || 0;
-    const tempWeight = state.contractWeight || 0;
+    //THESE ARE TEMP
+    const tempPrice = 0;
+    const tempWeight = 0;
     const tempEngOnly = false;
-    const tempComp = complexity || 0;
+    const tempComp = 0;
 
     const drawCheckBox = (page, text, x, y, check = false) => {
       page.drawRectangle({
@@ -1816,6 +1815,7 @@ export function usePDF() {
         currentY -= lineHt;
 
         wallsInBldg = walls;
+
         for (j = 0; j < wallsInBldg.length; j++) {
           if (state.buildings[i][`${wallsInBldg[j].id}ExtensionWidth`]) {
             textLeft(page, 'Location:', 22, currentY + textOffsetY);
@@ -2114,6 +2114,8 @@ export function usePDF() {
             : state.buildings[i].rightFrame == 'insetRF'
               ? wallsOuterRight
               : walls;
+
+      console.log('test: ', wallsInBldg);
 
       for (j = 0; j < wallsInBldg.length; j++) {
         wallBracingType =

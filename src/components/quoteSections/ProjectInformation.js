@@ -29,7 +29,7 @@ const ProjectInformation = ({ locked }) => {
     state,
     setValues
   );
-  const { getSnowLoad, snowData } = useSnow(state);
+  const { getSnowLoad, snowData } = useSnow(state, handleChange);
   const { getSeismicLoad, seismicData, getSmsLoad, smsData } =
     useSeismic(state);
   const { locationData, loading, error, fetchGeocodingData } = useGeocoding();

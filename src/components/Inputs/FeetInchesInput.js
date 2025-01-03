@@ -1,71 +1,87 @@
 import React, { useState, useEffect } from 'react';
 
+const snapToFraction = (decimal) => {
+  const fraction = 1 / 192; // 1/16 of an inch in feet (1/16 * 1/12)
+  return Math.round(decimal / fraction) * fraction;
+};
+
 const feetToDecimal = (feet, inches) => {
+  const totalFeet = parseFloat(inches) / 12;
   return feet < 0
-    ? parseFloat(feet) - parseFloat(inches) / 12
-    : parseFloat(feet) + parseFloat(inches) / 12;
+    ? snapToFraction(parseFloat(feet) - totalFeet)
+    : snapToFraction(parseFloat(feet) + totalFeet);
 };
 
 const decimalToFeetInches = (decimal) => {
-  const feet = parseInt(decimal);
-  const inches = Math.abs(Math.round((decimal - feet) * 12 * 10000) / 10000); //round to 4 decimal places
+  const snappedDecimal = snapToFraction(decimal);
+  const feet = Math.floor(snappedDecimal);
+  const inches = (snappedDecimal - feet) * 12;
   return { feet, inches };
 };
 
 const formatFeetInches = (feet, inches) => {
+  if (isNaN(feet) || isNaN(inches)) return `0'-0"`;
+
   let ft = feet;
   let inch = Math.floor(inches);
   let numerator = Math.round((inches - inch) * 16);
-  let denominator = 0;
 
-  if (numerator > 15) {
+  if (numerator === 16) {
     numerator = 0;
-    inch += inch;
+    inch += 1;
   }
-  if (inch > 11) {
+  if (inch === 12) {
     inch = 0;
     ft += 1;
   }
 
-  if (numerator % 8 == 0) {
-    numerator = Math.floor(numerator / 8);
-    denominator = 2;
-  } else if (numerator % 4 == 0) {
-    numerator = Math.floor(numerator / 4);
-    denominator = 4;
-  } else if (numerator % 2 == 0) {
-    numerator = Math.floor(numerator / 2);
-    denominator = 8;
-  } else {
-    denominator = 16;
-  }
-
-  if (isNaN(feet) || isNaN(inches)) {
-    return `0'-0"`;
-  } else if (numerator > 0) {
-    return `${ft}'-${inch} ${numerator}/${denominator}"`;
-  } else {
+  if (numerator === 0) {
     return `${ft}'-${inch}"`;
   }
-  // return `${feet}'-${inches.toString().padStart(1, '0')}"`;
+
+  // Simplify fraction
+  let denominator = 16;
+  if (numerator % 8 === 0) {
+    numerator /= 8;
+    denominator = 2;
+  } else if (numerator % 4 === 0) {
+    numerator /= 4;
+    denominator = 4;
+  } else if (numerator % 2 === 0) {
+    numerator /= 2;
+    denominator = 8;
+  }
+
+  return `${ft}'-${inch} ${numerator}/${denominator}"`;
 };
 
 const parseFeetInches = (input, neg) => {
+  if (!input || input === '') return decimalToFeetInches(0);
+
   // Handle decimal input
-  if (input == '') {
-    return decimalToFeetInches(0);
-  } else if ((parseFloat(input) >= 0 || neg) && !isNaN(parseFloat(input))) {
-    return decimalToFeetInches(parseFloat(input));
-  } else if (parseFloat(input) < 0 && !neg) {
+  const numericValue = parseFloat(input);
+  if (!isNaN(numericValue) && !input.includes("'")) {
+    if (numericValue >= 0 || neg) {
+      return decimalToFeetInches(numericValue);
+    }
     return null;
   }
 
-  const regex =
-    /^(\d+(?:\.\d+)?)(?:'|ft)?(?:\s*-?\s*(\d+(?:\.\d+)?)(?:"|in)?)?$/;
+  // Parse feet and inches format with fractions
+  const regex = /^(-?\d+)'(?:-?\s*(\d+)(?:\s+(\d+)\/(\d+))?)?"/;
   const match = input.match(regex);
+
   if (match) {
-    const feet = parseFloat(match[1]);
-    const inches = match[2] ? parseFloat(match[2]) : 0;
+    const feet = match[1] ? parseFloat(match[1]) : 0;
+    let inches = 0;
+
+    if (match[2]) {
+      inches = parseFloat(match[2]);
+      if (match[3] && match[4]) {
+        inches += parseFloat(match[3]) / parseFloat(match[4]);
+      }
+    }
+
     return { feet, inches };
   }
   return null;
@@ -89,48 +105,56 @@ const FeetInchesInput = ({
   disabled,
 }) => {
   const [inputValue, setInputValue] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
-    const { feet, inches } = decimalToFeetInches(value);
-    setInputValue(
-      value == 0 && !allowZero ? '' : formatFeetInches(feet, inches)
-    );
-  }, [value]);
+    if (!isFocused) {
+      const { feet, inches } = decimalToFeetInches(value);
+      setInputValue(
+        value === 0 && !allowZero ? '' : formatFeetInches(feet, inches)
+      );
+    }
+  }, [value, allowZero, isFocused]);
 
   const handleInputChange = (e) => {
-    const newInputValue = e.target.value;
-    setInputValue(newInputValue);
+    setInputValue(e.target.value);
   };
 
   const handleBlur = () => {
+    setIsFocused(false);
     const parsed = parseFeetInches(inputValue, negative);
     if (parsed) {
       const { feet, inches } = parsed;
       const decimalValue = feetToDecimal(feet, inches);
-      const event = { target: { name: name, value: decimalValue } };
-      onChange(event);
-      setInputValue(
-        (inputValue == 0 && !allowZero) || (inputValue == '' && allowBlankValue)
-          ? ''
-          : formatFeetInches(feet, inches)
-      );
+      onChange({ target: { name, value: decimalValue } });
+
+      if ((inputValue === '0' || inputValue === '') && !allowZero) {
+        setInputValue('');
+      } else if (inputValue === '' && allowBlankValue) {
+        setInputValue('');
+      } else {
+        const formatted = formatFeetInches(feet, inches);
+        setInputValue(formatted);
+      }
     } else {
-      // Reset to the last valid value
       const { feet, inches } = decimalToFeetInches(value);
       setInputValue(
-        value == 0 && !allowZero ? '' : formatFeetInches(feet, inches)
+        value === 0 && !allowZero ? '' : formatFeetInches(feet, inches)
       );
     }
   };
 
-  const condition = row ? 'projInput' : '';
-  const calcClass = calc ? 'calcInput' : '';
+  const handleFocus = (e) => {
+    setIsFocused(true);
+    e.target.select();
+    if (onFocus) onFocus();
+  };
 
   return (
-    <div className={`cardInput ${condition}`}>
+    <div className={`cardInput ${row ? 'projInput' : ''}`}>
       {showLabel && (
-        <div className={`${calcClass} ${labelClass}`}>
-          <label className={labelClass} htmlFor={name}>
+        <div className={`${calc ? 'calcInput' : ''} ${labelClass}`}>
+          <label htmlFor={name}>
             <span>{label}</span>
           </label>
           {calc && (
@@ -147,12 +171,7 @@ const FeetInchesInput = ({
         value={inputValue}
         onChange={handleInputChange}
         onBlur={handleBlur}
-        onFocus={(e) => {
-          e.target.select();
-          if (onFocus) {
-            onFocus();
-          }
-        }}
+        onFocus={handleFocus}
         placeholder={placeholder}
         disabled={disabled}
       />
