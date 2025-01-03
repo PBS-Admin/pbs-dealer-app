@@ -505,7 +505,7 @@ const ProjectInformation = ({ locked }) => {
 
       <section className="card">
         <header className="cardHeader">
-          <h3>Design Codes</h3>
+          <h3>Global Project Design Codes</h3>
         </header>
         <div className="grid2">
           <ReusableSelect

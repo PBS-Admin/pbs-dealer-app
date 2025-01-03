@@ -48,11 +48,14 @@ const BuildingOpenings = ({ locked }) => {
     ].filter((wall) => wall.girtType !== 'open');
 
     const partitionWalls = state.buildings[activeBuilding].partitions.map(
-      (partition, index) => ({
-        key: `partition${index + 1}`,
-        name: `Partition ${index + 1}`,
-        girtType: 'partition',
-      })
+      (partition, index) => {
+        // console.log(partition);
+        return {
+          key: `partition${index + 1}`,
+          name: `Partition ${index + 1}`,
+          girtType: 'partition',
+        };
+      }
     );
 
     return [...mainWalls, ...partitionWalls];
@@ -92,160 +95,168 @@ const BuildingOpenings = ({ locked }) => {
     }
   };
 
-  const renderOpeningInputs = (opening, openingIndex) => (
-    <>
-      <div
-        className={`tableGrid7 ${openingIndex == activeOpening ? 'activeRow' : ''}`}
-      >
-        <ReusableInteger
-          name={`building-${activeBuilding}-openingBay-${openingIndex}`}
-          value={opening.bay}
-          label="Bay:"
-          labelClass="offOnTablet"
-          min="1"
-          max={`${state.buildings[`${activeBuilding}`][`${activeWallKey}BaySpacing`].length}`}
-          allowBlankValue={true}
-          onChange={(e) => {
-            handleOpeningChange(
-              activeBuilding,
-              activeWallKey,
-              openingIndex,
-              'bay',
-              e.target.value
-            );
-          }}
-          onFocus={() => {
-            if (activeOpening !== openingIndex) {
-              setActiveOpening(openingIndex);
-            }
-          }}
-          placeholder="Bay"
-          disabled={locked}
-        />
-        <ReusableSelect
-          name={`building-${activeBuilding}-openingType-${openingIndex}`}
-          value={opening.openType}
-          label="Type:"
-          labelClass="offOnTablet"
-          onChange={(e) =>
-            handleOpeningChange(
-              activeBuilding,
-              activeWallKey,
-              openingIndex,
-              'openType',
-              e.target.value
-            )
-          }
-          onFocus={() => {
-            if (activeOpening !== openingIndex) {
-              setActiveOpening(openingIndex);
-            }
-          }}
-          options={openingTypes}
-          disabled={locked}
-        />
-        <FeetInchesInput
-          name={`building-${activeBuilding}-openingWidth-${openingIndex}`}
-          label="Width:"
-          labelClass="offOnTablet"
-          value={opening.width}
-          allowBlankValue={true}
-          onChange={(e) => {
-            handleOpeningChange(
-              activeBuilding,
-              activeWallKey,
-              openingIndex,
-              'width',
-              e.target.value
-            );
-          }}
-          onFocus={() => {
-            if (activeOpening !== openingIndex) {
-              setActiveOpening(openingIndex);
-            }
-          }}
-          disabled={locked}
-        />
-        <FeetInchesInput
-          name={`building-${activeBuilding}-openingHeight-${openingIndex}`}
-          label="Height:"
-          labelClass="offOnTablet"
-          value={opening.height}
-          allowBlankValue={true}
-          onChange={(e) =>
-            handleOpeningChange(
-              activeBuilding,
-              activeWallKey,
-              openingIndex,
-              'height',
-              e.target.value
-            )
-          }
-          onFocus={() => {
-            if (activeOpening !== openingIndex) {
-              setActiveOpening(openingIndex);
-            }
-          }}
-          disabled={locked}
-        />
-        <FeetInchesInput
-          name={`building-${activeBuilding}-openingSill-${openingIndex}`}
-          label="Sill:"
-          labelClass="offOnTablet"
-          value={opening.sill}
-          allowBlankValue={true}
-          allowZero={true}
-          onChange={(e) =>
-            handleOpeningChange(
-              activeBuilding,
-              activeWallKey,
-              openingIndex,
-              'sill',
-              e.target.value
-            )
-          }
-          onFocus={() => {
-            if (activeOpening !== openingIndex) {
-              setActiveOpening(openingIndex);
-            }
-          }}
-          disabled={locked}
-        />
-        <FeetInchesInput
-          name={`building-${activeBuilding}-openingOffset-${openingIndex}`}
-          label="Offset:"
-          labelClass="offOnTablet"
-          value={opening.offset}
-          allowBlankValue={true}
-          allowZero={true}
-          onChange={(e) =>
-            handleOpeningChange(
-              activeBuilding,
-              activeWallKey,
-              openingIndex,
-              'offset',
-              e.target.value
-            )
-          }
-          onFocus={() => {
-            if (activeOpening !== openingIndex) {
-              setActiveOpening(openingIndex);
-            }
-          }}
-          disabled={locked}
-        />
-        <button
-          type="button"
-          className="icon reject deleteRow"
-          onClick={() => handleRemoveOpening(openingIndex)}
-          disabled={locked}
+  const renderOpeningInputs = (opening, openingIndex) => {
+    return (
+      <>
+        <div
+          className={`tableGrid7 ${openingIndex == activeOpening ? 'activeRow' : ''}`}
         >
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
-      </div>
-      <div className="divider offOnTablet"></div>
-    </>
-  );
+          <ReusableInteger
+            name={`building-${activeBuilding}-openingBay-${openingIndex}`}
+            value={opening.bay}
+            label="Bay:"
+            labelClass="offOnTablet"
+            min="1"
+            max={
+              activeWallKey.includes('partition')
+                ? state.buildings[activeBuilding].partitions[
+                    activeWallKey.replace('partition', '') - 1
+                  ].baySpacing.length
+                : `${state.buildings[`${activeBuilding}`][`${activeWallKey}BaySpacing`].length}`
+            }
+            allowBlankValue={true}
+            onChange={(e) => {
+              handleOpeningChange(
+                activeBuilding,
+                activeWallKey,
+                openingIndex,
+                'bay',
+                e.target.value
+              );
+            }}
+            onFocus={() => {
+              if (activeOpening !== openingIndex) {
+                setActiveOpening(openingIndex);
+              }
+            }}
+            placeholder="Bay"
+            disabled={locked}
+          />
+          <ReusableSelect
+            name={`building-${activeBuilding}-openingType-${openingIndex}`}
+            value={opening.openType}
+            label="Type:"
+            labelClass="offOnTablet"
+            onChange={(e) =>
+              handleOpeningChange(
+                activeBuilding,
+                activeWallKey,
+                openingIndex,
+                'openType',
+                e.target.value
+              )
+            }
+            onFocus={() => {
+              if (activeOpening !== openingIndex) {
+                setActiveOpening(openingIndex);
+              }
+            }}
+            options={openingTypes}
+            disabled={locked}
+          />
+          <FeetInchesInput
+            name={`building-${activeBuilding}-openingWidth-${openingIndex}`}
+            label="Width:"
+            labelClass="offOnTablet"
+            value={opening.width}
+            allowBlankValue={true}
+            onChange={(e) => {
+              handleOpeningChange(
+                activeBuilding,
+                activeWallKey,
+                openingIndex,
+                'width',
+                e.target.value
+              );
+            }}
+            onFocus={() => {
+              if (activeOpening !== openingIndex) {
+                setActiveOpening(openingIndex);
+              }
+            }}
+            disabled={locked}
+          />
+          <FeetInchesInput
+            name={`building-${activeBuilding}-openingHeight-${openingIndex}`}
+            label="Height:"
+            labelClass="offOnTablet"
+            value={opening.height}
+            allowBlankValue={true}
+            onChange={(e) =>
+              handleOpeningChange(
+                activeBuilding,
+                activeWallKey,
+                openingIndex,
+                'height',
+                e.target.value
+              )
+            }
+            onFocus={() => {
+              if (activeOpening !== openingIndex) {
+                setActiveOpening(openingIndex);
+              }
+            }}
+            disabled={locked}
+          />
+          <FeetInchesInput
+            name={`building-${activeBuilding}-openingSill-${openingIndex}`}
+            label="Sill:"
+            labelClass="offOnTablet"
+            value={opening.sill}
+            allowBlankValue={true}
+            allowZero={true}
+            onChange={(e) =>
+              handleOpeningChange(
+                activeBuilding,
+                activeWallKey,
+                openingIndex,
+                'sill',
+                e.target.value
+              )
+            }
+            onFocus={() => {
+              if (activeOpening !== openingIndex) {
+                setActiveOpening(openingIndex);
+              }
+            }}
+            disabled={locked}
+          />
+          <FeetInchesInput
+            name={`building-${activeBuilding}-openingOffset-${openingIndex}`}
+            label="Offset:"
+            labelClass="offOnTablet"
+            value={opening.offset}
+            allowBlankValue={true}
+            allowZero={true}
+            onChange={(e) =>
+              handleOpeningChange(
+                activeBuilding,
+                activeWallKey,
+                openingIndex,
+                'offset',
+                e.target.value
+              )
+            }
+            onFocus={() => {
+              if (activeOpening !== openingIndex) {
+                setActiveOpening(openingIndex);
+              }
+            }}
+            disabled={locked}
+          />
+          <button
+            type="button"
+            className="icon reject deleteRow"
+            onClick={() => handleRemoveOpening(openingIndex)}
+            disabled={locked}
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
+        </div>
+        <div className="divider offOnTablet"></div>
+      </>
+    );
+  };
 
   // JSX
   return (
