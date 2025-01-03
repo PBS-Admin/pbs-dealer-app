@@ -232,14 +232,14 @@ const QuoteClient = () => {
           <div className={styles.tabContainer}>
             {state.quoteId != 0 && (
               <>
-                <button
+                {/* <button
                   type="button"
                   className={styles.noteTab}
                   // onClick={openQuoteEstimatorNotes}
                 >
                   <FontAwesomeIcon icon={faComment} />
                   <div className={styles.noteQty}>3</div>
-                </button>
+                </button> */}
                 {!locked && (
                   <button
                     type="button"
@@ -328,7 +328,7 @@ const QuoteClient = () => {
         {/* Accessories Page */}
         {activeCard == 'accessories' && <Accessories locked={locked} />}
         {/* Notes Page */}
-        {activeCard == 'notes' && <Notes />}
+        {activeCard == 'notes' && <Notes locked={locked} />}
         {/* Finalize Page */}
         {activeCard == 'finalize-quote' && <FinalizeQuote locked={locked} />}
         {!isDesktop &&

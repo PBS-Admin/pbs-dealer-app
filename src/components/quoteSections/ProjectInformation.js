@@ -579,7 +579,7 @@ const ProjectInformation = ({ locked }) => {
                 Wind Load: <small>(mph)</small>
               </>
             }
-            icon={windIcon}
+            icon={locked ? '' : windIcon}
             iconClass={'prim'}
             iconOnClick={getWindLoad}
             tooltip="Lookup Wind Load"
@@ -617,7 +617,7 @@ const ProjectInformation = ({ locked }) => {
                 Ground Load: <small>(psf)</small>
               </>
             }
-            icon={snowIcon}
+            icon={locked ? '' : snowIcon}
             iconClass={'prim'}
             iconOnClick={getSnowLoad}
             tooltip="Lookup Snow Load"
@@ -671,7 +671,7 @@ const ProjectInformation = ({ locked }) => {
             onChange={handleChange}
             options={seismicCategory}
             label="Seismic Category:"
-            icon={lookupIcon}
+            icon={locked ? '' : lookupIcon}
             iconClass={'prim'}
             iconOnClick={getSeismicLoad}
             tooltip="Lookup Seismic Data"
@@ -706,7 +706,7 @@ const ProjectInformation = ({ locked }) => {
             onChange={handleChange}
             name={'seismicSms'}
             label={'Sms:'}
-            icon={calcIcon}
+            icon={locked ? '' : calcIcon}
             iconClass={'prim'}
             iconOnClick={getSmsLoad}
             tooltip="Calculate Sms & Sm1"

@@ -153,6 +153,7 @@ const BuildingRoofOptions = ({ locked }) => {
               }
               label="Include Gutters and Downspouts"
               className="prim"
+              disabled={locked}
             />
           </div>
         </div>
@@ -193,6 +194,7 @@ const BuildingRoofOptions = ({ locked }) => {
                 }
                 label="Add Columns"
                 className="prim"
+                disabled={locked}
               />
             </div>
             <div className="cardInput">
@@ -245,6 +247,7 @@ const BuildingRoofOptions = ({ locked }) => {
                 }
                 label="Add Columns"
                 className="prim"
+                disabled={locked}
               />
             </div>
             <div className="cardInput">

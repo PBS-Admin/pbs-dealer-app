@@ -222,7 +222,9 @@ const ReusablePanel = ({
                 onChange={handleFinishChange}
                 options={finishMap[name]}
                 label="Finish:"
-                icon={internalFinishValue != 'galv' ? 'color' : ''}
+                icon={
+                  disabled ? '' : internalFinishValue != 'galv' ? 'color' : ''
+                }
                 iconClass={'success'}
                 iconOnClick={handleColorClick}
                 tooltip="Select Color"
