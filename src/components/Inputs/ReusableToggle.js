@@ -1,6 +1,13 @@
 import React from 'react';
 
-const ReusableToggle = ({ id, className, checked, onChange, label = '' }) => {
+const ReusableToggle = ({
+  id,
+  className,
+  checked,
+  onChange,
+  label = '',
+  disabled,
+}) => {
   return (
     <div className="toggle">
       <label htmlFor={id} className={`wrapper ${className}`}>
@@ -10,6 +17,7 @@ const ReusableToggle = ({ id, className, checked, onChange, label = '' }) => {
           name={id}
           onChange={onChange}
           checked={checked}
+          disabled={disabled}
         />
         <span className="toggleButton" />
       </label>

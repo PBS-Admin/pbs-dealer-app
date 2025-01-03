@@ -56,6 +56,7 @@ const Accessories = ({ locked }) => {
                 }}
                 label="Include Monolothic Slab Design"
                 className="prim"
+                disabled={locked}
               />
               <ReusableToggle
                 id="pierFootingDesign"
@@ -63,6 +64,7 @@ const Accessories = ({ locked }) => {
                 onChange={(e) => handleChange(e, 'pierFootingDesign')}
                 label="Include Pier Footing Design"
                 className="prim"
+                disabled={locked}
               />
             </div>
 
@@ -77,6 +79,7 @@ const Accessories = ({ locked }) => {
                 }}
                 label="Include Standard Warranty"
                 className="prim"
+                disabled={locked}
               />
               <ReusableToggle
                 id="singleSourceWarranty"
@@ -84,6 +87,7 @@ const Accessories = ({ locked }) => {
                 onChange={(e) => handleChange(e, 'singleSourceWarranty')}
                 label="Include Single Source Warranty"
                 className="prim"
+                disabled={locked}
               />
             </div>
 
@@ -95,6 +99,7 @@ const Accessories = ({ locked }) => {
                 onChange={(e) => handleChange(e, 'willCall')}
                 label="Will Call - Shipping By Others"
                 className="prim"
+                disabled={locked}
               />
             </div>
           </div>

@@ -518,15 +518,6 @@ const FinalizeQuote = ({ locked }) => {
           </div>
           <div className="divider offOnPhone"></div>
           <div className="cardButton">
-            <button
-              type="button"
-              className="sec"
-              onClick={() => {
-                console.log(state);
-              }}
-            >
-              Notes for Estimator
-            </button>
             {((state.contractPrice > 0 && state.contractWeight > 0) ||
               hasPermission(8)) &&
               state.quoteNumber != '' && (
