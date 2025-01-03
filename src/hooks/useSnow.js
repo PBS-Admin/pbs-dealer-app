@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-const useSnow = (values) => {
+const useSnow = (values, onChange) => {
   const [sLoading, setLoading] = useState(false);
   const [sError, setError] = useState(null);
   const [snowData, setSnowData] = useState(null);
@@ -21,14 +21,14 @@ const useSnow = (values) => {
       }
 
       const data = await response.json();
-
-      setSnowData(data);
+      onChange({ target: { name: 'groundSnowLoad', value: data.snowload } });
+      onChange({ target: { name: 'projectElevation', value: data.elevation } });
     } catch (error) {
       setError(error.message || 'Failed to fetch snow load data');
     } finally {
       setLoading(false);
     }
-  }, [values.projectLatitude, values.projectLongitude]);
+  }, [values.projectLatitude, values.projectLongitude, onChange]);
 
   return { getSnowLoad, snowData, sLoading, sError };
 };

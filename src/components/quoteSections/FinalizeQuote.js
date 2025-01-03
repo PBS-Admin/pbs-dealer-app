@@ -467,6 +467,13 @@ const FinalizeQuote = ({ locked }) => {
       });
     } catch (error) {
       console.error('Error parsing file:', error);
+      toastRef.current.show({
+        title: 'Error',
+        message:
+          'The MBS run was not completed before attempting to import weight and price',
+        timeout: 5000,
+        color: 'reject',
+      });
     }
   }, []);
 
@@ -529,7 +536,7 @@ const FinalizeQuote = ({ locked }) => {
                   >
                     Create Contract
                   </button>
-                  <button
+                  {/* <button
                     type="button"
                     className="nuetral"
                     onClick={() => {
@@ -537,7 +544,7 @@ const FinalizeQuote = ({ locked }) => {
                     }}
                   >
                     Open Contract
-                  </button>
+                  </button> */}
                 </>
               )}
           </div>
@@ -666,10 +673,10 @@ const FinalizeQuote = ({ locked }) => {
             name={'contractWeight'}
             label={
               <>
-                Fab Weight: <small>(lbs)</small>
+                Building Weight: <small>(lbs)</small>
               </>
             }
-            icon={complexityInfo.complexity < 3 ? 'import' : ''}
+            icon={locked ? '' : complexityInfo.complexity < 3 ? 'import' : ''}
             iconClass={'prim'}
             iconOnClick={handleImport}
             tooltip="Import price and weight"
