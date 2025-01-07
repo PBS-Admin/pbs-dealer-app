@@ -1,7 +1,7 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import DeleteDialog from './DeleteDialog';
 import styles from './QuoteTableEst.module.css';
 import Image from 'next/image';
@@ -12,17 +12,28 @@ import {
   faCopy,
   faCircleNotch,
   faUserSlash,
+  faTriangleExclamation,
+  faForward,
+  faBackward,
 } from '@fortawesome/free-solid-svg-icons';
-import { faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
+import {
+  faCircle,
+  faCircleCheck,
+  faCircleDot,
+  faCircleXmark,
+} from '@fortawesome/free-regular-svg-icons';
 import CopyDialog from './CopyDialog';
 import { useRouter } from 'next/navigation';
 import { useUserContext } from '@/contexts/UserContext';
 import { useUIContext } from '@/contexts/UIContext';
 
+const ITEMS_PER_PAGE = 10;
+
 export default function QuoteTableEst() {
   const router = useRouter();
   const { data: session } = useSession();
   const isEstimator = session?.user?.estimator === 1;
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Contexts
   const {
@@ -35,24 +46,62 @@ export default function QuoteTableEst() {
     getNameById,
   } = useUserContext();
 
-  const { dialogs, updateDialog, showToast } = useUIContext();
+  const {
+    dialogs,
+    updateDialog,
+    openDeleteQuoteDialog,
+    showToast,
+    setActiveBuilding,
+    setActiveCard,
+  } = useUIContext();
 
   const tabs = useMemo(() => {
+    const commonTabs = [
+      { key: 'all', name: 'All Quotes' },
+      { key: '00000100', name: 'Submitted' },
+      { key: '00100000|00001000', name: 'Returned' },
+      { key: '01000000', name: 'Completed' },
+    ];
+
     if (isEstimator) {
       return [
-        { key: 'all', name: 'All Quotes' },
-        { key: '00000100', name: 'Submitted' },
+        ...commonTabs.slice(0, 2),
         { key: '00010000', name: 'In Checking' },
-        { key: '00100000', name: 'Returned' },
-        { key: '01000000', name: 'Completed' },
+        ...commonTabs.slice(2),
       ];
     }
+
     return [
-      { key: 'all', name: 'All Quotes' },
+      ...commonTabs.slice(0, 1),
       { key: 'started', name: 'Started' },
-      { key: '00000100', name: 'Submitted' },
-      { key: '00100000', name: 'Returned' },
-      { key: '01000000', name: 'Completed' },
+      ...commonTabs.slice(1),
+    ];
+  }, [isEstimator]);
+
+  const columns = useMemo(() => {
+    const commonColumns = [
+      { key: 'status', label: 'Status' },
+      { key: 'quote', label: 'Quote' },
+      { key: 'complex', label: 'Complex' },
+      { key: 'project', label: 'Project' },
+      { key: 'customer', label: 'Customer' },
+      { key: 'salesPerson', label: 'Sales Person' },
+      { key: 'dateStarted', label: 'Date Started' },
+    ];
+
+    if (isEstimator) {
+      return [
+        ...commonColumns.slice(0, 6),
+        { key: 'estimator', label: 'Estimator' },
+        { key: 'checker', label: 'Checker' },
+        ...commonColumns.slice(6),
+      ];
+    }
+
+    return [
+      ...commonColumns.slice(0, 6),
+      { key: 'projectManager', label: 'Project Manager' },
+      ...commonColumns.slice(6),
     ];
   }, [isEstimator]);
 
@@ -60,8 +109,154 @@ export default function QuoteTableEst() {
   const tabListRef = useRef(null);
   const activeTabRef = useRef(null);
 
+  const filteredQuotes = useMemo(() => {
+    if (activeTabKey === 'all') return quotes;
+    if (activeTabKey === 'started') {
+      return quotes.filter((quote) => quote.Progress.toString() == 1);
+    }
+    const combinedKeys = activeTabKey.split('|');
+    const tabKeyNums = combinedKeys.map((key) => parseInt(key, 2));
+
+    return quotes.filter((quote) =>
+      tabKeyNums.some((tabKeyNum) => (quote.Progress & tabKeyNum) === tabKeyNum)
+    );
+  }, [quotes, activeTabKey]);
+
+  const handleQuoteClick = (e, quoteId) => {
+    e.preventDefault();
+    router.replace(`/quote/${quoteId}?t=${Date.now()}`);
+  };
+
+  const CustomTooltip = ({ content, children }) => {
+    const [isVisible, setIsVisible] = useState(false);
+    const tooltipRef = useRef(null);
+
+    return (
+      <div
+        className={styles.tooltipContainer}
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+      >
+        {children}
+        {isVisible && (
+          <div className={styles.tooltip} ref={tooltipRef}>
+            {content}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const STATUS_MAP = {
+    0b1000000: {
+      label: 'Completed',
+      icon: faCircleDot,
+      color: 'var(--dark-blue)',
+    },
+    0b100000: { label: 'Returned', icon: faCircleCheck, color: 'var(--green)' },
+    0b10000: { label: 'In Checking', icon: faCircle, color: 'var(--green)' },
+    0b1000: {
+      label: 'Rejected',
+      icon: faTriangleExclamation,
+      color: 'var(--yellow)',
+    },
+    0b100: { label: 'Submitted', icon: faCircle, color: 'var(--light-blue)' },
+    0b1: { label: 'Started', icon: faCircle, color: 'var(--red)' },
+  };
+
+  const StatusIcon = ({ progress }) => {
+    // Convert the binary string keys to numbers when comparing
+    const status =
+      Object.entries(STATUS_MAP).find(
+        ([key]) => (progress & Number(key)) === Number(key)
+      )?.[1] || STATUS_MAP[0b1]; // Default to Started if no match found
+
+    return (
+      <CustomTooltip content={status.label}>
+        <FontAwesomeIcon icon={status.icon} color={status.color} />
+      </CustomTooltip>
+    );
+  };
+
+  const renderCell = useCallback(
+    (quote, column) => {
+      const baseProps = {
+        href: `/quote/${quote.ID}`,
+        className: styles.quoteLink,
+        onClick: (e) => handleQuoteClick(e, quote.ID),
+      };
+
+      const content = {
+        status: () => <StatusIcon progress={quote.Progress} />,
+        quote: () =>
+          quote.Rev > 0 ? `${quote.Quote} R${quote.Rev}` : quote.Quote,
+        complex: () => quote.Complexity,
+        project: () => quote.ProjectName,
+        customer: () => quote.Customer,
+        salesPerson: () =>
+          getNameById(quote.SalesPerson, 'rsm').name || (
+            <FontAwesomeIcon icon={faUserSlash} color="var(--light-gray)" />
+          ),
+        estimator: () =>
+          getNameById(quote.Estimator, 'estimator').name || (
+            <FontAwesomeIcon icon={faUserSlash} color="var(--light-gray)" />
+          ),
+        checker: () =>
+          getNameById(quote.Checker, 'estimator').name || (
+            <FontAwesomeIcon icon={faUserSlash} color="var(--light-gray)" />
+          ),
+        projectManager: () =>
+          getNameById(quote.ProjectManager, 'pm').name || (
+            <FontAwesomeIcon icon={faUserSlash} color="var(--light-gray)" />
+          ),
+        dateStarted: () =>
+          new Date(quote.DateStarted).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+          }),
+      };
+
+      return <a {...baseProps}>{content[column.key]?.()}</a>;
+    },
+    [handleQuoteClick, getNameById]
+  );
+
+  // Pagination logic
+  const paginatedQuotes = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredQuotes.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredQuotes, currentPage]);
+
+  const totalPages = Math.ceil(filteredQuotes.length / ITEMS_PER_PAGE);
+
+  const renderPagination = () => (
+    <div className={styles.pagination}>
+      <button
+        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+        disabled={currentPage === 1}
+        className={styles.pageButton}
+      >
+        <FontAwesomeIcon icon={faBackward} />
+      </button>
+      <span className={styles.pageInfo}>
+        Page {currentPage} of {totalPages}
+      </span>
+      <button
+        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+        disabled={currentPage === totalPages}
+        className={styles.pageButton}
+      >
+        <FontAwesomeIcon icon={faForward} />
+      </button>
+    </div>
+  );
+
   useEffect(() => {
     fetchQuotes(true);
+
+    setActiveBuilding(0);
+    setActiveCard('quote-info');
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
@@ -87,30 +282,13 @@ export default function QuoteTableEst() {
     }
   }, [activeTabKey]);
 
-  const handleQuoteClick = (e, quoteId) => {
-    e.preventDefault();
-    router.replace(`/quote/${quoteId}?t=${Date.now()}`);
-  };
-
-  const handleDeleteQuote = async () => {
-    const quoteId = dialogs.deleteQuote.data;
-    const success = await deleteQuote(quoteId);
-
-    if (success) {
-      showToast({
-        title: 'Success',
-        message: 'Quote deleted successfully',
-        type: 'success',
-      });
-    } else {
-      showToast({
-        title: 'Error',
-        message: 'Failed to delete quote',
-        type: 'error',
-      });
-    }
-
-    updateDialog('deleteQuote', { isOpen: false, data: null });
+  const handleDeleteClick = (quote) => {
+    openDeleteQuoteDialog(
+      quote.ID,
+      `Quote ${quote.Quote}${quote.Rev > 0 ? ` R${quote.Rev}` : ''}`,
+      null,
+      fetchQuotes
+    );
   };
 
   const handleCopyQuote = async () => {
@@ -134,316 +312,11 @@ export default function QuoteTableEst() {
     updateDialog('copyBuilding', { isOpen: false, data: null });
   };
 
-  const openDeleteDialog = (quoteId) => {
-    updateDialog('deleteQuote', {
-      isOpen: true,
-      data: quoteId,
-    });
-  };
-
   const openCopyDialog = (quoteId) => {
     updateDialog('copyBuilding', {
       isOpen: true,
       data: quoteId,
     });
-  };
-
-  const filteredQuotes = useMemo(() => {
-    if (activeTabKey === 'all') return quotes;
-    if (activeTabKey === 'started') {
-      return quotes.filter((quote) => quote.Progress.toString() == 1);
-    }
-    return quotes.filter((quote) => quote.Progress.toString() & activeTabKey);
-  }, [quotes, activeTabKey]);
-
-  const renderEstTable = (filteredQuotes) => {
-    return (
-      <table>
-        <thead>
-          <tr>
-            <th>Started</th>
-            <th>Quote</th>
-            <th>Complex</th>
-            <th>Project</th>
-            <th>Customer</th>
-            <th>Sales Person</th>
-            <th>Estimator</th>
-            <th>Checker</th>
-            <th>Date Started</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredQuotes.map((quote) => (
-            <tr key={quote.ID} className={styles.quoteRow}>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {quote.Progress & 0b100 ? (
-                    <FontAwesomeIcon
-                      icon={faCircleCheck}
-                      style={{ color: 'var(--green)' }}
-                    />
-                  ) : (
-                    <FontAwesomeIcon icon={faCircle} color="var(--red)" />
-                  )}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {quote.Rev > 0
-                    ? `${quote.Quote} R${quote.Rev}`
-                    : `${quote.Quote}`}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {quote.Complexity}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {quote.ProjectName}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {quote.Customer}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {getNameById(quote.SalesPerson, 'rsm').name || (
-                    <FontAwesomeIcon
-                      icon={faUserSlash}
-                      color={`var(--light-gray)`}
-                    />
-                  )}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {getNameById(quote.Estimator, 'estimator').name || (
-                    <FontAwesomeIcon
-                      icon={faUserSlash}
-                      color={`var(--light-gray)`}
-                    />
-                  )}
-                  {/* {estimators[quote.Estimator]?.name || quote.Estimator} */}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {getNameById(quote.Checker, 'estimator').name || (
-                    <FontAwesomeIcon
-                      icon={faUserSlash}
-                      color={`var(--light-gray)`}
-                    />
-                  )}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {new Date(quote.DateStarted).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'numeric',
-                    day: 'numeric',
-                  })}
-                </a>
-              </td>
-              <td>
-                <div>
-                  <button
-                    className="icon actionButton reject"
-                    onClick={() => openDeleteDialog(quote.ID)}
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </button>
-                  <button
-                    className="icon actionButton sec"
-                    onClick={() => openCopyDialog(quote.ID)}
-                  >
-                    <FontAwesomeIcon icon={faCopy} />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-  };
-
-  const renderSalesTable = (filteredQuotes) => {
-    return (
-      <table>
-        <thead>
-          <tr>
-            <th>Started</th>
-            <th>Quote</th>
-            <th>Complex</th>
-            <th>Project</th>
-            <th>Customer</th>
-            <th>Sales Person</th>
-            <th>Project Manager</th>
-            <th>Date Started</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredQuotes.map((quote) => (
-            <tr key={quote.ID} className={styles.quoteRow}>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {quote.Progress & 0b100 ? (
-                    <FontAwesomeIcon
-                      icon={faCircleCheck}
-                      style={{ color: 'var(--green)' }}
-                    />
-                  ) : (
-                    <FontAwesomeIcon icon={faCircle} color="var(--red)" />
-                  )}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {quote.Rev > 0
-                    ? `${quote.Quote} R${quote.Rev}`
-                    : `${quote.Quote}`}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {quote.Complexity}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {quote.ProjectName}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {quote.Customer}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {getNameById(quote.SalesPerson, 'rsm').name || (
-                    <FontAwesomeIcon
-                      icon={faUserSlash}
-                      color={`var(--light-gray)`}
-                    />
-                  )}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {getNameById(quote.ProjectManager, 'pm').name || (
-                    <FontAwesomeIcon
-                      icon={faUserSlash}
-                      color={`var(--light-gray)`}
-                    />
-                  )}
-                </a>
-              </td>
-              <td>
-                <a
-                  href={`/quote/${quote.ID}`}
-                  className={styles.quoteLink}
-                  onClick={(e) => handleQuoteClick(e, quote.ID)}
-                >
-                  {new Date(quote.DateStarted).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'numeric',
-                    day: 'numeric',
-                  })}
-                </a>
-              </td>
-              <td>
-                <div>
-                  <button
-                    className="icon actionButton reject"
-                    onClick={() => openDeleteDialog(quote.ID)}
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </button>
-                  <button
-                    className="icon actionButton sec"
-                    onClick={() => openCopyDialog(quote.ID)}
-                  >
-                    <FontAwesomeIcon icon={faCopy} />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
   };
 
   if (isLoading) {
@@ -480,26 +353,49 @@ export default function QuoteTableEst() {
         </div>
 
         <div className={styles.quoteTableEst}>
-          {filteredQuotes.length > 0 ? (
-            isEstimator ? (
-              renderEstTable(filteredQuotes)
-            ) : (
-              renderSalesTable(filteredQuotes)
-            )
+          {paginatedQuotes.length > 0 ? (
+            <>
+              <table>
+                <thead>
+                  <tr>
+                    {columns.map((column) => (
+                      <th key={column.key}>{column.label}</th>
+                    ))}
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedQuotes.map((quote) => (
+                    <tr key={quote.ID} className={styles.quoteRow}>
+                      {columns.map((column) => (
+                        <td key={column.key}>{renderCell(quote, column)}</td>
+                      ))}
+                      <td>
+                        <div>
+                          <button
+                            className="icon actionButton reject"
+                            onClick={() => handleDeleteClick(quote)}
+                          >
+                            <FontAwesomeIcon icon={faTrash} />
+                          </button>
+                          <button
+                            className="icon actionButton sec"
+                            onClick={() => openCopyDialog(quote.ID)}
+                          >
+                            <FontAwesomeIcon icon={faCopy} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {filteredQuotes.length > ITEMS_PER_PAGE - 1 && renderPagination()}
+            </>
           ) : (
             <h5 className={styles.message}>No quotes found</h5>
           )}
-          {dialogs.deleteQuote.isOpen && (
-            <DeleteDialog
-              isOpen={dialogs.deleteQuote.isOpen}
-              onDelete={handleDeleteQuote}
-              onClose={() =>
-                updateDialog('deleteQuote', { isOpen: false, data: null })
-              }
-              title="Confirm Deletion"
-              message="Are you sure you want to delete this quote?"
-            />
-          )}
+          <DeleteDialog />
           {dialogs.copyBuilding.isOpen && (
             <CopyDialog
               isOpen={dialogs.copyBuilding.isOpen}

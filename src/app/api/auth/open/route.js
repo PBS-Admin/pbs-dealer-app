@@ -46,14 +46,14 @@ export async function GET() {
         SELECT ID, Progress, Status, Quote, Rev, Complexity, Customer, ProjectName, 
                SalesPerson, ProjectManager, Estimator, Checker, DateStarted 
         FROM Dealer_Quotes 
-        WHERE Status & 85`; // 01010101 - check QuoteClient for status def
+        WHERE Status & 1`; // 01010101 - check QuoteClient for status def
     } else if (session.user.estimator == 1) {
       // Estimator 1
       quotesQuery = `
         SELECT ID, Progress, Status, Quote, Rev, Complexity, Customer, ProjectName, 
                SalesPerson, ProjectManager, Estimator, Checker, DateStarted 
         FROM Dealer_Quotes 
-        WHERE Estimator = ? AND Status & 84 `; // 01010100 - check QuoteClient for status def
+        WHERE Estimator = ? AND Status & 1 `; // 01010100 - check QuoteClient for status def
       queryParams = [company, session.user.id];
     } else {
       // RSM 1

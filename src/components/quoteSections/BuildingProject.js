@@ -30,17 +30,17 @@ const BuildingProject = ({ locked }) => {
     useUIContext();
 
   // Local Functions
-  useEffect(() => {
-    if (state.buildings.length === 0) {
-      setActiveBuilding(0);
-    } else if (activeBuilding >= state.buildings.length) {
-      setActiveBuilding(state.buildings.length - 1);
-    }
-  }, [state.buildings.length, activeBuilding, setActiveBuilding]);
+  // useEffect(() => {
+  //   if (state.buildings.length === 0) {
+  //     setActiveBuilding(0);
+  //   } else if (activeBuilding >= state.buildings.length) {
+  //     setActiveBuilding(state.buildings.length - 1);
+  //   }
+  // }, [state.buildings.length, activeBuilding, setActiveBuilding]);
 
   const handleAddBuilding = () => {
     addBuilding();
-    setActiveBuilding(state.buildings.length - 1);
+    setActiveBuilding(state.buildings.length);
   };
 
   const handleRemoveBuilding = () => {
