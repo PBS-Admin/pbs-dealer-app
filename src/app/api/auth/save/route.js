@@ -108,12 +108,13 @@ export async function POST(req) {
         // console.log('complex', complexityInfo?.complexity);
         await transaction(async (conn) => {
           await query(
-            'UPDATE Dealer_Quotes SET QuoteData = ?, Customer = ?, ProjectName = ?, Progress = ?, SalesPerson = ?, ProjectManager = ?, Estimator = ?, Checker = ?, Complexity = ? WHERE id = ?',
+            'UPDATE Dealer_Quotes SET QuoteData = ?, Customer = ?, ProjectName = ?, Progress = ?, Status = ?, SalesPerson = ?, ProjectManager = ?, Estimator = ?, Checker = ?, Complexity = ? WHERE id = ?',
             [
               JSON.stringify(state),
               state.customerName,
               state.projectName,
               state.quoteProgress || 0,
+              state.quoteStatus,
               salesPerson,
               projectManager,
               estimator,

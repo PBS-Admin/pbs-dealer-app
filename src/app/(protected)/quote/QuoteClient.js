@@ -63,6 +63,7 @@ const QuoteClient = () => {
     handleNext,
     handleDotClick,
     updateDialog,
+    openDeleteQuoteDialog,
     setLoading,
     showToast,
   } = useUIContext();
@@ -72,10 +73,11 @@ const QuoteClient = () => {
   // Derived State
   const submitted = !!(state.quoteProgress & 0b00000100);
   const inChecking = !!(state.quoteProgress & 0b00010000);
+  const completed = !!(state.quoteProgress & 0b01000000);
   const locked =
-    (submitted || inChecking) &&
+    (submitted || inChecking || completed) &&
     session?.user?.estimator == 0 &&
-    !hasPermission(3);
+    !hasPermission(4);
 
   /*
   Progress Bits:
@@ -186,14 +188,11 @@ const QuoteClient = () => {
 
   // Handle delete functionality
   const handleDeleteClick = () => {
-    updateDialog('deleteQuote', {
-      isOpen: true,
-      data: {
-        quoteId: state.id,
-        quoteName: `Quote ${state.quoteNumber}`,
-        redirectUrl: '/dashboard',
-      },
-    });
+    openDeleteQuoteDialog(
+      state.quoteId,
+      `Quote ${state.quoteNumber}${state.revNumber > 0 ? ` R${state.revNumber}` : ''}`,
+      '/tracker'
+    );
   };
 
   useEffect(() => {
@@ -383,13 +382,7 @@ const QuoteClient = () => {
       )}
 
       {/* Dialogs */}
-      <DeleteDialog
-        isOpen={dialogs.deleteQuote.isOpen}
-        onClose={() => updateDialog('deleteQuote', { isOpen: false })}
-        onDelete={handleDeleteClick}
-        title="Confirm Deletion"
-        message={`Are you sure you want to delete ${dialogs.deleteQuote.data?.quoteName}?`}
-      />
+      <DeleteDialog />
 
       <ReusableLoader
         isOpen={dialogs.loader.isOpen}

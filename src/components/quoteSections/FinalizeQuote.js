@@ -13,6 +13,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { redirect } from 'next/navigation';
 import ReusableDouble from '../Inputs/ReusableDouble';
+import { useUIContext } from '@/contexts/UIContext';
 
 const FinalizeQuote = ({ locked }) => {
   const router = useRouter();
@@ -33,6 +34,7 @@ const FinalizeQuote = ({ locked }) => {
     isLoading,
     hasPermission,
   } = useUserContext();
+  const { openDeleteQuoteDialog } = useUIContext();
 
   // Hooks
   const memoizedSetValues = useCallback(setValues, []);
@@ -91,12 +93,10 @@ const FinalizeQuote = ({ locked }) => {
   const estimatorOptions = useMemo(
     () => [
       { id: '', label: '-- Select Estimator/Checker --' },
-      ...Object.entries(estimators)
-        .filter(([_, est]) => est.company === state.companyId)
-        .map(([id, est]) => ({
-          id: id,
-          label: est.name,
-        })),
+      ...Object.entries(estimators).map(([id, est]) => ({
+        id: id,
+        label: est.name,
+      })),
     ],
     [estimators]
   );
@@ -125,7 +125,7 @@ const FinalizeQuote = ({ locked }) => {
           },
           state: {
             ...state,
-            quoteProgress: state.quoteProgress | 4,
+            quoteProgress: 4,
           },
           salesPerson: state.salesPerson,
           projectManager: state.projectManager,
@@ -168,10 +168,7 @@ const FinalizeQuote = ({ locked }) => {
         },
         state: {
           ...state,
-          quoteProgress:
-            state.quoteProgress & 16
-              ? state.quoteProgress ^ 28
-              : state.quoteProgress ^ 12,
+          quoteProgress: 8,
         },
         salesPerson: state.salesPerson,
         projectManager: state.projectManager,
@@ -206,7 +203,7 @@ const FinalizeQuote = ({ locked }) => {
         },
         state: {
           ...state,
-          quoteProgress: state.quoteProgress | 16,
+          quoteProgress: 16,
         },
         salesPerson: state.salesPerson,
         projectManager: state.projectManager,
@@ -241,10 +238,7 @@ const FinalizeQuote = ({ locked }) => {
         },
         state: {
           ...state,
-          quoteProgress:
-            state.quoteProgress & 16
-              ? state.quoteProgress ^ 52
-              : state.quoteProgress ^ 36,
+          quoteProgress: 32,
         },
         salesPerson: state.salesPerson,
         projectManager: state.projectManager,
@@ -268,6 +262,49 @@ const FinalizeQuote = ({ locked }) => {
       exportPendingRef.current = false;
     }
   }, []);
+
+  const handleComplete = useCallback(async (e) => {
+    try {
+      const saveData = {
+        currentQuote: state.quoteId || 0,
+        user: {
+          id: session?.user?.id,
+          company: companyData.ID,
+        },
+        state: {
+          ...state,
+          quoteProgress: 64,
+        },
+        salesPerson: state.salesPerson,
+        projectManager: state.projectManager,
+        estimator: state.estimator,
+        checker: state.checker,
+        complexity: complexityInfo?.complexity || 1,
+      };
+
+      const response = await fetch('/api/auth/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(saveData),
+      });
+
+      if (response.ok) {
+        router.replace('/tracker');
+      }
+    } catch (error) {
+      console.error('Export error: ', error);
+      showRejectExport();
+      exportPendingRef.current = false;
+    }
+  }, []);
+
+  const handleDelete = () => {
+    openDeleteQuoteDialog(
+      state.quoteId,
+      `Quote ${state.quoteNumber}${state.revNumber > 0 ? ` R${state.revNumber}` : ''}`,
+      '/tracker'
+    );
+  };
 
   const handleExport = useCallback(async () => {
     try {
@@ -501,15 +538,16 @@ const FinalizeQuote = ({ locked }) => {
                 Save Quote
               </button>
             )}
-            {!(state.quoteProgress & 0b100) && state.quoteNumber && (
-              <button
-                type="button"
-                className="accent"
-                onClick={(e) => handleSubmit(e)}
-              >
-                Submit Quote
-              </button>
-            )}
+            {(state.quoteProgress & 9) != 0 && //Rejected or Started Progress
+              state.quoteNumber && (
+                <button
+                  type="button"
+                  className="accent"
+                  onClick={(e) => handleSubmit(e)}
+                >
+                  Submit Quote
+                </button>
+              )}
             <button
               type="button"
               className="prim"
@@ -525,8 +563,8 @@ const FinalizeQuote = ({ locked }) => {
           </div>
           <div className="divider offOnPhone"></div>
           <div className="cardButton">
-            {((state.contractPrice > 0 && state.contractWeight > 0) ||
-              hasPermission(8)) &&
+            {state.contractPrice > 0 &&
+              state.contractWeight > 0 &&
               state.quoteNumber != '' && (
                 <>
                   <button
@@ -551,8 +589,7 @@ const FinalizeQuote = ({ locked }) => {
           <div className="divider showWithSidebar span2"></div>
           {!locked && (
             <div className="cardButton">
-              {(state.quoteProgress & 4) == 4 && //Is Submitted
-                (state.quoteProgress & 16) != 16 && //Not in Checking
+              {(state.quoteProgress & 4) != 0 && //Submitted Progress
                 isEstimator && (
                   <button
                     type="button"
@@ -562,20 +599,26 @@ const FinalizeQuote = ({ locked }) => {
                     Move to Checking
                   </button>
                 )}
-              {(state.quoteProgress & 4) == 4 && isEstimator && (
-                <button type="button" className="reject" onClick={handleReject}>
-                  Reject Quote
-                </button>
-              )}
-              {(state.quoteProgress & 4) == 4 && isEstimator && (
-                <button
-                  type="button"
-                  className="success"
-                  onClick={handleReturn}
-                >
-                  Return Quote
-                </button>
-              )}
+              {(state.quoteProgress & 20) != 0 && //Submitted or InChecking Progress
+                isEstimator && (
+                  <button
+                    type="button"
+                    className="reject"
+                    onClick={handleReject}
+                  >
+                    Reject Quote
+                  </button>
+                )}
+              {(state.quoteProgress & 20) != 0 && //Submitted or InChecking Progress
+                isEstimator && (
+                  <button
+                    type="button"
+                    className="success"
+                    onClick={handleReturn}
+                  >
+                    Return Quote
+                  </button>
+                )}
             </div>
           )}
 
@@ -583,13 +626,7 @@ const FinalizeQuote = ({ locked }) => {
             <>
               <div className="divider offOnPhone"></div>
               <div className="cardButton">
-                <button
-                  type="button"
-                  className="reject"
-                  onClick={() => {
-                    console.log(state);
-                  }}
-                >
+                <button type="button" className="reject" onClick={handleDelete}>
                   Delete Quote
                 </button>
                 <button
@@ -597,10 +634,16 @@ const FinalizeQuote = ({ locked }) => {
                   className="nuetral"
                   onClick={() => {
                     console.log(state);
-                    // console.log(6 | 4);
                   }}
                 >
                   Archive Quote
+                </button>
+                <button
+                  type="button"
+                  className="success"
+                  onClick={handleComplete}
+                >
+                  Complete Quote
                 </button>
               </div>
             </>

@@ -82,6 +82,68 @@
   padding: 1em;
 }
 
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+}
+
+.pageButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+  background-color: var(--light-blue);
+  cursor: pointer;
+}
+
+.pageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageButton:hover:not(:disabled) {
+  background-color: var(--light-gray);
+}
+
+.pageInfo {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.tooltipContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  background-color: #333;
+  color: white;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-bottom: 5px;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
 @media screen and (min-width: 1000px) {
   .quoteContainer {
     padding: 0 5em;

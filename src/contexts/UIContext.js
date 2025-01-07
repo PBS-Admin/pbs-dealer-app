@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useReducer, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUserContext } from './UserContext';
 
 const UIContext = createContext(undefined);
 
@@ -54,8 +55,19 @@ const initialState = {
   // Dialog states
   dialogs: {
     copyBuilding: { isOpen: false, data: null },
-    deleteBuilding: { isOpen: false, data: null },
-    deleteQuote: { isOpen: false, data: null },
+    deleteBuilding: {
+      isOpen: false,
+      data: null,
+    },
+    deleteQuote: {
+      isOpen: false,
+      data: {
+        quoteId: null,
+        quoteName: '',
+        redirectUrl: null,
+        onSuccess: null,
+      },
+    },
 
     validation: {
       isOpen: false,
@@ -161,6 +173,7 @@ function uiReducer(state, action) {
 export function UIProvider({ children }) {
   const [state, dispatch] = useReducer(uiReducer, initialState);
   const router = useRouter();
+  const { deleteQuote } = useUserContext();
 
   // Navigation actions
   const setActiveBuilding = useCallback((index) => {
@@ -214,6 +227,22 @@ export function UIProvider({ children }) {
     });
   }, []);
 
+  // Centralized delete quote handling
+  const openDeleteQuoteDialog = useCallback(
+    (quoteId, quoteName, redirectUrl, onSuccess) => {
+      updateDialog('deleteQuote', {
+        isOpen: true,
+        data: {
+          quoteId,
+          quoteName,
+          redirectUrl,
+          onSuccess,
+        },
+      });
+    },
+    [updateDialog]
+  );
+
   // Loading state
   const setLoading = useCallback((isLoading, message = '') => {
     dispatch({
@@ -239,6 +268,49 @@ export function UIProvider({ children }) {
     []
   );
 
+  const handleDeleteQuote = useCallback(async () => {
+    const { quoteId, redirectUrl, onSuccess } = state.dialogs.deleteQuote.data;
+
+    try {
+      const success = await deleteQuote(quoteId); // Using deleteQuote from UserContext
+
+      if (success) {
+        showToast({
+          title: 'Success',
+          message: 'Quote deleted successfully',
+          type: 'success',
+        });
+
+        if (onSuccess) {
+          await onSuccess();
+        }
+      } else {
+        throw new Error('Failed to delete quote');
+      }
+
+      // Close dialog
+      updateDialog('deleteQuote', { isOpen: false, data: null });
+
+      // Redirect if URL provided
+      if (redirectUrl) {
+        router.replace(redirectUrl);
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      showToast({
+        title: 'Error',
+        message: error.message || 'Failed to delete quote',
+        type: 'error',
+      });
+    }
+  }, [
+    state.dialogs.deleteQuote.data,
+    router,
+    showToast,
+    updateDialog,
+    deleteQuote,
+  ]);
+
   const value = {
     // Navigation state
     activeBuilding: state.activeBuilding,
@@ -261,6 +333,8 @@ export function UIProvider({ children }) {
 
     // Dialog actions
     updateDialog,
+    openDeleteQuoteDialog,
+    handleDeleteQuote,
     setLoading,
     showToast,
   };
