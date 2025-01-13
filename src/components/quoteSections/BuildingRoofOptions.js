@@ -19,6 +19,7 @@ import { useUIContext } from '@/contexts/UIContext';
 import { useBuildingContext } from '@/contexts/BuildingContext';
 import { useColorSelection } from '@/hooks/useColorSelection';
 import ReusableColorSelect from '../Inputs/ReusableColorSelect';
+import BaySelectionInput from '../Inputs/BaySelectionInput';
 
 const BuildingRoofOptions = ({ locked }) => {
   // Local State
@@ -198,7 +199,23 @@ const BuildingRoofOptions = ({ locked }) => {
               />
             </div>
             <div className="cardInput">
-              <label htmlFor={`buildingFrontExtensionBays-${activeBuilding}`}>
+              <BaySelectionInput
+                name={`buildingFrontExtensionBays-${activeBuilding}`}
+                label="Front Extension Bays:"
+                className="span2"
+                value={state.buildings[activeBuilding].frontExtensionBays}
+                onChange={(name, value) =>
+                  handleNestedChange(
+                    activeBuilding,
+                    'frontExtensionBays',
+                    value
+                  )
+                }
+                baySpacing={state.buildings[activeBuilding].frontBaySpacing}
+                multiSelect={true}
+                disabled={locked}
+              />
+              {/* <label htmlFor={`buildingFrontExtensionBays-${activeBuilding}`}>
                 Front Extension Bays:
               </label>
               <input
@@ -215,7 +232,7 @@ const BuildingRoofOptions = ({ locked }) => {
                 }
                 placeholder="Separate Bays with Space"
                 disabled={locked}
-              />
+              /> */}
             </div>
           </div>
           <div className="grid">
@@ -251,7 +268,19 @@ const BuildingRoofOptions = ({ locked }) => {
               />
             </div>
             <div className="cardInput">
-              <label htmlFor={`buildingBackExtensionBays-${activeBuilding}`}>
+              <BaySelectionInput
+                name={`buildingBackExtensionBays-${activeBuilding}`}
+                label="Back Extension Bays:"
+                className="span2"
+                value={state.buildings[activeBuilding].backExtensionBays}
+                onChange={(name, value) =>
+                  handleNestedChange(activeBuilding, 'backExtensionBays', value)
+                }
+                baySpacing={state.buildings[activeBuilding].backBaySpacing}
+                multiSelect={true}
+                disabled={locked}
+              />
+              {/* <label htmlFor={`buildingBackExtensionBays-${activeBuilding}`}>
                 Back Extension Bays:
               </label>
               <input
@@ -268,7 +297,7 @@ const BuildingRoofOptions = ({ locked }) => {
                 }
                 placeholder="Separate Bays with Space"
                 disabled={locked}
-              />
+              /> */}
             </div>
           </div>
           <FeetInchesInput

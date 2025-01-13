@@ -70,12 +70,26 @@ const QuoteClient = () => {
   const { companyData, hasPermission } = useUserContext();
   const { state, complexityInfo, setValues } = useBuildingContext();
 
+  const {
+    quoteId,
+    quoteNumber,
+    revNumber,
+    customerName,
+    projectName,
+    quoteProgress,
+    salesPerson,
+    projectManager,
+    estimator,
+    checker,
+  } = state;
+
   // Derived State
   const submitted = !!(state.quoteProgress & 0b00000100);
   const inChecking = !!(state.quoteProgress & 0b00010000);
   const completed = !!(state.quoteProgress & 0b01000000);
+  const returned = !!(state.quoteProgress & 0b00100000);
   const locked =
-    (submitted || inChecking || completed) &&
+    (submitted || inChecking || completed || returned) &&
     session?.user?.estimator == 0 &&
     !hasPermission(4);
 
@@ -104,96 +118,99 @@ const QuoteClient = () => {
   */
 
   // Local Functions
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
 
-    // Early validation
-    if (!companyData?.ID) {
-      showToast({
-        title: 'Error',
-        message: 'Company information not available',
-        type: 'error',
-      });
-      return;
-    }
-
-    setLoading(true, 'Saving quote...');
-
-    try {
-      const saveData = {
-        currentQuote: state.quoteId || 0,
-        user: {
-          id: session?.user?.id,
-          company: companyData.ID,
-        },
-        state: {
-          ...state,
-        },
-        salesPerson: state.salesPerson,
-        projectManager: state.projectManager,
-        estimator: state.estimator,
-        checker: state.checker,
-        complexity: complexityInfo?.complexity || 1,
-      };
-
-      const response = await fetch('/api/auth/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(saveData),
-        cache: 'no-store',
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to save quote');
-      }
-
-      const data = await response.json();
-
-      // Handle new quote case
-      if (!state.quoteId && data.message?.quoteId) {
-        setValues({
-          ...state,
-          quoteId: data.message.quoteId,
-          quoteNumber: data.message.quoteNum,
-          quoteProgress: 1,
-          quoteStatus: 1,
+      // Early validation
+      if (!companyData?.ID) {
+        showToast({
+          title: 'Error',
+          message: 'Company information not available',
+          type: 'error',
         });
+        return;
       }
 
-      showToast({
-        title: 'Success',
-        message: 'Quote saved successfully',
-        type: 'success',
-      });
+      setLoading(true, 'Saving quote...');
 
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      try {
+        const saveData = {
+          currentQuote: state.quoteId || 0,
+          user: {
+            id: session?.user?.id,
+            company: companyData.ID,
+          },
+          state: {
+            ...state,
+          },
+          salesPerson: state.salesPerson,
+          projectManager: state.projectManager,
+          estimator: state.estimator,
+          checker: state.checker,
+          complexity: complexityInfo?.complexity || 1,
+        };
 
-      // Handle submission case
-      if (submitted && !isEstimator) {
-        router.replace('/tracker');
+        const response = await fetch('/api/auth/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(saveData),
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to save quote');
+        }
+
+        const data = await response.json();
+
+        // Handle new quote case
+        if (!state.quoteId && data.message?.quoteId) {
+          setValues({
+            ...state,
+            quoteId: data.message.quoteId,
+            quoteNumber: data.message.quoteNum,
+            quoteProgress: 1,
+            quoteStatus: 1,
+          });
+        }
+
+        showToast({
+          title: 'Success',
+          message: 'Quote saved successfully',
+          type: 'success',
+        });
+
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+
+        // Handle submission case
+        if (submitted && !isEstimator) {
+          router.replace('/tracker');
+        }
+      } catch (error) {
+        console.error('Save error:', error);
+        showToast({
+          title: 'Error',
+          message: error.message || 'Failed to save quote',
+          type: 'error',
+        });
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Save error:', error);
-      showToast({
-        title: 'Error',
-        message: error.message || 'Failed to save quote',
-        type: 'error',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [companyData?.ID, state, complexityInfo?.complexity, session?.user?.id]
+  );
 
   // Handle delete functionality
-  const handleDeleteClick = () => {
+  const handleDeleteClick = useCallback(() => {
     openDeleteQuoteDialog(
       state.quoteId,
       `Quote ${state.quoteNumber}${state.revNumber > 0 ? ` R${state.revNumber}` : ''}`,
       '/tracker'
     );
-  };
+  }, [quoteId, quoteNumber, revNumber]);
 
   useEffect(() => {
     const handleResize = () => setDesktop(window.innerWidth > 1000);

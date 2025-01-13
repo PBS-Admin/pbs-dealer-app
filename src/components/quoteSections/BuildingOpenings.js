@@ -7,6 +7,7 @@ import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { openingTypes } from '../../util/dropdownOptions';
 import { useUIContext } from '@/contexts/UIContext';
 import { useBuildingContext } from '@/contexts/BuildingContext';
+import OpeningSketch from '../OpeningSketch';
 
 const BuildingOpenings = ({ locked }) => {
   // Local State
@@ -260,66 +261,75 @@ const BuildingOpenings = ({ locked }) => {
 
   // JSX
   return (
-    <section className="card">
-      <header>
-        <h3>Openings</h3>
-      </header>
-      <div className="tabsContainer">
-        <div className="tabList" ref={tabListRef}>
-          {walls.map((wall) => (
-            <button
-              type="button"
-              key={wall.key}
-              ref={activeWallKey === wall.key ? activeTabRef : null}
-              className={`tab ${activeWallKey === wall.key ? 'activeTab' : ''}`}
-              onClick={() => setActiveWallKey(wall.key)}
-            >
-              {wall.name}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="tabContent">
-        {state.buildings[activeBuilding].openings[activeWallKey]?.length >
-          0 && (
-          <div className="onTablet">
-            <div className="tableGrid7">
-              <h5>Bay</h5>
-              <h5>Type</h5>
-              <h5>Width</h5>
-              <h5>Height</h5>
-              <h5>Sill</h5>
-              <h5>Offset</h5>
-              <h5></h5>
-            </div>
-          </div>
-        )}
-        {state.buildings[activeBuilding].openings[activeWallKey]?.map(
-          (opening, index) => (
-            <Fragment
-              key={`building-${activeBuilding}-opening-${activeWallKey}-${index}`}
-            >
-              {renderOpeningInputs(opening, index)}
-            </Fragment>
-          )
-        )}
-        {!locked && (
-          <>
-            {state.buildings[activeBuilding].openings[activeWallKey]?.length >
-              0 && <div className="divider onTablet"></div>}
-            <div className="buttonFooter">
+    <>
+      <section className="card">
+        <header>
+          <h3>Openings</h3>
+        </header>
+        <div className="tabsContainer">
+          <div className="tabList" ref={tabListRef}>
+            {walls.map((wall) => (
               <button
                 type="button"
-                className="addButton"
-                onClick={() => handleAddOpening()}
+                key={wall.key}
+                ref={activeWallKey === wall.key ? activeTabRef : null}
+                className={`tab ${activeWallKey === wall.key ? 'activeTab' : ''}`}
+                onClick={() => setActiveWallKey(wall.key)}
               >
-                <FontAwesomeIcon icon={faPlus} />
+                {wall.name}
               </button>
+            ))}
+          </div>
+        </div>
+        <div className="tabContent">
+          {state.buildings[activeBuilding].openings[activeWallKey]?.length >
+            0 && (
+            <div className="onTablet">
+              <div className="tableGrid7">
+                <h5>Bay</h5>
+                <h5>Type</h5>
+                <h5>Width</h5>
+                <h5>Height</h5>
+                <h5>Sill</h5>
+                <h5>Offset</h5>
+                <h5></h5>
+              </div>
             </div>
-          </>
-        )}
-      </div>
-    </section>
+          )}
+          {state.buildings[activeBuilding].openings[activeWallKey]?.map(
+            (opening, index) => (
+              <Fragment
+                key={`building-${activeBuilding}-opening-${activeWallKey}-${index}`}
+              >
+                {renderOpeningInputs(opening, index)}
+              </Fragment>
+            )
+          )}
+          {!locked && (
+            <>
+              {state.buildings[activeBuilding].openings[activeWallKey]?.length >
+                0 && <div className="divider onTablet"></div>}
+              <div className="buttonFooter">
+                <button
+                  type="button"
+                  className="addButton"
+                  onClick={() => handleAddOpening()}
+                >
+                  <FontAwesomeIcon icon={faPlus} />
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+      {/* Opening Sketch placeholder */}
+      {/* <section className="card">
+        <header>
+          <h3>Wall Sketch</h3>
+        </header>
+        <OpeningSketch wallType={activeWallKey} />
+      </section> */}
+    </>
   );
 };
 

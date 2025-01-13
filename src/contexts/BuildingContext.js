@@ -83,6 +83,191 @@ export const BUILDING_ACTIONS = {
   SET_VALUES: 'SET_VALUES',
 };
 
+// Building Fields update helper function
+const applyBuildingConstraints = (building, field, value) => {
+  // Ensure initial value is a number for numeric fields
+  const numericFields = [
+    'backEaveHeight',
+    'frontEaveHeight',
+    'backRoofPitch',
+    'frontRoofPitch',
+    'width',
+    'backPeakOffset',
+  ];
+  const updates = {
+    [field]: numericFields.includes(field) ? parseFloat(value) || value : value,
+  };
+
+  // Handle symmetrical building constraints
+  if (building.shape === 'symmetrical') {
+    switch (field) {
+      case 'backEaveHeight':
+        updates.frontEaveHeight = parseFloat(value) || value;
+        break;
+      case 'frontEaveHeight':
+        updates.backEaveHeight = parseFloat(value) || value;
+        break;
+      case 'backRoofPitch':
+        updates.frontRoofPitch = parseFloat(value) || value;
+        break;
+      case 'frontRoofPitch':
+        updates.backRoofPitch = parseFloat(value) || value;
+        break;
+      case 'width':
+        if (value) {
+          updates.backPeakOffset = parseFloat(value) / 2;
+        }
+        break;
+    }
+  }
+
+  // Handle single slope/lean-to constraints
+  if (
+    (building.shape === 'singleSlope' || building.shape === 'leanTo') &&
+    building.width
+  ) {
+    if (field === 'backEaveHeight' || field === 'backRoofPitch') {
+      const heightDiff =
+        (parseFloat(building.width) *
+          (field === 'backRoofPitch' ? value : building.backRoofPitch)) /
+        12;
+      const backHeight =
+        field === 'backEaveHeight' ? value : building.backEaveHeight;
+      if (backHeight) {
+        const rawFrontHeight = parseFloat(backHeight) + heightDiff;
+        const snappedFrontHeight = Math.round(rawFrontHeight * 192) / 192;
+        updates.frontEaveHeight = snappedFrontHeight;
+      }
+    } else if (field === 'frontEaveHeight') {
+      const heightDiff =
+        (parseFloat(building.width) * building.backRoofPitch) / 12;
+      const rawBackHeight = parseFloat(value) - heightDiff;
+      const snappedBackHeight = Math.round(rawBackHeight * 192) / 192;
+      updates.backEaveHeight = snappedBackHeight;
+    }
+  }
+
+  // Handle non-symmetrical building constraints
+  if (building.shape === 'nonSymmetrical' && building.width) {
+    const width = parseFloat(building.width);
+
+    // Ensure backPeakOffset is valid when width changes
+    if (field === 'width') {
+      updates.backPeakOffset = Math.min(
+        building.backPeakOffset || width / 4,
+        width
+      );
+    }
+
+    // Ensure backPeakOffset doesn't exceed width
+    if (field === 'backPeakOffset') {
+      updates.backPeakOffset = Math.min(parseFloat(value), width);
+    }
+
+    const backOffset = parseFloat(
+      updates.backPeakOffset || building.backPeakOffset
+    );
+    const frontOffset = width - backOffset;
+
+    // Calculate peak heights and adjust pitches
+    if (
+      [
+        'backEaveHeight',
+        'frontEaveHeight',
+        'backRoofPitch',
+        'frontRoofPitch',
+      ].includes(field)
+    ) {
+      const backEaveHeight = parseFloat(
+        field === 'backEaveHeight' ? value : building.backEaveHeight
+      );
+      const frontEaveHeight = parseFloat(
+        field === 'frontEaveHeight' ? value : building.frontEaveHeight
+      );
+      const backPitch = parseFloat(
+        field === 'backRoofPitch' ? value : building.backRoofPitch
+      );
+      const frontPitch = parseFloat(
+        field === 'frontRoofPitch' ? value : building.frontRoofPitch
+      );
+
+      // Calculate peak heights from both sides
+      const backPeakHeight = backEaveHeight + (backOffset * backPitch) / 12;
+      const frontPeakHeight = frontEaveHeight + (frontOffset * frontPitch) / 12;
+      const peakHeight = Math.max(backPeakHeight, frontPeakHeight);
+
+      // Adjust pitches based on which field changed
+      if (field === 'backEaveHeight' || field === 'backRoofPitch') {
+        const newFrontPitch = Math.min(
+          ((peakHeight - frontEaveHeight) * 12) / frontOffset,
+          12
+        );
+        updates.frontRoofPitch = Math.max(
+          0,
+          Math.round(newFrontPitch * 1000) / 1000
+        );
+      } else {
+        const newBackPitch = Math.min(
+          ((peakHeight - backEaveHeight) * 12) / backOffset,
+          12
+        );
+        updates.backRoofPitch = Math.max(
+          0,
+          Math.round(newBackPitch * 1000) / 1000
+        );
+      }
+    }
+  }
+
+  // Handle shape changes
+  if (field === 'shape') {
+    if (value === 'symmetrical') {
+      updates.frontEaveHeight =
+        parseFloat(building.backEaveHeight) || building.backEaveHeight;
+      updates.frontRoofPitch =
+        parseFloat(building.backRoofPitch) || building.backRoofPitch;
+      if (building.width) {
+        updates.backPeakOffset = parseFloat(building.width) / 2;
+      }
+    } else if (value === 'singleSlope' || value === 'leanTo') {
+      // Calculate front eave height based on existing back height and pitch
+      if (building.width && building.backEaveHeight && building.backRoofPitch) {
+        const heightDiff =
+          (parseFloat(building.width) * building.backRoofPitch) / 12;
+        const rawFrontHeight = parseFloat(building.backEaveHeight) + heightDiff;
+        const snappedFrontHeight = Math.round(rawFrontHeight * 192) / 192;
+        updates.frontEaveHeight = snappedFrontHeight;
+      }
+    } else if (value === 'nonSymmetrical') {
+      // When switching to non-symmetrical, start with equal pitches and calculate heights
+      if (building.width && building.backEaveHeight && building.backRoofPitch) {
+        updates.backPeakOffset = parseFloat(building.width) / 4; // Default to 1/4 width
+        const backOffset = updates.backPeakOffset;
+        const frontOffset = parseFloat(building.width) - backOffset;
+
+        // Set front eave height equal to back eave height initially
+        updates.frontEaveHeight = building.backEaveHeight;
+        updates.frontRoofPitch = building.backRoofPitch;
+
+        // Calculate peak height from back side
+        const backPeakHeight =
+          parseFloat(building.backEaveHeight) +
+          (backOffset * building.backRoofPitch) / 12;
+
+        // Adjust front pitch to match peak height
+        const heightDiff = backPeakHeight - parseFloat(updates.frontEaveHeight);
+        const frontPitch = Math.min((heightDiff * 12) / frontOffset, 12);
+        updates.frontRoofPitch = Math.max(
+          0,
+          Math.round(frontPitch * 1000) / 1000
+        );
+      }
+    }
+  }
+
+  return updates;
+};
+
 // Reducer function
 function buildingReducer(state, action) {
   switch (action.type) {
@@ -220,24 +405,39 @@ function buildingReducer(state, action) {
         ...state,
         buildings: state.buildings.map((building, index) => {
           if (index === buildingIndex) {
-            let updatedValue = fieldValue;
-            if (
-              field.includes('Qty') ||
-              field.includes('Gauge') ||
-              field.includes('gauge')
-            ) {
-              updatedValue = parseInt(fieldValue);
-            } else if (field.includes('thermalFactor')) {
-              updatedValue = parseFloat(fieldValue);
-            } else if (
-              field.includes('deadLoad') ||
-              field.includes('liveLoad') ||
-              field.includes('roofSnowLoad') ||
-              field.includes('collateralLoad')
-            ) {
-              updatedValue = Math.round((fieldValue * 100) / 100);
-            }
-            return { ...building, [field]: updatedValue };
+            const updates = applyBuildingConstraints(
+              building,
+              field,
+              fieldValue
+            );
+
+            // Apply type conversions for specific fields
+            const processedUpdates = Object.entries(updates).reduce(
+              (acc, [key, value]) => {
+                let processedValue = value;
+                if (
+                  key.includes('Qty') ||
+                  key.includes('Gauge') ||
+                  key.includes('gauge')
+                ) {
+                  processedValue = parseInt(value);
+                } else if (key.includes('thermalFactor')) {
+                  processedValue = parseFloat(value);
+                } else if (
+                  key.includes('deadLoad') ||
+                  key.includes('liveLoad') ||
+                  key.includes('roofSnowLoad') ||
+                  key.includes('collateralLoad')
+                ) {
+                  processedValue = Math.round((value * 100) / 100);
+                }
+                acc[key] = processedValue;
+                return acc;
+              },
+              {}
+            );
+
+            return { ...building, ...processedUpdates };
           }
           return building;
         }),

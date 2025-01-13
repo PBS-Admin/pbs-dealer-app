@@ -3,426 +3,249 @@ import * as THREE from 'three';
 export const createBuilding = (buildingData) => {
   const { shape } = buildingData;
 
+  // Calculate vertices and indices for the complete building
+  const { vertices, indices } = calculateBuildingGeometry(buildingData);
+
+  // Create building mesh
+  const buildingGeometry = new THREE.BufferGeometry();
+  buildingGeometry.setAttribute(
+    'position',
+    new THREE.BufferAttribute(vertices, 3)
+  );
+  buildingGeometry.setIndex(indices);
+  buildingGeometry.computeVertexNormals();
+
+  const buildingMaterial = new THREE.MeshBasicMaterial({
+    color: 0xcccccc,
+    transparent: true,
+    opacity: 0.7,
+  });
+  const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
+
+  // Add edges
+  const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+  const buildingEdges = new THREE.EdgesGeometry(buildingGeometry);
+  const buildingLines = new THREE.LineSegments(buildingEdges, edgesMaterial);
+
+  // Return empty objects for roof and roofLines to maintain compatibility
+  const roof = new THREE.Mesh(new THREE.BufferGeometry());
+  const roofLines = new THREE.LineSegments(new THREE.BufferGeometry());
+
+  return { building, roof, buildingLines, roofLines };
+};
+
+const calculateBuildingGeometry = (buildingData) => {
+  const {
+    shape,
+    width,
+    length,
+    backEaveHeight,
+    frontEaveHeight = backEaveHeight,
+    backRoofPitch,
+    frontRoofPitch = backRoofPitch,
+    backPeakOffset = width / 2,
+  } = buildingData;
+
+  let vertices, indices;
+
   switch (shape) {
-    case 'symmetrical':
-      // return createNonSymmetricalBuilding(buildingData);
-      return createSymmetricalBuilding(buildingData);
+    case 'symmetrical': {
+      // Calculate peak height for symmetrical roof
+      const peakHeight = ((width / 2) * backRoofPitch) / 12 + backEaveHeight;
+
+      vertices = new Float32Array([
+        // Left Endwall vertices (pentagon)
+        -width / 2,
+        0,
+        length / 2, // 0: bottom left
+        width / 2,
+        0,
+        length / 2, // 1: bottom right
+        width / 2,
+        backEaveHeight,
+        length / 2, // 2: right eave
+        0,
+        peakHeight,
+        length / 2, // 3: peak
+        -width / 2,
+        backEaveHeight,
+        length / 2, // 4: left eave
+
+        // Right Endwall vertices (pentagon)
+        -width / 2,
+        0,
+        -length / 2, // 5: bottom left
+        width / 2,
+        0,
+        -length / 2, // 6: bottom right
+        width / 2,
+        backEaveHeight,
+        -length / 2, // 7: right eave
+        0,
+        peakHeight,
+        -length / 2, // 8: peak
+        -width / 2,
+        backEaveHeight,
+        -length / 2, // 9: left eave
+      ]);
+
+      indices = [
+        // Left Endwall
+        0, 1, 2, 0, 2, 3, 0, 3, 4,
+
+        // Right Endwall
+        5, 7, 6, 5, 8, 7, 5, 9, 8,
+
+        // Back Wall
+        0, 4, 9, 0, 9, 5,
+
+        // Front Wall
+        1, 6, 7, 1, 7, 2,
+
+        // Roof Left
+        4, 3, 8, 4, 8, 9,
+
+        // Roof Right
+        2, 7, 8, 2, 8, 3,
+
+        // Floor
+        0, 5, 6, 0, 6, 1,
+      ];
+      break;
+    }
+
     case 'singleSlope':
-    case 'leanTo':
-      return createSingleSlopeBuilding(buildingData);
-    case 'nonSymmetrical':
-      return createNonSymmetricalBuilding(buildingData);
+    case 'leanTo': {
+      vertices = new Float32Array([
+        // Front Face vertices
+        -width / 2,
+        0,
+        length / 2, // 0: bottom left
+        width / 2,
+        0,
+        length / 2, // 1: bottom right
+        width / 2,
+        frontEaveHeight,
+        length / 2, // 2: top right
+        -width / 2,
+        backEaveHeight,
+        length / 2, // 3: top left
+
+        // Back Face vertices
+        -width / 2,
+        0,
+        -length / 2, // 4: bottom left
+        width / 2,
+        0,
+        -length / 2, // 5: bottom right
+        width / 2,
+        frontEaveHeight,
+        -length / 2, // 6: top right
+        -width / 2,
+        backEaveHeight,
+        -length / 2, // 7: top left
+      ]);
+
+      indices = [
+        // Front Face
+        0, 1, 2, 0, 2, 3,
+
+        // Back Face
+        4, 6, 5, 4, 7, 6,
+
+        // Left Wall
+        0, 3, 7, 0, 7, 4,
+
+        // Right Wall
+        1, 5, 6, 1, 6, 2,
+
+        // Roof
+        3, 2, 6, 3, 6, 7,
+
+        // Floor
+        0, 4, 5, 0, 5, 1,
+      ];
+      break;
+    }
+
+    case 'nonSymmetrical': {
+      const peakX = -width / 2 + backPeakOffset;
+      const backRoofHeight =
+        (backPeakOffset * backRoofPitch) / 12 + backEaveHeight;
+      const frontRoofHeight =
+        ((width - backPeakOffset) * frontRoofPitch) / 12 + frontEaveHeight;
+      const peakHeight = Math.max(backRoofHeight, frontRoofHeight);
+
+      vertices = new Float32Array([
+        // Front Face vertices (pentagon)
+        -width / 2,
+        0,
+        length / 2, // 0: bottom left
+        width / 2,
+        0,
+        length / 2, // 1: bottom right
+        width / 2,
+        frontEaveHeight,
+        length / 2, // 2: right eave
+        peakX,
+        peakHeight,
+        length / 2, // 3: peak
+        -width / 2,
+        backEaveHeight,
+        length / 2, // 4: left eave
+
+        // Back Face vertices (pentagon)
+        -width / 2,
+        0,
+        -length / 2, // 5: bottom left
+        width / 2,
+        0,
+        -length / 2, // 6: bottom right
+        width / 2,
+        frontEaveHeight,
+        -length / 2, // 7: right eave
+        peakX,
+        peakHeight,
+        -length / 2, // 8: peak
+        -width / 2,
+        backEaveHeight,
+        -length / 2, // 9: left eave
+      ]);
+
+      indices = [
+        // Front Face
+        0, 1, 2, 0, 2, 3, 0, 3, 4,
+
+        // Back Face
+        5, 7, 6, 5, 8, 7, 5, 9, 8,
+
+        // Left Wall
+        0, 4, 9, 0, 9, 5,
+
+        // Right Wall
+        1, 6, 7, 1, 7, 2,
+
+        // Roof Left
+        4, 3, 8, 4, 8, 9,
+
+        // Roof Right
+        2, 7, 8, 2, 8, 3,
+
+        // Floor
+        0, 5, 6, 0, 6, 1,
+      ];
+      break;
+    }
+
     default:
       throw new Error(`Unsupported building shape: ${shape}`);
   }
-};
 
-const createSymmetricalBuilding = (buildingData) => {
-  const { width, length, backEaveHeight, backRoofPitch } = buildingData;
-
-  // Create building
-  const buildingGeometry = new THREE.BoxGeometry(width, backEaveHeight, length);
-  const buildingMaterial = new THREE.MeshBasicMaterial({
-    color: 0xcccccc,
-    transparent: true,
-    opacity: 0.7,
-  });
-  const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
-  building.position.y = backEaveHeight / 2;
-
-  // Create roof
-  const roofHeight =
-    (width / 2) * Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180);
-  const roofGeometry = createSymmetricRoofGeometry(
-    width,
-    length,
-    backEaveHeight,
-    roofHeight
-  );
-  const roofMaterial = new THREE.MeshBasicMaterial({
-    color: 0xcccccc,
-    side: THREE.DoubleSide,
-    transparent: true,
-    opacity: 0.7,
-  });
-  const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-
-  // Add edges
-  const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
-  const buildingEdges = new THREE.EdgesGeometry(buildingGeometry);
-  const buildingLines = new THREE.LineSegments(buildingEdges, edgesMaterial);
-  buildingLines.position.y = backEaveHeight / 2;
-
-  const roofEdges = new THREE.EdgesGeometry(roofGeometry);
-  const roofLines = new THREE.LineSegments(roofEdges, edgesMaterial);
-
-  return { building, roof, buildingLines, roofLines };
-};
-
-const createSymmetricRoofGeometry = (
-  width,
-  length,
-  backEaveHeight,
-  roofHeight
-) => {
-  const roofGeometry = new THREE.BufferGeometry();
-  const vertices = new Float32Array([
-    -width / 2,
-    backEaveHeight,
-    length / 2,
-    width / 2,
-    backEaveHeight,
-    length / 2,
-    0,
-    backEaveHeight + roofHeight,
-    length / 2,
-    -width / 2,
-    backEaveHeight,
-    -length / 2,
-    width / 2,
-    backEaveHeight,
-    -length / 2,
-    0,
-    backEaveHeight + roofHeight,
-    -length / 2,
-  ]);
-  const indices = [0, 1, 2, 3, 4, 5, 0, 2, 5, 5, 3, 0, 1, 2, 5, 5, 4, 1];
-  roofGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-  roofGeometry.setIndex(indices);
-  roofGeometry.computeVertexNormals();
-  return roofGeometry;
-};
-
-const createSingleSlopeBuilding = (buildingData) => {
-  const { width, length, backEaveHeight, frontEaveHeight, backRoofPitch } =
-    buildingData;
-
-  // Create building
-  const buildingGeometry = new THREE.BufferGeometry();
-  const vertices = new Float32Array([
-    // Front face
-    -width / 2,
-    0,
-    length / 2,
-    width / 2,
-    0,
-    length / 2,
-    width / 2,
-    frontEaveHeight,
-    length / 2,
-    -width / 2,
-    backEaveHeight,
-    length / 2,
-    // Back face
-    -width / 2,
-    0,
-    -length / 2,
-    width / 2,
-    0,
-    -length / 2,
-    width / 2,
-    frontEaveHeight,
-    -length / 2,
-    -width / 2,
-    backEaveHeight,
-    -length / 2,
-  ]);
-  const indices = [
-    0,
-    1,
-    2,
-    2,
-    3,
-    0, // Front face
-    4,
-    7,
-    6,
-    6,
-    5,
-    4, // Back face
-    0,
-    3,
-    7,
-    7,
-    4,
-    0, // Left face
-    1,
-    5,
-    6,
-    6,
-    2,
-    1, // Right face
-    3,
-    2,
-    6,
-    6,
-    7,
-    3, // Top face
-    0,
-    4,
-    5,
-    5,
-    1,
-    0, // Bottom face
-  ];
-  buildingGeometry.setAttribute(
-    'position',
-    new THREE.BufferAttribute(vertices, 3)
-  );
-  buildingGeometry.setIndex(indices);
-  buildingGeometry.computeVertexNormals();
-
-  const buildingMaterial = new THREE.MeshBasicMaterial({
-    color: 0xcccccc,
-    transparent: true,
-    opacity: 0.7,
-  });
-  const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
-
-  // Create roof (in this case, the roof is the same as the top face of the building)
-  const roofGeometry = new THREE.BufferGeometry();
-  const roofVertices = new Float32Array([
-    -width / 2,
-    backEaveHeight,
-    length / 2,
-    width / 2,
-    frontEaveHeight,
-    length / 2,
-    width / 2,
-    frontEaveHeight,
-    -length / 2,
-    -width / 2,
-    backEaveHeight,
-    -length / 2,
-  ]);
-  const roofIndices = [0, 1, 2, 2, 3, 0];
-  roofGeometry.setAttribute(
-    'position',
-    new THREE.BufferAttribute(roofVertices, 3)
-  );
-  roofGeometry.setIndex(roofIndices);
-  roofGeometry.computeVertexNormals();
-
-  const roofMaterial = new THREE.MeshBasicMaterial({
-    color: 0xcccccc,
-    side: THREE.DoubleSide,
-    transparent: true,
-    opacity: 0.7,
-  });
-  const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-
-  // Add edges
-  const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
-  const buildingEdges = new THREE.EdgesGeometry(buildingGeometry);
-  const buildingLines = new THREE.LineSegments(buildingEdges, edgesMaterial);
-
-  const roofEdges = new THREE.EdgesGeometry(roofGeometry);
-  const roofLines = new THREE.LineSegments(roofEdges, edgesMaterial);
-
-  return { building, roof, buildingLines, roofLines };
-};
-
-const createNonSymmetricalBuilding = (buildingData) => {
-  const {
-    width,
-    length,
-    backEaveHeight,
-    backRoofPitch,
-    frontEaveHeight,
-    frontRoofPitch,
-    backPeakOffset,
-  } = buildingData;
-
-  // Calculate roof height (using the higher of the two pitches)
-  // const roofHeight =
-  //   (width / 2) *
-  //   Math.tan((Math.max(backRoofPitch, frontRoofPitch) * Math.PI) / 180);
-
-  const backRoofHeight = (backPeakOffset * backRoofPitch) / 12 + backEaveHeight;
-  const frontRoofHeight =
-    ((width - backPeakOffset) * frontRoofPitch) / 12 + frontEaveHeight;
-
-  const peakHeight = Math.max(frontRoofHeight, backRoofHeight);
-  // Create building
-  const buildingGeometry = new THREE.BufferGeometry();
-  const vertices = new Float32Array([
-    // Front face
-    -width / 2,
-    0,
-    length / 2,
-    width / 2,
-    0,
-    length / 2,
-    width / 2,
-    frontEaveHeight,
-    length / 2,
-    -width / 2,
-    backEaveHeight,
-    length / 2,
-    // Back face
-    -width / 2,
-    0,
-    -length / 2,
-    width / 2,
-    0,
-    -length / 2,
-    width / 2,
-    frontEaveHeight,
-    -length / 2,
-    -width / 2,
-    backEaveHeight,
-    -length / 2,
-    // Peak Calcs
-    -width / 2 + backPeakOffset,
-    peakHeight,
-    -length / 2,
-    -width / 2 + backPeakOffset,
-    peakHeight,
-    length / 2,
-  ]);
-  const indices = [
-    1,
-    2,
-    9,
-    1,
-    9,
-    3,
-    1,
-    3,
-    0, // Left Endwall face
-    5,
-    6,
-    8,
-    5,
-    8,
-    7,
-    5,
-    7,
-    4, // Right Endwall face
-    0,
-    3,
-    7,
-    7,
-    4,
-    0, // Back Sidewall face
-    1,
-    5,
-    6,
-    6,
-    2,
-    1, // Front Sidewall face
-    0,
-    4,
-    5,
-    5,
-    1,
-    0, // Bottom face
-  ];
-  buildingGeometry.setAttribute(
-    'position',
-    new THREE.BufferAttribute(vertices, 3)
-  );
-  buildingGeometry.setIndex(indices);
-  buildingGeometry.computeVertexNormals();
-
-  const buildingMaterial = new THREE.MeshBasicMaterial({
-    color: 0xcccccc,
-    transparent: true,
-    opacity: 0.7,
-  });
-  const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
-
-  // Create roof
-  const roofGeometry = createNonSymmetricalRoofGeometry(
-    width,
-    length,
-    backEaveHeight,
-    frontEaveHeight,
-    peakHeight,
-    backPeakOffset
-  );
-  const roofMaterial = new THREE.MeshBasicMaterial({
-    color: 0xcccccc,
-    side: THREE.DoubleSide,
-    transparent: true,
-    opacity: 0.7,
-  });
-  const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-
-  // Add edges
-  const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
-  const buildingEdges = new THREE.EdgesGeometry(buildingGeometry);
-  const buildingLines = new THREE.LineSegments(buildingEdges, edgesMaterial);
-
-  const roofEdges = new THREE.EdgesGeometry(roofGeometry);
-  const roofLines = new THREE.LineSegments(roofEdges, edgesMaterial);
-
-  return { building, roof, buildingLines, roofLines };
-};
-
-const createNonSymmetricalRoofGeometry = (
-  width,
-  length,
-  backEaveHeight,
-  frontEaveHeight,
-  roofHeight,
-  backPeakOffset
-) => {
-  const roofGeometry = new THREE.BufferGeometry();
-  // const peakHeight = Math.max(backEaveHeight, frontEaveHeight) + roofHeight;
-  const peakPosition = -width / 2 + backPeakOffset;
-
-  const vertices = new Float32Array([
-    // Front eave
-    width / 2,
-    frontEaveHeight,
-    -length / 2,
-    width / 2,
-    frontEaveHeight,
-    length / 2,
-    // Peak
-    peakPosition,
-    roofHeight,
-    -length / 2,
-    peakPosition,
-    roofHeight,
-    length / 2,
-    // Back eave
-    -width / 2,
-    backEaveHeight,
-    -length / 2,
-    -width / 2,
-    backEaveHeight,
-    length / 2,
-  ]);
-
-  const indices = [
-    0,
-    1,
-    2,
-    2,
-    1,
-    3, // Front slope
-    4,
-    5,
-    3,
-    4,
-    3,
-    2, // Back slope
-  ];
-
-  roofGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-  roofGeometry.setIndex(indices);
-  roofGeometry.computeVertexNormals();
-
-  return roofGeometry;
+  return { vertices, indices };
 };
 
 export const addBayLines = (spacing, wall, scene, buildingData) => {
-  // Check if spacing is undefined, null, or an empty array
-  if (!spacing || spacing.length === 0) {
-    return; // Exit the function without adding any lines or warnings
-  }
+  if (!spacing || spacing.length === 0) return;
 
   // Remove existing bay lines for this wall
   scene.children = scene.children.filter(
@@ -440,19 +263,19 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
     scene.add(line);
   };
 
-  const createRoofLine = (start, mid, end) => {
-    const geometry = new THREE.BufferGeometry().setFromPoints([
-      start,
-      mid,
-      end,
-    ]);
+  const createRoofLine = (points) => {
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const line = new THREE.Line(geometry, lineMaterial);
     line.isBayLine = true;
     line.wall = wall;
     scene.add(line);
   };
 
-  spacing.forEach((bay, index) => {
+  // Create a copy of spacing array and reverse it for back wall
+  const adjustedSpacing =
+    wall === 'backSidewall' ? [...spacing].reverse() : spacing;
+
+  adjustedSpacing.forEach((bay, index) => {
     if (typeof bay !== 'number') {
       console.warn(`Invalid bay spacing value for ${wall}:`, bay);
       return;
@@ -460,7 +283,7 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
 
     if (index === 0) {
       position += bay;
-      return; // Skip drawing a line for the first bay
+      return;
     }
 
     const {
@@ -473,235 +296,117 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
       backRoofPitch,
       frontRoofPitch,
     } = buildingData;
-    const roofHeight =
-      (width / 2) * Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180);
 
-    const backRoofHeight =
-      (backPeakOffset * backRoofPitch) / 12 + backEaveHeight;
-    const frontRoofHeight =
-      ((width - backPeakOffset) * frontRoofPitch) / 12 + frontEaveHeight;
+    let start, end, roofPoints;
 
-    const peakHeight = Math.max(frontRoofHeight, backRoofHeight);
+    // Calculate height at any point along the width
+    const calculateHeightAtPosition = (pos, isRightWall = false) => {
+      const adjustedPos = isRightWall ? width - pos : pos;
 
-    let start, end, height, roofStart, roofMid, roofEnd;
-
-    switch (shape) {
-      case 'symmetrical':
-        switch (wall) {
-          case 'leftEndwall':
-          case 'rightEndwall':
-            height =
-              (width / 2 - Math.abs(width / 2 - position)) *
-              Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180);
-            start = new THREE.Vector3(
-              wall === 'leftEndwall'
-                ? -width / 2 + position
-                : width / 2 - position,
-              0,
-              wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
-            );
-            end = new THREE.Vector3(
-              wall === 'leftEndwall'
-                ? -width / 2 + position
-                : width / 2 - position,
-              backEaveHeight + height,
-              wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
-            );
-            createLine(start, end);
-            break;
-          case 'frontSidewall':
-          case 'backSidewall':
-            // Front sidewall line
-            start = new THREE.Vector3(
-              -width / 2 - 0.1,
-              0,
-              length / 2 - position
-            );
-            end = new THREE.Vector3(
-              -width / 2 - 0.1,
-              backEaveHeight,
-              length / 2 - position
-            );
-            createLine(start, end);
-
-            // Back sidewall line
-            start = new THREE.Vector3(
-              width / 2 + 0.1,
-              0,
-              length / 2 - position
-            );
-            end = new THREE.Vector3(
-              width / 2 + 0.1,
-              backEaveHeight,
-              length / 2 - position
-            );
-            createLine(start, end);
-
-            // Roof line
-            roofStart = new THREE.Vector3(
-              -width / 2,
-              backEaveHeight,
-              length / 2 - position
-            );
-            roofMid = new THREE.Vector3(
-              0,
-              backEaveHeight + roofHeight,
-              length / 2 - position
-            );
-            roofEnd = new THREE.Vector3(
-              width / 2,
-              backEaveHeight,
-              length / 2 - position
-            );
-            createRoofLine(roofStart, roofMid, roofEnd);
-            break;
+      switch (shape) {
+        case 'symmetrical': {
+          const distanceFromCenter = Math.abs(width / 2 - adjustedPos);
+          return (
+            ((width / 2 - distanceFromCenter) * backRoofPitch) / 12 +
+            backEaveHeight
+          );
         }
-        break;
-      case 'singleSlope':
-      case 'leanTo':
-        switch (wall) {
-          case 'leftEndwall':
-          case 'rightEndwall':
-            height =
-              wall === 'leftEndwall'
-                ? (position * backRoofPitch) / 12
-                : ((width - position) * backRoofPitch) / 12;
-            start = new THREE.Vector3(
-              wall === 'leftEndwall'
-                ? -width / 2 + position
-                : width / 2 - position,
-              0,
-              wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
-            );
-            end = new THREE.Vector3(
-              wall === 'leftEndwall'
-                ? -width / 2 + position
-                : width / 2 - position,
-              backEaveHeight + height,
-
-              wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
-            );
-            createLine(start, end);
-            break;
-          case 'frontSidewall':
-          case 'backSidewall':
-            // Front sidewall line
-            start = new THREE.Vector3(
-              width / 2 + 0.1,
-              0,
-              length / 2 - position
-            );
-            end = new THREE.Vector3(
-              width / 2 + 0.1,
-              frontEaveHeight,
-              length / 2 - position
-            );
-            createLine(start, end);
-
-            // Back sidewall line
-            start = new THREE.Vector3(
-              -width / 2 - 0.1,
-              0,
-              length / 2 - position
-            );
-            end = new THREE.Vector3(
-              -width / 2 - 0.1,
-              backEaveHeight,
-              length / 2 - position
-            );
-            createLine(start, end);
-
-            // Roof line
-            roofStart = new THREE.Vector3(
-              -width / 2,
-              backEaveHeight,
-              length / 2 - position
-            );
-            // roofMid = new THREE.Vector3(
-            //   0,
-            //   backEaveHeight + roofHeight,
-            //   -length / 2 + position
-            // );
-            roofEnd = new THREE.Vector3(
-              width / 2,
-              frontEaveHeight,
-
-              length / 2 - position
-            );
-            createLine(roofStart, roofEnd);
-            break;
+        case 'singleSlope':
+        case 'leanTo': {
+          return (adjustedPos * backRoofPitch) / 12 + backEaveHeight;
         }
-        break;
-      case 'nonSymmetrical':
-        switch (wall) {
-          case 'leftEndwall':
-          case 'rightEndwall':
-            height =
-              position < backPeakOffset
-                ? (position * backRoofPitch) / 12 + backEaveHeight
-                : ((width - position) * frontRoofPitch) / 12 + frontEaveHeight;
-            start = new THREE.Vector3(
-              -width / 2 + position,
-              0,
-              wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
-            );
-            end = new THREE.Vector3(
-              -width / 2 + position,
-              height,
-              wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1
-            );
-            createLine(start, end);
-            break;
-          case 'frontSidewall':
-          case 'backSidewall':
-            // Front sidewall line
-            start = new THREE.Vector3(
-              width / 2 + 0.1,
-              0,
-              length / 2 - position
-            );
-            end = new THREE.Vector3(
-              width / 2 + 0.1,
-              frontEaveHeight,
-              length / 2 - position
-            );
-            createLine(start, end);
-
-            // Back sidewall line
-            start = new THREE.Vector3(
-              -width / 2 - 0.1,
-              0,
-              length / 2 - position
-            );
-            end = new THREE.Vector3(
-              -width / 2 - 0.1,
-              backEaveHeight,
-              length / 2 - position
-            );
-            createLine(start, end);
-
-            // Roof line
-            roofStart = new THREE.Vector3(
-              -width / 2,
-              backEaveHeight + 0.1,
-
-              length / 2 - position
-            );
-            roofMid = new THREE.Vector3(
-              -width / 2 + backPeakOffset,
-              peakHeight,
-              length / 2 - position
-            );
-            roofEnd = new THREE.Vector3(
-              width / 2,
-              frontEaveHeight + 0.1,
-
-              length / 2 - position
-            );
-            createRoofLine(roofStart, roofMid, roofEnd);
-            break;
+        case 'nonSymmetrical': {
+          if (adjustedPos <= backPeakOffset) {
+            return (adjustedPos * backRoofPitch) / 12 + backEaveHeight;
+          } else {
+            const distanceFromPeak = adjustedPos - backPeakOffset;
+            const rightSideLength = width - backPeakOffset;
+            const peakHeight =
+              backEaveHeight + (backPeakOffset * backRoofPitch) / 12;
+            return peakHeight - (distanceFromPeak * frontRoofPitch) / 12;
+          }
         }
+        default:
+          return backEaveHeight;
+      }
+    };
+
+    switch (wall) {
+      case 'leftEndwall':
+      case 'rightEndwall': {
+        const xPos =
+          wall === 'leftEndwall' ? -width / 2 + position : width / 2 - position;
+        const zPos =
+          wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1;
+
+        const height = calculateHeightAtPosition(
+          position,
+          wall === 'rightEndwall'
+        );
+
+        start = new THREE.Vector3(xPos, 0, zPos);
+        end = new THREE.Vector3(xPos, height, zPos);
+        createLine(start, end);
         break;
+      }
+
+      case 'frontSidewall':
+      case 'backSidewall': {
+        const xOffset =
+          wall === 'frontSidewall' ? width / 2 + 0.1 : -width / 2 - 0.1;
+        const zPos =
+          wall === 'frontSidewall'
+            ? length / 2 - position
+            : -length / 2 + position;
+
+        start = new THREE.Vector3(xOffset, 0, zPos);
+        end = new THREE.Vector3(
+          xOffset,
+          wall === 'frontSidewall' ? frontEaveHeight : backEaveHeight,
+          zPos
+        );
+        createLine(start, end);
+
+        // Roof line
+        roofPoints = [];
+        switch (shape) {
+          case 'symmetrical':
+            roofPoints = [
+              new THREE.Vector3(-width / 2, backEaveHeight, zPos),
+              new THREE.Vector3(
+                0,
+                ((width / 2) * backRoofPitch) / 12 + backEaveHeight,
+                zPos
+              ),
+              new THREE.Vector3(width / 2, backEaveHeight, zPos),
+            ];
+            break;
+
+          case 'singleSlope':
+          case 'leanTo':
+            roofPoints = [
+              new THREE.Vector3(-width / 2, backEaveHeight, zPos),
+              new THREE.Vector3(width / 2, frontEaveHeight, zPos),
+            ];
+            break;
+
+          case 'nonSymmetrical': {
+            const peakX = -width / 2 + backPeakOffset;
+            const peakHeight = Math.max(
+              (backPeakOffset * backRoofPitch) / 12 + backEaveHeight,
+              ((width - backPeakOffset) * frontRoofPitch) / 12 + frontEaveHeight
+            );
+            roofPoints = [
+              new THREE.Vector3(-width / 2, backEaveHeight, zPos),
+              new THREE.Vector3(peakX, peakHeight, zPos),
+              new THREE.Vector3(width / 2, frontEaveHeight, zPos),
+            ];
+            break;
+          }
+        }
+        createRoofLine(roofPoints);
+        break;
+      }
     }
 
     position += bay;
@@ -709,26 +414,23 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
 };
 
 export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
-  // Remove all existing brace lines for this wall
-  const existingBraceLines = scene.children.filter(
-    (child) => child.isBraceLine && child.wall === wall
+  // Remove existing brace lines
+  scene.children = scene.children.filter(
+    (child) => !(child.isBraceLine && child.wall === wall)
   );
-  existingBraceLines.forEach((line) => scene.remove(line));
 
-  // If there are no braces to add, we're done
   if (!spacing || spacing.length === 0 || !bracing || bracing.length === 0) {
     return;
   }
 
   const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
 
-  const createBraceLine = (start, end) => {
-    const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
+  const createBraceLine = (points) => {
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const line = new THREE.Line(geometry, lineMaterial);
     line.isBraceLine = true;
     line.wall = wall;
     scene.add(line);
-    return line;
   };
 
   const {
@@ -740,16 +442,61 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
     backEaveHeight,
     frontRoofPitch,
     backRoofPitch,
-    roofBreakPoints,
   } = buildingData;
 
-  const backRoofHeight = (backPeakOffset * backRoofPitch) / 12 + backEaveHeight;
-  const frontRoofHeight =
-    ((width - backPeakOffset) * frontRoofPitch) / 12 + frontEaveHeight;
+  // Calculate height at any point along the width
+  const calculateHeightAtPosition = (pos, isRightWall = false) => {
+    // For right endwall, we need to measure from the right side
+    const adjustedPos = pos;
+    const effectiveBackPeakOffset = isRightWall
+      ? width - backPeakOffset
+      : backPeakOffset;
 
-  const peakHeight = Math.max(frontRoofHeight, backRoofHeight);
+    switch (shape) {
+      case 'symmetrical': {
+        const distanceFromCenter = Math.abs(width / 2 - adjustedPos);
+        return (
+          ((width / 2 - distanceFromCenter) * backRoofPitch) / 12 +
+          backEaveHeight
+        );
+      }
+      case 'singleSlope':
+      case 'leanTo': {
+        return (adjustedPos * backRoofPitch) / 12 + backEaveHeight;
+      }
+      case 'nonSymmetrical': {
+        if (
+          (!isRightWall && adjustedPos <= effectiveBackPeakOffset) ||
+          (isRightWall && adjustedPos >= effectiveBackPeakOffset)
+        ) {
+          // Left side of peak (or right side for right wall)
+          if (isRightWall) {
+            const distanceFromPeak = adjustedPos - effectiveBackPeakOffset;
+            const peakHeight =
+              backEaveHeight +
+              ((width - effectiveBackPeakOffset) * backRoofPitch) / 12;
+            return peakHeight - (distanceFromPeak * backRoofPitch) / 12; // Use backRoofPitch for right wall
+          } else {
+            return (adjustedPos * backRoofPitch) / 12 + backEaveHeight;
+          }
+        } else {
+          // Right side of peak (or left side for right wall)
+          if (isRightWall) {
+            return (adjustedPos * frontRoofPitch) / 12 + frontEaveHeight;
+          } else {
+            const distanceFromPeak = adjustedPos - effectiveBackPeakOffset;
+            const peakHeight =
+              backEaveHeight + (effectiveBackPeakOffset * backRoofPitch) / 12;
+            return peakHeight - (distanceFromPeak * frontRoofPitch) / 12; // Keep frontRoofPitch for left wall
+          }
+        }
+      }
+      default:
+        return backEaveHeight;
+    }
+  };
 
-  // Calculate cumulative bay positions
+  // Calculate bay positions
   const bayPositions = spacing.reduce((acc, bayWidth, index) => {
     acc.push(index === 0 ? 0 : acc[index - 1] + spacing[index - 1]);
     return acc;
@@ -773,405 +520,522 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
         ? bayStart + spacing[spacing.length - bracedBayIndex - 1]
         : bayStart + spacing[bracedBayIndex];
 
-    let roofHeight, startHeight, endHeight;
+    switch (wall) {
+      case 'leftEndwall':
+      case 'rightEndwall': {
+        const zOffset =
+          wall === 'leftEndwall' ? length / 2 + 0.1 : -length / 2 - 0.1;
+        const startX =
+          wall === 'leftEndwall' ? -width / 2 + bayStart : width / 2 - bayStart;
+        const endX =
+          wall === 'leftEndwall' ? -width / 2 + bayEnd : width / 2 - bayEnd;
+
+        // Calculate heights using corrected position logic
+        const startHeight = calculateHeightAtPosition(
+          bayStart,
+          wall === 'rightEndwall'
+        );
+        const endHeight = calculateHeightAtPosition(
+          bayEnd,
+          wall === 'rightEndwall'
+        );
+
+        // Create X bracing
+        createBraceLine([
+          new THREE.Vector3(startX, 0, zOffset),
+          new THREE.Vector3(endX, endHeight, zOffset),
+        ]);
+        createBraceLine([
+          new THREE.Vector3(startX, startHeight, zOffset),
+          new THREE.Vector3(endX, 0, zOffset),
+        ]);
+        break;
+      }
+
+      case 'frontSidewall':
+      case 'backSidewall': {
+        const xOffset =
+          wall === 'frontSidewall' ? width / 2 + 0.1 : -width / 2 - 0.1;
+        const zStart =
+          wall === 'frontSidewall'
+            ? length / 2 - bayStart
+            : -length / 2 + bayStart;
+        const zEnd =
+          wall === 'frontSidewall' ? length / 2 - bayEnd : -length / 2 + bayEnd;
+        const eaveHeight =
+          wall === 'frontSidewall' ? frontEaveHeight : backEaveHeight;
+
+        createBraceLine([
+          new THREE.Vector3(xOffset, 0, zStart),
+          new THREE.Vector3(xOffset, eaveHeight, zEnd),
+        ]);
+        createBraceLine([
+          new THREE.Vector3(xOffset, eaveHeight, zStart),
+          new THREE.Vector3(xOffset, 0, zEnd),
+        ]);
+        break;
+      }
+
+      case 'roof': {
+        const zStart = length / 2 - bayStart;
+
+        const zEnd = length / 2 - bayEnd;
+
+        switch (shape) {
+          case 'symmetrical': {
+            const peakHeight =
+              ((width / 2) * backRoofPitch) / 12 + backEaveHeight;
+            createBraceLine([
+              new THREE.Vector3(-width / 2, backEaveHeight + 0.1, zStart),
+              new THREE.Vector3(0, peakHeight + 0.1, zEnd),
+            ]);
+            createBraceLine([
+              new THREE.Vector3(0, peakHeight + 0.1, zStart),
+              new THREE.Vector3(-width / 2, backEaveHeight + 0.1, zEnd),
+            ]);
+            createBraceLine([
+              new THREE.Vector3(width / 2, backEaveHeight + 0.1, zStart),
+              new THREE.Vector3(0, peakHeight + 0.1, zEnd),
+            ]);
+            createBraceLine([
+              new THREE.Vector3(0, peakHeight + 0.1, zStart),
+              new THREE.Vector3(width / 2, backEaveHeight + 0.1, zEnd),
+            ]);
+            break;
+          }
+
+          case 'singleSlope':
+          case 'leanTo': {
+            createBraceLine([
+              new THREE.Vector3(-width / 2, backEaveHeight + 0.1, zStart),
+              new THREE.Vector3(width / 2, frontEaveHeight + 0.1, zEnd),
+            ]);
+            createBraceLine([
+              new THREE.Vector3(width / 2, frontEaveHeight + 0.1, zStart),
+              new THREE.Vector3(-width / 2, backEaveHeight + 0.1, zEnd),
+            ]);
+            break;
+          }
+
+          case 'nonSymmetrical': {
+            const peakX = -width / 2 + backPeakOffset;
+            const peakHeight = Math.max(
+              (backPeakOffset * backRoofPitch) / 12 + backEaveHeight,
+              ((width - backPeakOffset) * frontRoofPitch) / 12 + frontEaveHeight
+            );
+
+            createBraceLine([
+              new THREE.Vector3(-width / 2, backEaveHeight + 0.1, zStart),
+              new THREE.Vector3(peakX, peakHeight + 0.1, zEnd),
+            ]);
+            createBraceLine([
+              new THREE.Vector3(peakX, peakHeight + 0.1, zStart),
+              new THREE.Vector3(-width / 2, backEaveHeight + 0.1, zEnd),
+            ]);
+            createBraceLine([
+              new THREE.Vector3(width / 2, frontEaveHeight + 0.1, zStart),
+              new THREE.Vector3(peakX, peakHeight + 0.1, zEnd),
+            ]);
+            createBraceLine([
+              new THREE.Vector3(peakX, peakHeight + 0.1, zStart),
+              new THREE.Vector3(width / 2, frontEaveHeight + 0.1, zEnd),
+            ]);
+            break;
+          }
+        }
+        break;
+      }
+    }
+  });
+};
+
+export const addExtensions = (spacing, wall, scene, buildingData) => {
+  // Remove existing brace lines
+  scene.children = scene.children.filter(
+    (child) => !(child.isExtensionLine && child.wall === wall)
+  );
+
+  const buildingMaterial = new THREE.MeshBasicMaterial({
+    color: 0xcccccc,
+    transparent: true,
+    opacity: 0.7,
+  });
+
+  const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+  const dashedMaterial = new THREE.LineDashedMaterial({
+    color: 0x666666,
+    linewidth: 1,
+    scale: 2,
+    dashSize: 2,
+    gapSize: 1,
+  });
+
+  const createExtLine = (points) => {
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const line = new THREE.Line(geometry, lineMaterial);
+    const building = new THREE.Mesh(geometry, buildingMaterial);
+    line.isExtensionLine = true;
+    line.wall = wall;
+    building.isExtensionLine = true;
+    building.wall = wall;
+    scene.add(line);
+    scene.add(building);
+  };
+
+  const createColLine = (points) => {
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const line = new THREE.Line(geometry, dashedMaterial);
+    line.computeLineDistances();
+    line.isExtensionLine = true;
+    line.wall = wall;
+    scene.add(line);
+  };
+
+  const {
+    shape,
+    backPeakOffset,
+    width,
+    length,
+    frontEaveHeight,
+    backEaveHeight,
+    frontRoofPitch,
+    backRoofPitch,
+    frontExtensionWidth,
+    frontExtensionBays,
+    backExtensionWidth,
+    backExtensionBays,
+    leftExtensionWidth,
+    rightExtensionWidth,
+    frontExtensionColumns,
+    backExtensionColumns,
+    frontBaySpacing,
+    backBaySpacing,
+  } = buildingData;
+
+  // Calculate height at any point along the width
+  const calculateHeightAtPosition = (pos, isRightWall = false) => {
+    const getPitchExtension = (height, pitch) => {
+      return (height * 12) / pitch;
+    };
+
+    // For right endwall, we need to measure from the right side
+    const adjustedPos = pos;
+    const effectiveBackPeakOffset = isRightWall
+      ? width - backPeakOffset
+      : backPeakOffset;
 
     switch (shape) {
-      case 'symmetrical':
-        roofHeight =
-          (width / 2) *
-          Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180);
+      case 'symmetrical': {
+        const centerPos = width / 2;
+        const peakHeight = ((width / 2) * backRoofPitch) / 12 + backEaveHeight;
 
-        startHeight =
-          (width / 2 - Math.abs(width / 2 - bayStart)) *
-          Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180);
-
-        endHeight =
-          (width / 2 - Math.abs(width / 2 - bayEnd)) *
-          Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180);
-
-        switch (wall) {
-          case 'leftEndwall':
-            createBraceLine(
-              new THREE.Vector3(-width / 2 + bayStart, 0, length / 2 + 0.1),
-              new THREE.Vector3(
-                -width / 2 + bayEnd,
-                backEaveHeight + endHeight,
-                length / 2 + 0.1
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                -width / 2 + bayStart,
-                backEaveHeight + startHeight,
-                length / 2 + 0.1
-              ),
-              new THREE.Vector3(-width / 2 + bayEnd, 0, length / 2 + 0.1)
-            );
-            break;
-          case 'rightEndwall':
-            createBraceLine(
-              new THREE.Vector3(width / 2 - bayStart, 0, -length / 2 - 0.1),
-              new THREE.Vector3(
-                width / 2 - bayEnd,
-                backEaveHeight + endHeight,
-                -length / 2 - 0.1
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                width / 2 - bayStart,
-                backEaveHeight + startHeight,
-                -length / 2 - 0.1
-              ),
-              new THREE.Vector3(width / 2 - bayEnd, 0, -length / 2 - 0.1)
-            );
-            break;
-          case 'frontSidewall':
-            createBraceLine(
-              new THREE.Vector3(width / 2 + 0.1, 0, length / 2 - bayStart),
-              new THREE.Vector3(
-                width / 2 + 0.1,
-                backEaveHeight,
-                length / 2 - bayEnd
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                width / 2 + 0.1,
-                backEaveHeight,
-                length / 2 - bayStart
-              ),
-              new THREE.Vector3(width / 2 + 0.1, 0, length / 2 - bayEnd)
-            );
-            break;
-          case 'backSidewall':
-            createBraceLine(
-              new THREE.Vector3(-width / 2 - 0.1, 0, -length / 2 + bayStart),
-              new THREE.Vector3(
-                -width / 2 - 0.1,
-                backEaveHeight,
-                -length / 2 + bayEnd
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                -width / 2 - 0.1,
-                backEaveHeight,
-                -length / 2 + bayStart
-              ),
-              new THREE.Vector3(-width / 2 - 0.1, 0, -length / 2 + bayEnd)
-            );
-            break;
-          case 'roof':
-            createBraceLine(
-              new THREE.Vector3(
-                -width / 2,
-                backEaveHeight + 0.1,
-                length / 2 - bayStart
-              ),
-              new THREE.Vector3(
-                0,
-                backEaveHeight + roofHeight + 0.1,
-                length / 2 - bayEnd
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                0,
-                backEaveHeight + roofHeight + 0.1,
-                length / 2 - bayStart
-              ),
-              new THREE.Vector3(
-                -width / 2,
-                backEaveHeight + 0.1,
-                length / 2 - bayEnd
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                width / 2,
-                backEaveHeight + 0.1,
-                length / 2 - bayStart
-              ),
-              new THREE.Vector3(
-                0,
-                backEaveHeight + roofHeight + 0.1,
-                length / 2 - bayEnd
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                0,
-                backEaveHeight + roofHeight + 0.1,
-                length / 2 - bayStart
-              ),
-              new THREE.Vector3(
-                width / 2,
-                backEaveHeight + 0.1,
-                length / 2 - bayEnd
-              )
-            );
-            break;
+        if (pos <= 0) {
+          // Left of building
+          const extension = getPitchExtension(backEaveHeight, backRoofPitch);
+          const distanceOutside = Math.abs(pos);
+          return Math.max(
+            0,
+            backEaveHeight - (distanceOutside * backRoofPitch) / 12
+          );
+        } else if (pos >= width) {
+          // Right of building
+          const extension = getPitchExtension(backEaveHeight, backRoofPitch);
+          const distanceOutside = pos - width;
+          return Math.max(
+            0,
+            backEaveHeight - (distanceOutside * backRoofPitch) / 12
+          );
+        } else {
+          // Inside building
+          const distanceFromCenter = Math.abs(centerPos - pos);
+          return (
+            ((centerPos - distanceFromCenter) * backRoofPitch) / 12 +
+            backEaveHeight
+          );
         }
-        break;
+      }
+
       case 'singleSlope':
-      case 'leanTo':
-        // roofHeight =
-        //   (width / 2) * Math.tan((((backRoofPitch * 100) / 12) * Math.PI) / 180);
+      case 'leanTo': {
+        if (pos <= 0) {
+          // Left of building
+          const extension = getPitchExtension(backEaveHeight, backRoofPitch);
+          const distanceOutside = Math.abs(pos);
+          return Math.max(
+            0,
+            backEaveHeight - (distanceOutside * backRoofPitch) / 12
+          );
+        } else if (pos >= width) {
+          // Right of building
+          const extension = getPitchExtension(frontEaveHeight, backRoofPitch);
+          const distanceOutside = pos - width;
+          return Math.max(
+            0,
+            frontEaveHeight - (distanceOutside * backRoofPitch) / 12
+          );
+        } else {
+          // Inside building
+          return (pos * backRoofPitch) / 12 + backEaveHeight;
+        }
+      }
 
-        switch (wall) {
-          case 'leftEndwall':
-            startHeight = (bayStart * backRoofPitch) / 12 + backEaveHeight;
-            endHeight = (bayEnd * backRoofPitch) / 12 + backEaveHeight;
-            createBraceLine(
-              new THREE.Vector3(-width / 2 + bayStart, 0, length / 2 + 0.1),
-              new THREE.Vector3(
-                -width / 2 + bayEnd,
-                endHeight,
-                length / 2 + 0.1
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                -width / 2 + bayStart,
-                startHeight,
-                length / 2 + 0.1
-              ),
-              new THREE.Vector3(-width / 2 + bayEnd, 0, length / 2 + 0.1)
-            );
-            break;
-          case 'rightEndwall':
-            startHeight =
-              ((width - bayStart) * backRoofPitch) / 12 + backEaveHeight;
-            endHeight =
-              ((width - bayEnd) * backRoofPitch) / 12 + backEaveHeight;
-            createBraceLine(
-              new THREE.Vector3(width / 2 - bayStart, 0, -length / 2 - 0.1),
-              new THREE.Vector3(
-                width / 2 - bayEnd,
-                endHeight,
-                -length / 2 - 0.1
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                width / 2 - bayStart,
-                startHeight,
-                -length / 2 - 0.1
-              ),
-              new THREE.Vector3(width / 2 - bayEnd, 0, -length / 2 - 0.1)
-            );
-            break;
-          case 'frontSidewall':
-            createBraceLine(
-              new THREE.Vector3(width / 2 + 0.1, 0, length / 2 - bayStart),
-              new THREE.Vector3(
-                width / 2 + 0.1,
-                frontEaveHeight,
-                length / 2 - bayEnd
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                width / 2 + 0.1,
-                frontEaveHeight,
-                length / 2 - bayStart
-              ),
-              new THREE.Vector3(width / 2 + 0.1, 0, length / 2 - bayEnd)
-            );
-            break;
-          case 'backSidewall':
-            createBraceLine(
-              new THREE.Vector3(-width / 2 - 0.1, 0, -length / 2 + bayStart),
-              new THREE.Vector3(
-                -width / 2 - 0.1,
-                backEaveHeight,
-                -length / 2 + bayEnd
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                -width / 2 - 0.1,
-                backEaveHeight,
-                -length / 2 + bayStart
-              ),
-              new THREE.Vector3(-width / 2 - 0.1, 0, -length / 2 + bayEnd)
-            );
-            break;
-          case 'roof':
-            createBraceLine(
-              new THREE.Vector3(
-                -width / 2,
-                backEaveHeight + 0.1,
-                length / 2 - bayStart
-              ),
-              new THREE.Vector3(
-                width / 2,
-                frontEaveHeight + 0.1,
-                length / 2 - bayEnd
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                width / 2,
-                frontEaveHeight,
-                length / 2 - bayStart
-              ),
-              new THREE.Vector3(
-                -width / 2,
-                backEaveHeight + 0.1,
-                length / 2 - bayEnd
-              )
-            );
-            break;
+      case 'nonSymmetrical': {
+        const peakX = -width / 2 + backPeakOffset;
+        const peakHeight = Math.max(
+          (backPeakOffset * backRoofPitch) / 12 + backEaveHeight,
+          ((width - backPeakOffset) * frontRoofPitch) / 12 + frontEaveHeight
+        );
+
+        if (pos <= 0) {
+          // Left of building
+          const extension = getPitchExtension(backEaveHeight, backRoofPitch);
+          const distanceOutside = Math.abs(pos);
+          return Math.max(
+            0,
+            backEaveHeight - (distanceOutside * backRoofPitch) / 12
+          );
+        } else if (pos >= width) {
+          // Right of building
+          const extension = getPitchExtension(frontEaveHeight, frontRoofPitch);
+          const distanceOutside = pos - width;
+          return Math.max(
+            0,
+            frontEaveHeight - (distanceOutside * frontRoofPitch) / 12
+          );
+        } else if (pos <= backPeakOffset) {
+          // Left side of peak
+          return (pos * backRoofPitch) / 12 + backEaveHeight;
+        } else {
+          // Right side of peak
+          const distanceFromPeak = pos - backPeakOffset;
+          return peakHeight - (distanceFromPeak * frontRoofPitch) / 12;
         }
-        break;
-      case 'nonSymmetrical':
-        switch (wall) {
-          case 'leftEndwall':
-            startHeight =
-              bayStart > backPeakOffset
-                ? (width - backPeakOffset - (bayStart - backPeakOffset)) *
-                    (frontRoofPitch / 12) +
-                  frontEaveHeight
-                : (bayStart * backRoofPitch) / 12 + backEaveHeight;
-            endHeight =
-              bayEnd > backPeakOffset
-                ? (width - backPeakOffset - (bayEnd - backPeakOffset)) *
-                    (frontRoofPitch / 12) +
-                  frontEaveHeight
-                : (bayEnd * backRoofPitch) / 12 + backEaveHeight;
-            createBraceLine(
-              new THREE.Vector3(-width / 2 + bayStart, 0, length / 2 + 0.1),
-              new THREE.Vector3(
-                -width / 2 + bayEnd,
-                endHeight,
-                length / 2 + 0.1
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                -width / 2 + bayStart,
-                startHeight,
-                length / 2 + 0.1
-              ),
-              new THREE.Vector3(-width / 2 + bayEnd, 0, length / 2 + 0.1)
-            );
-            break;
-          case 'rightEndwall':
-            startHeight =
-              bayStart < width - backPeakOffset
-                ? bayStart * (frontRoofPitch / 12) + frontEaveHeight
-                : ((width - bayStart) * backRoofPitch) / 12 + backEaveHeight;
-            endHeight =
-              bayEnd < width - backPeakOffset
-                ? bayEnd * (frontRoofPitch / 12) + frontEaveHeight
-                : ((width - bayEnd) * backRoofPitch) / 12 + backEaveHeight;
-            createBraceLine(
-              new THREE.Vector3(width / 2 - bayStart, 0, -length / 2 - 0.1),
-              new THREE.Vector3(
-                width / 2 - bayEnd,
-                endHeight,
-                -length / 2 - 0.1
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                width / 2 - bayStart,
-                startHeight,
-                -length / 2 - 0.1
-              ),
-              new THREE.Vector3(width / 2 - bayEnd, 0, -length / 2 - 0.1)
-            );
-            break;
-          case 'frontSidewall':
-            createBraceLine(
-              new THREE.Vector3(width / 2 + 0.1, 0, length / 2 - bayStart),
-              new THREE.Vector3(
-                width / 2 + 0.1,
-                frontEaveHeight,
-                length / 2 - bayEnd
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                width / 2 + 0.1,
-                frontEaveHeight,
-                length / 2 - bayStart
-              ),
-              new THREE.Vector3(width / 2 + 0.1, 0, length / 2 - bayEnd)
-            );
-            break;
-          case 'backSidewall':
-            createBraceLine(
-              new THREE.Vector3(-width / 2 - 0.1, 0, -length / 2 + bayStart),
-              new THREE.Vector3(
-                -width / 2 - 0.1,
-                backEaveHeight,
-                -length / 2 + bayEnd
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                -width / 2 - 0.1,
-                backEaveHeight,
-                -length / 2 + bayStart
-              ),
-              new THREE.Vector3(-width / 2 - 0.1, 0, -length / 2 + bayEnd)
-            );
-            break;
-          case 'roof':
-            createBraceLine(
-              new THREE.Vector3(
-                -width / 2,
-                backEaveHeight + 0.1,
-                length / 2 - bayStart
-              ),
-              new THREE.Vector3(
-                -width / 2 + backPeakOffset,
-                peakHeight + 0.1,
-                length / 2 - bayEnd
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                -width / 2 + backPeakOffset,
-                peakHeight + 0.1,
-                length / 2 - bayStart
-              ),
-              new THREE.Vector3(
-                -width / 2,
-                backEaveHeight + 0.1,
-                length / 2 - bayEnd
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                width / 2,
-                frontEaveHeight + 0.1,
-                length / 2 - bayStart
-              ),
-              new THREE.Vector3(
-                -width / 2 + backPeakOffset,
-                peakHeight + 0.1,
-                length / 2 - bayEnd
-              )
-            );
-            createBraceLine(
-              new THREE.Vector3(
-                -width / 2 + backPeakOffset,
-                peakHeight + 0.1,
-                length / 2 - bayStart
-              ),
-              new THREE.Vector3(
-                width / 2,
-                frontEaveHeight + 0.1,
-                length / 2 - bayEnd
-              )
-            );
-            break;
-        }
-        break;
+      }
+
+      default:
+        return backEaveHeight;
+    }
+  };
+
+  let bays = [];
+  let extWidth = 0;
+
+  switch (wall) {
+    case 'frontSidewall':
+      bays = frontExtensionBays;
+      extWidth = frontExtensionWidth;
+      break;
+    case 'backSidewall':
+      bays = backExtensionBays;
+      extWidth = backExtensionWidth;
+      break;
+    case 'leftEndwall': {
+      extWidth = leftExtensionWidth;
+      const frontFirstBay = frontExtensionBays.includes(1);
+      const backLastBay = backExtensionBays.includes(backBaySpacing.length);
+      const frontWidth = frontFirstBay ? frontExtensionWidth : 0;
+      const backWidth = backLastBay ? backExtensionWidth : 0;
+      // Create Front Left Gable
+      createExtLine([
+        new THREE.Vector3(width / 2 + frontWidth, frontEaveHeight, length / 2),
+        new THREE.Vector3(
+          -width / 2 + backPeakOffset,
+          calculateHeightAtPosition(backPeakOffset),
+          length / 2
+        ),
+        new THREE.Vector3(
+          -width / 2 + backPeakOffset,
+          calculateHeightAtPosition(backPeakOffset),
+          length / 2 + extWidth
+        ),
+        new THREE.Vector3(
+          -width / 2 + backPeakOffset,
+          calculateHeightAtPosition(backPeakOffset),
+          length / 2 + extWidth
+        ),
+        new THREE.Vector3(
+          width / 2 + frontWidth,
+          frontEaveHeight,
+          length / 2 + extWidth
+        ),
+        new THREE.Vector3(width / 2 + frontWidth, frontEaveHeight, length / 2),
+      ]);
+      // Create Back Left Gable
+      createExtLine([
+        new THREE.Vector3(
+          -width / 2 + backPeakOffset,
+          calculateHeightAtPosition(backPeakOffset),
+          length / 2
+        ),
+        new THREE.Vector3(-width / 2 - backWidth, backEaveHeight, length / 2),
+        new THREE.Vector3(
+          -width / 2 - backWidth,
+          backEaveHeight,
+          length / 2 + extWidth
+        ),
+        new THREE.Vector3(
+          -width / 2 - backWidth,
+          backEaveHeight,
+          length / 2 + extWidth
+        ),
+        new THREE.Vector3(
+          -width / 2 + backPeakOffset,
+          calculateHeightAtPosition(backPeakOffset),
+          length / 2 + extWidth
+        ),
+        new THREE.Vector3(
+          -width / 2 + backPeakOffset,
+          calculateHeightAtPosition(backPeakOffset),
+          length / 2
+        ),
+      ]);
+      break;
+    }
+    case 'rightEndwall': {
+      extWidth = rightExtensionWidth;
+      const frontLastBay = frontExtensionBays.includes(frontBaySpacing.length);
+      const backFirstBay = backExtensionBays.includes(1);
+      const frontWidth = frontLastBay ? frontExtensionWidth : 0;
+      const backWidth = backFirstBay ? backExtensionWidth : 0;
+      // Create Front Right Gable
+      createExtLine([
+        new THREE.Vector3(width / 2 + frontWidth, frontEaveHeight, -length / 2),
+        new THREE.Vector3(
+          width / 2 + frontWidth,
+          frontEaveHeight,
+          -length / 2 - extWidth
+        ),
+        new THREE.Vector3(
+          -width / 2 + backPeakOffset,
+          calculateHeightAtPosition(backPeakOffset),
+          -length / 2 - extWidth
+        ),
+        new THREE.Vector3(
+          -width / 2 + backPeakOffset,
+          calculateHeightAtPosition(backPeakOffset),
+          -length / 2 - extWidth
+        ),
+        new THREE.Vector3(
+          -width / 2 + backPeakOffset,
+          calculateHeightAtPosition(backPeakOffset),
+          -length / 2
+        ),
+        new THREE.Vector3(width / 2 + frontWidth, frontEaveHeight, -length / 2),
+      ]);
+      // Create Back Right Gable
+      createExtLine([
+        new THREE.Vector3(
+          -width / 2 + backPeakOffset,
+          calculateHeightAtPosition(backPeakOffset),
+          -length / 2
+        ),
+        new THREE.Vector3(
+          -width / 2 + backPeakOffset,
+          calculateHeightAtPosition(backPeakOffset),
+          -length / 2 - extWidth
+        ),
+        new THREE.Vector3(
+          -width / 2 - backWidth,
+          backEaveHeight,
+          -length / 2 - extWidth
+        ),
+        new THREE.Vector3(
+          -width / 2 - backWidth,
+          backEaveHeight,
+          -length / 2 - extWidth
+        ),
+        new THREE.Vector3(-width / 2 - backWidth, backEaveHeight, -length / 2),
+        new THREE.Vector3(
+          -width / 2 + backPeakOffset,
+          calculateHeightAtPosition(backPeakOffset),
+          -length / 2
+        ),
+      ]);
+      break;
+    }
+    default:
+      bays = frontExtensionBays;
+      extWidth = frontExtensionWidth;
+      break;
+  }
+
+  // Calculate bay positions
+  const bayPositions = spacing.reduce((acc, bayWidth, index) => {
+    acc.push(index === 0 ? 0 : acc[index - 1] + spacing[index - 1]);
+    return acc;
+  }, []);
+
+  bays.forEach((bayIndex) => {
+    bayIndex = bayIndex - 1;
+    if (bayIndex < 0 || bayIndex >= spacing.length) {
+      console.warn(`Invalid braced bay index: ${bayIndex}`);
+      return;
+    }
+
+    const bayStart =
+      wall === 'backSidewall'
+        ? length -
+          bayPositions[bayPositions.length - bayIndex - 1] -
+          spacing[spacing.length - bayIndex - 1]
+        : bayPositions[bayIndex];
+    const bayEnd =
+      wall === 'backSidewall'
+        ? bayStart + spacing[spacing.length - bayIndex - 1]
+        : bayStart + spacing[bayIndex];
+
+    const xOffset =
+      wall === 'frontSidewall' ? width / 2 + 0.1 : -width / 2 - 0.1;
+    const zStart =
+      wall === 'frontSidewall' ? length / 2 - bayStart : -length / 2 + bayStart;
+    const zEnd =
+      wall === 'frontSidewall' ? length / 2 - bayEnd : -length / 2 + bayEnd;
+    const eaveHeight =
+      wall === 'frontSidewall' ? frontEaveHeight : backEaveHeight;
+    const extHeight =
+      wall === 'frontSidewall'
+        ? calculateHeightAtPosition(width + extWidth)
+        : calculateHeightAtPosition(0 - extWidth);
+
+    createExtLine([
+      new THREE.Vector3(xOffset, eaveHeight, zStart),
+      new THREE.Vector3(
+        wall === 'frontSidewall' ? xOffset + extWidth : xOffset - extWidth,
+        extHeight,
+        zStart
+      ),
+      new THREE.Vector3(
+        wall === 'frontSidewall' ? xOffset + extWidth : xOffset - extWidth,
+        extHeight,
+        zEnd
+      ),
+      new THREE.Vector3(
+        wall === 'frontSidewall' ? xOffset + extWidth : xOffset - extWidth,
+        extHeight,
+        zEnd
+      ),
+      new THREE.Vector3(xOffset, eaveHeight, zEnd),
+      new THREE.Vector3(xOffset, eaveHeight, zStart),
+    ]);
+
+    if (wall === 'frontSidewall' && frontExtensionColumns) {
+      createColLine([
+        new THREE.Vector3(xOffset + extWidth, extHeight, zStart),
+        new THREE.Vector3(xOffset + extWidth, 0, zStart),
+      ]);
+      createColLine([
+        new THREE.Vector3(xOffset + extWidth, extHeight, zEnd),
+        new THREE.Vector3(xOffset + extWidth, 0, zEnd),
+      ]);
+    }
+    if (wall === 'backSidewall' && backExtensionColumns) {
+      createColLine([
+        new THREE.Vector3(xOffset - extWidth, extHeight, zStart),
+        new THREE.Vector3(xOffset - extWidth, 0, zStart),
+      ]);
+      createColLine([
+        new THREE.Vector3(xOffset - extWidth, extHeight, zEnd),
+        new THREE.Vector3(xOffset - extWidth, 0, zEnd),
+      ]);
     }
   });
 };

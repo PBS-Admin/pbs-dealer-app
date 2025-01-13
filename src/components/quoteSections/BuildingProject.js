@@ -326,7 +326,7 @@ const BuildingProject = ({ locked }) => {
                     }
                     disabled={index != activeBuilding || locked}
                   />
-                  <div className="cardInput">
+                  {/* <div className="cardInput">
                     <div className="center">
                       <label htmlFor={`buildingCommonWall-${index}`}>
                         Common Wall:
@@ -354,7 +354,7 @@ const BuildingProject = ({ locked }) => {
                           )
                       )}
                     </select>
-                  </div>
+                  </div> */}
                 </div>
               </>
             )}
