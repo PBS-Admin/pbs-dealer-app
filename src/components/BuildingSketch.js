@@ -1,7 +1,12 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { useThreeSetup } from '../hooks/useThreeSetup';
-import { createBuilding, addBayLines, addBraceLines } from './BuildingUtils';
+import {
+  createBuilding,
+  addBayLines,
+  addBraceLines,
+  addExtensions,
+} from './BuildingUtils';
 import { useBuildingContext } from '@/contexts/BuildingContext';
 import { useUIContext } from '@/contexts/UIContext';
 
@@ -9,10 +14,13 @@ const BuildingSketch = () => {
   const backgroundColor = 0xf5f5f5;
   const mountRef = useRef(null);
   const canvasRef = useRef(null);
-  const updateCountRef = useRef(0);
-  const [currentView, setCurrentView] = useState('ISO');
   const { state } = useBuildingContext();
-  const { activeBuilding } = useUIContext();
+  const {
+    activeBuilding,
+    camera: cameraState,
+    updateCameraState,
+  } = useUIContext();
+
   const { scene, camera, renderer, controls, isSetup, updateCameraPosition } =
     useThreeSetup(
       mountRef,
@@ -22,11 +30,39 @@ const BuildingSketch = () => {
         length: state.buildings[activeBuilding].length,
         height: state.buildings[activeBuilding].backEaveHeight,
       },
-      currentView
+      cameraState.view
     );
 
+  // Update context when user interacts with controls
+  useEffect(() => {
+    if (controls) {
+      const handleChange = () => {
+        updateCameraState(camera.position, controls.target);
+      };
+
+      controls.addEventListener('change', handleChange);
+      return () => controls.removeEventListener('change', handleChange);
+    }
+  }, [controls, camera, updateCameraState]);
+
+  // Restore camera position from context when available
+  useEffect(() => {
+    if (camera && controls && cameraState.position && cameraState.target) {
+      camera.position.set(
+        cameraState.position.x,
+        cameraState.position.y,
+        cameraState.position.z
+      );
+      controls.target.set(
+        cameraState.target.x,
+        cameraState.target.y,
+        cameraState.target.z
+      );
+      controls.update();
+    }
+  }, [camera, controls, cameraState.position, cameraState.target]);
+
   const updateBuilding = useCallback(() => {
-    updateCountRef.current++;
     if (!isSetup || !scene) return;
 
     // Remove existing building objects
@@ -76,6 +112,12 @@ const BuildingSketch = () => {
       scene,
       state.buildings[activeBuilding]
     );
+    addBayLines(
+      state.buildings[activeBuilding].roofBaySpacing,
+      'backSidewall',
+      scene,
+      state.buildings[activeBuilding]
+    );
 
     addBraceLines(
       state.buildings[activeBuilding].frontBaySpacing,
@@ -117,24 +159,48 @@ const BuildingSketch = () => {
       state.buildings[activeBuilding]
     );
 
+    addExtensions(
+      state.buildings[activeBuilding].frontBaySpacing,
+      'frontSidewall',
+      scene,
+      state.buildings[activeBuilding]
+    );
+
+    addExtensions(
+      state.buildings[activeBuilding].backBaySpacing,
+      'backSidewall',
+      scene,
+      state.buildings[activeBuilding]
+    );
+
+    addExtensions(
+      state.buildings[activeBuilding].leftBaySpacing,
+      'leftEndwall',
+      scene,
+      state.buildings[activeBuilding]
+    );
+
+    addExtensions(
+      state.buildings[activeBuilding].rightBaySpacing,
+      'rightEndwall',
+      scene,
+      state.buildings[activeBuilding]
+    );
+
     // Render the scene
     if (renderer && camera) {
       renderer.render(scene, camera);
     }
   }, [state.buildings[activeBuilding], isSetup, scene, renderer, camera]);
 
+  // Update building when needed
   useEffect(() => {
     if (isSetup) {
       updateBuilding();
     }
   }, [state.buildings[activeBuilding], isSetup, updateBuilding]);
 
-  useEffect(() => {
-    if (isSetup) {
-      updateCameraPosition(currentView);
-    }
-  }, [currentView, isSetup, updateCameraPosition]);
-
+  // Mount canvas
   useEffect(() => {
     if (renderer && !canvasRef.current) {
       canvasRef.current = renderer.domElement;
@@ -142,8 +208,28 @@ const BuildingSketch = () => {
     }
   }, [renderer]);
 
+  // Add effect to initialize camera state after setup
+  useEffect(() => {
+    if (isSetup && camera && controls && !cameraState.position) {
+      // Sync initial camera state to context
+      updateCameraState(camera.position, controls.target, 'ISO');
+      // Set initial view
+      updateCameraPosition('ISO');
+    }
+  }, [
+    isSetup,
+    camera,
+    controls,
+    cameraState.position,
+    updateCameraState,
+    updateCameraPosition,
+  ]);
+
   const handleViewChange = (view) => {
-    setCurrentView(view);
+    // First update the camera position for the new view
+    updateCameraPosition(view);
+    // Then store the new position and view in context
+    updateCameraState(camera.position, controls.target, view);
   };
 
   return (

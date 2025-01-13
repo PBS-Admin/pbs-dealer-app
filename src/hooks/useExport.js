@@ -3471,6 +3471,7 @@ export function useExport() {
     }
 
     let extData = getExtData(building, loc);
+
     const numOfExt = extData[0];
     let numBays = roofBaySpacing.length;
     const extStarts = extData[1].split(',');

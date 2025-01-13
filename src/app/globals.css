@@ -634,7 +634,8 @@ button.reject:hover {
 }
 
 button.nuetral,
-.button.nuetral {
+.button.nuetral,
+.nuetral {
   background-color: var(--gray);
 }
 

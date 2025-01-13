@@ -496,6 +496,14 @@ const FinalizeQuote = ({ locked }) => {
         ?.split(',')[1]
         .trim();
 
+      if (buildingWeight == 0 || finalPrice.includes('@')) {
+        toastRef.current.show({
+          title: 'Error',
+          message: `The bldgStats.txt did not get created properly, \n please remake your Ship.out file and try importing again`,
+          timeout: 5000,
+          color: 'reject',
+        });
+      }
       // Set the weight and price in the state
       setValues({
         ...state,
@@ -503,14 +511,35 @@ const FinalizeQuote = ({ locked }) => {
         contractPrice: finalPrice,
       });
     } catch (error) {
-      console.error('Error parsing file:', error);
-      toastRef.current.show({
-        title: 'Error',
-        message:
-          'The MBS run was not completed before attempting to import weight and price',
-        timeout: 5000,
-        color: 'reject',
-      });
+      switch (error.name) {
+        case 'AbortError':
+          toastRef.current.show({
+            title: 'Error',
+            message: 'Import cancelled',
+            timeout: 1000,
+            color: 'nuetral',
+          });
+          break;
+        case 'NotFoundError':
+          toastRef.current.show({
+            title: 'Error',
+            message: `Error importing, did not find ${state.quoteNumber} folder inside of that Jobs folder`,
+            timeout: 5000,
+            color: 'reject',
+          });
+          console.error('Error parsing file:', error);
+          break;
+        default:
+          toastRef.current.show({
+            title: 'Error',
+            message:
+              'Error importing, Please try rerunning your MBS and selecting the Jobs folder to import',
+            timeout: 5000,
+            color: 'reject',
+          });
+          console.error('Error parsing file:', error);
+          break;
+      }
     }
   }, []);
 
@@ -722,7 +751,7 @@ const FinalizeQuote = ({ locked }) => {
             icon={locked ? '' : complexityInfo.complexity < 3 ? 'import' : ''}
             iconClass={'prim'}
             iconOnClick={handleImport}
-            tooltip="Import price and weight"
+            tooltip="Import price/weight from Jobs folder"
             disabled={locked}
             decimalPlaces={2}
           />

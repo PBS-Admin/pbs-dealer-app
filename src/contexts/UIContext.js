@@ -11,6 +11,7 @@ export const UI_ACTIONS = {
   SET_ACTIVE_CARD: 'SET_ACTIVE_CARD',
   SET_CURRENT_INDEX: 'SET_CURRENT_INDEX',
   TOGGLE_SIDEBAR: 'TOGGLE_SIDEBAR',
+  UPDATE_CAMERA_STATE: 'UPDATE_CAMERA_STATE',
   UPDATE_DIALOG: 'UPDATE_DIALOG',
   SHOW_TOAST: 'SHOW_TOAST',
   CLEAR_TOAST: 'CLEAR_TOAST',
@@ -51,7 +52,11 @@ const initialState = {
   activeCard: 'quote-info',
   currentIndex: 0,
   isSidebarOpen: true,
-
+  camera: {
+    position: null,
+    target: null,
+    view: 'ISO',
+  },
   // Dialog states
   dialogs: {
     copyBuilding: { isOpen: false, data: null },
@@ -116,10 +121,16 @@ function uiReducer(state, action) {
         activeCard: items[action.payload].id,
       };
     }
-    case UI_ACTIONS.TOGGLE_SIDEBAR:
+
+    case UI_ACTIONS.UPDATE_CAMERA_STATE:
       return {
         ...state,
-        isSidebarOpen: !state.isSidebarOpen,
+        camera: {
+          ...state.camera,
+          position: action.payload.position || state.camera.position,
+          target: action.payload.target || state.camera.target,
+          view: action.payload.view || state.camera.view,
+        },
       };
 
     case UI_ACTIONS.UPDATE_DIALOG:
@@ -217,6 +228,19 @@ export function UIProvider({ children }) {
 
   const toggleSidebar = useCallback(() => {
     dispatch({ type: UI_ACTIONS.TOGGLE_SIDEBAR });
+  }, []);
+
+  const updateCameraState = useCallback((position, target, view) => {
+    dispatch({
+      type: UI_ACTIONS.UPDATE_CAMERA_STATE,
+      payload: {
+        position: position
+          ? { x: position.x, y: position.y, z: position.z }
+          : null,
+        target: target ? { x: target.x, y: target.y, z: target.z } : null,
+        view,
+      },
+    });
   }, []);
 
   // Dialog management
@@ -318,6 +342,9 @@ export function UIProvider({ children }) {
     currentIndex: state.currentIndex,
     navItems: getNavItems(state.activeBuilding),
     isSidebarOpen: state.isSidebarOpen,
+
+    camera: state.camera,
+    updateCameraState,
 
     // Dialog states
     dialogs: state.dialogs,
