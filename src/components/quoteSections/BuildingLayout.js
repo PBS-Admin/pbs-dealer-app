@@ -753,7 +753,8 @@ const BuildingLayout = ({ locked }) => {
                   e.target.value
                 )
               }
-              icon={!locked && 'copy'}
+              icon={''}
+              // icon={!locked && 'copy'}
               iconClass={'prim'}
               // iconOnClick={}
               tooltip="Copy to all Walls"
