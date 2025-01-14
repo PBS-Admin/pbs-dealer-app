@@ -25,6 +25,7 @@ export default async function Quote({ params }) {
   if (quoteId == 0) {
     initialQuoteData = {
       ...emptyInitialState,
+      salesPerson: session.user.id,
       companyId: session.user.company,
     };
   } else if (quoteId != null) {

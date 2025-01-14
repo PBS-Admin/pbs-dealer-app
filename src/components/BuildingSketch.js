@@ -33,34 +33,66 @@ const BuildingSketch = () => {
       cameraState.view
     );
 
+  const timeoutRef = useRef(null);
+
   // Update context when user interacts with controls
   useEffect(() => {
     if (controls) {
       const handleChange = () => {
-        updateCameraState(camera.position, controls.target);
+        // Clear any pending timeout
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+
+        // Set new timeout
+        timeoutRef.current = setTimeout(() => {
+          if (camera && controls) {
+            updateCameraState(
+              camera.position,
+              controls.target,
+              cameraState.view
+            );
+          }
+        }, 100); // 100ms delay
       };
 
       controls.addEventListener('change', handleChange);
-      return () => controls.removeEventListener('change', handleChange);
+
+      return () => {
+        controls.removeEventListener('change', handleChange);
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+      };
     }
-  }, [controls, camera, updateCameraState]);
+  }, [controls, camera, updateCameraState, cameraState.view]);
 
   // Restore camera position from context when available
   useEffect(() => {
     if (camera && controls && cameraState.position && cameraState.target) {
-      camera.position.set(
-        cameraState.position.x,
-        cameraState.position.y,
-        cameraState.position.z
+      const shouldUpdate = !camera.position.equals(
+        new THREE.Vector3(
+          cameraState.position.x,
+          cameraState.position.y,
+          cameraState.position.z
+        )
       );
-      controls.target.set(
-        cameraState.target.x,
-        cameraState.target.y,
-        cameraState.target.z
-      );
-      controls.update();
+
+      if (shouldUpdate) {
+        camera.position.set(
+          cameraState.position.x,
+          cameraState.position.y,
+          cameraState.position.z
+        );
+        controls.target.set(
+          cameraState.target.x,
+          cameraState.target.y,
+          cameraState.target.z
+        );
+        controls.update();
+      }
     }
-  }, [camera, controls, cameraState.position, cameraState.target]);
+  }, [camera, controls, cameraState.view]);
 
   const updateBuilding = useCallback(() => {
     if (!isSetup || !scene) return;
@@ -107,13 +139,13 @@ const BuildingSketch = () => {
       state.buildings[activeBuilding]
     );
     addBayLines(
-      state.buildings[activeBuilding].roofBaySpacing,
+      state.buildings[activeBuilding].frontBaySpacing,
       'frontSidewall',
       scene,
       state.buildings[activeBuilding]
     );
     addBayLines(
-      state.buildings[activeBuilding].roofBaySpacing,
+      state.buildings[activeBuilding].backBaySpacing,
       'backSidewall',
       scene,
       state.buildings[activeBuilding]

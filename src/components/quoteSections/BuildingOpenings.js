@@ -323,12 +323,12 @@ const BuildingOpenings = ({ locked }) => {
         </div>
       </section>
       {/* Opening Sketch placeholder */}
-      {/* <section className="card">
+      <section className="card">
         <header>
           <h3>Wall Sketch</h3>
         </header>
         <OpeningSketch wallType={activeWallKey} />
-      </section> */}
+      </section>
     </>
   );
 };
