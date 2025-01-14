@@ -271,11 +271,7 @@ export const addBayLines = (spacing, wall, scene, buildingData) => {
     scene.add(line);
   };
 
-  // Create a copy of spacing array and reverse it for back wall
-  const adjustedSpacing =
-    wall === 'backSidewall' ? [...spacing].reverse() : spacing;
-
-  adjustedSpacing.forEach((bay, index) => {
+  spacing.forEach((bay, index) => {
     if (typeof bay !== 'number') {
       console.warn(`Invalid bay spacing value for ${wall}:`, bay);
       return;
@@ -509,16 +505,8 @@ export const addBraceLines = (spacing, bracing, wall, scene, buildingData) => {
       return;
     }
 
-    const bayStart =
-      wall === 'backSidewall'
-        ? length -
-          bayPositions[bayPositions.length - bracedBayIndex - 1] -
-          spacing[spacing.length - bracedBayIndex - 1]
-        : bayPositions[bracedBayIndex];
-    const bayEnd =
-      wall === 'backSidewall'
-        ? bayStart + spacing[spacing.length - bracedBayIndex - 1]
-        : bayStart + spacing[bracedBayIndex];
+    const bayStart = bayPositions[bracedBayIndex];
+    const bayEnd = bayStart + spacing[bracedBayIndex];
 
     switch (wall) {
       case 'leftEndwall':
@@ -972,16 +960,8 @@ export const addExtensions = (spacing, wall, scene, buildingData) => {
       return;
     }
 
-    const bayStart =
-      wall === 'backSidewall'
-        ? length -
-          bayPositions[bayPositions.length - bayIndex - 1] -
-          spacing[spacing.length - bayIndex - 1]
-        : bayPositions[bayIndex];
-    const bayEnd =
-      wall === 'backSidewall'
-        ? bayStart + spacing[spacing.length - bayIndex - 1]
-        : bayStart + spacing[bayIndex];
+    const bayStart = bayPositions[bayIndex];
+    const bayEnd = bayStart + spacing[bayIndex];
 
     const xOffset =
       wall === 'frontSidewall' ? width / 2 + 0.1 : -width / 2 - 0.1;

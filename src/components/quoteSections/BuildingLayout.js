@@ -361,7 +361,11 @@ const BuildingLayout = ({ locked }) => {
             onChange={(name, value) => {
               handleNestedChange(activeBuilding, 'roofBaySpacing', value);
               handleNestedChange(activeBuilding, 'frontBaySpacing', value);
-              handleNestedChange(activeBuilding, 'backBaySpacing', value);
+              handleNestedChange(
+                activeBuilding,
+                'backBaySpacing',
+                value.toReversed()
+              );
             }}
             compareLabel="building length"
             compareValue={state.buildings[activeBuilding].length}
@@ -384,9 +388,9 @@ const BuildingLayout = ({ locked }) => {
             name={`buildingBackBaySpacing-${activeBuilding}`}
             label="Back Sidewall Bay Spacing:"
             value={state.buildings[activeBuilding].backBaySpacing}
-            onChange={(name, value) =>
-              handleNestedChange(activeBuilding, 'backBaySpacing', value)
-            }
+            onChange={(name, value) => {
+              handleNestedChange(activeBuilding, 'backBaySpacing', value);
+            }}
             compareLabel="building length"
             compareValue={state.buildings[activeBuilding].length}
             disabled={locked}

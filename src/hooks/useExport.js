@@ -81,7 +81,7 @@ export function useExport() {
         );
       } catch (error) {
         setStatus('MBS and Jobs subfolder not found on the selected drive.');
-        const res = { success: false, folder: '' };
+        const res = { success: false, folder: '', error: error.name };
         return res;
       }
 
@@ -305,7 +305,7 @@ export function useExport() {
       return res;
     } catch (error) {
       setStatus(`Error during export: ${error.message}`);
-      const res = { success: false, folder: '' };
+      const res = { success: false, folder: '', error: error.name };
       return res;
     } finally {
       setIsExporting(false);

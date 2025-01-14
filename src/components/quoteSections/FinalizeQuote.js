@@ -327,11 +327,41 @@ const FinalizeQuote = ({ locked }) => {
         await createImportBAT(result.folder);
         showSuccessExport();
       } else {
-        showRejectExport();
+        console.log(result.error);
+        switch (result.error) {
+          case 'AbortError':
+            toastRef.current.show({
+              title: 'Error',
+              message: 'Export cancelled',
+              timeout: 1000,
+              color: 'nuetral',
+            });
+            break;
+          case 'NotFoundError':
+            toastRef.current.show({
+              title: 'Error',
+              message:
+                'Could not find correct subfolders, please follow these steps: \n1.) Select C:/MBS folder on first dialog \n2.) Select C:/Jobs or custom Jobs folder on second dialog',
+              timeout: 5000,
+              color: 'reject',
+            });
+            break;
+          default:
+            toastRef.current.show({
+              title: 'Error',
+              message: 'Export failed',
+              timeout: 1000,
+              color: 'reject',
+            });
+            break;
+        }
+
+        // showRejectExport();
         console.log('Export failed');
       }
     } catch (error) {
       console.error('Export error: ', error);
+      console.log('e:', error.name);
       showRejectExport();
       exportPendingRef.current = false;
     }

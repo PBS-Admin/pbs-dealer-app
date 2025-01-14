@@ -230,18 +230,51 @@ export function UIProvider({ children }) {
     dispatch({ type: UI_ACTIONS.TOGGLE_SIDEBAR });
   }, []);
 
-  const updateCameraState = useCallback((position, target, view) => {
-    dispatch({
-      type: UI_ACTIONS.UPDATE_CAMERA_STATE,
-      payload: {
-        position: position
-          ? { x: position.x, y: position.y, z: position.z }
-          : null,
-        target: target ? { x: target.x, y: target.y, z: target.z } : null,
-        view,
-      },
-    });
-  }, []);
+  const updateCameraState = useCallback(
+    (position, target, view) => {
+      // Only update if there's actually a change
+      const currentState = state.camera;
+      const positionChanged =
+        position &&
+        (!currentState.position ||
+          position.x !== currentState.position.x ||
+          position.y !== currentState.position.y ||
+          position.z !== currentState.position.z);
+
+      const targetChanged =
+        target &&
+        (!currentState.target ||
+          target.x !== currentState.target.x ||
+          target.y !== currentState.target.y ||
+          target.z !== currentState.target.z);
+
+      const viewChanged = view && view !== currentState.view;
+
+      if (positionChanged || targetChanged || viewChanged) {
+        dispatch({
+          type: UI_ACTIONS.UPDATE_CAMERA_STATE,
+          payload: {
+            position: position
+              ? {
+                  x: position.x,
+                  y: position.y,
+                  z: position.z,
+                }
+              : currentState.position,
+            target: target
+              ? {
+                  x: target.x,
+                  y: target.y,
+                  z: target.z,
+                }
+              : currentState.target,
+            view: view || currentState.view,
+          },
+        });
+      }
+    },
+    [state.camera]
+  );
 
   // Dialog management
   const updateDialog = useCallback((dialogName, dialogData) => {

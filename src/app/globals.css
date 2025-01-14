@@ -1288,7 +1288,7 @@ label:has(.tooltip.left) {
 
 .toastContent {
   /* background-color: var(--green); */
-  height: 5rem;
+  min-height: 5rem;
   color: var(--background-white);
   padding: 0.75em 1.5em 1.5em 1.5em;
   display: flex;
@@ -1306,6 +1306,7 @@ label:has(.tooltip.left) {
 .toastContent p {
   color: var(--background-white);
   font-size: 0.75rem;
+  white-space: pre-line;
 }
 
 /* Loading Animation */
