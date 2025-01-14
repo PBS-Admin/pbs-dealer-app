@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
 const formatFeetInches = (value) => {
+  // Round to 2 decimal places before formatting to avoid floating point errors
+  value = Number(value.toFixed(2));
   const feet = Math.floor(value);
   const inches = Math.round((value - feet) * 12);
+  // Handle case where inches rounds to 12
+  if (inches === 12) {
+    return `${feet + 1}'-0"`;
+  }
   return `${feet}'-${inches.toString().padStart(1, '0')}"`;
 };
 
@@ -13,7 +19,10 @@ const parseFeetInput = (input) => {
   if (multiplierMatch) {
     const count = parseInt(multiplierMatch[1], 10);
     const value = parseFloat(multiplierMatch[2]);
-    return Array(count).fill(Number(value.toFixed(2)));
+    // Round each value individually to maintain precision
+    return Array(count)
+      .fill()
+      .map(() => Number(value.toFixed(2)));
   }
 
   // First, try to parse as a decimal number
@@ -52,7 +61,9 @@ const BaySpacingInput = ({
 
   useEffect(() => {
     if (value && Array.isArray(value)) {
-      setInputValue(value.map(formatFeetInches).join(', '));
+      // Round each value before formatting
+      const roundedValues = value.map((v) => Number(v.toFixed(2)));
+      setInputValue(roundedValues.map(formatFeetInches).join(', '));
     }
   }, [value]);
 
@@ -83,15 +94,22 @@ const BaySpacingInput = ({
       return;
     }
 
-    const sum = spacings.reduce((acc, curr) => acc + curr, 0);
+    // Round sum to 2 decimal places to avoid floating point errors
+    const sum = Number(
+      spacings.reduce((acc, curr) => acc + curr, 0).toFixed(2)
+    );
+    const roundedCompareValue = Number(compareValue.toFixed(2));
 
-    if (Math.abs(sum - compareValue) < 0.01) {
-      onChange(name, spacings);
-      setInputValue(spacings.map(formatFeetInches).join(', '));
+    // Use a slightly larger epsilon for the comparison
+    if (Math.abs(sum - roundedCompareValue) < 0.02) {
+      // Round all values before passing them back
+      const roundedSpacings = spacings.map((v) => Number(v.toFixed(2)));
+      onChange(name, roundedSpacings);
+      setInputValue(roundedSpacings.map(formatFeetInches).join(', '));
       setError('');
     } else {
       setError(
-        `Bay spacing (${formatFeetInches(sum)}) does not equal ${compareLabel} (${formatFeetInches(compareValue)})`
+        `Bay spacing (${formatFeetInches(sum)}) does not equal ${compareLabel} (${formatFeetInches(roundedCompareValue)})`
       );
     }
   };
@@ -100,7 +118,8 @@ const BaySpacingInput = ({
     if (inputValue === '') {
       const optimalBaySize = 25;
       const numBays = Math.round(compareValue / optimalBaySize);
-      const baySize = compareValue / numBays;
+      // Round the bay size to 2 decimal places
+      const baySize = Number((compareValue / numBays).toFixed(2));
       const suggestion = Array(numBays).fill(baySize);
       setInputValue(suggestion.map(formatFeetInches).join(', '));
     }
