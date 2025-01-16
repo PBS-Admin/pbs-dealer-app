@@ -640,7 +640,7 @@ export function usePDF() {
 
     textLargeBoldLeft(page, '', 470, 736.125, 120);
     textBoldLeft(page, quoteNum, 470, 720.5, 120);
-    textBoldLeft(page, getNameById(salesPerson).name, 470, 704.875, 120);
+    textBoldLeft(page, getNameById(salesPerson).name || '', 470, 704.875, 120);
 
     currentY = 696;
     lineThick(page, 390, 758.5, 390, 696);
