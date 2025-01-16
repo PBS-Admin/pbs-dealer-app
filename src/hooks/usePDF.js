@@ -2247,17 +2247,19 @@ export function usePDF() {
           currentY + textOffsetY,
           124
         );
+
         textBoldLeft(
           page,
           wallGauge.find(
             (item) =>
               parseInt(item.id) ===
               state.buildings[i][`${wallsInBldg[j].id}WallPanelGauge`]
-          ).label,
+          )?.label || '--',
           260,
           currentY + textOffsetY,
           54
         );
+
         // textBoldLeft(
         //   page,
         //   wallFinish.find(
