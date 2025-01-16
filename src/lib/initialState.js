@@ -685,7 +685,9 @@ export const complexityRules = [
           b.backExtensionWidth > 6 ||
           b.leftExtensionWidth > 6 ||
           b.rightExtensionWidth > 6 ||
-          (b.soffitPanelType != 'pbr' && b.soffitPanelType != 'tuff')
+          (b.soffitPanelType != 'pbr' &&
+            b.soffitPanelType != 'tuff' &&
+            b.soffitPanelType != 'none')
       ),
     desc: `Extensions are greater than 6' or have a special soffit`,
     complexity: 3,
