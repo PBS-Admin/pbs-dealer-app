@@ -128,6 +128,7 @@ const ReusableSelect = ({
                       value={id}
                       disabled={
                         validFor &&
+                        dependantOn &&
                         !validFor.includes(dependantOn) &&
                         !validFor.includes(dependantOn.toString())
                           ? 'disabled'

@@ -142,7 +142,7 @@ export const roofPanels = [
 ];
 
 export const roofGauge = [
-  { id: '26', label: '26', validFor: ['pbr', 'pbrDrip', 'hr34'] },
+  { id: '26', label: '26', validFor: ['pbr', 'pbrDrip', 'hr34', 'others'] },
   {
     id: '24',
     label: '24',
@@ -156,6 +156,7 @@ export const roofGauge = [
       'battenLok',
       'superLok',
       'hr34',
+      'others',
     ],
   },
 ];
