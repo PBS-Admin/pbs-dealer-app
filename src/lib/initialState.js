@@ -684,12 +684,25 @@ export const complexityRules = [
           b.frontExtensionWidth > 6 ||
           b.backExtensionWidth > 6 ||
           b.leftExtensionWidth > 6 ||
-          b.rightExtensionWidth > 6 ||
-          (b.soffitPanelType != 'pbr' &&
-            b.soffitPanelType != 'tuff' &&
-            b.soffitPanelType != 'none')
+          b.rightExtensionWidth > 6
       ),
-    desc: `Extensions are greater than 6' or have a special soffit`,
+    desc: `Extensions are greater than 6'`,
+    complexity: 3,
+    engAdd: 0,
+    detAdd: 0,
+  },
+  {
+    id: 'extensionFlat',
+    condition: (state) =>
+      state.buildings.some(
+        (b) =>
+          (b.frontExtensionWidth > 0 ||
+            b.backExtensionWidth > 0 ||
+            b.leftExtensionWidth > 0 ||
+            b.rightExtensionWidth > 0) &&
+          b.soffitPanelType == 'flat'
+      ),
+    desc: `Extensions have a flat soffit`,
     complexity: 3,
     engAdd: 0,
     detAdd: 0,
