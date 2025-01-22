@@ -25,8 +25,17 @@ import { useUIContext } from '@/contexts/UIContext';
 
 const BuildingLayout = ({ locked }) => {
   // Contexts
-  const { state, handleNestedChange } = useBuildingContext();
+  const { state, handleNestedChange, removeWallOpenings } =
+    useBuildingContext();
   const { activeBuilding } = useUIContext();
+
+  const handleGirtTypeChange = (e, wall) => {
+    const wallKey = `${wall}GirtType`;
+    if (e.target.value == 'open') {
+      removeWallOpenings(activeBuilding, wall);
+    }
+    handleNestedChange(activeBuilding, wallKey, e.target.value);
+  };
 
   // JSX
   return (
@@ -750,13 +759,7 @@ const BuildingLayout = ({ locked }) => {
             <ReusableSelect
               name={`buildingFrontGirtType-${activeBuilding}`}
               value={state.buildings[activeBuilding].frontGirtType}
-              onChange={(e) =>
-                handleNestedChange(
-                  activeBuilding,
-                  'frontGirtType',
-                  e.target.value
-                )
-              }
+              onChange={(e) => handleGirtTypeChange(e, 'front')}
               icon={''}
               // icon={!locked && 'copy'}
               iconClass={'prim'}
