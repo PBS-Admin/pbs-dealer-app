@@ -67,6 +67,7 @@ export const BUILDING_ACTIONS = {
   // Openings
   ADD_OPENING: 'ADD_OPENING',
   REMOVE_OPENING: 'REMOVE_OPENING',
+  REMOVE_WALL_OPENINGS: 'REMOVE_WALL_OPENINGS',
   UPDATE_OPENING: 'UPDATE_OPENING',
 
   // Accessories
@@ -100,6 +101,9 @@ const applyBuildingConstraints = (building, field, value) => {
 
   // Handle symmetrical building constraints
   if (building.shape === 'symmetrical') {
+    if (value) {
+      updates.backPeakOffset = parseFloat(value) / 2;
+    }
     switch (field) {
       case 'backEaveHeight':
         updates.frontEaveHeight = parseFloat(value) || value;
@@ -113,11 +117,6 @@ const applyBuildingConstraints = (building, field, value) => {
       case 'frontRoofPitch':
         updates.backRoofPitch = parseFloat(value) || value;
         break;
-      case 'width':
-        if (value) {
-          updates.backPeakOffset = parseFloat(value) / 2;
-        }
-        break;
     }
   }
 
@@ -126,24 +125,33 @@ const applyBuildingConstraints = (building, field, value) => {
     (building.shape === 'singleSlope' || building.shape === 'leanTo') &&
     building.width
   ) {
-    if (field === 'backEaveHeight' || field === 'backRoofPitch') {
-      const heightDiff =
-        (parseFloat(building.width) *
-          (field === 'backRoofPitch' ? value : building.backRoofPitch)) /
-        12;
-      const backHeight =
-        field === 'backEaveHeight' ? value : building.backEaveHeight;
-      if (backHeight) {
-        const rawFrontHeight = parseFloat(backHeight) + heightDiff;
-        const snappedFrontHeight = Math.round(rawFrontHeight * 192) / 192;
-        updates.frontEaveHeight = snappedFrontHeight;
+    updates.backPeakOffset = 0;
+    switch (field) {
+      case 'backEaveHeight':
+      case 'backRoofPitch': {
+        const heightDiff =
+          (parseFloat(building.width) *
+            (field === 'backRoofPitch' ? value : building.backRoofPitch)) /
+          12;
+        const backHeight =
+          field === 'backEaveHeight' ? value : building.backEaveHeight;
+        if (backHeight) {
+          const rawFrontHeight = parseFloat(backHeight) + heightDiff;
+          const snappedFrontHeight = Math.round(rawFrontHeight * 192) / 192;
+          updates.frontEaveHeight = snappedFrontHeight;
+        }
+        break;
       }
-    } else if (field === 'frontEaveHeight') {
-      const heightDiff =
-        (parseFloat(building.width) * building.backRoofPitch) / 12;
-      const rawBackHeight = parseFloat(value) - heightDiff;
-      const snappedBackHeight = Math.round(rawBackHeight * 192) / 192;
-      updates.backEaveHeight = snappedBackHeight;
+      case 'frontEaveHeight': {
+        const heightDiff =
+          (parseFloat(building.width) * building.backRoofPitch) / 12;
+        const rawBackHeight = parseFloat(value) - heightDiff;
+        const snappedBackHeight = Math.round(rawBackHeight * 192) / 192;
+        updates.backEaveHeight = snappedBackHeight;
+        break;
+      }
+      default:
+        break;
     }
   }
 
@@ -1010,6 +1018,24 @@ function buildingReducer(state, action) {
       };
     }
 
+    case BUILDING_ACTIONS.REMOVE_WALL_OPENINGS: {
+      const { buildingIndex, wall } = action.payload;
+      return {
+        ...state,
+        buildings: state.buildings.map((building, index) =>
+          index === buildingIndex
+            ? {
+                ...building,
+                openings: {
+                  ...building.openings,
+                  [wall]: [],
+                },
+              }
+            : building
+        ),
+      };
+    }
+
     case BUILDING_ACTIONS.UPDATE_OPENING: {
       const { buildingIndex, wall, openingIndex, field, value } =
         action.payload;
@@ -1465,6 +1491,13 @@ export function BuildingProvider({
     });
   }, []);
 
+  const removeWallOpenings = useCallback((buildingIndex, wall) => {
+    dispatch({
+      type: BUILDING_ACTIONS.REMOVE_WALL_OPENINGS,
+      payload: { buildingIndex, wall },
+    });
+  }, []);
+
   const handleOpeningChange = useCallback(
     (buildingIndex, wall, openingIndex, field, value) => {
       dispatch({
@@ -1592,6 +1625,7 @@ export function BuildingProvider({
     // Openings
     addOpening,
     removeOpening,
+    removeWallOpenings,
     handleOpeningChange,
 
     // Accessories

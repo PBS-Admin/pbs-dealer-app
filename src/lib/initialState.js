@@ -396,12 +396,12 @@ export const wallReliteTemplate = {
 };
 
 export const openingTemplate = {
-  bay: '',
+  bay: 1,
   openType: 'overhead',
   width: '',
   height: '',
   sill: '',
-  offset: '',
+  offset: 0,
 };
 
 export const mandoorTemplate = {
