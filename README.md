@@ -2,6 +2,10 @@
 
 ![PBS Logo](./public/images/pbslogo.png)
 
+## Description
+
+The PBS Dealer App allows a user to enter important information describing a metal building and provides ways to export that information into MBS design software and generate contracts. We chose to use the Next.js framework with React components because this is an external application that requires authentication and we had an existing HTA application that our in-house team was familiar with. 
+
 ## Getting Started
 
 First, install all your dependencies
@@ -32,3 +36,6 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 ## Deploy on Vercel
 
 This application is deployed through Vercel and will automatically update when changes are merged to the master branch
+
+## How to Use the Project
+
