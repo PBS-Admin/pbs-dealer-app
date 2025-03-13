@@ -8,11 +8,14 @@ import { openingTypes } from '../../util/dropdownOptions';
 import { useUIContext } from '@/contexts/UIContext';
 import { useBuildingContext } from '@/contexts/BuildingContext';
 import OpeningSketch from '../OpeningSketch';
+import BuildingSketch from '../BuildingSketch';
+import BuildingFlatSketch from '../BuildingFlatSketch';
+import { calculateHeightAtPosition } from '../BuildingUtils';
 
 const BuildingOpenings = ({ locked }) => {
   // Local State
   const [activeOpening, setActiveOpening] = useState(0);
-  const [activeWallKey, setActiveWallKey] = useState('');
+  const [activeWallKey, setActiveWallKey] = useState('front');
 
   // Contexts
   const { activeBuilding } = useUIContext();
@@ -27,24 +30,24 @@ const BuildingOpenings = ({ locked }) => {
   const walls = useMemo(() => {
     const mainWalls = [
       {
-        key: 'front',
-        name: 'Front Sidewall',
-        girtType: state.buildings[activeBuilding].frontGirtType,
-      },
-      {
-        key: 'back',
-        name: 'Back Sidewall',
-        girtType: state.buildings[activeBuilding].backGirtType,
-      },
-      {
         key: 'left',
         name: 'Left Endwall',
         girtType: state.buildings[activeBuilding].leftGirtType,
       },
       {
+        key: 'front',
+        name: 'Front Sidewall',
+        girtType: state.buildings[activeBuilding].frontGirtType,
+      },
+      {
         key: 'right',
         name: 'Right Endwall',
         girtType: state.buildings[activeBuilding].rightGirtType,
+      },
+      {
+        key: 'back',
+        name: 'Back Sidewall',
+        girtType: state.buildings[activeBuilding].backGirtType,
       },
     ].filter((wall) => wall.girtType !== 'open');
 
@@ -96,11 +99,82 @@ const BuildingOpenings = ({ locked }) => {
     }
   };
 
+  const getSpacingBeforeBay = (spacingArray, bayNumber) => {
+    // If bay is 0 or 1, return 0 as there's no spacing before it
+    if (bayNumber <= 1) return 0;
+
+    const spacesBeforeBay = spacingArray.slice(0, bayNumber - 1);
+
+    // Sum up all the spaces
+    return spacesBeforeBay.reduce((sum, space) => sum + space, 0);
+  };
+
+  const isOpenConflict = (opening, wall) => {
+    switch (wall) {
+      case 'front': {
+        const spacing = state.buildings[activeBuilding].frontBaySpacing;
+        const eaveHeight = state.buildings[activeBuilding].frontEaveHeight;
+        return (
+          opening.offset + opening.width > spacing[opening.bay - 1] ||
+          opening.height + opening.sill > eaveHeight
+        );
+      }
+      case 'back': {
+        const spacing = state.buildings[activeBuilding].backBaySpacing;
+        const eaveHeight = state.buildings[activeBuilding].backEaveHeight;
+        return (
+          opening.offset + opening.width > spacing[opening.bay - 1] ||
+          opening.height + opening.sill > eaveHeight
+        );
+      }
+      case 'left': {
+        const spacing = state.buildings[activeBuilding].leftBaySpacing;
+        return (
+          opening.height + opening.sill >
+            calculateHeightAtPosition(
+              state.buildings[activeBuilding],
+              getSpacingBeforeBay(spacing, opening.bay) + opening.offset,
+              false
+            ) ||
+          opening.height + opening.sill >
+            calculateHeightAtPosition(
+              state.buildings[activeBuilding],
+              getSpacingBeforeBay(spacing, opening.bay) +
+                opening.offset +
+                opening.width,
+              false
+            ) ||
+          opening.offset + opening.width > spacing[opening.bay]
+        );
+      }
+      case 'right': {
+        const spacing = state.buildings[activeBuilding].rightBaySpacing;
+        return (
+          opening.height + opening.sill >
+            calculateHeightAtPosition(
+              state.buildings[activeBuilding],
+              getSpacingBeforeBay(spacing, opening.bay) + opening.offset,
+              true
+            ) ||
+          opening.height + opening.sill >
+            calculateHeightAtPosition(
+              state.buildings[activeBuilding],
+              getSpacingBeforeBay(spacing, opening.bay) +
+                opening.offset +
+                opening.width,
+              true
+            ) ||
+          opening.offset + opening.width > spacing[opening.bay]
+        );
+      }
+    }
+  };
+
   const renderOpeningInputs = (opening, openingIndex) => {
     return (
       <>
         <div
-          className={`tableGrid7 ${openingIndex == activeOpening ? 'activeRow' : ''}`}
+          className={`tableGrid7 ${openingIndex == activeOpening ? 'activeRow' : ''} ${isOpenConflict(opening, activeWallKey) ? 'errorRow' : ''}`}
         >
           <ReusableInteger
             name={`building-${activeBuilding}-openingBay-${openingIndex}`}
@@ -262,6 +336,14 @@ const BuildingOpenings = ({ locked }) => {
   // JSX
   return (
     <>
+      {/* Opening Sketch placeholder */}
+      <section className="card">
+        <header>
+          <h3>Wall Sketch</h3>
+        </header>
+        <BuildingFlatSketch activeWall={activeWallKey} />
+        {/* <OpeningSketch wallType={activeWallKey} /> */}
+      </section>
       <section className="card">
         <header>
           <h3>Openings</h3>
@@ -321,13 +403,6 @@ const BuildingOpenings = ({ locked }) => {
             </>
           )}
         </div>
-      </section>
-      {/* Opening Sketch placeholder */}
-      <section className="card">
-        <header>
-          <h3>Wall Sketch</h3>
-        </header>
-        <OpeningSketch wallType={activeWallKey} />
       </section>
     </>
   );
