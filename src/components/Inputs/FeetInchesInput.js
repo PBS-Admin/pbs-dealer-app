@@ -19,7 +19,12 @@ const decimalToFeetInches = (decimal) => {
   return { feet, inches };
 };
 
-const formatFeetInches = (feet, inches) => {
+const formatFeetInches = (value) => {
+  if (value === undefined || value === null || isNaN(value)) return `0'-0"`;
+
+  // Use decimalToFeetInches to convert the decimal value
+  const { feet, inches } = decimalToFeetInches(value);
+
   if (isNaN(feet) || isNaN(inches)) return `0'-0"`;
 
   let ft = feet;
@@ -102,10 +107,13 @@ const FeetInchesInput = ({
   calc,
   onCalc,
   placeholder = 'Feet',
+  compareValue,
+  compareLabel,
   disabled,
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!isFocused) {
@@ -118,14 +126,67 @@ const FeetInchesInput = ({
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
+    setError('');
   };
 
   const handleBlur = () => {
     setIsFocused(false);
     const parsed = parseFeetInches(inputValue, negative);
+
     if (parsed) {
       const { feet, inches } = parsed;
       const decimalValue = feetToDecimal(feet, inches);
+
+      // Check comparison with compareValue if both are provided
+      if (compareValue !== undefined && compareLabel) {
+        // Round values to 2 decimal places to avoid floating point comparison issues
+        const roundedValue = Number(decimalValue.toFixed(2));
+
+        // Only validate when compareValue is meaningful (not null, undefined, or NaN)
+        const isCompareValueValid =
+          compareValue !== null &&
+          compareValue !== undefined &&
+          !isNaN(compareValue);
+
+        // Only round compareValue if it's valid to avoid toFixed() errors
+        const roundedCompareValue = isCompareValueValid
+          ? Number(compareValue.toFixed(2))
+          : null;
+
+        // Check for both "start < end" and "end > start" scenarios
+        const isStartField = name.includes('partitionStart');
+        const isEndField = name.includes('partitionEnd');
+
+        if (
+          isStartField &&
+          isCompareValueValid &&
+          roundedValue > roundedCompareValue
+        ) {
+          setError(
+            `Start (${formatFeetInches(decimalValue)}) cannot be greater than ${compareLabel} (${formatFeetInches(compareValue)})`
+          );
+        } else if (
+          isEndField &&
+          isCompareValueValid &&
+          roundedValue < roundedCompareValue &&
+          compareLabel === 'start'
+        ) {
+          setError(
+            `End (${formatFeetInches(decimalValue)}) cannot be less than ${compareLabel} (${formatFeetInches(compareValue)})`
+          );
+        } else if (
+          isCompareValueValid &&
+          roundedValue > roundedCompareValue &&
+          compareLabel !== 'start'
+        ) {
+          setError(
+            `Value (${formatFeetInches(decimalValue)}) exceeds ${compareLabel} (${formatFeetInches(compareValue)})`
+          );
+        } else {
+          setError('');
+        }
+      }
+
       onChange({ target: { name, value: decimalValue } });
 
       if ((inputValue === '0' || inputValue === '') && !allowZero) {
@@ -133,14 +194,58 @@ const FeetInchesInput = ({
       } else if (inputValue === '' && allowBlankValue) {
         setInputValue('');
       } else {
-        const formatted = formatFeetInches(feet, inches);
-        setInputValue(formatted);
+        setInputValue(formatFeetInches(decimalValue));
       }
     } else {
-      const { feet, inches } = decimalToFeetInches(value);
-      setInputValue(
-        value === 0 && !allowZero ? '' : formatFeetInches(feet, inches)
-      );
+      // Invalid input - revert to previous valid value
+      setInputValue(value === 0 && !allowZero ? '' : formatFeetInches(value));
+
+      // Check comparison with previousValue and compareValue
+      if (value !== undefined && compareValue !== undefined && compareLabel) {
+        const roundedValue = Number(value.toFixed(2));
+
+        // Only validate when compareValue is meaningful (not null, undefined, or NaN)
+        const isCompareValueValid =
+          compareValue !== null &&
+          compareValue !== undefined &&
+          !isNaN(compareValue);
+
+        // Only round compareValue if it's valid to avoid toFixed() errors
+        const roundedCompareValue = isCompareValueValid
+          ? Number(compareValue.toFixed(2))
+          : null;
+
+        // Also check for both scenarios when reverting to previous value
+        const isStartField = name.includes('partitionStart');
+        const isEndField = name.includes('partitionEnd');
+
+        if (
+          isStartField &&
+          isCompareValueValid &&
+          roundedValue > roundedCompareValue
+        ) {
+          setError(
+            `Start (${formatFeetInches(value)}) cannot be greater than ${compareLabel} (${formatFeetInches(compareValue)})`
+          );
+        } else if (
+          isEndField &&
+          isCompareValueValid &&
+          roundedValue < roundedCompareValue &&
+          compareLabel === 'start'
+        ) {
+          setError(
+            `End (${formatFeetInches(value)}) cannot be less than ${compareLabel} (${formatFeetInches(compareValue)})`
+          );
+        } else if (
+          isCompareValueValid &&
+          roundedValue > roundedCompareValue &&
+          compareLabel !== 'start'
+        ) {
+          setError(
+            `Value (${formatFeetInches(value)}) exceeds ${compareLabel} (${formatFeetInches(compareValue)})`
+          );
+        }
+      }
     }
   };
 
@@ -175,6 +280,7 @@ const FeetInchesInput = ({
         placeholder={placeholder}
         disabled={disabled}
       />
+      {error && <div style={{ color: 'red', fontSize: '0.8em' }}>{error}</div>}
     </div>
   );
 };

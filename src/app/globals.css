@@ -522,6 +522,11 @@ select option:disabled {
   border-radius: 4px;
 }
 
+.errorRow {
+  /* background-color: var(--light-red); */
+  border: 2px solid var(--red);
+}
+
 .error {
   border-color: var(--red) !important;
   outline: 1px solid var(--red) !important;
@@ -1114,6 +1119,13 @@ label:has(.tooltip.left) {
   border: var(--background-white);
   color: var(--background-white);
   min-width: 38px;
+}
+
+.openingSketch {
+  width: 1200px;
+  height: 400px;
+  align-self: center;
+  justify-self: center;
 }
 
 /* Hides the autocomplete google logo */

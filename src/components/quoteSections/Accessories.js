@@ -51,7 +51,6 @@ const Accessories = ({ locked }) => {
                 id="monoSlabDesign"
                 checked={state.monoSlabDesign}
                 onChange={(e) => {
-                  console.log('change e: ', e);
                   handleChange(e, 'monoSlabDesign');
                 }}
                 label="Include Monolothic Slab Design"
@@ -74,7 +73,6 @@ const Accessories = ({ locked }) => {
                 id="standardWarranty"
                 checked={state.standardWarranty}
                 onChange={(e) => {
-                  console.log('change e: ', e);
                   handleChange(e, 'standardWarranty');
                 }}
                 label="Include Standard Warranty"

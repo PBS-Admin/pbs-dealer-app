@@ -10,6 +10,7 @@ import { wallInsulation, orientations } from '../../util/dropdownOptions';
 import { useUIContext } from '@/contexts/UIContext';
 import { useBuildingContext } from '@/contexts/BuildingContext';
 import { useColorSelection } from '@/hooks/useColorSelection';
+import BuildingFlatSketch from '../BuildingFlatSketch';
 
 const BuildingPartitions = ({ locked }) => {
   // Local State
@@ -106,7 +107,6 @@ const BuildingPartitions = ({ locked }) => {
                   labelClass="offOnDesktop"
                   value={partition.start}
                   allowBlankValue={true}
-                  allowZero={true}
                   onChange={(e) =>
                     handlePartitionChange(
                       activeBuilding,
@@ -120,6 +120,24 @@ const BuildingPartitions = ({ locked }) => {
                       setActivePartition(partitionIndex);
                     }
                   }}
+                  compareValue={
+                    partition.orientation === 't'
+                      ? Math.min(
+                          state.buildings[activeBuilding].width,
+                          partition.end
+                        )
+                      : Math.min(
+                          state.buildings[activeBuilding].length,
+                          partition.end
+                        )
+                  }
+                  compareLabel={
+                    partition.end !== undefined && partition.end !== null
+                      ? 'end'
+                      : partition.orientation === 't'
+                        ? 'width'
+                        : 'length'
+                  }
                   disabled={locked}
                 />
                 <FeetInchesInput
@@ -145,8 +163,29 @@ const BuildingPartitions = ({ locked }) => {
                       setActivePartition(partitionIndex);
                     }
                   }}
+                  compareValue={
+                    // Only compare with start if start has a valid value
+                    partition.start !== undefined &&
+                    partition.start !== null &&
+                    partition.start !== '' &&
+                    partition.start > 0
+                      ? partition.start
+                      : null // Use null to skip validation when start is not meaningful
+                  }
+                  compareLabel={
+                    // Only set label to 'start' if start has a valid value
+                    partition.start !== undefined &&
+                    partition.start !== null &&
+                    partition.start !== '' &&
+                    partition.start > 0
+                      ? 'start'
+                      : partition.orientation === 't'
+                        ? 'width'
+                        : 'length'
+                  }
                   disabled={locked}
                 />
+                {/*// todo: make sure this gets changed to bay spacing */}
                 <FeetInchesInput
                   name={`building-${activeBuilding}-partitionOffset-${partitionIndex}`}
                   label={
@@ -315,6 +354,16 @@ const BuildingPartitions = ({ locked }) => {
             </div>
           </>
         )}
+      </section>
+
+      <section className="card">
+        <header>
+          <h3>Overhead Sketch</h3>
+        </header>
+        <BuildingFlatSketch
+          activeWall={'partRoof'}
+          activePartition={activePartition}
+        />
       </section>
 
       <ReusableColorSelect

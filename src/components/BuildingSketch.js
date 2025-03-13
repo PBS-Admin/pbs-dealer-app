@@ -1,3 +1,4 @@
+// Component that shows a 3D sketch of the active building in the Builing Context
 import React, { useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { useThreeSetup } from '../hooks/useThreeSetup';
@@ -6,6 +7,8 @@ import {
   addBayLines,
   addBraceLines,
   addExtensions,
+  addOpenings,
+  addPartitions,
 } from './BuildingUtils';
 import { useBuildingContext } from '@/contexts/BuildingContext';
 import { useUIContext } from '@/contexts/UIContext';
@@ -115,7 +118,8 @@ const BuildingSketch = () => {
     scene.add(axesHelper);
 
     const { building, roof, buildingLines, roofLines } = createBuilding(
-      state.buildings[activeBuilding]
+      state.buildings[activeBuilding],
+      false
     );
 
     // Assign names to the objects for easier identification
@@ -124,7 +128,8 @@ const BuildingSketch = () => {
     buildingLines.name = 'buildingLines';
     roofLines.name = 'roofLines';
 
-    scene.add(building, roof, buildingLines, roofLines);
+    // scene.add(building, roof, buildingLines, roofLines);
+    scene.add(building, buildingLines, roof, roofLines);
 
     addBayLines(
       state.buildings[activeBuilding].leftBaySpacing,
@@ -218,6 +223,10 @@ const BuildingSketch = () => {
       scene,
       state.buildings[activeBuilding]
     );
+
+    addOpenings(scene, state.buildings[activeBuilding]);
+
+    addPartitions(scene, state.buildings[activeBuilding]);
 
     // Render the scene
     if (renderer && camera) {
